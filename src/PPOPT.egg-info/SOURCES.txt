@@ -1,0 +1,7 @@
+README.md
+setup.py
+src/MPO.egg-info/PKG-INFO
+src/MPO.egg-info/SOURCES.txt
+src/MPO.egg-info/dependency_links.txt
+src/MPO.egg-info/requires.txt
+src/MPO.egg-info/top_level.txt

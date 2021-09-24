@@ -1,0 +1,429 @@
+\begin{sphinxtheindex}
+\let\bigletter\sphinxstyleindexlettergroup
+\let\spxpagem \sphinxstyleindexpagemain
+\let\spxentry \sphinxstyleindexentry
+\let\spxextra \sphinxstyleindexextra
+
+  \bigletter A
+  \item \spxentry{A}\spxextra{mpo.critical\_region.CriticalRegion attribute}, \hyperpage{30}
+  \item \spxentry{A}\spxextra{mpo.mp\_program.MPLP\_Program attribute}, \hyperpage{31}
+  \item \spxentry{A}\spxextra{mpo.mp\_program.MPQP\_Program attribute}, \hyperpage{32}
+  \item \spxentry{A\_t}\spxextra{mpo.mp\_program.MPLP\_Program attribute}, \hyperpage{31}
+  \item \spxentry{A\_t}\spxextra{mpo.mp\_program.MPQP\_Program attribute}, \hyperpage{32}
+  \item \spxentry{active\_set}\spxextra{mpo.critical\_region.CriticalRegion attribute}, 
+		\hyperpage{30}
+  \item \spxentry{active\_set}\spxextra{mpo.mp\_program.MPLP\_Program attribute}, \hyperpage{31}
+  \item \spxentry{active\_set}\spxextra{mpo.mp\_program.MPQP\_Program attribute}, \hyperpage{32}
+  \item \spxentry{active\_set}\spxextra{mpo.solver\_interface.solver\_utils.SolverOutput attribute}, 
+		\hyperpage{20}
+  \item \spxentry{add()}\spxextra{mpo.mp\_solvers.mpqp\_combinatorial.CombinationTester method}, 
+		\hyperpage{10}
+  \item \spxentry{add\_combos()}\spxextra{mpo.mp\_solvers.mpqp\_parrallel\_combinatorial.CombinationTester method}, 
+		\hyperpage{11}
+  \item \spxentry{add\_region()}\spxextra{mpo.solution.Solution method}, \hyperpage{33}
+
+  \indexspace
+  \bigletter B
+  \item \spxentry{b}\spxextra{mpo.critical\_region.CriticalRegion attribute}, \hyperpage{30}
+  \item \spxentry{b}\spxextra{mpo.mp\_program.MPLP\_Program attribute}, \hyperpage{31}
+  \item \spxentry{b}\spxextra{mpo.mp\_program.MPQP\_Program attribute}, \hyperpage{32}
+  \item \spxentry{b\_t}\spxextra{mpo.mp\_program.MPLP\_Program attribute}, \hyperpage{31}
+  \item \spxentry{b\_t}\spxextra{mpo.mp\_program.MPQP\_Program attribute}, \hyperpage{32}
+  \item \spxentry{BVH}\spxextra{class in mpo.upop.ucontroller}, \hyperpage{22}
+
+  \indexspace
+  \bigletter C
+  \item \spxentry{C}\spxextra{mpo.critical\_region.CriticalRegion attribute}, \hyperpage{30}
+  \item \spxentry{c}\spxextra{mpo.mp\_program.MPLP\_Program attribute}, \hyperpage{31}
+  \item \spxentry{c}\spxextra{mpo.mp\_program.MPQP\_Program attribute}, \hyperpage{32}
+  \item \spxentry{calculate\_control\_law()}\spxextra{in module mpo.utils.mpqp\_utils}, 
+		\hyperpage{28}
+  \item \spxentry{calculate\_redundant\_constraints()}\spxextra{in module mpo.utils.constraint\_utilities}, 
+		\hyperpage{25}
+  \item \spxentry{cheap\_remove\_redundant\_constraints()}\spxextra{in module mpo.utils.constraint\_utilities}, 
+		\hyperpage{25}
+  \item \spxentry{chebyshev\_ball()}\spxextra{in module mpo.utils.chebyshev\_ball}, \hyperpage{24}
+  \item \spxentry{check()}\spxextra{mpo.mp\_solvers.mpqp\_combinatorial.CombinationTester method}, 
+		\hyperpage{10}
+  \item \spxentry{check()}\spxextra{mpo.mp\_solvers.mpqp\_parrallel\_combinatorial.CombinationTester method}, 
+		\hyperpage{11}
+  \item \spxentry{check\_child\_feasibility()}\spxextra{in module mpo.mp\_solvers.mpqp\_combinatorial}, 
+		\hyperpage{10}
+  \item \spxentry{check\_feasibility()}\spxextra{in module mpo.utils.mpqp\_utils}, \hyperpage{28}
+  \item \spxentry{check\_optimality()}\spxextra{in module mpo.utils.mpqp\_utils}, \hyperpage{28}
+  \item \spxentry{classify\_polytope()}\spxextra{in module mpo.upop.ucontroller}, \hyperpage{22}
+  \item \spxentry{CombinationTester}\spxextra{class in mpo.mp\_solvers.mpqp\_combinatorial}, 
+		\hyperpage{10}
+  \item \spxentry{CombinationTester}\spxextra{class in mpo.mp\_solvers.mpqp\_parrallel\_combinatorial}, 
+		\hyperpage{11}
+  \item \spxentry{combos}\spxextra{mpo.mp\_solvers.mpqp\_combinatorial.CombinationTester attribute}, 
+		\hyperpage{10}
+  \item \spxentry{constraint\_norm()}\spxextra{in module mpo.utils.constraint\_utilities}, 
+		\hyperpage{25}
+  \item \spxentry{critical\_regions}\spxextra{mpo.solution.Solution attribute}, \hyperpage{34}
+  \item \spxentry{CriticalRegion}\spxextra{class in mpo.critical\_region}, \hyperpage{30}
+
+  \indexspace
+  \bigletter D
+  \item \spxentry{d}\spxextra{mpo.critical\_region.CriticalRegion attribute}, \hyperpage{30}
+  \item \spxentry{determine\_hyperplane()}\spxextra{in module mpo.upop.ucontroller}, \hyperpage{22}
+  \item \spxentry{display\_latex()}\spxextra{mpo.mp\_program.MPLP\_Program method}, \hyperpage{31}
+  \item \spxentry{display\_warnings()}\spxextra{mpo.mp\_program.MPLP\_Program method}, 
+		\hyperpage{31}
+  \item \spxentry{dual}\spxextra{mpo.solver\_interface.solver\_utils.SolverOutput attribute}, 
+		\hyperpage{20}
+  \item \spxentry{Dustin}\spxextra{mpo.mp\_solvers.solve\_mplp.mplp\_solver attribute}, 
+		\hyperpage{12}
+
+  \indexspace
+  \bigletter E
+  \item \spxentry{E}\spxextra{mpo.critical\_region.CriticalRegion attribute}, \hyperpage{30}
+  \item \spxentry{evaluate()}\spxextra{mpo.critical\_region.CriticalRegion method}, \hyperpage{30}
+  \item \spxentry{evaluate()}\spxextra{mpo.solution.Solution method}, \hyperpage{34}
+  \item \spxentry{evaluate()}\spxextra{mpo.upop.point\_location.PointLocation method}, 
+		\hyperpage{21}
+
+  \indexspace
+  \bigletter F
+  \item \spxentry{f}\spxextra{mpo.critical\_region.CriticalRegion attribute}, \hyperpage{30}
+  \item \spxentry{F}\spxextra{mpo.mp\_program.MPLP\_Program attribute}, \hyperpage{31}
+  \item \spxentry{F}\spxextra{mpo.mp\_program.MPQP\_Program attribute}, \hyperpage{32}
+  \item \spxentry{facet\_ball\_elimination()}\spxextra{in module mpo.utils.constraint\_utilities}, 
+		\hyperpage{25}
+  \item \spxentry{filter\_solution()}\spxextra{in module mpo.mp\_solvers.solve\_mpqp}, 
+		\hyperpage{13}
+  \item \spxentry{find\_unique\_hyperplanes()}\spxextra{in module mpo.upop.upop\_utils}, 
+		\hyperpage{23}
+  \item \spxentry{find\_unique\_region\_functions()}\spxextra{in module mpo.upop.upop\_utils}, 
+		\hyperpage{23}
+  \item \spxentry{find\_unique\_region\_hyperplanes()}\spxextra{in module mpo.upop.upop\_utils}, 
+		\hyperpage{23}
+  \item \spxentry{full\_process()}\spxextra{in module mpo.mp\_solvers.mpqp\_parrallel\_combinatorial}, 
+		\hyperpage{11}
+
+  \indexspace
+  \bigletter G
+  \item \spxentry{gen\_array()}\spxextra{in module mpo.upop.language\_generation}, \hyperpage{21}
+  \item \spxentry{gen\_cpp\_array()}\spxextra{in module mpo.upop.language\_generation}, 
+		\hyperpage{21}
+  \item \spxentry{gen\_cpp\_variable()}\spxextra{in module mpo.upop.language\_generation}, 
+		\hyperpage{21}
+  \item \spxentry{gen\_cr\_from\_active\_set()}\spxextra{in module mpo.utils.mpqp\_utils}, 
+		\hyperpage{28}
+  \item \spxentry{gen\_js\_array()}\spxextra{in module mpo.upop.language\_generation}, 
+		\hyperpage{21}
+  \item \spxentry{gen\_js\_variable()}\spxextra{in module mpo.upop.language\_generation}, 
+		\hyperpage{21}
+  \item \spxentry{gen\_python\_array()}\spxextra{in module mpo.upop.language\_generation}, 
+		\hyperpage{21}
+  \item \spxentry{gen\_python\_variable()}\spxextra{in module mpo.upop.language\_generation}, 
+		\hyperpage{21}
+  \item \spxentry{gen\_tess\_points\_simplex()}\spxextra{in module mpo.utils.geometric}, 
+		\hyperpage{27}
+  \item \spxentry{gen\_variable()}\spxextra{in module mpo.upop.language\_generation}, 
+		\hyperpage{21}
+  \item \spxentry{gen\_vertices()}\spxextra{in module mpo.plot}, \hyperpage{32}
+  \item \spxentry{generate\_children()}\spxextra{in module mpo.mp\_solvers.mpqp\_combinatorial}, 
+		\hyperpage{10}
+  \item \spxentry{generate\_children()}\spxextra{in module mpo.mp\_solvers.mpqp\_parrallel\_combinatorial}, 
+		\hyperpage{11}
+  \item \spxentry{generate\_code()}\spxextra{in module mpo.upop.ucontroller}, \hyperpage{22}
+  \item \spxentry{generate\_extra()}\spxextra{in module mpo.mp\_solvers.mpqp\_graph}, 
+		\hyperpage{11}
+  \item \spxentry{generate\_mplp()}\spxextra{in module mpo.problem\_generator}, \hyperpage{33}
+  \item \spxentry{generate\_mpqp()}\spxextra{in module mpo.problem\_generator}, \hyperpage{33}
+  \item \spxentry{generate\_reduce()}\spxextra{in module mpo.mp\_solvers.mpqp\_graph}, 
+		\hyperpage{11}
+  \item \spxentry{get\_active\_set()}\spxextra{in module mpo.utils.solver\_utils}, \hyperpage{29}
+  \item \spxentry{get\_boundary\_types()}\spxextra{in module mpo.utils.mpqp\_utils}, \hyperpage{28}
+  \item \spxentry{get\_chebychev\_centers()}\spxextra{in module mpo.upop.upop\_utils}, 
+		\hyperpage{23}
+  \item \spxentry{get\_chebyshev\_information()}\spxextra{in module mpo.geometry.polytope\_operations}, 
+		\hyperpage{9}
+  \item \spxentry{get\_constraints()}\spxextra{mpo.critical\_region.CriticalRegion method}, 
+		\hyperpage{30}
+  \item \spxentry{get\_descriptions()}\spxextra{in module mpo.upop.upop\_utils}, \hyperpage{23}
+  \item \spxentry{get\_feasible\_theta()}\spxextra{in module mpo.utils.mpqp\_utils}, \hyperpage{28}
+  \item \spxentry{get\_feasible\_theta\_2()}\spxextra{in module mpo.utils.mpqp\_utils}, 
+		\hyperpage{28}
+  \item \spxentry{get\_outer\_boundaries()}\spxextra{in module mpo.upop.upop\_utils}, 
+		\hyperpage{23}
+  \item \spxentry{get\_program\_parameters()}\spxextra{in module mpo.solver\_interface.solver\_utils}, 
+		\hyperpage{20}
+  \item \spxentry{get\_region()}\spxextra{in module mpo.utils.mpqp\_utils}, \hyperpage{29}
+  \item \spxentry{get\_region()}\spxextra{mpo.solution.Solution method}, \hyperpage{34}
+  \item \spxentry{get\_vertices()}\spxextra{in module mpo.geometry.polytope\_operations}, 
+		\hyperpage{9}
+  \item \spxentry{graph}\spxextra{mpo.mp\_solvers.solve\_mpqp.mpqp\_algorithm attribute}, 
+		\hyperpage{13}
+  \item \spxentry{gupta}\spxextra{mpo.mp\_solvers.solve\_mpqp.mpqp\_algorithm attribute}, 
+		\hyperpage{13}
+  \item \spxentry{gupta\_parallel}\spxextra{mpo.mp\_solvers.solve\_mpqp.mpqp\_algorithm attribute}, 
+		\hyperpage{13}
+
+  \indexspace
+  \bigletter I
+  \item \spxentry{is\_feasible()}\spxextra{in module mpo.mp\_solvers.mpqp\_parrallel\_combinatorial}, 
+		\hyperpage{12}
+  \item \spxentry{is\_full\_dimension()}\spxextra{mpo.critical\_region.CriticalRegion method}, 
+		\hyperpage{30}
+  \item \spxentry{is\_full\_dimensional()}\spxextra{in module mpo.utils.mpqp\_utils}, 
+		\hyperpage{29}
+  \item \spxentry{is\_full\_rank()}\spxextra{in module mpo.utils.constraint\_utilities}, 
+		\hyperpage{25}
+  \item \spxentry{is\_inside()}\spxextra{mpo.critical\_region.CriticalRegion method}, 
+		\hyperpage{30}
+  \item \spxentry{is\_inside()}\spxextra{mpo.upop.point\_location.PointLocation method}, 
+		\hyperpage{21}
+  \item \spxentry{is\_optimal()}\spxextra{in module mpo.mp\_solvers.mpqp\_parrallel\_combinatorial}, 
+		\hyperpage{12}
+
+  \indexspace
+  \bigletter L
+  \item \spxentry{lagrange\_multipliers()}\spxextra{mpo.critical\_region.CriticalRegion method}, 
+		\hyperpage{30}
+  \item \spxentry{lambda\_set}\spxextra{mpo.critical\_region.CriticalRegion attribute}, 
+		\hyperpage{30}
+  \item \spxentry{latex()}\spxextra{mpo.mp\_program.MPLP\_Program method}, \hyperpage{31}
+  \item \spxentry{latex()}\spxextra{mpo.mp\_program.MPQP\_Program method}, \hyperpage{32}
+  \item \spxentry{latex\_matrix()}\spxextra{in module mpo.utils.general\_utils}, \hyperpage{27}
+  \item \spxentry{locate()}\spxextra{mpo.upop.point\_location.PointLocation method}, \hyperpage{22}
+
+  \indexspace
+  \bigletter M
+  \item \spxentry{make\_column()}\spxextra{in module mpo.utils.general\_utils}, \hyperpage{27}
+  \item \spxentry{make\_domain\_subdivision()}\spxextra{in module mpo.utils.geometric}, 
+		\hyperpage{27}
+  \item \spxentry{make\_row()}\spxextra{in module mpo.utils.general\_utils}, \hyperpage{27}
+  \item \spxentry{make\_simplex()}\spxextra{in module mpo.utils.geometric}, \hyperpage{27}
+  \item \spxentry{make\_subdomains()}\spxextra{in module mpo.utils.geometric}, \hyperpage{27}
+  \item \spxentry{module}
+    \subitem \spxentry{mpo}, \hyperpage{34}
+    \subitem \spxentry{mpo.critical\_region}, \hyperpage{30}
+    \subitem \spxentry{mpo.geometry}, \hyperpage{9}
+    \subitem \spxentry{mpo.geometry.polytope\_operations}, \hyperpage{9}
+    \subitem \spxentry{mpo.mp\_program}, \hyperpage{31}
+    \subitem \spxentry{mpo.mp\_solvers}, \hyperpage{13}
+    \subitem \spxentry{mpo.mp\_solvers.mpqp\_combinatorial}, \hyperpage{10}
+    \subitem \spxentry{mpo.mp\_solvers.mpqp\_geometric}, \hyperpage{11}
+    \subitem \spxentry{mpo.mp\_solvers.mpqp\_graph}, \hyperpage{11}
+    \subitem \spxentry{mpo.mp\_solvers.mpqp\_parrallel\_combinatorial}, \hyperpage{11}
+    \subitem \spxentry{mpo.mp\_solvers.mpqp\_parrallel\_graph}, \hyperpage{12}
+    \subitem \spxentry{mpo.mp\_solvers.solve\_mplp}, \hyperpage{12}
+    \subitem \spxentry{mpo.mp\_solvers.solve\_mpqp}, \hyperpage{13}
+    \subitem \spxentry{mpo.plot}, \hyperpage{32}
+    \subitem \spxentry{mpo.problem\_generator}, \hyperpage{33}
+    \subitem \spxentry{mpo.settings}, \hyperpage{33}
+    \subitem \spxentry{mpo.solution}, \hyperpage{33}
+    \subitem \spxentry{mpo.solver\_interface}, \hyperpage{21}
+    \subitem \spxentry{mpo.solver\_interface.cvxopt\_interface}, \hyperpage{13}
+    \subitem \spxentry{mpo.solver\_interface.gurobi\_solver\_interface}, \hyperpage{14}
+    \subitem \spxentry{mpo.solver\_interface.solver\_interface}, \hyperpage{17}
+    \subitem \spxentry{mpo.solver\_interface.solver\_utils}, \hyperpage{20}
+    \subitem \spxentry{mpo.upop}, \hyperpage{24}
+    \subitem \spxentry{mpo.upop.language\_generation}, \hyperpage{21}
+    \subitem \spxentry{mpo.upop.point\_location}, \hyperpage{21}
+    \subitem \spxentry{mpo.upop.ucontroller}, \hyperpage{22}
+    \subitem \spxentry{mpo.upop.upop\_utils}, \hyperpage{23}
+    \subitem \spxentry{mpo.utils}, \hyperpage{30}
+    \subitem \spxentry{mpo.utils.chebyshev\_ball}, \hyperpage{24}
+    \subitem \spxentry{mpo.utils.constraint\_utilities}, \hyperpage{25}
+    \subitem \spxentry{mpo.utils.general\_utils}, \hyperpage{27}
+    \subitem \spxentry{mpo.utils.geometric}, \hyperpage{27}
+    \subitem \spxentry{mpo.utils.mpqp\_utils}, \hyperpage{28}
+    \subitem \spxentry{mpo.utils.solver\_utils}, \hyperpage{29}
+  \item \spxentry{MPLP\_Program}\spxextra{class in mpo.mp\_program}, \hyperpage{31}
+  \item \spxentry{mplp\_solver}\spxextra{class in mpo.mp\_solvers.solve\_mplp}, \hyperpage{12}
+  \item \spxentry{mpo}
+    \subitem \spxentry{module}, \hyperpage{34}
+  \item \spxentry{mpo.critical\_region}
+    \subitem \spxentry{module}, \hyperpage{30}
+  \item \spxentry{mpo.geometry}
+    \subitem \spxentry{module}, \hyperpage{9}
+  \item \spxentry{mpo.geometry.polytope\_operations}
+    \subitem \spxentry{module}, \hyperpage{9}
+  \item \spxentry{mpo.mp\_program}
+    \subitem \spxentry{module}, \hyperpage{31}
+  \item \spxentry{mpo.mp\_solvers}
+    \subitem \spxentry{module}, \hyperpage{13}
+  \item \spxentry{mpo.mp\_solvers.mpqp\_combinatorial}
+    \subitem \spxentry{module}, \hyperpage{10}
+  \item \spxentry{mpo.mp\_solvers.mpqp\_geometric}
+    \subitem \spxentry{module}, \hyperpage{11}
+  \item \spxentry{mpo.mp\_solvers.mpqp\_graph}
+    \subitem \spxentry{module}, \hyperpage{11}
+  \item \spxentry{mpo.mp\_solvers.mpqp\_parrallel\_combinatorial}
+    \subitem \spxentry{module}, \hyperpage{11}
+  \item \spxentry{mpo.mp\_solvers.mpqp\_parrallel\_graph}
+    \subitem \spxentry{module}, \hyperpage{12}
+  \item \spxentry{mpo.mp\_solvers.solve\_mplp}
+    \subitem \spxentry{module}, \hyperpage{12}
+  \item \spxentry{mpo.mp\_solvers.solve\_mpqp}
+    \subitem \spxentry{module}, \hyperpage{13}
+  \item \spxentry{mpo.plot}
+    \subitem \spxentry{module}, \hyperpage{32}
+  \item \spxentry{mpo.problem\_generator}
+    \subitem \spxentry{module}, \hyperpage{33}
+  \item \spxentry{mpo.settings}
+    \subitem \spxentry{module}, \hyperpage{33}
+  \item \spxentry{mpo.solution}
+    \subitem \spxentry{module}, \hyperpage{33}
+  \item \spxentry{mpo.solver\_interface}
+    \subitem \spxentry{module}, \hyperpage{21}
+  \item \spxentry{mpo.solver\_interface.cvxopt\_interface}
+    \subitem \spxentry{module}, \hyperpage{13}
+  \item \spxentry{mpo.solver\_interface.gurobi\_solver\_interface}
+    \subitem \spxentry{module}, \hyperpage{14}
+  \item \spxentry{mpo.solver\_interface.solver\_interface}
+    \subitem \spxentry{module}, \hyperpage{17}
+  \item \spxentry{mpo.solver\_interface.solver\_utils}
+    \subitem \spxentry{module}, \hyperpage{20}
+  \item \spxentry{mpo.upop}
+    \subitem \spxentry{module}, \hyperpage{24}
+  \item \spxentry{mpo.upop.language\_generation}
+    \subitem \spxentry{module}, \hyperpage{21}
+  \item \spxentry{mpo.upop.point\_location}
+    \subitem \spxentry{module}, \hyperpage{21}
+  \item \spxentry{mpo.upop.ucontroller}
+    \subitem \spxentry{module}, \hyperpage{22}
+  \item \spxentry{mpo.upop.upop\_utils}
+    \subitem \spxentry{module}, \hyperpage{23}
+  \item \spxentry{mpo.utils}
+    \subitem \spxentry{module}, \hyperpage{30}
+  \item \spxentry{mpo.utils.chebyshev\_ball}
+    \subitem \spxentry{module}, \hyperpage{24}
+  \item \spxentry{mpo.utils.constraint\_utilities}
+    \subitem \spxentry{module}, \hyperpage{25}
+  \item \spxentry{mpo.utils.general\_utils}
+    \subitem \spxentry{module}, \hyperpage{27}
+  \item \spxentry{mpo.utils.geometric}
+    \subitem \spxentry{module}, \hyperpage{27}
+  \item \spxentry{mpo.utils.mpqp\_utils}
+    \subitem \spxentry{module}, \hyperpage{28}
+  \item \spxentry{mpo.utils.solver\_utils}
+    \subitem \spxentry{module}, \hyperpage{29}
+  \item \spxentry{mpo\_block()}\spxextra{in module mpo.utils.general\_utils}, \hyperpage{27}
+  \item \spxentry{mpqp\_algorithm}\spxextra{class in mpo.mp\_solvers.solve\_mpqp}, \hyperpage{13}
+  \item \spxentry{MPQP\_Program}\spxextra{class in mpo.mp\_program}, \hyperpage{31}
+
+  \indexspace
+  \bigletter N
+  \item \spxentry{num\_constraints()}\spxextra{mpo.mp\_program.MPLP\_Program method}, 
+		\hyperpage{31}
+  \item \spxentry{num\_cpu\_cores()}\spxextra{in module mpo.utils.general\_utils}, \hyperpage{27}
+  \item \spxentry{num\_t()}\spxextra{mpo.mp\_program.MPLP\_Program method}, \hyperpage{31}
+  \item \spxentry{num\_x()}\spxextra{mpo.mp\_program.MPLP\_Program method}, \hyperpage{31}
+
+  \indexspace
+  \bigletter O
+  \item \spxentry{obj}\spxextra{mpo.solver\_interface.solver\_utils.SolverOutput attribute}, 
+		\hyperpage{20}
+  \item \spxentry{omega\_set}\spxextra{mpo.critical\_region.CriticalRegion attribute}, 
+		\hyperpage{30}
+
+  \indexspace
+  \bigletter P
+  \item \spxentry{parametric\_plot()}\spxextra{in module mpo.plot}, \hyperpage{32}
+  \item \spxentry{plotly\_plot()}\spxextra{in module mpo.plot}, \hyperpage{32}
+  \item \spxentry{PointLocation}\spxextra{class in mpo.upop.point\_location}, \hyperpage{21}
+  \item \spxentry{process\_constraints()}\spxextra{mpo.mp\_program.MPLP\_Program method}, 
+		\hyperpage{31}
+  \item \spxentry{process\_constraints()}\spxextra{mpo.mp\_program.MPQP\_Program method}, 
+		\hyperpage{32}
+  \item \spxentry{process\_region\_constraints()}\spxextra{in module mpo.utils.constraint\_utilities}, 
+		\hyperpage{25}
+  \item \spxentry{program}\spxextra{mpo.solution.Solution attribute}, \hyperpage{34}
+
+  \indexspace
+  \bigletter R
+  \item \spxentry{regular\_set}\spxextra{mpo.critical\_region.CriticalRegion attribute}, 
+		\hyperpage{30}
+  \item \spxentry{remove\_duplicate\_rows()}\spxextra{in module mpo.utils.constraint\_utilities}, 
+		\hyperpage{26}
+  \item \spxentry{remove\_size\_zero\_matrices()}\spxextra{in module mpo.utils.general\_utils}, 
+		\hyperpage{27}
+  \item \spxentry{remove\_strongly\_redundant\_constraints()}\spxextra{in module mpo.utils.constraint\_utilities}, 
+		\hyperpage{26}
+  \item \spxentry{remove\_zero\_rows()}\spxextra{in module mpo.utils.constraint\_utilities}, 
+		\hyperpage{26}
+  \item \spxentry{revised\_tess\_simplex()}\spxextra{in module mpo.utils.geometric}, \hyperpage{27}
+  \item \spxentry{row\_equality()}\spxextra{in module mpo.utils.constraint\_utilities}, 
+		\hyperpage{26}
+
+  \indexspace
+  \bigletter S
+  \item \spxentry{sample\_region\_convex\_combination()}\spxextra{in module mpo.geometry.polytope\_operations}, 
+		\hyperpage{9}
+  \item \spxentry{scale\_constraint()}\spxextra{in module mpo.utils.constraint\_utilities}, 
+		\hyperpage{26}
+  \item \spxentry{scale\_constraints()}\spxextra{mpo.mp\_program.MPLP\_Program method}, 
+		\hyperpage{31}
+  \item \spxentry{select\_not\_in\_list()}\spxextra{in module mpo.utils.general\_utils}, 
+		\hyperpage{27}
+  \item \spxentry{slack}\spxextra{mpo.solver\_interface.solver\_utils.SolverOutput attribute}, 
+		\hyperpage{20}
+  \item \spxentry{sol}\spxextra{mpo.solver\_interface.solver\_utils.SolverOutput attribute}, 
+		\hyperpage{20}
+  \item \spxentry{Solution}\spxextra{class in mpo.solution}, \hyperpage{33}
+  \item \spxentry{solve()}\spxextra{in module mpo.mp\_solvers.mpqp\_combinatorial}, \hyperpage{10}
+  \item \spxentry{solve()}\spxextra{in module mpo.mp\_solvers.mpqp\_geometric}, \hyperpage{11}
+  \item \spxentry{solve()}\spxextra{in module mpo.mp\_solvers.mpqp\_graph}, \hyperpage{11}
+  \item \spxentry{solve()}\spxextra{in module mpo.mp\_solvers.mpqp\_parrallel\_combinatorial}, 
+		\hyperpage{12}
+  \item \spxentry{solve()}\spxextra{in module mpo.mp\_solvers.mpqp\_parrallel\_graph}, 
+		\hyperpage{12}
+  \item \spxentry{solve\_fully\_constraints()}\spxextra{in module mpo.solver\_interface.cvxopt\_interface}, 
+		\hyperpage{13}
+  \item \spxentry{solve\_lp()}\spxextra{in module mpo.solver\_interface.solver\_interface}, 
+		\hyperpage{17}
+  \item \spxentry{solve\_lp\_cvxopt()}\spxextra{in module mpo.solver\_interface.cvxopt\_interface}, 
+		\hyperpage{14}
+  \item \spxentry{solve\_lp\_gurobi()}\spxextra{in module mpo.solver\_interface.gurobi\_solver\_interface}, 
+		\hyperpage{14}
+  \item \spxentry{solve\_milp()}\spxextra{in module mpo.solver\_interface.solver\_interface}, 
+		\hyperpage{18}
+  \item \spxentry{solve\_milp\_gurobi()}\spxextra{in module mpo.solver\_interface.gurobi\_solver\_interface}, 
+		\hyperpage{14}
+  \item \spxentry{solve\_miqp()}\spxextra{in module mpo.solver\_interface.solver\_interface}, 
+		\hyperpage{18}
+  \item \spxentry{solve\_miqp\_gurobi()}\spxextra{in module mpo.solver\_interface.gurobi\_solver\_interface}, 
+		\hyperpage{15}
+  \item \spxentry{solve\_mplp()}\spxextra{in module mpo.mp\_solvers.solve\_mplp}, \hyperpage{12}
+  \item \spxentry{solve\_mpqp()}\spxextra{in module mpo.mp\_solvers.solve\_mpqp}, \hyperpage{13}
+  \item \spxentry{solve\_qp()}\spxextra{in module mpo.solver\_interface.solver\_interface}, 
+		\hyperpage{19}
+  \item \spxentry{solve\_qp\_gurobi()}\spxextra{in module mpo.solver\_interface.gurobi\_solver\_interface}, 
+		\hyperpage{16}
+  \item \spxentry{solve\_theta()}\spxextra{mpo.mp\_program.MPLP\_Program method}, \hyperpage{31}
+  \item \spxentry{solve\_theta()}\spxextra{mpo.mp\_program.MPQP\_Program method}, \hyperpage{32}
+  \item \spxentry{solver\_not\_supported()}\spxextra{in module mpo.solver\_interface.solver\_interface}, 
+		\hyperpage{20}
+  \item \spxentry{SolverOutput}\spxextra{class in mpo.solver\_interface.solver\_utils}, 
+		\hyperpage{20}
+  \item \spxentry{sort\_clockwise()}\spxextra{in module mpo.plot}, \hyperpage{33}
+  \item \spxentry{space}\spxextra{mpo.mp\_solvers.solve\_mpqp.mpqp\_algorithm attribute}, 
+		\hyperpage{13}
+  \item \spxentry{step}\spxextra{mpo.mp\_solvers.solve\_mpqp.mpqp\_algorithm attribute}, 
+		\hyperpage{13}
+
+  \indexspace
+  \bigletter T
+  \item \spxentry{theta\_ball()}\spxextra{in module mpo.utils.mpqp\_utils}, \hyperpage{29}
+
+  \indexspace
+  \bigletter V
+  \item \spxentry{verify\_outer\_boundary()}\spxextra{in module mpo.upop.upop\_utils}, 
+		\hyperpage{24}
+  \item \spxentry{verify\_solution()}\spxextra{mpo.solution.Solution method}, \hyperpage{34}
+  \item \spxentry{verify\_theta()}\spxextra{mpo.solution.Solution method}, \hyperpage{34}
+
+  \indexspace
+  \bigletter W
+  \item \spxentry{warnings()}\spxextra{mpo.mp\_program.MPLP\_Program method}, \hyperpage{31}
+  \item \spxentry{warnings()}\spxextra{mpo.mp\_program.MPQP\_Program method}, \hyperpage{32}
+
+  \indexspace
+  \bigletter Z
+  \item \spxentry{zeros()}\spxextra{in module mpo.utils.mpqp\_utils}, \hyperpage{29}
+
+\end{sphinxtheindex}

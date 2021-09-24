@@ -1,0 +1,60 @@
+\babel@toc {english}{}
+\contentsline {chapter}{\numberline {1}Installation}{3}{chapter.1}% 
+\contentsline {chapter}{\numberline {2}Tutorial}{5}{chapter.2}% 
+\contentsline {section}{\numberline {2.1}Solving a MPQP Program}{5}{section.2.1}% 
+\contentsline {chapter}{\numberline {3}API}{9}{chapter.3}% 
+\contentsline {section}{\numberline {3.1}mpo package}{9}{section.3.1}% 
+\contentsline {subsection}{\numberline {3.1.1}Subpackages}{9}{subsection.3.1.1}% 
+\contentsline {subsubsection}{mpo.geometry package}{9}{subsubsection*.3}% 
+\contentsline {paragraph}{Submodules}{9}{paragraph*.4}% 
+\contentsline {paragraph}{mpo.geometry.polytope module}{9}{paragraph*.5}% 
+\contentsline {paragraph}{mpo.geometry.polytope\_operations module}{9}{paragraph*.6}% 
+\contentsline {paragraph}{Module contents}{9}{paragraph*.10}% 
+\contentsline {subsubsection}{mpo.mp\_solvers package}{9}{subsubsection*.11}% 
+\contentsline {paragraph}{Submodules}{9}{paragraph*.12}% 
+\contentsline {paragraph}{mpo.mp\_solvers.mpqp\_ahmadi module}{9}{paragraph*.13}% 
+\contentsline {paragraph}{mpo.mp\_solvers.mpqp\_combinatorial module}{10}{paragraph*.14}% 
+\contentsline {paragraph}{mpo.mp\_solvers.mpqp\_geometric module}{11}{paragraph*.22}% 
+\contentsline {paragraph}{mpo.mp\_solvers.mpqp\_graph module}{11}{paragraph*.24}% 
+\contentsline {paragraph}{mpo.mp\_solvers.mpqp\_parrallel\_combinatorial module}{11}{paragraph*.28}% 
+\contentsline {paragraph}{mpo.mp\_solvers.mpqp\_parrallel\_combinatorial\_exp module}{12}{paragraph*.37}% 
+\contentsline {paragraph}{mpo.mp\_solvers.mpqp\_parrallel\_graph module}{12}{paragraph*.38}% 
+\contentsline {paragraph}{mpo.mp\_solvers.solve\_mplp module}{12}{paragraph*.40}% 
+\contentsline {paragraph}{mpo.mp\_solvers.solve\_mpqp module}{13}{paragraph*.44}% 
+\contentsline {paragraph}{mpo.mp\_solvers.solver\_utils module}{13}{paragraph*.53}% 
+\contentsline {paragraph}{Module contents}{13}{paragraph*.54}% 
+\contentsline {subsubsection}{mpo.solver\_interface package}{13}{subsubsection*.55}% 
+\contentsline {paragraph}{Submodules}{13}{paragraph*.56}% 
+\contentsline {paragraph}{mpo.solver\_interface.cvxopt\_interface module}{13}{paragraph*.57}% 
+\contentsline {paragraph}{mpo.solver\_interface.gurobi\_solver\_interface module}{14}{paragraph*.60}% 
+\contentsline {paragraph}{mpo.solver\_interface.solver\_interface module}{17}{paragraph*.65}% 
+\contentsline {paragraph}{mpo.solver\_interface.solver\_utils module}{20}{paragraph*.71}% 
+\contentsline {paragraph}{Module contents}{21}{paragraph*.79}% 
+\contentsline {subsubsection}{mpo.upop package}{21}{subsubsection*.80}% 
+\contentsline {paragraph}{Submodules}{21}{paragraph*.81}% 
+\contentsline {paragraph}{mpo.upop.language\_generation module}{21}{paragraph*.82}% 
+\contentsline {paragraph}{mpo.upop.linear\_code\_gen module}{21}{paragraph*.91}% 
+\contentsline {paragraph}{mpo.upop.point\_location module}{21}{paragraph*.92}% 
+\contentsline {paragraph}{mpo.upop.ucontroller module}{22}{paragraph*.97}% 
+\contentsline {paragraph}{mpo.upop.upop\_utils module}{23}{paragraph*.102}% 
+\contentsline {paragraph}{Module contents}{24}{paragraph*.110}% 
+\contentsline {subsubsection}{mpo.utils package}{24}{subsubsection*.111}% 
+\contentsline {paragraph}{Submodules}{24}{paragraph*.112}% 
+\contentsline {paragraph}{mpo.utils.chebyshev\_ball module}{24}{paragraph*.113}% 
+\contentsline {paragraph}{mpo.utils.constraint\_utilities module}{25}{paragraph*.115}% 
+\contentsline {paragraph}{mpo.utils.general\_utils module}{27}{paragraph*.127}% 
+\contentsline {paragraph}{mpo.utils.geometric module}{27}{paragraph*.135}% 
+\contentsline {paragraph}{mpo.utils.mpqp\_utils module}{28}{paragraph*.141}% 
+\contentsline {paragraph}{mpo.utils.solver\_utils module}{29}{paragraph*.153}% 
+\contentsline {paragraph}{Module contents}{30}{paragraph*.155}% 
+\contentsline {subsection}{\numberline {3.1.2}Submodules}{30}{subsection.3.1.2}% 
+\contentsline {subsection}{\numberline {3.1.3}mpo.critical\_region module}{30}{subsection.3.1.3}% 
+\contentsline {subsection}{\numberline {3.1.4}mpo.mp\_program module}{31}{subsection.3.1.4}% 
+\contentsline {subsection}{\numberline {3.1.5}mpo.plot module}{32}{subsection.3.1.5}% 
+\contentsline {subsection}{\numberline {3.1.6}mpo.problem\_generator module}{33}{subsection.3.1.6}% 
+\contentsline {subsection}{\numberline {3.1.7}mpo.settings module}{33}{subsection.3.1.7}% 
+\contentsline {subsection}{\numberline {3.1.8}mpo.solution module}{33}{subsection.3.1.8}% 
+\contentsline {subsection}{\numberline {3.1.9}Module contents}{34}{subsection.3.1.9}% 
+\contentsline {chapter}{\numberline {4}Indices and tables}{35}{chapter.4}% 
+\contentsline {chapter}{Python Module Index}{37}{section*.216}% 
+\contentsline {chapter}{Index}{39}{section*.217}% 
