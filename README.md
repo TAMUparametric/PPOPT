@@ -1,10 +1,3 @@
-<p>
-<h1>
-<img valign="middle" src="mp_plot.png" height="50" height="50" alt="PPOPT_LOGO"/></a>
-PPOPT
-</h1>
-</p>
-
 **P**ython **P**arametric **OP**timization **T**oolbox (**PPOPT**) is a software platform for solving and manipulating multiparametric programs in Python. This package is still in development but the following features are complete and are in full working order.
 
 #### Completed Features
@@ -31,5 +24,5 @@ Currently PPOPT requires Python 3.7 or higher and can be installed with the foll
 
 ```bash
 pip install -e git+https://github.com/mmihaltz/pysettrie.git#egg=pysettrie
-pip install git+https://github.com/TamuParametric/ppopt.git#egg=ppopt
+pip install ppopt
 ```
