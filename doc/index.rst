@@ -33,7 +33,7 @@ API
     :maxdepth: 2
     :caption: API
 
-    mpo
+    ppopt
 
 
 Indices and tables

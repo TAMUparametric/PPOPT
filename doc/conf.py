@@ -14,15 +14,23 @@ import os
 import sys
 import sphinx_rtd_theme
 
-sys.path.insert(0, os.path.abspath('../src/ppopt'))
+for x in os.walk('../src'):
+    sys.path.insert(0, x[0])
 
+sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../src/ppopt/*'))
+sys.path.insert(0, os.path.abspath('../src/ppopt/utils'))
+sys.path.insert(0, os.path.abspath('../'))
+sys.path.insert(0, os.path.abspath('../*'))
+sys.path.insert(0, os.path.abspath('../..'))
+sys.path.append('C:\\Users\\dustin.kenefake\\PycharmProjects\\solver')
 sys.setrecursionlimit(10000)
 
 # -- Project information -----------------------------------------------------
 
 project = 'PPOPT'
-copyright = '2021, Dustin Kenefake'
-author = 'Dustin Kenefake'
+copyright = '2021, Dustin Kenefake, Efstratios Pistikopoulos'
+author = 'Dustin Kenefake, Efstratios Pistikopoulos'
 
 # The full version, including alpha/beta/rc tags
 release = '1.0.2'

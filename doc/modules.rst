@@ -1,7 +1,7 @@
-mpo
-===
+ppopt
+=====
 
 .. toctree::
    :maxdepth: 4
 
-   mpo
+   ppopt
