@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.7", "3.8", "3.9"]
 
     steps:
       - uses: actions/checkout@v2
@@ -35,12 +35,16 @@ jobs:
 
       - name: Install Packages
         shell: bash -l {0}
-        run: pip install flake8 pytest pathos plotly numba numpy matplotlib gurobipy quadprog cvxopt pypoman scipy setuptools psutil
+        run: pip install flake8 pytest pathos plotly numba numpy matplotlib gurobipy cvxopt pypoman scipy setuptools psutil
 
       - name: Install Settry
         shell: bash -l {0}
         run: pip install -e git+https://github.com/mmihaltz/pysettrie.git#egg=pysettrie
      
+      - name: Install Quadprog
+        shell: bash -l {0}
+        run: conda install -c conda-forge quadprog
+        
       - name: Run tests
         shell: bash -l {0}
         run: pytest --disable-pytest-warnings
