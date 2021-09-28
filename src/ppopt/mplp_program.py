@@ -299,12 +299,23 @@ class MPLP_Program:
         self.H = self.H.astype('float64')
 
     def solve_theta(self, theta_point: numpy.ndarray, deterministic_solver='gurobi') -> Optional[SolverOutput]:
-        """
-        Substitutes theta into the multiparametric problem and solves
+        r"""
+        Substitutes theta into the multiparametric problem and solves the following optimization problem
 
-        :param theta_point: an uncertainty realization
-        :param deterministic_solver: Solver to use to solve the problem
-        :return: the Solver output of the substituted problem, returns None if not feasible
+        .. math::
+
+            \min_{x} \tilde{c}^Tx
+
+        .. math::
+            \begin{align}
+            Ax &\leq \tilde{b}\\
+            A_{eq}x &= \tilde{b}_{eq}\\
+            x &\in R^n\\
+            \end{align}
+
+        :param theta_point: An uncertainty realization
+        :param deterministic_solver: Deterministic solver to use to solve the above quadratic program
+        :return: The Solver output of the substituted problem, returns None if not solvable
         """
 
         if not numpy.all(self.A_t @ theta_point <= self.b_t):
@@ -331,11 +342,18 @@ class MPLP_Program:
         return self.solver.solve_lp(c=c_prime, A=A_prime, b=self.b, equality_constraints=self.equality_indices)
 
     def optimal_control_law(self, active_set: List[int]) -> Tuple:
-        """
+        r"""
         This function calculates the optimal control law corresponding to an active set combination
 
         :param active_set: an active set combination
-        :return: a tuple of the optimal x* and λ* functions in the form x* = parameter_A@theta + parameter_b, λ* = lagrange_A@theta + lagrange_b
+        :return: a tuple of the optimal x* and λ* functions in the following form(A_x, b_x, A_l, b_l)
+
+        .. math::
+
+            \begin{align*}
+            x^*(\theta) &= A_x\theta + b_x\\
+            \lambda^*(\theta) &= A_l\theta + b_l\\
+            \end{align*}
         """
 
         aux = numpy.linalg.pinv(self.A[active_set])
@@ -349,11 +367,34 @@ class MPLP_Program:
         return parameter_A, parameter_b, lagrange_A, lagrange_b
 
     def check_active_set_rank(self, active_set):
+        r"""
+        Checks the rank of the matrix is equal to the cardinality of the active set
+
+        .. math::
+
+            \textrm{Rank}(A_{\mathcal{A}}) = |\mathcal{A}|
+
+        :param active_set:
+        :return: True if full rank otherwise false
+        """
         return is_full_rank(self.A, active_set)
 
     def check_feasibility(self, active_set, check_rank=True) -> bool:
-        """
-        Checks the feasibility of an active set combination w.r.t. a multiparametric program
+        r"""
+        Checks the feasibility of an active set combination w.r.t. a multiparametric program.
+
+        .. math::
+
+            \min_{x,\theta} 0
+
+        .. math::
+            \begin{align}
+            Ax &\leq b + F\theta\\
+            A_{i}x &= b_{i} + F_{i}\theta, \quad \forall i \in \mathcal{A}\\
+            A_\theta \theta &\leq b_\theta\\
+            x &\in R^n\\
+            \theta &\in R^m
+            \end{align}
 
         :param active_set: an active set
         :param check_rank: Checks the rank of the LHS matrix for a violation of LINQ if True (default)
@@ -370,10 +411,28 @@ class MPLP_Program:
         return self.solver.solve_lp(c, A, b, active_set) is not None
 
     def check_optimality(self, active_set):
-        """
+        r"""
+        Tests if the active set is optimal for the provided mpLP program
 
-        :param active_set:
-        :return:
+        .. math::
+
+            \max_{x, \theta, \lambda, s, t} \quad t
+
+        .. math::
+            \begin{align*}
+                H \theta + (A_{A_i})^T \lambda_{A_i} + c &= 0\\
+                A_{A_i}x - b_ai-F_{a_i}\theta &= 0\\
+                A_{A_j}x - b_{A_j}-F_{A_j}\theta + s{j_k} &= 0\\
+               t*e_1 &\leq \lambda_{A_i}\\
+               t*e_2 &\leq s_{J_i}\\
+               t &\geq 0\\
+               \lambda_{A_i} &\geq 0\\
+               s_{J_i} &\geq 0\\
+               A_t\theta &\leq b_t
+            \end{align*}
+
+        :param active_set: active set being considered in the optimality test
+        :return: dictionary of parameters, or None if active set is not optimal
         """
         if len(active_set) != self.num_x():
             return False
@@ -490,6 +549,12 @@ class MPLP_Program:
         return sol.sol[self.num_x(): self.num_x() + self.num_t()].reshape(-1, 1)
 
     def gen_optimal_active_set(self) -> Optional[List[int]]:
+        """
+        Self contained method to geometrically sample the theta feasible space to generate an optimal active set.
+
+        :return: an optimal active set
+        """
+
 
         sol = self.feasible_space_chebychev_ball()
 
@@ -515,6 +580,12 @@ class MPLP_Program:
         return None
 
     def feasible_space_chebychev_ball(self):
+        """
+        Formulates and solves the (x, \theta) chebychev ball of the multiparametric program.
+
+
+        :return: makes a che
+        """
         A = numpy.block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.num_x())), self.A_t]])
         b = numpy.block([[self.b], [self.b_t]])
         sol = chebyshev_ball(A, b, equality_constraints=self.equality_indices,
@@ -523,9 +594,9 @@ class MPLP_Program:
 
     def sample_theta_space(self, num_samples: int = 100) -> Optional[list]:
         """
-        This samples the feasible theta space with a diken walk, NOT statistically nice as we are returning a single run of things but it is fine for this purpose
+        Samples the theta feasible space with a diken walk algorithm. This is typically used to initate the graph and geometric algorithm
 
-        :return: s
+        :return: list of found optimal active sets
         """
 
         sol = self.feasible_space_chebychev_ball()

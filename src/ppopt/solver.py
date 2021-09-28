@@ -13,26 +13,47 @@ from .solver_interface.quad_prog_interface import solve_qp_quadprog
 from .solver_interface.solver_interface_utils import SolverOutput
 
 def check_modules(modules: Iterable):
+    """
+    Given an iterable of module names, returns modules that are installed
+    """
     return [module for module in modules if module in sys.modules]
 
 
 def check_solver_modules(module_map, packages):
+    """
+    Maps optimization python package names to internal names and returns an interable
+    """
     avalable_packages = check_modules(packages)
     return [module_map[package] for package in avalable_packages]
 
 
 def avalable_LP_solvers():
+    """
+    Checks what LP solvers are avalable to use
+
+    :return: Installed and supported solvers for linear programs
+    """
     solver_map = {'cvxopt': 'glpk', 'gurobipy': 'gurobi'}
     check_packages = ['cvxopt', 'gurobipy']
     return check_solver_modules(solver_map, check_packages)
 
 
 def avalable_QP_solvers():
+    """
+    Checks what QP solvers are avalable to use
+
+    :return: Installed and supported solvers for quadratic programs
+    """
     solver_map = {'quadprog': 'quadprog', 'gurobipy': 'gurobi'}
     check_packages = ['quadprog', 'gurobipy']
     return check_solver_modules(solver_map, check_packages)
 
 def default_solver_options():
+    """
+    Generates the default system solvers to use for optimization sub problems
+
+    :return: A dictionary of determanistic solvers to use
+    """
     default_solver = {'lp': 'gurobi', 'qp': 'gurobi', 'milp': 'gurobi', 'miqp': 'gurobi'}
 
     if 'glpk' in avalable_LP_solvers():
@@ -48,6 +69,8 @@ def default_solver_options():
 class Solver:
     """
     This is the primary user interface for deterministic solvers
+
+    The solvers can be changed by directly editing the solvers dict to different solver names
     """
     solvers: Dict[str, str] = field(default_factory=default_solver_options)
 
@@ -107,14 +130,18 @@ class Solver:
         This is the breakout for solving mixed integer quadratic programs
 
         The Mixed Integer Quadratic program programming problem
-            min_{xy} 1/2 [xy]^T@Q@[xy] + c^T@[xy]
 
-            s.t.   A@[xy] <= b
-                   A_eq@[xy] = beq
+        .. math::
 
-                   xy is the parameter vector of mixed real and binary inputs
-                   x \in R^n
-                   y \in \{0, 1\}^m
+            \min_{xy} \frac{1}{2} [xy]^TQ[xy] + c^T[xy]
+
+        .. math::
+            \begin{align}
+            A[xy] &\leq b\\
+            A_{eq}[xy] &= beq\\
+            x &\in R^n\\
+            y &\in \{0, 1\}^m
+            \end{align}
 
         :param Q: Square matrix, can be None
         :param c: Column Vector, can be None
@@ -142,12 +169,17 @@ class Solver:
         This is the breakout for solving quadratic programs
 
         The Quadratic programming problem
-            min_{x} 1/2 x^T@Q@x + c^T@x
 
-            s.t.   A@x <= b
-                   A_eq@x = beq
+        .. math::
 
-                   x \in R^n
+            \min_{x} \frac{1}{2}x^TQx + c^Tx
+
+        .. math::
+            \begin{align}
+            Ax &\leq b\\
+            A_{eq}x &= beq\\
+            x &\in R^n\\
+            \end{align}
 
         :param Q: Square matrix, can be None
         :param c: Column Vector, can be None
@@ -176,12 +208,17 @@ class Solver:
         This is the breakout for solving linear programs
 
         The Linear programming problem
-            min_{xy} c^T@[xy]
 
-            s.t.   A@x <= b
-                   A_eq@x = beq
+        .. math::
 
-                   x \in R^n
+            \min_{xy} c^Tx
+
+        .. math::
+            \begin{align}
+            Ax &\leq b\\
+            A_{eq}x &= beq\\
+            x &\in R^n\\
+            \end{align}
 
         :param c: Column Vector, can be None
         :param A: Constraint LHS matrix, can be None
@@ -207,14 +244,18 @@ class Solver:
         This is the breakout for solving mixed integer linear programs
 
         The Mixed Integer Linear programming problem
-            min_{xy} c^T*[xy]
 
-            s.t.   A[xy] <= b
-                   Aeq*[xy] = beq
+        .. math::
 
-                   xy is the parameter vector of mixed real and binary inputs
-                   x \in R^n
-                   y \in \{0, 1\}^m
+            \min_{xy} c^T[xy]
+
+        .. math::
+            \begin{align}
+            A[xy] &\leq b\\
+            A_{eq}[xy] &= beq\\
+            x &\in R^n\\
+            y &\in \{0, 1\}^m
+            \end{align}
 
         :param c: Column Vector, can be None
         :param A: Constraint LHS matrix, can be None

@@ -51,10 +51,12 @@ class Solution:
 
     def verify_solution(self) -> bool:
         """
-        This can be called to verify that all of the critical regions agree with the optimization problem. With problems with numerically small critical regions\\
-         the deterministic optimizer value could fail. This does NOT necessarily mean that the critical region is at fault but that perhaps more analysis should be done.\\
-         This is especially apparent with critical regions with chebychev radii on the order of sqrt(machine epsilon).
-        :return: True if all is verified, else false
+        This can be called to verify that all of the critical regions agree with the optimization problem. With problems
+        with numerically small critical regions the deterministic optimizer value could fail. This does NOT necessarily
+        mean that the critical region is at fault but that perhaps more analysis should be done. This is especially
+        apparent with critical regions with chebychev radii on the order of sqrt(machine epsilon).
+
+        :return: True if all is verified, else False
         """
 
         print(len(self.critical_regions))

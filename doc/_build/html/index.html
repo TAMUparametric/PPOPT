@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MPO: A Multiparametric Programming and Optimization Package for Python &mdash; PPOPT 1.0.2 documentation</title>
+  <title>Readme File &mdash; PPOPT 1.0.2 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -43,7 +43,7 @@
 </ul>
 <p class="caption"><span class="caption-text">API</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="ppopt.html">ppopt package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">ppopt</a></li>
 </ul>
 
         </div>
@@ -60,7 +60,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home"></a> &raquo;</li>
-      <li>MPO: A Multiparametric Programming and Optimization Package for Python</li>
+      <li>Readme File</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -70,18 +70,47 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="mpo-a-multiparametric-programming-and-optimization-package-for-python">
-<h1>MPO: A Multiparametric Programming and Optimization Package for Python<a class="headerlink" href="#mpo-a-multiparametric-programming-and-optimization-package-for-python" title="Permalink to this headline"></a></h1>
-<p>MPO is a multiparametric programming Solver written in Python, meant for solving general mpQPs and mpLPs with support for mixed integer and Quadratically constrained problems prospectively in the future. Optimized implementations of combinatorial algorithms and graph-based algorithms have been implemented. A focus of this Solver is to implement parallel and scalable algorithms for multithreading compute.</p>
+  <section id="readme-file">
+<h1>Readme File<a class="headerlink" href="#readme-file" title="Permalink to this headline"></a></h1>
+</section>
+<section id="ppopt">
+<h1>PPOPT<a class="headerlink" href="#ppopt" title="Permalink to this headline"></a></h1>
+<a class="reference external image-reference" href="https://github.com/TAMUparametric/PPOPT/actions/workflows/python-package.yml"><img alt="Python package" src="https://github.com/TAMUparametric/PPOPT/actions/workflows/python-package.yml/badge.svg" /></a>
+<p><strong>P</strong>ython <strong>P</strong>arametric <strong>OP</strong>timization <strong>T</strong>oolbox (<strong>PPOPT</strong>) is a software platform for solving and manipulating multiparametric programs in Python. This package is still in development but the following features are complete and are in full working order.</p>
+<section id="completed-features">
+<h2>Completed Features<a class="headerlink" href="#completed-features" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>Solver interface for mpLPs and mpQP with the following algorithms</p>
+<ol class="arabic simple">
+<li><p>Serial and Parallel Combinatorial Algorithm</p></li>
+<li><p>Serial and Parallel Geometrical Algorithm</p></li>
+<li><p>Serial and Parallel Graph based Algorithm</p></li>
+</ol>
+</li>
+<li><p>Multiparametric solution export to C++, Javacript, Matlab, and Python</p></li>
+<li><p>Plotting utilities</p></li>
+<li><p>Presolver and Conditioning for Multiparametric Programs</p></li>
+</ul>
+<section id="key-applications">
+<h3>Key Applications<a class="headerlink" href="#key-applications" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p>Explicit Model Predictive Control</p></li>
+<li><p>Multilevel Optimization</p></li>
+<li><p>Integrated Design, Control, and Scheduling</p></li>
+<li><p>Robust Optimization</p></li>
+</ul>
+<p>For more information about Multiparametric programming and it’s applications, <a class="reference external" href="https://www.frontiersin.org/articles/10.3389/fceng.2020.620168/full">this paper</a> is a good jumping point.</p>
+</section>
 <section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
-<p>All you need to do is the following pip command in the relevant console.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install git+https://github.com/dkenefake/mpo.git
+<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h3>
+<p>Currently PPOPT requires Python 3.7 or higher and can be installed with the following commands.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -e git+https://github.com/mmihaltz/pysettrie.git#egg<span class="o">=</span>pysettrie
+pip install ppopt
 </pre></div>
 </div>
 </section>
 <section id="tutorial">
-<h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline"></a></h2>
+<h3>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline"></a></h3>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
@@ -96,25 +125,17 @@
 </div>
 </section>
 <section id="api">
-<h2>API<a class="headerlink" href="#api" title="Permalink to this headline"></a></h2>
+<h3>API<a class="headerlink" href="#api" title="Permalink to this headline"></a></h3>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">API</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="ppopt.html">ppopt package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ppopt.html#subpackages">Subpackages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ppopt.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ppopt.html#module-ppopt.critical_region">ppopt.critical_region module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ppopt.html#module-ppopt.mplp_program">ppopt.mplp_program module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ppopt.html#module-ppopt.mpqp_program">ppopt.mpqp_program module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ppopt.html#module-ppopt.plot">ppopt.plot module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ppopt.html#module-ppopt.problem_generator">ppopt.problem_generator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ppopt.html#module-ppopt.solution">ppopt.solution module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ppopt.html#module-ppopt.solver">ppopt.solver module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ppopt.html#module-ppopt">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">ppopt</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.html">ppopt package</a></li>
 </ul>
 </li>
 </ul>
 </div>
+</section>
 </section>
 </section>
 <section id="indices-and-tables">

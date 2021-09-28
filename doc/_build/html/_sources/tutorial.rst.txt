@@ -17,7 +17,7 @@ This optimization problem leads to the following multiparametric optimization pr
     \end{split}
     \end{equation*}
 
-Using MPO, this is translated as the following python code. (The latex above was generated for me with ``prog.latex()`` if you were wondering if I typed that all out by hand.)
+Using PPOPT, this is translated as the following python code. (The latex above was generated for me with ``prog.latex()`` if you were wondering if I typed that all out by hand.)
 
 .. code:: python
 
@@ -57,7 +57,7 @@ That wasn't that bad, and we were able to cut away some constraints that didn't 
 
 .. code:: python
 
-    solution = mpo.solve(prog)
+    solution = ppopt.solve(prog)
 
 
 Now we have the solution, we can either export the solution via the micropop module, or we can plot it. Let's plot it here. The extra arguments mean we are saving a picture of the plot and displaying it to the user (you can give a file path, so it saves somewhere that is not the current working directory).
