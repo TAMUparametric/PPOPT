@@ -440,13 +440,13 @@ x &amp;\in R^n\\
 <dd><p>Generated the theta feasible space of a multiparametric program (with up to affine constraints)</p>
 <p>this is done by solving the following linear program for each reduced constraint</p>
 <p>min -A_i x</p>
-<p>s.t. Ax leq F  heta + b</p>
+<p>s.t. Ax leq F theta + b</p>
 <p>then the solutions are transformed into the following results</p>
-<p>A’ = [-F        heta; A_theta]
+<p>A’ = [-F theta; A_theta]
 b’ = [b - {A_i x} min, b_theta]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A’, b’ for A’  heta leq b’</p>
+<dd class="field-odd"><p>A’, b’ for A’ theta leq b’</p>
 </dd>
 </dl>
 </dd></dl>
@@ -915,7 +915,7 @@ x &amp;\in R^n\\
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ppopt.solution.Solution.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_point</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solution.Solution.evaluate" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_point</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solution.Solution.evaluate" title="Permalink to this definition"></a></dt>
 <dd><p>returns the optimal x* from the solution</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -943,7 +943,7 @@ x &amp;\in R^n\\
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ppopt.solution.Solution.get_region">
-<span class="sig-name descname"><span class="pre">get_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_point</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="#ppopt.critical_region.CriticalRegion" title="ppopt.critical_region.CriticalRegion"><span class="pre">ppopt.critical_region.CriticalRegion</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solution.Solution.get_region" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_point</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.critical_region.CriticalRegion" title="ppopt.critical_region.CriticalRegion"><span class="pre">ppopt.critical_region.CriticalRegion</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solution.Solution.get_region" title="Permalink to this definition"></a></dt>
 <dd><p>Find the critical region in the solution that corresponds to the theta provided</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -962,7 +962,7 @@ x &amp;\in R^n\\
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ppopt.solution.Solution.theta_dim">
-<span class="sig-name descname"><span class="pre">theta_dim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.solution.Solution.theta_dim" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">theta_dim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#ppopt.solution.Solution.theta_dim" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">

@@ -19,11 +19,7 @@ for x in os.walk('../src'):
 
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../src/ppopt/*'))
-sys.path.insert(0, os.path.abspath('../src/ppopt/utils'))
 sys.path.insert(0, os.path.abspath('../'))
-sys.path.insert(0, os.path.abspath('../*'))
-sys.path.insert(0, os.path.abspath('../..'))
-sys.path.append('C:\\Users\\dustin.kenefake\\PycharmProjects\\solver')
 sys.setrecursionlimit(10000)
 
 # -- Project information -----------------------------------------------------
