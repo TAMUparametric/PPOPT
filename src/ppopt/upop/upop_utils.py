@@ -1,5 +1,6 @@
-import numpy
 from typing import List, Tuple
+
+import numpy
 
 from ..geometry.polytope_operations import get_chebyshev_information
 from ..solution import Solution

@@ -1,11 +1,11 @@
-import numpy
 from typing import Optional
+
+import numpy
 
 try:
     from cvxopt import matrix, solvers
 except ImportError:
     pass
-
 
 from ..solver_interface.solver_interface_utils import SolverOutput, get_program_parameters
 
@@ -99,6 +99,31 @@ def solve_fully_constraints(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray
 def solve_qp_cvxopt(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray, equality_constraints=None,
                     verbose=False,
                     get_duals=True, cvx_solver='quadprog') -> Optional[SolverOutput]:
+    r"""
+    This is the breakout for QP with cvxopt
+
+    .. math::
+
+        \min_{x} \frac{1}{2}x^TQx + c^Tx
+
+    .. math::
+        \begin{align}
+        Ax &\leq b\\
+        A_{eq}x &= b_{eq}\\
+        x &\in R^n\\
+        \end{align}
+
+
+    :param Q:
+    :param c:
+    :param A:
+    :param b:
+    :param equality_constraints:
+    :param verbose:
+    :param get_duals:
+    :param cvx_solver:
+    :return:
+    """
     # this is to deal with immutability an copy constrictors
     if equality_constraints is None:
         equality_constraints = []
@@ -121,16 +146,19 @@ def solve_qp_cvxopt(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: num
 
 def solve_lp_cvxopt(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray, equality_constraints=None, verbose=False,
                     get_duals=True, cvx_solver='glpk') -> Optional[SolverOutput]:
-    """
+    r"""
     This is the breakout for solving linear programs with cvxopt, This is the preferred Solver as it has the lowest interface cost of all of the other solvers
 
-    The Mixed Integer Linear program programming problem
-        min_{x} c^Tx
+    .. math::
 
-        s.t.    A[x] <= b
-                Aeq*[x] = beq
+        \min_{x} c^Tx
 
-                x is the parameter vector of real values
+    .. math::
+        \begin{align}
+        Ax &\leq b\\
+        A_{eq}x &= b_{eq}\\
+        x &\in R^n\\
+        \end{align}
 
     :param c: Column Vector, can be None
     :param A: Constraint LHS matrix, can be None

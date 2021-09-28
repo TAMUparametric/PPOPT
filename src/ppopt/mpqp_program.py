@@ -1,5 +1,6 @@
-import numpy
 from typing import List, Optional, Tuple
+
+import numpy
 
 from .mplp_program import MPLP_Program
 from .solver_interface.solver_interface import SolverOutput
@@ -7,7 +8,20 @@ from .utils.general_utils import latex_matrix, remove_size_zero_matrices, ppopt_
 
 
 class MPQP_Program(MPLP_Program):
-    """The standard class for quadratic multiparametric programming, inherits from MPLP_Program"""
+    r"""
+    The standard class for quadratic multiparametric programming.
+
+    .. math::
+        \min \frac{1}{2}x^TQx + \theta^TH^Tx + c^Tx
+    .. math::
+        \begin{align}
+        Ax &\leq b + F\theta\\
+        A_{eq}x &= b_{eq}\\
+        A_\theta \theta &\leq b_\theta\\
+        x &\in R^n\\
+        \end{align}
+
+    """
 
     def __init__(self, A: numpy.ndarray, b: numpy.ndarray, c: numpy.ndarray, H: numpy.ndarray, Q: numpy.ndarray,
                  A_t: numpy.ndarray,
@@ -24,7 +38,18 @@ class MPQP_Program(MPLP_Program):
         # super(MPQP_Program, self).__post_init__()
 
     def evaluate_objective(self, x, theta_point):
-        return 0.5*x.T@self.Q@x + theta_point.T@self.H.T@x + self.c.T@x
+        r"""
+        Evaluates the objective of the Mutliparametric program. for a given x and Θ.
+
+        .. math::
+
+            \frac{1}{2}x^TQx + \theta^TH^Tx+c^Tx
+
+        :param x: x input
+        :param theta_point: θ input
+        :return: Objective function evaluated at x, θ
+        """
+        return 0.5 * x.T @ self.Q @ x + theta_point.T @ self.H.T @ x + self.c.T @ x
 
     def warnings(self) -> List[str]:
         """Checks the dimensions of the matrices to ensure consistency"""
@@ -77,23 +102,41 @@ class MPQP_Program(MPLP_Program):
         return output
 
     def solve_theta(self, theta_point: numpy.ndarray, deterministic_solver: str = 'gurobi') -> Optional[SolverOutput]:
-        """
-        Substitutes theta into the multiparametric problem and solves
+        r"""
+        Substitutes theta into the multiparametric problem and solves the following optimization problem
 
-        :param theta_point: an uncertainty realization
-        :param deterministic_solver:
-        :return: the Solver output of the substituted problem, returns None if not solvable
+        .. math::
+
+            \min_{x} \frac{1}{2}x^TQx + \tilde{c}^Tx
+
+        .. math::
+            \begin{align}
+            Ax &\leq \tilde{b}\\
+            A_{eq}x &= \tilde{b}_{eq}\\
+            x &\in R^n\\
+            \end{align}
+
+        :param theta_point: An uncertainty realization
+        :param deterministic_solver: Deterministic solver to use to solve the above quadratic program
+        :return: The Solver output of the substituted problem, returns None if not solvable
         """
         return self.solver.solve_qp(Q=self.Q, c=self.H @ theta_point + self.c, A=self.A,
                                     b=self.b + (self.F @ theta_point),
                                     equality_constraints=self.equality_indices)
 
     def optimal_control_law(self, active_set: List[int]) -> Tuple:
-        """
+        r"""
         This function calculates the optimal control law corresponding to an active set combination
 
         :param active_set: an active set combination
-        :return: a tuple of the optimal x* and λ* functions in the form x* = parameter_A@theta + parameter_b, λ* = lagrange_A@theta + lagrange_b
+        :return: a tuple of the optimal x* and λ* functions in the following form(A_x, b_x, A_l, b_l)
+
+        .. math::
+
+            \begin{align*}
+            x^*(\theta) &= A_x\theta + b_x\\
+            \lambda^*(\theta) &= A_l\theta + b_l\\
+            \end{align*}
         """
 
         inverse_Q = numpy.linalg.pinv(self.Q)
@@ -117,31 +160,22 @@ class MPQP_Program(MPLP_Program):
         r"""
         Tests if the active set is optimal for the provided mpqp program
 
-         x | theta | lambda | slack | t
-
         .. math::
 
-            \max_{x, \theta, \lambda, s, t} \quad t = \min_{x, \theta, \lambda, s, t} -t
+            \max_{x, \theta, \lambda, s, t} \quad t
 
         .. math::
-
-               1) Qu + H@theta + (A_Ai)^T lambda_Ai + c = 0
-
-               2) A_Ai*u - b_ai-F_ai*theta = 0
-
-               3) A_Aj*u - b_aj-F_aj*theta + sj_k= 0
-
-               4) t*e_1 <= lambda_Ai,
-
-               5) t*e_2 <= s_Ji
-
-               6) t >= 0,
-
-               7) lambda_Ai>= 0,
-
-               8) s_Ji>=0
-
-               9) A_t*theta<= b_t
+            \begin{align*}
+                Qx + H \theta + (A_{A_i})^T \lambda_{A_i} + c &= 0\\
+                A_{A_i}x - b_ai-F_{a_i}\theta &= 0\\
+                A_{A_j}x - b_{A_j}-F_{A_j}\theta + s{j_k} &= 0\\
+               t*e_1 &\leq \lambda_{A_i}\\
+               t*e_2 &\leq s_{J_i}\\
+               t &\geq 0\\
+               \lambda_{A_i} &\geq 0\\
+               s_{J_i} &\geq 0\\
+               A_t\theta &\leq b_t
+            \end{align*}
 
         :param active_set: active set being considered in the optimality test
         :return: dictionary of parameters, or None if active set is not optimal

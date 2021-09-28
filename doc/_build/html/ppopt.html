@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ppopt package &mdash; PPOPT 1.0.2 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ppopt.geometry package" href="ppopt.geometry.html" />
+    <link rel="prev" title="ppopt" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> PPOPT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Solving a MPQP Program</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithm_overview.html">Multiparametric Algorithms</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">ppopt</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">ppopt package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ppopt.geometry.html">ppopt.geometry package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ppopt.mp_solvers.html">ppopt.mp_solvers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ppopt.solver_interface.html">ppopt.solver_interface package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ppopt.upop.html">ppopt.upop package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ppopt.utils.html">ppopt.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-ppopt.critical_region">ppopt.critical_region module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-ppopt.mplp_program">ppopt.mplp_program module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-ppopt.mpqp_program">ppopt.mpqp_program module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-ppopt.plot">ppopt.plot module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-ppopt.problem_generator">ppopt.problem_generator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-ppopt.solution">ppopt.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-ppopt.solver">ppopt.solver module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-ppopt">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PPOPT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">ppopt</a> &raquo;</li>
+      <li>ppopt package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ppopt.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ppopt-package">
+<h1>ppopt package<a class="headerlink" href="#ppopt-package" title="Permalink to this headline"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ppopt.geometry.html">ppopt.geometry package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.geometry.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.geometry.html#module-ppopt.geometry.polytope">ppopt.geometry.polytope module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.geometry.html#module-ppopt.geometry.polytope_operations">ppopt.geometry.polytope_operations module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.geometry.html#module-ppopt.geometry">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ppopt.mp_solvers.html">ppopt.mp_solvers package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.mp_solvers.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.mp_solvers.html#module-ppopt.mp_solvers.mpqp_ahmadi">ppopt.mp_solvers.mpqp_ahmadi module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.mp_solvers.html#module-ppopt.mp_solvers.mpqp_combinatorial">ppopt.mp_solvers.mpqp_combinatorial module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.mp_solvers.html#module-ppopt.mp_solvers.mpqp_geometric">ppopt.mp_solvers.mpqp_geometric module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.mp_solvers.html#module-ppopt.mp_solvers.mpqp_graph">ppopt.mp_solvers.mpqp_graph module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.mp_solvers.html#module-ppopt.mp_solvers.mpqp_parallel_geometric">ppopt.mp_solvers.mpqp_parallel_geometric module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.mp_solvers.html#module-ppopt.mp_solvers.mpqp_parallel_geometric_exp">ppopt.mp_solvers.mpqp_parallel_geometric_exp module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.mp_solvers.html#module-ppopt.mp_solvers.mpqp_parrallel_combinatorial">ppopt.mp_solvers.mpqp_parrallel_combinatorial module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.mp_solvers.html#module-ppopt.mp_solvers.mpqp_parrallel_combinatorial_exp">ppopt.mp_solvers.mpqp_parrallel_combinatorial_exp module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.mp_solvers.html#module-ppopt.mp_solvers.mpqp_parrallel_graph">ppopt.mp_solvers.mpqp_parrallel_graph module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.mp_solvers.html#module-ppopt.mp_solvers.solve_mplp">ppopt.mp_solvers.solve_mplp module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.mp_solvers.html#module-ppopt.mp_solvers.solve_mpqp">ppopt.mp_solvers.solve_mpqp module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.mp_solvers.html#module-ppopt.mp_solvers.solver_utils">ppopt.mp_solvers.solver_utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.mp_solvers.html#module-ppopt.mp_solvers">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ppopt.solver_interface.html">ppopt.solver_interface package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.solver_interface.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.solver_interface.html#module-ppopt.solver_interface.cvxopt_interface">ppopt.solver_interface.cvxopt_interface module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.solver_interface.html#module-ppopt.solver_interface.gurobi_solver_interface">ppopt.solver_interface.gurobi_solver_interface module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.solver_interface.html#module-ppopt.solver_interface.quad_prog_interface">ppopt.solver_interface.quad_prog_interface module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.solver_interface.html#module-ppopt.solver_interface.solver_interface">ppopt.solver_interface.solver_interface module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.solver_interface.html#module-ppopt.solver_interface.solver_interface_utils">ppopt.solver_interface.solver_interface_utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.solver_interface.html#module-ppopt.solver_interface">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ppopt.upop.html">ppopt.upop package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.upop.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.upop.html#module-ppopt.upop.language_generation">ppopt.upop.language_generation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.upop.html#module-ppopt.upop.linear_code_gen">ppopt.upop.linear_code_gen module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.upop.html#module-ppopt.upop.point_location">ppopt.upop.point_location module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.upop.html#module-ppopt.upop.ucontroller">ppopt.upop.ucontroller module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.upop.html#module-ppopt.upop.upop_utils">ppopt.upop.upop_utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.upop.html#module-ppopt.upop">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ppopt.utils.html">ppopt.utils package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.utils.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.utils.html#module-ppopt.utils.chebyshev_ball">ppopt.utils.chebyshev_ball module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.utils.html#module-ppopt.utils.constraint_utilities">ppopt.utils.constraint_utilities module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.utils.html#module-ppopt.utils.general_utils">ppopt.utils.general_utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.utils.html#module-ppopt.utils.geometric">ppopt.utils.geometric module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.utils.html#module-ppopt.utils.mpqp_utils">ppopt.utils.mpqp_utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.utils.html#module-ppopt.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-ppopt.critical_region">
+<span id="ppopt-critical-region-module"></span><h2>ppopt.critical_region module<a class="headerlink" href="#module-ppopt.critical_region" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ppopt.critical_region.CriticalRegion">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ppopt.critical_region.</span></span><span class="sig-name descname"><span class="pre">CriticalRegion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">numpy.ndarray,</span> <span class="pre">b:</span> <span class="pre">numpy.ndarray,</span> <span class="pre">C:</span> <span class="pre">numpy.ndarray,</span> <span class="pre">d:</span> <span class="pre">numpy.ndarray,</span> <span class="pre">E:</span> <span class="pre">numpy.ndarray,</span> <span class="pre">f:</span> <span class="pre">numpy.ndarray,</span> <span class="pre">active_set:</span> <span class="pre">Union[List[int],</span> <span class="pre">numpy.ndarray],</span> <span class="pre">omega_set:</span> <span class="pre">Union[List[int],</span> <span class="pre">numpy.ndarray]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">lambda_set:</span> <span class="pre">Union[List[int],</span> <span class="pre">numpy.ndarray]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">regular_set:</span> <span class="pre">Union[List[int],</span> <span class="pre">numpy.ndarray]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.critical_region.CriticalRegion" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Critical region is a polytope that defines a region in the uncertainty space
+with an associated optimal value, active set, lagrange multipliers and
+constraints</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+    x(\theta) &amp;= A\theta + b\\
+    \lambda(\theta) &amp;= C\theta + d\\
+    \Theta &amp;:= \{\forall \theta \in \mathbf{R}^m: E\theta \leq f\}
+\end{align}\end{split}\]</div>
+<p>equality_indices: numpy array of indices</p>
+<p>constraint_set: if this is a A&#64;x = b + <a class="reference external" href="mailto:F&#37;&#52;&#48;theta">F<span>&#64;</span>theta</a> boundary</p>
+<p>lambda_set: if this is a λ = 0 boundary</p>
+<p>boundary_set: if this is a Eθ &lt;= f boundary</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.critical_region.CriticalRegion.A">
+<span class="sig-name descname"><span class="pre">A</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.critical_region.CriticalRegion.A" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.critical_region.CriticalRegion.C">
+<span class="sig-name descname"><span class="pre">C</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.critical_region.CriticalRegion.C" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.critical_region.CriticalRegion.E">
+<span class="sig-name descname"><span class="pre">E</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.critical_region.CriticalRegion.E" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.critical_region.CriticalRegion.active_set">
+<span class="sig-name descname"><span class="pre">active_set</span></span><em class="property"><span class="pre">:</span> <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ppopt.critical_region.CriticalRegion.active_set" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.critical_region.CriticalRegion.b">
+<span class="sig-name descname"><span class="pre">b</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.critical_region.CriticalRegion.b" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.critical_region.CriticalRegion.d">
+<span class="sig-name descname"><span class="pre">d</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.critical_region.CriticalRegion.d" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.critical_region.CriticalRegion.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#ppopt.critical_region.CriticalRegion.evaluate" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluates x(θ) = Aθ + b</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.critical_region.CriticalRegion.f">
+<span class="sig-name descname"><span class="pre">f</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.critical_region.CriticalRegion.f" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.critical_region.CriticalRegion.get_constraints">
+<span class="sig-name descname"><span class="pre">get_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.critical_region.CriticalRegion.get_constraints" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.critical_region.CriticalRegion.is_full_dimension">
+<span class="sig-name descname"><span class="pre">is_full_dimension</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#ppopt.critical_region.CriticalRegion.is_full_dimension" title="Permalink to this definition"></a></dt>
+<dd><p>Tests dimensionality of critical region</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.critical_region.CriticalRegion.is_inside">
+<span class="sig-name descname"><span class="pre">is_inside</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#ppopt.critical_region.CriticalRegion.is_inside" title="Permalink to this definition"></a></dt>
+<dd><p>Tests if point θ is inside of the critical region</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.critical_region.CriticalRegion.lagrange_multipliers">
+<span class="sig-name descname"><span class="pre">lagrange_multipliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#ppopt.critical_region.CriticalRegion.lagrange_multipliers" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluates λ(θ) = Cθ + d</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.critical_region.CriticalRegion.lambda_set">
+<span class="sig-name descname"><span class="pre">lambda_set</span></span><em class="property"><span class="pre">:</span> <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ppopt.critical_region.CriticalRegion.lambda_set" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.critical_region.CriticalRegion.omega_set">
+<span class="sig-name descname"><span class="pre">omega_set</span></span><em class="property"><span class="pre">:</span> <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ppopt.critical_region.CriticalRegion.omega_set" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.critical_region.CriticalRegion.regular_set">
+<span class="sig-name descname"><span class="pre">regular_set</span></span><em class="property"><span class="pre">:</span> <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ppopt.critical_region.CriticalRegion.regular_set" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ppopt.mplp_program">
+<span id="ppopt-mplp-program-module"></span><h2>ppopt.mplp_program module<a class="headerlink" href="#module-ppopt.mplp_program" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ppopt.mplp_program.</span></span><span class="sig-name descname"><span class="pre">MPLP_Program</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_t</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_t</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_indices</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#ppopt.solver.Solver" title="ppopt.solver.Solver"><span class="pre">ppopt.solver.Solver</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">Solver(solvers={'lp':</span> <span class="pre">'glpk',</span> <span class="pre">'qp':</span> <span class="pre">'gurobi',</span> <span class="pre">'milp':</span> <span class="pre">'gurobi',</span> <span class="pre">'miqp':</span> <span class="pre">'gurobi'})</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The standard class for linear multiparametric programming</p>
+<div class="math notranslate nohighlight">
+\[\min \theta^TH^Tx + c^Tx\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+Ax &amp;\leq b + F\theta\\
+A_{eq}x &amp;= b_{eq}\\
+A_\theta \theta &amp;\leq b_\theta\\
+x &amp;\in R^n\\
+\end{align}\end{split}\]</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.A">
+<span class="sig-name descname"><span class="pre">A</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.A" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.A_t">
+<span class="sig-name descname"><span class="pre">A_t</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.A_t" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.F">
+<span class="sig-name descname"><span class="pre">F</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.F" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.H">
+<span class="sig-name descname"><span class="pre">H</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.H" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.b">
+<span class="sig-name descname"><span class="pre">b</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.b" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.b_t">
+<span class="sig-name descname"><span class="pre">b_t</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.b_t" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.c">
+<span class="sig-name descname"><span class="pre">c</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.c" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.check_active_set_rank">
+<span class="sig-name descname"><span class="pre">check_active_set_rank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">active_set</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.check_active_set_rank" title="Permalink to this definition"></a></dt>
+<dd><p>Checks the rank of the matrix is equal to the cardinality of the active set</p>
+<div class="math notranslate nohighlight">
+\[\textrm{Rank}(A_{\mathcal{A}}) = |\mathcal{A}|\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>active_set</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if full rank otherwise false</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.check_feasibility">
+<span class="sig-name descname"><span class="pre">check_feasibility</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">active_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_rank</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.check_feasibility" title="Permalink to this definition"></a></dt>
+<dd><p>Checks the feasibility of an active set combination w.r.t. a multiparametric program.</p>
+<div class="math notranslate nohighlight">
+\[\min_{x,\theta} 0\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+Ax &amp;\leq b + F\theta\\
+A_{i}x &amp;= b_{i} + F_{i}\theta, \quad \forall i \in \mathcal{A}\\
+A_\theta \theta &amp;\leq b_\theta\\
+x &amp;\in R^n\\
+\theta &amp;\in R^m
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>active_set</strong> – an active set</p></li>
+<li><p><strong>check_rank</strong> – Checks the rank of the LHS matrix for a violation of LINQ if True (default)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if active set feasible else False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.check_optimality">
+<span class="sig-name descname"><span class="pre">check_optimality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">active_set</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.check_optimality" title="Permalink to this definition"></a></dt>
+<dd><p>Tests if the active set is optimal for the provided mpLP program</p>
+<div class="math notranslate nohighlight">
+\[\max_{x, \theta, \lambda, s, t} \quad t\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    H \theta + (A_{A_i})^T \lambda_{A_i} + c &amp;= 0\\
+    A_{A_i}x - b_ai-F_{a_i}\theta &amp;= 0\\
+    A_{A_j}x - b_{A_j}-F_{A_j}\theta + s{j_k} &amp;= 0\\
+   t*e_1 &amp;\leq \lambda_{A_i}\\
+   t*e_2 &amp;\leq s_{J_i}\\
+   t &amp;\geq 0\\
+   \lambda_{A_i} &amp;\geq 0\\
+   s_{J_i} &amp;\geq 0\\
+   A_t\theta &amp;\leq b_t
+\end{align*}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>active_set</strong> – active set being considered in the optimality test</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dictionary of parameters, or None if active set is not optimal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.constraint_datatype_conversion">
+<span class="sig-name descname"><span class="pre">constraint_datatype_conversion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.constraint_datatype_conversion" title="Permalink to this definition"></a></dt>
+<dd><p>Makes sure that all of the data types of the problem are in fp64, this is important as some solvers do not accept integral data types</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.display_latex">
+<span class="sig-name descname"><span class="pre">display_latex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.display_latex" title="Permalink to this definition"></a></dt>
+<dd><p>Displaces Latex text of the multiparametric problem</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.display_warnings">
+<span class="sig-name descname"><span class="pre">display_warnings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.display_warnings" title="Permalink to this definition"></a></dt>
+<dd><p>Displaces warnings</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.equality_indices">
+<span class="sig-name descname"><span class="pre">equality_indices</span></span><em class="property"><span class="pre">:</span> <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.equality_indices" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.evaluate_objective">
+<span class="sig-name descname"><span class="pre">evaluate_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta_point</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.evaluate_objective" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.feasible_space_chebychev_ball">
+<span class="sig-name descname"><span class="pre">feasible_space_chebychev_ball</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.feasible_space_chebychev_ball" title="Permalink to this definition"></a></dt>
+<dd><p>Formulates and solves the (x,   heta) chebychev ball of the multiparametric program.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>makes a che</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.feasible_theta_point">
+<span class="sig-name descname"><span class="pre">feasible_theta_point</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.feasible_theta_point" title="Permalink to this definition"></a></dt>
+<dd><p>This generates a feasible theta point for the multiparametric problem</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.gen_feasible_theta_space">
+<span class="sig-name descname"><span class="pre">gen_feasible_theta_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.gen_feasible_theta_space" title="Permalink to this definition"></a></dt>
+<dd><p>Generated the theta feasible space of a multiparametric program (with up to affine constraints)</p>
+<p>this is done by solving the following linear program for each reduced constraint</p>
+<p>min -A_i x</p>
+<p>s.t. Ax leq F theta + b</p>
+<p>then the solutions are transformed into the following results</p>
+<p>A’ = [-F theta; A_theta]
+b’ = [b - {A_i x} min, b_theta]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A’, b’ for A’ theta leq b’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.gen_optimal_active_set">
+<span class="sig-name descname"><span class="pre">gen_optimal_active_set</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.gen_optimal_active_set" title="Permalink to this definition"></a></dt>
+<dd><p>Self contained method to geometrically sample the theta feasible space to generate an optimal active set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>an optimal active set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.latex">
+<span class="sig-name descname"><span class="pre">latex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.latex" title="Permalink to this definition"></a></dt>
+<dd><p>Generates latex of the multiparametric problem</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>returns latex of the</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.num_constraints">
+<span class="sig-name descname"><span class="pre">num_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.num_constraints" title="Permalink to this definition"></a></dt>
+<dd><p>Returns number of constraints</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.num_equality_constraints">
+<span class="sig-name descname"><span class="pre">num_equality_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.num_equality_constraints" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.num_inequality_constraints">
+<span class="sig-name descname"><span class="pre">num_inequality_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.num_inequality_constraints" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.num_t">
+<span class="sig-name descname"><span class="pre">num_t</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.num_t" title="Permalink to this definition"></a></dt>
+<dd><p>Returns number of uncertain variables</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.num_x">
+<span class="sig-name descname"><span class="pre">num_x</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.num_x" title="Permalink to this definition"></a></dt>
+<dd><p>Returns number of parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.optimal_control_law">
+<span class="sig-name descname"><span class="pre">optimal_control_law</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">active_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Tuple</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.optimal_control_law" title="Permalink to this definition"></a></dt>
+<dd><p>This function calculates the optimal control law corresponding to an active set combination</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>active_set</strong> – an active set combination</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a tuple of the optimal x* and λ* functions in the following form(A_x, b_x, A_l, b_l)</p>
+</dd>
+</dl>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+x^*(\theta) &amp;= A_x\theta + b_x\\
+\lambda^*(\theta) &amp;= A_l\theta + b_l\\
+\end{align*}\end{split}\]</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.process_constraints">
+<span class="sig-name descname"><span class="pre">process_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">find_implicit_equalities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.process_constraints" title="Permalink to this definition"></a></dt>
+<dd><p>Removes redundant constraints from the multiparametric programming problem</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.sample_theta_space">
+<span class="sig-name descname"><span class="pre">sample_theta_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.sample_theta_space" title="Permalink to this definition"></a></dt>
+<dd><p>Samples the theta feasible space with a diken walk algorithm. This is typically used to initate the graph and geometric algorithm</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of found optimal active sets</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.scale_constraints">
+<span class="sig-name descname"><span class="pre">scale_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.scale_constraints" title="Permalink to this definition"></a></dt>
+<dd><p>Rescales the constraints of the multiparametric problem to ||[A|-F]||_i = 1, in the L2 sense</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.solve_theta">
+<span class="sig-name descname"><span class="pre">solve_theta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_point</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deterministic_solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gurobi'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ppopt.solver_interface.html#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.solve_theta" title="Permalink to this definition"></a></dt>
+<dd><p>Substitutes theta into the multiparametric problem and solves the following optimization problem</p>
+<div class="math notranslate nohighlight">
+\[\min_{x} \tilde{c}^Tx\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+Ax &amp;\leq \tilde{b}\\
+A_{eq}x &amp;= \tilde{b}_{eq}\\
+x &amp;\in R^n\\
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta_point</strong> – An uncertainty realization</p></li>
+<li><p><strong>deterministic_solver</strong> – Deterministic solver to use to solve the above quadratic program</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The Solver output of the substituted problem, returns None if not solvable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.solve_theta_variable">
+<span class="sig-name descname"><span class="pre">solve_theta_variable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ppopt.solver_interface.html#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.solve_theta_variable" title="Permalink to this definition"></a></dt>
+<dd><p>Leaves Theta as an optimization variable, solves the following problem</p>
+<p>define y’ = [x^T theta^T]^T</p>
+<p>min [c^T 0]^Ty’
+s.t. [A -F]y’ &lt;= b</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the Solver output of the substituted problem, returns None if not solvable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.solver">
+<span class="sig-name descname"><span class="pre">solver</span></span><em class="property"><span class="pre">:</span> <a class="reference internal" href="#ppopt.solver.Solver" title="ppopt.solver.Solver"><span class="pre">ppopt.solver.Solver</span></a></em><em class="property"> <span class="pre">=</span> <span class="pre">Solver(solvers={'lp':</span> <span class="pre">'glpk',</span> <span class="pre">'qp':</span> <span class="pre">'gurobi',</span> <span class="pre">'milp':</span> <span class="pre">'gurobi',</span> <span class="pre">'miqp':</span> <span class="pre">'gurobi'})</span></em><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.solver" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.warnings">
+<span class="sig-name descname"><span class="pre">warnings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.warnings" title="Permalink to this definition"></a></dt>
+<dd><p>Checks the dimensions of the matrices to ensure consistency</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mplp_program.calc_weakly_redundant">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mplp_program.</span></span><span class="sig-name descname"><span class="pre">calc_weakly_redundant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deterministic_solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'glpk'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mplp_program.calc_weakly_redundant" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-ppopt.mpqp_program">
+<span id="ppopt-mpqp-program-module"></span><h2>ppopt.mpqp_program module<a class="headerlink" href="#module-ppopt.mpqp_program" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ppopt.mpqp_program.MPQP_Program">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ppopt.mpqp_program.</span></span><span class="sig-name descname"><span class="pre">MPQP_Program</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Q</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_t</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_t</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mpqp_program.MPQP_Program" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ppopt.mplp_program.MPLP_Program" title="ppopt.mplp_program.MPLP_Program"><code class="xref py py-class docutils literal notranslate"><span class="pre">ppopt.mplp_program.MPLP_Program</span></code></a></p>
+<p>The standard class for quadratic multiparametric programming.</p>
+<div class="math notranslate nohighlight">
+\[\min \frac{1}{2}x^TQx + \theta^TH^Tx + c^Tx\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+Ax &amp;\leq b + F\theta\\
+A_{eq}x &amp;= b_{eq}\\
+A_\theta \theta &amp;\leq b_\theta\\
+x &amp;\in R^n\\
+\end{align}\end{split}\]</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mpqp_program.MPQP_Program.A">
+<span class="sig-name descname"><span class="pre">A</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.mpqp_program.MPQP_Program.A" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mpqp_program.MPQP_Program.A_t">
+<span class="sig-name descname"><span class="pre">A_t</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.mpqp_program.MPQP_Program.A_t" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mpqp_program.MPQP_Program.F">
+<span class="sig-name descname"><span class="pre">F</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.mpqp_program.MPQP_Program.F" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mpqp_program.MPQP_Program.H">
+<span class="sig-name descname"><span class="pre">H</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.mpqp_program.MPQP_Program.H" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mpqp_program.MPQP_Program.b">
+<span class="sig-name descname"><span class="pre">b</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.mpqp_program.MPQP_Program.b" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mpqp_program.MPQP_Program.b_t">
+<span class="sig-name descname"><span class="pre">b_t</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.mpqp_program.MPQP_Program.b_t" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mpqp_program.MPQP_Program.c">
+<span class="sig-name descname"><span class="pre">c</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.mpqp_program.MPQP_Program.c" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mpqp_program.MPQP_Program.check_optimality">
+<span class="sig-name descname"><span class="pre">check_optimality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">active_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mpqp_program.MPQP_Program.check_optimality" title="Permalink to this definition"></a></dt>
+<dd><p>Tests if the active set is optimal for the provided mpqp program</p>
+<div class="math notranslate nohighlight">
+\[\max_{x, \theta, \lambda, s, t} \quad t\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    Qx + H \theta + (A_{A_i})^T \lambda_{A_i} + c &amp;= 0\\
+    A_{A_i}x - b_ai-F_{a_i}\theta &amp;= 0\\
+    A_{A_j}x - b_{A_j}-F_{A_j}\theta + s{j_k} &amp;= 0\\
+   t*e_1 &amp;\leq \lambda_{A_i}\\
+   t*e_2 &amp;\leq s_{J_i}\\
+   t &amp;\geq 0\\
+   \lambda_{A_i} &amp;\geq 0\\
+   s_{J_i} &amp;\geq 0\\
+   A_t\theta &amp;\leq b_t
+\end{align*}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>active_set</strong> – active set being considered in the optimality test</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dictionary of parameters, or None if active set is not optimal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mpqp_program.MPQP_Program.equality_indices">
+<span class="sig-name descname"><span class="pre">equality_indices</span></span><em class="property"><span class="pre">:</span> <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ppopt.mpqp_program.MPQP_Program.equality_indices" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mpqp_program.MPQP_Program.evaluate_objective">
+<span class="sig-name descname"><span class="pre">evaluate_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta_point</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mpqp_program.MPQP_Program.evaluate_objective" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluates the objective of the Mutliparametric program. for a given x and Θ.</p>
+<div class="math notranslate nohighlight">
+\[\frac{1}{2}x^TQx + \theta^TH^Tx+c^Tx\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – x input</p></li>
+<li><p><strong>theta_point</strong> – θ input</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Objective function evaluated at x, θ</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mpqp_program.MPQP_Program.latex">
+<span class="sig-name descname"><span class="pre">latex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mpqp_program.MPQP_Program.latex" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a latex output for the multiparametric problem</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mpqp_program.MPQP_Program.optimal_control_law">
+<span class="sig-name descname"><span class="pre">optimal_control_law</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">active_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Tuple</span><a class="headerlink" href="#ppopt.mpqp_program.MPQP_Program.optimal_control_law" title="Permalink to this definition"></a></dt>
+<dd><p>This function calculates the optimal control law corresponding to an active set combination</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>active_set</strong> – an active set combination</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a tuple of the optimal x* and λ* functions in the following form(A_x, b_x, A_l, b_l)</p>
+</dd>
+</dl>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+x^*(\theta) &amp;= A_x\theta + b_x\\
+\lambda^*(\theta) &amp;= A_l\theta + b_l\\
+\end{align*}\end{split}\]</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mpqp_program.MPQP_Program.solve_theta">
+<span class="sig-name descname"><span class="pre">solve_theta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_point</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deterministic_solver</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'gurobi'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ppopt.solver_interface.html#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mpqp_program.MPQP_Program.solve_theta" title="Permalink to this definition"></a></dt>
+<dd><p>Substitutes theta into the multiparametric problem and solves the following optimization problem</p>
+<div class="math notranslate nohighlight">
+\[\min_{x} \frac{1}{2}x^TQx + \tilde{c}^Tx\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+Ax &amp;\leq \tilde{b}\\
+A_{eq}x &amp;= \tilde{b}_{eq}\\
+x &amp;\in R^n\\
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta_point</strong> – An uncertainty realization</p></li>
+<li><p><strong>deterministic_solver</strong> – Deterministic solver to use to solve the above quadratic program</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The Solver output of the substituted problem, returns None if not solvable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mpqp_program.MPQP_Program.warnings">
+<span class="sig-name descname"><span class="pre">warnings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mpqp_program.MPQP_Program.warnings" title="Permalink to this definition"></a></dt>
+<dd><p>Checks the dimensions of the matrices to ensure consistency</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ppopt.plot">
+<span id="ppopt-plot-module"></span><h2>ppopt.plot module<a class="headerlink" href="#module-ppopt.plot" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.plot.gen_vertices">
+<span class="sig-prename descclassname"><span class="pre">ppopt.plot.</span></span><span class="sig-name descname"><span class="pre">gen_vertices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.plot.gen_vertices" title="Permalink to this definition"></a></dt>
+<dd><p>Generates the vertices associated with the critical regions in the solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>solution</strong> – a multiparametric region</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of a collection of vertices sorted counterclockwise that correspond to the specific region</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.plot.parametric_plot">
+<span class="sig-prename descclassname"><span class="pre">ppopt.plot.</span></span><span class="sig-name descname"><span class="pre">parametric_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#ppopt.plot.parametric_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Makes a simple plot from a solution. This uses matplotlib to generate a plot, it is the general plotting backend.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>solution</strong> – a multiparametric solution</p></li>
+<li><p><strong>save_path</strong> – if specified saves the plot in the directory</p></li>
+<li><p><strong>show</strong> – Keyword argument, if True displays the plot otherwise does not display</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>no return, creates graph of solution</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.plot.parametric_plot_1D">
+<span class="sig-prename descclassname"><span class="pre">ppopt.plot.</span></span><span class="sig-name descname"><span class="pre">parametric_plot_1D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#ppopt.plot.parametric_plot_1D" title="Permalink to this definition"></a></dt>
+<dd><p>Makes a simple plot of a 1D parametric solution</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>solution</strong> – </p></li>
+<li><p><strong>save_path</strong> – </p></li>
+<li><p><strong>show</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.plot.plotly_plot">
+<span class="sig-prename descclassname"><span class="pre">ppopt.plot.</span></span><span class="sig-name descname"><span class="pre">plotly_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#ppopt.plot.plotly_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Makes a plot via the plotly library, this is good for interactive figures that you can embed into webpages and handle interactively.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>solution</strong> – </p></li>
+<li><p><strong>save_path</strong> – Keyword argument, if a directory path is specified it will save a html copy and a png to that directory</p></li>
+<li><p><strong>show</strong> – Keyword argument, if True displays the plot otherwise does not display</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>no return, creates a graph of the solution</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.plot.sort_clockwise">
+<span class="sig-prename descclassname"><span class="pre">ppopt.plot.</span></span><span class="sig-name descname"><span class="pre">sort_clockwise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vertices</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.plot.sort_clockwise" title="Permalink to this definition"></a></dt>
+<dd><p>Sorts the vertices in clockwise order. This is important for rendering as if they were not sorted then you would see nonsense.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vertices</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.problem_generator">
+<span id="ppopt-problem-generator-module"></span><h2>ppopt.problem_generator module<a class="headerlink" href="#module-ppopt.problem_generator" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.problem_generator.generate_mplp">
+<span class="sig-prename descclassname"><span class="pre">ppopt.problem_generator.</span></span><span class="sig-name descname"><span class="pre">generate_mplp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#ppopt.mplp_program.MPLP_Program" title="ppopt.mplp_program.MPLP_Program"><span class="pre">ppopt.mplp_program.MPLP_Program</span></a><a class="headerlink" href="#ppopt.problem_generator.generate_mplp" title="Permalink to this definition"></a></dt>
+<dd><p>Generates a random mpLP problem with of the following characteristics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – number of parameters</p></li>
+<li><p><strong>t</strong> – number of uncertain variables</p></li>
+<li><p><strong>m</strong> – number of constraints</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A random mpLP of the specified type</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.problem_generator.generate_mpqp">
+<span class="sig-prename descclassname"><span class="pre">ppopt.problem_generator.</span></span><span class="sig-name descname"><span class="pre">generate_mpqp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a><a class="headerlink" href="#ppopt.problem_generator.generate_mpqp" title="Permalink to this definition"></a></dt>
+<dd><p>Generates a random mpQP problem with of the following characteristics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – number of x dimensions</p></li>
+<li><p><strong>t</strong> – number of theta dimensions</p></li>
+<li><p><strong>m</strong> – number of constraints</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A random mpQP problem of the specified type</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.solution">
+<span id="ppopt-solution-module"></span><h2>ppopt.solution module<a class="headerlink" href="#module-ppopt.solution" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ppopt.solution.Solution">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ppopt.solution.</span></span><span class="sig-name descname"><span class="pre">Solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.mplp_program.MPLP_Program" title="ppopt.mplp_program.MPLP_Program"><span class="pre">ppopt.mplp_program.MPLP_Program</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">critical_regions</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.critical_region.CriticalRegion" title="ppopt.critical_region.CriticalRegion"><span class="pre">ppopt.critical_region.CriticalRegion</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.solution.Solution" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The Solution object is the output of multiparametric solvers, it contains all of the critical regions as well as holds a copy of the original problem that was solved</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.solution.Solution.add_region">
+<span class="sig-name descname"><span class="pre">add_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#ppopt.critical_region.CriticalRegion" title="ppopt.critical_region.CriticalRegion"><span class="pre">ppopt.critical_region.CriticalRegion</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#ppopt.solution.Solution.add_region" title="Permalink to this definition"></a></dt>
+<dd><p>Adds a region to the solution</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>region</strong> – region to add to the solution</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.solution.Solution.critical_regions">
+<span class="sig-name descname"><span class="pre">critical_regions</span></span><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.critical_region.CriticalRegion" title="ppopt.critical_region.CriticalRegion"><span class="pre">ppopt.critical_region.CriticalRegion</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ppopt.solution.Solution.critical_regions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.solution.Solution.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_point</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solution.Solution.evaluate" title="Permalink to this definition"></a></dt>
+<dd><p>returns the optimal x* from the solution</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>theta_point</strong> – an uncertainty realization</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the calculated x* from theta</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.solution.Solution.evaluate_objective">
+<span class="sig-name descname"><span class="pre">evaluate_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_point</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solution.Solution.evaluate_objective" title="Permalink to this definition"></a></dt>
+<dd><p>Given a realization of an uncertainty parameter, calculate the objective value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>theta_point</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.solution.Solution.get_region">
+<span class="sig-name descname"><span class="pre">get_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_point</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.critical_region.CriticalRegion" title="ppopt.critical_region.CriticalRegion"><span class="pre">ppopt.critical_region.CriticalRegion</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solution.Solution.get_region" title="Permalink to this definition"></a></dt>
+<dd><p>Find the critical region in the solution that corresponds to the theta provided</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>theta_point</strong> – an uncertainty realization</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the region that contains theta</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.solution.Solution.program">
+<span class="sig-name descname"><span class="pre">program</span></span><em class="property"><span class="pre">:</span> <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.mplp_program.MPLP_Program" title="ppopt.mplp_program.MPLP_Program"><span class="pre">ppopt.mplp_program.MPLP_Program</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ppopt.solution.Solution.program" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.solution.Solution.theta_dim">
+<span class="sig-name descname"><span class="pre">theta_dim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#ppopt.solution.Solution.theta_dim" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.solution.Solution.verify_solution">
+<span class="sig-name descname"><span class="pre">verify_solution</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#ppopt.solution.Solution.verify_solution" title="Permalink to this definition"></a></dt>
+<dd><p>This can be called to verify that all of the critical regions agree with the optimization problem. With problems
+with numerically small critical regions the deterministic optimizer value could fail. This does NOT necessarily
+mean that the critical region is at fault but that perhaps more analysis should be done. This is especially
+apparent with critical regions with chebychev radii on the order of sqrt(machine epsilon).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if all is verified, else False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.solution.Solution.verify_theta">
+<span class="sig-name descname"><span class="pre">verify_theta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_point</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#ppopt.solution.Solution.verify_theta" title="Permalink to this definition"></a></dt>
+<dd><p>Checks that the result of the solution is consistent with theta substituted multiparametric problem</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>theta_point</strong> – an uncertainty realization</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if they are the same, False if they are different</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ppopt.solver">
+<span id="ppopt-solver-module"></span><h2>ppopt.solver module<a class="headerlink" href="#module-ppopt.solver" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ppopt.solver.Solver">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ppopt.solver.</span></span><span class="sig-name descname"><span class="pre">Solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">solvers:</span> <span class="pre">Dict[str</span></em>, <em class="sig-param"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.solver.Solver" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is the primary user interface for deterministic solvers</p>
+<p>The solvers can be changed by directly editing the solvers dict to different solver names</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.solver.Solver.check_supported_problem">
+<span class="sig-name descname"><span class="pre">check_supported_problem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#ppopt.solver.Solver.check_supported_problem" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.solver.Solver.problem_not_supported">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">problem_not_supported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#ppopt.solver.Solver.problem_not_supported" title="Permalink to this definition"></a></dt>
+<dd><p>This is an internal method that throws an error and prompts the user when they use an unsupported Solver</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.solver.Solver.solve_lp">
+<span class="sig-name descname"><span class="pre">solve_lp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_duals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ppopt.solver_interface.html#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solver.Solver.solve_lp" title="Permalink to this definition"></a></dt>
+<dd><p>This is the breakout for solving linear programs</p>
+<p>The Linear programming problem</p>
+<div class="math notranslate nohighlight">
+\[\min_{xy} c^Tx\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+Ax &amp;\leq b\\
+A_{eq}x &amp;= beq\\
+x &amp;\in R^n\\
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> – Column Vector, can be None</p></li>
+<li><p><strong>A</strong> – Constraint LHS matrix, can be None</p></li>
+<li><p><strong>b</strong> – Constraint RHS matrix, can be None</p></li>
+<li><p><strong>equality_constraints</strong> – List of Equality constraints</p></li>
+<li><p><strong>verbose</strong> – Flag for output of underlying Solver, default False</p></li>
+<li><p><strong>get_duals</strong> – Flag for returning dual variable of problem, default True (false for all mixed integer models)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A SolverOutput object if optima found, otherwise None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.solver.Solver.solve_milp">
+<span class="sig-name descname"><span class="pre">solve_milp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_vars</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_duals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ppopt.solver_interface.html#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solver.Solver.solve_milp" title="Permalink to this definition"></a></dt>
+<dd><p>This is the breakout for solving mixed integer linear programs</p>
+<p>The Mixed Integer Linear programming problem</p>
+<div class="math notranslate nohighlight">
+\[\min_{xy} c^T[xy]\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+A[xy] &amp;\leq b\\
+A_{eq}[xy] &amp;= beq\\
+x &amp;\in R^n\\
+y &amp;\in \{0, 1\}^m
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> – Column Vector, can be None</p></li>
+<li><p><strong>A</strong> – Constraint LHS matrix, can be None</p></li>
+<li><p><strong>b</strong> – Constraint RHS matrix, can be None</p></li>
+<li><p><strong>equality_constraints</strong> – List of Equality constraints</p></li>
+<li><p><strong>bin_vars</strong> – List of binary variable indices</p></li>
+<li><p><strong>verbose</strong> – Flag for output of underlying Solver, default False</p></li>
+<li><p><strong>get_duals</strong> – Flag for returning dual variable of problem, default True (false for all mixed integer models)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary of the Solver outputs, or none if infeasible or unbounded. output[‘sol’] = primal variables, output[‘dual’] = dual variables, output[‘obj’] = objective value, output[‘const’] = slacks, output[‘active’] = active constraints.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.solver.Solver.solve_miqp">
+<span class="sig-name descname"><span class="pre">solve_miqp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_vars</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_duals</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ppopt.solver_interface.html#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solver.Solver.solve_miqp" title="Permalink to this definition"></a></dt>
+<dd><p>This is the breakout for solving mixed integer quadratic programs</p>
+<p>The Mixed Integer Quadratic program programming problem</p>
+<div class="math notranslate nohighlight">
+\[\min_{xy} \frac{1}{2} [xy]^TQ[xy] + c^T[xy]\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+A[xy] &amp;\leq b\\
+A_{eq}[xy] &amp;= beq\\
+x &amp;\in R^n\\
+y &amp;\in \{0, 1\}^m
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Q</strong> – Square matrix, can be None</p></li>
+<li><p><strong>c</strong> – Column Vector, can be None</p></li>
+<li><p><strong>A</strong> – Constraint LHS matrix, can be None</p></li>
+<li><p><strong>b</strong> – Constraint RHS matrix, can be None</p></li>
+<li><p><strong>equality_constraints</strong> – List of Equality constraints</p></li>
+<li><p><strong>bin_vars</strong> – List of binary variable indices</p></li>
+<li><p><strong>verbose</strong> – Flag for output of underlying Solver, default False</p></li>
+<li><p><strong>get_duals</strong> – Flag for returning dual variable of problem, default True (false for all mixed integer models)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A SolverOutput object if optima found, otherwise None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.solver.Solver.solve_qp">
+<span class="sig-name descname"><span class="pre">solve_qp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_duals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ppopt.solver_interface.html#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solver.Solver.solve_qp" title="Permalink to this definition"></a></dt>
+<dd><p>This is the breakout for solving quadratic programs</p>
+<p>The Quadratic programming problem</p>
+<div class="math notranslate nohighlight">
+\[\min_{x} \frac{1}{2}x^TQx + c^Tx\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+Ax &amp;\leq b\\
+A_{eq}x &amp;= beq\\
+x &amp;\in R^n\\
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Q</strong> – Square matrix, can be None</p></li>
+<li><p><strong>c</strong> – Column Vector, can be None</p></li>
+<li><p><strong>A</strong> – Constraint LHS matrix, can be None</p></li>
+<li><p><strong>b</strong> – Constraint RHS matrix, can be None</p></li>
+<li><p><strong>equality_constraints</strong> – List of Equality constraints</p></li>
+<li><p><strong>verbose</strong> – Flag for output of underlying Solver, default False</p></li>
+<li><p><strong>get_duals</strong> – Flag for returning dual variable of problem, default True (false for all mixed integer models)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A SolverOutput object if optima found, otherwise None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.solver.Solver.solver_not_supported">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">solver_not_supported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solver_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#ppopt.solver.Solver.solver_not_supported" title="Permalink to this definition"></a></dt>
+<dd><p>This is an internal method that throws an error and prompts the user when they use an unsupported Solver</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.solver.Solver.solvers">
+<span class="sig-name descname"><span class="pre">solvers</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ppopt.solver.Solver.solvers" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.solver.Solver.supported_problems">
+<span class="sig-name descname"><span class="pre">supported_problems</span></span><em class="property"> <span class="pre">=</span> <span class="pre">['lp',</span> <span class="pre">'qp',</span> <span class="pre">'milp',</span> <span class="pre">'miqp']</span></em><a class="headerlink" href="#ppopt.solver.Solver.supported_problems" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.solver.Solver.supported_solvers">
+<span class="sig-name descname"><span class="pre">supported_solvers</span></span><em class="property"> <span class="pre">=</span> <span class="pre">['gurobi',</span> <span class="pre">'glpk',</span> <span class="pre">'quadprog']</span></em><a class="headerlink" href="#ppopt.solver.Solver.supported_solvers" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver.avalable_LP_solvers">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver.</span></span><span class="sig-name descname"><span class="pre">avalable_LP_solvers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.solver.avalable_LP_solvers" title="Permalink to this definition"></a></dt>
+<dd><p>Checks what LP solvers are avalable to use</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Installed and supported solvers for linear programs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver.avalable_QP_solvers">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver.</span></span><span class="sig-name descname"><span class="pre">avalable_QP_solvers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.solver.avalable_QP_solvers" title="Permalink to this definition"></a></dt>
+<dd><p>Checks what QP solvers are avalable to use</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Installed and supported solvers for quadratic programs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver.check_modules">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver.</span></span><span class="sig-name descname"><span class="pre">check_modules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modules</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Iterable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.solver.check_modules" title="Permalink to this definition"></a></dt>
+<dd><p>Given an iterable of module names, returns modules that are installed</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver.check_solver_modules">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver.</span></span><span class="sig-name descname"><span class="pre">check_solver_modules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">packages</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.solver.check_solver_modules" title="Permalink to this definition"></a></dt>
+<dd><p>Maps optimization python package names to internal names and returns an interable</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver.default_solver_options">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver.</span></span><span class="sig-name descname"><span class="pre">default_solver_options</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.solver.default_solver_options" title="Permalink to this definition"></a></dt>
+<dd><p>Generates the default system solvers to use for optimization sub problems</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary of determanistic solvers to use</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ppopt" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="ppopt" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ppopt.geometry.html" class="btn btn-neutral float-right" title="ppopt.geometry package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dustin Kenefake, Efstratios Pistikopoulos.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

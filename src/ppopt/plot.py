@@ -1,12 +1,13 @@
+import time
+from math import atan2
+from typing import List
+
 import numpy
 import plotly.graph_objects as go
 import pypoman
-import time
-from math import atan2
 from matplotlib import pyplot
 from matplotlib.collections import PatchCollection
 from matplotlib.patches import Polygon
-from typing import List
 
 from .solution import Solution
 from .utils.general_utils import make_column

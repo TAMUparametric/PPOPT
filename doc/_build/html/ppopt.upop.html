@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ppopt.upop package &mdash; PPOPT 1.0.2 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ppopt.utils package" href="ppopt.utils.html" />
+    <link rel="prev" title="ppopt.solver_interface package" href="ppopt.solver_interface.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> PPOPT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Solving a MPQP Program</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithm_overview.html">Multiparametric Algorithms</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">ppopt</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ppopt.html">ppopt package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="ppopt.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ppopt.geometry.html">ppopt.geometry package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ppopt.mp_solvers.html">ppopt.mp_solvers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ppopt.solver_interface.html">ppopt.solver_interface package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">ppopt.upop package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ppopt.utils.html">ppopt.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.critical_region">ppopt.critical_region module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.mplp_program">ppopt.mplp_program module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.mpqp_program">ppopt.mpqp_program module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.plot">ppopt.plot module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.problem_generator">ppopt.problem_generator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.solution">ppopt.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.solver">ppopt.solver module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PPOPT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">ppopt</a> &raquo;</li>
+          <li><a href="ppopt.html">ppopt package</a> &raquo;</li>
+      <li>ppopt.upop package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ppopt.upop.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ppopt-upop-package">
+<h1>ppopt.upop package<a class="headerlink" href="#ppopt-upop-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-ppopt.upop.language_generation">
+<span id="ppopt-upop-language-generation-module"></span><h2>ppopt.upop.language_generation module<a class="headerlink" href="#module-ppopt.upop.language_generation" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.language_generation.gen_array">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.language_generation.</span></span><span class="sig-name descname"><span class="pre">gen_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vartype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('const')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpp'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#ppopt.upop.language_generation.gen_array" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.language_generation.gen_cpp_array">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.language_generation.</span></span><span class="sig-name descname"><span class="pre">gen_cpp_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vartype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('const')</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#ppopt.upop.language_generation.gen_cpp_array" title="Permalink to this definition"></a></dt>
+<dd><p>Generates a static C++ array from the provided data in the following format</p>
+<p>vartype name[size] = {data};</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – </p></li>
+<li><p><strong>name</strong> – </p></li>
+<li><p><strong>vartype</strong> – </p></li>
+<li><p><strong>options</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.language_generation.gen_cpp_variable">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.language_generation.</span></span><span class="sig-name descname"><span class="pre">gen_cpp_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vartype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('const')</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#ppopt.upop.language_generation.gen_cpp_variable" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.language_generation.gen_js_array">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.language_generation.</span></span><span class="sig-name descname"><span class="pre">gen_js_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vartype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('const')</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#ppopt.upop.language_generation.gen_js_array" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.language_generation.gen_js_variable">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.language_generation.</span></span><span class="sig-name descname"><span class="pre">gen_js_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vartype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('const')</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#ppopt.upop.language_generation.gen_js_variable" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.language_generation.gen_python_array">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.language_generation.</span></span><span class="sig-name descname"><span class="pre">gen_python_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vartype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('const')</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#ppopt.upop.language_generation.gen_python_array" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.language_generation.gen_python_variable">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.language_generation.</span></span><span class="sig-name descname"><span class="pre">gen_python_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vartype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('const')</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#ppopt.upop.language_generation.gen_python_variable" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.language_generation.gen_variable">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.language_generation.</span></span><span class="sig-name descname"><span class="pre">gen_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vartype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('const')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpp'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#ppopt.upop.language_generation.gen_variable" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-ppopt.upop.linear_code_gen">
+<span id="ppopt-upop-linear-code-gen-module"></span><h2>ppopt.upop.linear_code_gen module<a class="headerlink" href="#module-ppopt.upop.linear_code_gen" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.linear_code_gen.generate_code_cpp">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.linear_code_gen.</span></span><span class="sig-name descname"><span class="pre">generate_code_cpp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">float_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'float'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#ppopt.upop.linear_code_gen.generate_code_cpp" title="Permalink to this definition"></a></dt>
+<dd><p>Generates C++17 code for point location and function evaluation on microcontrollers</p>
+<p>WARNING: This breaks down at high dimensions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>solution</strong> – a solution to a MPLP or MPQP solution</p></li>
+<li><p><strong>float_type</strong> – the type of C++ float to export, e.g. ‘double’ or ‘float’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of the strings of the C++17 datafiles that integrate with uPOP</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.linear_code_gen.generate_code_js">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.linear_code_gen.</span></span><span class="sig-name descname"><span class="pre">generate_code_js</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.upop.linear_code_gen.generate_code_js" title="Permalink to this definition"></a></dt>
+<dd><p>Generates Javascript code for point location and function evaluation for Scripting Engines and IOT servers</p>
+<p>This is direct enumeration, and it is</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>solution</strong> – a solution to a MPLP or MPQP solution</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of the strings of the C++17 datafiles that integrate with uPOP</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.linear_code_gen.generate_code_matlab">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.linear_code_gen.</span></span><span class="sig-name descname"><span class="pre">generate_code_matlab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#ppopt.upop.linear_code_gen.generate_code_matlab" title="Permalink to this definition"></a></dt>
+<dd><p>This code gen does not bother with memory compression as it is running in the matlab environment and takes ~1 gb to run anyways</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>solution</strong> – </p></li>
+<li><p><strong>path</strong> – File export path, if not specified will save in current working directory</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.upop.point_location">
+<span id="ppopt-upop-point-location-module"></span><h2>ppopt.upop.point_location module<a class="headerlink" href="#module-ppopt.upop.point_location" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ppopt.upop.point_location.PointLocation">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ppopt.upop.point_location.</span></span><span class="sig-name descname"><span class="pre">PointLocation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.upop.point_location.PointLocation" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.upop.point_location.PointLocation.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.upop.point_location.PointLocation.evaluate" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluates the value of x(theta), of the</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>theta</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.upop.point_location.PointLocation.is_inside">
+<span class="sig-name descname"><span class="pre">is_inside</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#ppopt.upop.point_location.PointLocation.is_inside" title="Permalink to this definition"></a></dt>
+<dd><blockquote>
+<div><p>Determines if the theta point in inside of the feasible space</p>
+<dl class="field-list simple">
+<dt class="field-odd">param theta</dt>
+<dd class="field-odd"><p>A point in the theta space</p>
+</dd>
+<dt class="field-even">return</dt>
+<dd class="field-even"><p>True, if theta in region</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>False, if theta not in region</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.upop.point_location.PointLocation.locate">
+<span class="sig-name descname"><span class="pre">locate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#ppopt.upop.point_location.PointLocation.locate" title="Permalink to this definition"></a></dt>
+<dd><p>Finds the index of the critical region that theta is inside</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>theta</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ppopt.upop.ucontroller">
+<span id="ppopt-upop-ucontroller-module"></span><h2>ppopt.upop.ucontroller module<a class="headerlink" href="#module-ppopt.upop.ucontroller" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ppopt.upop.ucontroller.BVH">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ppopt.upop.ucontroller.</span></span><span class="sig-name descname"><span class="pre">BVH</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fundamental_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.upop.ucontroller.BVH" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.ucontroller.classify_polytope">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.ucontroller.</span></span><span class="sig-name descname"><span class="pre">classify_polytope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.critical_region.CriticalRegion" title="ppopt.critical_region.CriticalRegion"><span class="pre">ppopt.critical_region.CriticalRegion</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">hyper_plane</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#ppopt.upop.ucontroller.classify_polytope" title="Permalink to this definition"></a></dt>
+<dd><p>We are going to classify the polytopic critical region by solving 2 LPS</p>
+<p>max ||&lt;x,A&gt;||-d for x in Critical region</p>
+<p>min ||&lt;x,A&gt;||-d for x in Critical region</p>
+<p>The result of the objective function will tell us the side of the hyper plane the point is on</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>region</strong> – Critical region</p></li>
+<li><p><strong>hyper_plane</strong> – A fundamental hyperplane</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>-1 if completely not in support, 0 if intersected, 1 if completely in support</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.ucontroller.determine_hyperplane">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.ucontroller.</span></span><span class="sig-name descname"><span class="pre">determine_hyperplane</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regions</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ppopt.html#ppopt.critical_region.CriticalRegion" title="ppopt.critical_region.CriticalRegion"><span class="pre">ppopt.critical_region.CriticalRegion</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hyper_planes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.upop.ucontroller.determine_hyperplane" title="Permalink to this definition"></a></dt>
+<dd><p>Finds the ‘best’ splitting hyper plane for this task</p>
+<p>In this case best means minimizing the number of intersected regions while also maximizing the difference between supported and not supported regions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>regions</strong> – </p></li>
+<li><p><strong>hyper_planes</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.ucontroller.generate_code">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.ucontroller.</span></span><span class="sig-name descname"><span class="pre">generate_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.upop.ucontroller.generate_code" title="Permalink to this definition"></a></dt>
+<dd><p>Generates C++17 code for point location and function evaluation on microcontrollers</p>
+<p>This forms a BVH to accelerate solution times</p>
+<p>WARNING: This breaks down at high dimensions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>solution</strong> – a solution to a MPLP or MPQP solution</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of the strings of the C++17 datafiles that integrate with uPOP</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.upop.upop_utils">
+<span id="ppopt-upop-upop-utils-module"></span><h2>ppopt.upop.upop_utils module<a class="headerlink" href="#module-ppopt.upop.upop_utils" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.upop_utils.find_unique_hyperplanes">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.upop_utils.</span></span><span class="sig-name descname"><span class="pre">find_unique_hyperplanes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overall</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.upop.upop_utils.find_unique_hyperplanes" title="Permalink to this definition"></a></dt>
+<dd><p>Generates the list of indices of the fundamental hyperplanes of the solution, as well as the indices of the associated hyperplanes from the original solution and the parity of the constraint</p>
+<p>This is linear w.r.t. number of hyper planes and is quite quick ~25 ns per constraint in the solution</p>
+<p>It first creates approximate(near exact) integer representations for each constraint for each region in the solution</p>
+<p>This approximation step is justified in that it will find equality between 2 constraints if the L2 norm of the difference is below 10E-12</p>
+<p>Then the positive and negative versions of these constraints [ -x &lt; -1, x &lt; 1 are on different sides of the same hyperplane] are made into a format that can be hashed (tuples of ints)</p>
+<p>With this is is relatively strait forward to check for uniqueness with the set</p>
+<p>The first loop scans thru all of the constraints and if the constraint contains a unique hyperplane</p>
+<ol class="arabic simple">
+<li><p>if it is a unique hyper plane store the index, add the integer representation to the set, then index the integer representation to the index</p></li>
+<li><p>if it is not a unique hyperplane do nothing</p></li>
+</ol>
+<p>The second loop scans thru the constraints again and assigns them unique hyper plane indices and the parity(what side of the hyper plane that they are on)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>overall</strong> – The solution of a multiparametric programming problem</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>returns indices of fundamental hyperplanes, indices of constraints back to fundamental hyperplane, parity of constraint</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.upop_utils.find_unique_region_functions">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.upop_utils.</span></span><span class="sig-name descname"><span class="pre">find_unique_region_functions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.upop.upop_utils.find_unique_region_functions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.upop_utils.find_unique_region_hyperplanes">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.upop_utils.</span></span><span class="sig-name descname"><span class="pre">find_unique_region_hyperplanes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.upop.upop_utils.find_unique_region_hyperplanes" title="Permalink to this definition"></a></dt>
+<dd><p>This is an overload of the find_unique_hyperplane function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>solution</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.upop_utils.get_chebychev_centers">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.upop_utils.</span></span><span class="sig-name descname"><span class="pre">get_chebychev_centers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.upop.upop_utils.get_chebychev_centers" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates and returns a list of all of the theta chebychev centers for the critical regions in the solution</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>solution</strong> – An mp programming Solution</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of all of the chebychev centers of the regions in the solutions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.upop_utils.get_descriptions">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.upop_utils.</span></span><span class="sig-name descname"><span class="pre">get_descriptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="headerlink" href="#ppopt.upop.upop_utils.get_descriptions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.upop_utils.get_outer_boundaries">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.upop_utils.</span></span><span class="sig-name descname"><span class="pre">get_outer_boundaries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parity</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.upop.upop_utils.get_outer_boundaries" title="Permalink to this definition"></a></dt>
+<dd><p>Takes in the global constraint indices to the fundamental hyperplanes and their parity finds all planes with only one parity version aka only one verity of them appears in the original set.</p>
+<p>This method is linear w.r.t. number of indices, by the use of sets and hash maps</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indices</strong> – list of indices that maps the solution constraints into the fundamental hyperplanes</p></li>
+<li><p><strong>parity</strong> – the side of the hyperplane that the constraint represents</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.upop.upop_utils.verify_outer_boundary">
+<span class="sig-prename descclassname"><span class="pre">ppopt.upop.upop_utils.</span></span><span class="sig-name descname"><span class="pre">verify_outer_boundary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">hyper_indices</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outer_indices</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chebychev_centers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.upop.upop_utils.verify_outer_boundary" title="Permalink to this definition"></a></dt>
+<dd><p>This checks all of the possible outer boundary indices for errors, failures to solve for the minimal set of fundamental hyperplanes in the solution</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>solution</strong> – An mp programming solution</p></li>
+<li><p><strong>hyper_indices</strong> – The list of all fundamental hyperplane indices</p></li>
+<li><p><strong>outer_indices</strong> – The list of identified exterior hyperplane indices</p></li>
+<li><p><strong>chebychev_centers</strong> – the list of chebychev centers in the theta space for every critical region {Optional}</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of verified outer boundary constraints</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.upop">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ppopt.upop" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ppopt.solver_interface.html" class="btn btn-neutral float-left" title="ppopt.solver_interface package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ppopt.utils.html" class="btn btn-neutral float-right" title="ppopt.utils package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dustin Kenefake, Efstratios Pistikopoulos.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

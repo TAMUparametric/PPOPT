@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Readme File &mdash; PPOPT 1.0.2 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Solving a MPQP Program" href="tutorial.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> PPOPT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Solving a MPQP Program</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithm_overview.html">Multiparametric Algorithms</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">ppopt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">PPOPT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>Readme File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="readme-file">
+<h1>Readme File<a class="headerlink" href="#readme-file" title="Permalink to this headline"></a></h1>
+</section>
+<section id="ppopt">
+<h1>PPOPT<a class="headerlink" href="#ppopt" title="Permalink to this headline"></a></h1>
+<a class="reference external image-reference" href="https://github.com/TAMUparametric/PPOPT/actions/workflows/python-package.yml"><img alt="Python package" src="https://github.com/TAMUparametric/PPOPT/actions/workflows/python-package.yml/badge.svg" /></a>
+<p><strong>P</strong>ython <strong>P</strong>arametric <strong>OP</strong>timization <strong>T</strong>oolbox (<strong>PPOPT</strong>) is a software platform for solving and manipulating multiparametric programs in Python. This package is still in development but the following features are complete and are in full working order.</p>
+<section id="completed-features">
+<h2>Completed Features<a class="headerlink" href="#completed-features" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>Solver interface for mpLPs and mpQP with the following algorithms</p>
+<ol class="arabic simple">
+<li><p>Serial and Parallel Combinatorial Algorithm</p></li>
+<li><p>Serial and Parallel Geometrical Algorithm</p></li>
+<li><p>Serial and Parallel Graph based Algorithm</p></li>
+</ol>
+</li>
+<li><p>Multiparametric solution export to C++, Javacript, Matlab, and Python</p></li>
+<li><p>Plotting utilities</p></li>
+<li><p>Presolver and Conditioning for Multiparametric Programs</p></li>
+</ul>
+<section id="key-applications">
+<h3>Key Applications<a class="headerlink" href="#key-applications" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p>Explicit Model Predictive Control</p></li>
+<li><p>Multilevel Optimization</p></li>
+<li><p>Integrated Design, Control, and Scheduling</p></li>
+<li><p>Robust Optimization</p></li>
+</ul>
+<p>For more information about Multiparametric programming and it’s applications, <a class="reference external" href="https://www.frontiersin.org/articles/10.3389/fceng.2020.620168/full">this paper</a> is a good jumping point.</p>
+</section>
+<section id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h3>
+<p>Currently PPOPT requires Python 3.7 or higher and can be installed with the following commands.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -e git+https://github.com/mmihaltz/pysettrie.git#egg<span class="o">=</span>pysettrie
+pip install ppopt
+</pre></div>
+</div>
+</section>
+<section id="tutorial">
+<h3>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline"></a></h3>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Solving a MPQP Program</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithm_overview.html">Multiparametric Algorithms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="algorithm_overview.html#geometric-algorithm">Geometric Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithm_overview.html#combinatorial-algorithm">Combinatorial Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithm_overview.html#graph-algorithm">Graph Algorithm</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="api">
+<h3>API<a class="headerlink" href="#api" title="Permalink to this headline"></a></h3>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">ppopt</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ppopt.html">ppopt package</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial.html" class="btn btn-neutral float-right" title="Solving a MPQP Program" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dustin Kenefake, Efstratios Pistikopoulos.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

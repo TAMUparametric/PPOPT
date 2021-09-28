@@ -1,6 +1,7 @@
+from typing import Optional
+
 import numba
 import numpy
-from typing import Optional
 
 from ..solution import Solution
 from ..upop.upop_utils import find_unique_region_hyperplanes, get_outer_boundaries, get_chebychev_centers

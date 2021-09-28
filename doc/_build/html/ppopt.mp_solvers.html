@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ppopt.mp_solvers package &mdash; PPOPT 1.0.2 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ppopt.solver_interface package" href="ppopt.solver_interface.html" />
+    <link rel="prev" title="ppopt.geometry package" href="ppopt.geometry.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> PPOPT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Solving a MPQP Program</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithm_overview.html">Multiparametric Algorithms</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">ppopt</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ppopt.html">ppopt package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="ppopt.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ppopt.geometry.html">ppopt.geometry package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">ppopt.mp_solvers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ppopt.solver_interface.html">ppopt.solver_interface package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ppopt.upop.html">ppopt.upop package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ppopt.utils.html">ppopt.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.critical_region">ppopt.critical_region module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.mplp_program">ppopt.mplp_program module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.mpqp_program">ppopt.mpqp_program module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.plot">ppopt.plot module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.problem_generator">ppopt.problem_generator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.solution">ppopt.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.solver">ppopt.solver module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PPOPT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">ppopt</a> &raquo;</li>
+          <li><a href="ppopt.html">ppopt package</a> &raquo;</li>
+      <li>ppopt.mp_solvers package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ppopt.mp_solvers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ppopt-mp-solvers-package">
+<h1>ppopt.mp_solvers package<a class="headerlink" href="#ppopt-mp-solvers-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-ppopt.mp_solvers.mpqp_ahmadi">
+<span id="ppopt-mp-solvers-mpqp-ahmadi-module"></span><h2>ppopt.mp_solvers.mpqp_ahmadi module<a class="headerlink" href="#module-ppopt.mp_solvers.mpqp_ahmadi" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_ahmadi.solve">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_ahmadi.</span></span><span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mp_solvers.mpqp_ahmadi.solve" title="Permalink to this definition"></a></dt>
+<dd><p>This solves a MPQP program with the method proposed by Parisa Ahmadi-Moshkenani et. al. This algorithm is similar to the graph algorithm implemented by Richard Oberdeik.</p>
+<p>The source for the algorithm can be found here. <a class="reference external" href="https://ieeexplore.ieee.org/document/8252719">https://ieeexplore.ieee.org/document/8252719</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>program</strong> – a MPQP_Program</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The solution of a MPQP Program</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.mp_solvers.mpqp_combinatorial">
+<span id="ppopt-mp-solvers-mpqp-combinatorial-module"></span><h2>ppopt.mp_solvers.mpqp_combinatorial module<a class="headerlink" href="#module-ppopt.mp_solvers.mpqp_combinatorial" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_combinatorial.check_child_feasibility">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_combinatorial.</span></span><span class="sig-name descname"><span class="pre">check_child_feasibility</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">combination_checker</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#ppopt.mp_solvers.solver_utils.CombinationTester" title="ppopt.mp_solvers.solver_utils.CombinationTester"><span class="pre">ppopt.mp_solvers.solver_utils.CombinationTester</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mp_solvers.mpqp_combinatorial.check_child_feasibility" title="Permalink to this definition"></a></dt>
+<dd><p>Checks the feasibility of a list of active set combinations, if infeasible add to the combination checker and returns all feasible active set combinations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>program</strong> – An MPQP Program</p></li>
+<li><p><strong>set_list</strong> – The list of active sets</p></li>
+<li><p><strong>combination_checker</strong> – The combination checker that prunes</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The list of all feasible active sets</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_combinatorial.solve">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_combinatorial.</span></span><span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a><a class="headerlink" href="#ppopt.mp_solvers.mpqp_combinatorial.solve" title="Permalink to this definition"></a></dt>
+<dd><p>Solves the MPQP program with a modified algorithm described in Gupta et. al. 2011</p>
+<p>The algorithm is described in this paper <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0005109811003190">https://www.sciencedirect.com/science/article/pii/S0005109811003190</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>program</strong> – MPQP to be solved</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the solution of the MPQP</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.mp_solvers.mpqp_geometric">
+<span id="ppopt-mp-solvers-mpqp-geometric-module"></span><h2>ppopt.mp_solvers.mpqp_geometric module<a class="headerlink" href="#module-ppopt.mp_solvers.mpqp_geometric" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_geometric.solve">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_geometric.</span></span><span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mp_solvers.mpqp_geometric.solve" title="Permalink to this definition"></a></dt>
+<dd><p>This solved the multiparametric program using the geometric algorithm described in Spjotvold et al.</p>
+<p><a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S1474667016369154">https://www.sciencedirect.com/science/article/pii/S1474667016369154</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>program</strong> – a multiparametric program</p></li>
+<li><p><strong>active_set</strong> – an initial optimal active set combination</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the solution to the multiparametric optimization problem</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.mp_solvers.mpqp_graph">
+<span id="ppopt-mp-solvers-mpqp-graph-module"></span><h2>ppopt.mp_solvers.mpqp_graph module<a class="headerlink" href="#module-ppopt.mp_solvers.mpqp_graph" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_graph.graph_initialization">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_graph.</span></span><span class="sig-name descname"><span class="pre">graph_initialization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_active_sets</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mp_solvers.mpqp_graph.graph_initialization" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes the graph algorithm based on input</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>program</strong> – </p></li>
+<li><p><strong>initial_active_sets</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_graph.solve">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_graph.</span></span><span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_active_sets</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a><a class="headerlink" href="#ppopt.mp_solvers.mpqp_graph.solve" title="Permalink to this definition"></a></dt>
+<dd><p>Solves the MPQP program with a modified algorithm described in Oberdieck et. al. 2016</p>
+<p>url: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0005109816303971">https://www.sciencedirect.com/science/article/pii/S0005109816303971</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>program</strong> – MPQP to be solved</p></li>
+<li><p><strong>initial_active_sets</strong> – An initial critical region to start this algorithm with, otherwise one will be found</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the solution of the MPQP</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_graph.solve_no_murder">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_graph.</span></span><span class="sig-name descname"><span class="pre">solve_no_murder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_active_sets</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a><a class="headerlink" href="#ppopt.mp_solvers.mpqp_graph.solve_no_murder" title="Permalink to this definition"></a></dt>
+<dd><p>Solves the MPQP program with a modified algorithm described in Oberdieck et. al. 2016</p>
+<p>url: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0005109816303971">https://www.sciencedirect.com/science/article/pii/S0005109816303971</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>program</strong> – MPQP to be solved</p></li>
+<li><p><strong>initial_active_sets</strong> – An initial critical region to start this algorithm with, otherwise one will be found</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the solution of the MPQP</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.mp_solvers.mpqp_parallel_geometric">
+<span id="ppopt-mp-solvers-mpqp-parallel-geometric-module"></span><h2>ppopt.mp_solvers.mpqp_parallel_geometric module<a class="headerlink" href="#module-ppopt.mp_solvers.mpqp_parallel_geometric" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_parallel_geometric.full_process">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_parallel_geometric.</span></span><span class="sig-name descname"><span class="pre">full_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_active_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indexed_region_as</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mp_solvers.mpqp_parallel_geometric.full_process" title="Permalink to this definition"></a></dt>
+<dd><p>This is the function block to be executed in parallel. Takes in a facet. Returns the associated CR on the other side of the facet
+if it exists, and all the facets associated with the other side of the</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>center</strong> – Chebychev Center of a Critical Region Facet</p></li>
+<li><p><strong>norm</strong> – Normal of the Facet</p></li>
+<li><p><strong>radius</strong> – Chebychev Radius of the Critical Region Facet</p></li>
+<li><p><strong>program</strong> – the multiparametric program being considered</p></li>
+<li><p><strong>indexed_region_as</strong> – set of all critical regions found so far</p></li>
+<li><p><strong>current_active_set</strong> – list of the active set that we are stepping out of</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The identified Critical Region on the other side of the facet, and the facets of this critical region or None of nothing</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_parallel_geometric.solve">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_parallel_geometric.</span></span><span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mp_solvers.mpqp_parallel_geometric.solve" title="Permalink to this definition"></a></dt>
+<dd><p>This solved the multiparametric program using the geometric algorithm described in Spjotvold et al.</p>
+<p><a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S1474667016369154">https://www.sciencedirect.com/science/article/pii/S1474667016369154</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>program</strong> – a multiparametric program</p></li>
+<li><p><strong>active_set</strong> – an initial optimal active set combination</p></li>
+<li><p><strong>num_cores</strong> – number of cores to run this calculation on, default of -1 means use all available cores</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the solution to the multiparametric optimization problem</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.mp_solvers.mpqp_parallel_geometric_exp">
+<span id="ppopt-mp-solvers-mpqp-parallel-geometric-exp-module"></span><h2>ppopt.mp_solvers.mpqp_parallel_geometric_exp module<a class="headerlink" href="#module-ppopt.mp_solvers.mpqp_parallel_geometric_exp" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_parallel_geometric_exp.fathem_facet_exp">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_parallel_geometric_exp.</span></span><span class="sig-name descname"><span class="pre">fathem_facet_exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">program</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_active_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mp_solvers.mpqp_parallel_geometric_exp.fathem_facet_exp" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_parallel_geometric_exp.fathem_initial_active_sets">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_parallel_geometric_exp.</span></span><span class="sig-name descname"><span class="pre">fathem_initial_active_sets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_active_sets</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mp_solvers.mpqp_parallel_geometric_exp.fathem_initial_active_sets" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>program</strong> – </p></li>
+<li><p><strong>initial_active_sets</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_parallel_geometric_exp.full_process_2">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_parallel_geometric_exp.</span></span><span class="sig-name descname"><span class="pre">full_process_2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_active_set</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mp_solvers.mpqp_parallel_geometric_exp.full_process_2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_parallel_geometric_exp.solve">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_parallel_geometric_exp.</span></span><span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_active_sets</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mp_solvers.mpqp_parallel_geometric_exp.solve" title="Permalink to this definition"></a></dt>
+<dd><p>This solved the multiparametric program using the geometric algorithm described in Spjotvold et al.</p>
+<p><a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S1474667016369154">https://www.sciencedirect.com/science/article/pii/S1474667016369154</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>program</strong> – a multiparametric program</p></li>
+<li><p><strong>initial_active_sets</strong> – a set of optimal active set combinations to initiate the algorithm</p></li>
+<li><p><strong>num_cores</strong> – number of cores to run this calculation on, default of -1 means use all available cores</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the solution to the multiparametric optimization problem</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.mp_solvers.mpqp_parrallel_combinatorial">
+<span id="ppopt-mp-solvers-mpqp-parrallel-combinatorial-module"></span><h2>ppopt.mp_solvers.mpqp_parrallel_combinatorial module<a class="headerlink" href="#module-ppopt.mp_solvers.mpqp_parrallel_combinatorial" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_parrallel_combinatorial.full_process">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_parrallel_combinatorial.</span></span><span class="sig-name descname"><span class="pre">full_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">murder_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_children</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mp_solvers.mpqp_parrallel_combinatorial.full_process" title="Permalink to this definition"></a></dt>
+<dd><p>This is the fundamental building block of the parallel combinatorial algorithm, here we branch off of a known feasible active set combinationand then</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>program</strong> – A multiparametric program</p></li>
+<li><p><strong>active_set</strong> – the active set combination that we are expanding on</p></li>
+<li><p><strong>murder_list</strong> – the list containing all previously found</p></li>
+<li><p><strong>gen_children</strong> – A boolean flag, that determines if we should generate the children subsets</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of the following form [Optional[CriticalRegion], pruned active set combination,Possibly Feasible Active set combinations]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_parrallel_combinatorial.solve">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_parrallel_combinatorial.</span></span><span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a><a class="headerlink" href="#ppopt.mp_solvers.mpqp_parrallel_combinatorial.solve" title="Permalink to this definition"></a></dt>
+<dd><p>Solves the MPQP program with a modified algorithm described in Gupta et. al. 2011</p>
+<p>This is the parallel version of the combinatorial.</p>
+<p>url: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0005109811003190">https://www.sciencedirect.com/science/article/pii/S0005109811003190</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_cores</strong> – Sets the number of cores that are allocated to run this algorithm</p></li>
+<li><p><strong>program</strong> – MPQP to be solved</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the solution of the MPQP</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.mp_solvers.mpqp_parrallel_combinatorial_exp">
+<span id="ppopt-mp-solvers-mpqp-parrallel-combinatorial-exp-module"></span><h2>ppopt.mp_solvers.mpqp_parrallel_combinatorial_exp module<a class="headerlink" href="#module-ppopt.mp_solvers.mpqp_parrallel_combinatorial_exp" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_parrallel_combinatorial_exp.full_process">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_parrallel_combinatorial_exp.</span></span><span class="sig-name descname"><span class="pre">full_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mp_solvers.mpqp_parrallel_combinatorial_exp.full_process" title="Permalink to this definition"></a></dt>
+<dd><p>This is the function block that is executed in parallel. This takes a MPQP program as well as an active set combination, and checks the feasibility of all super sets of cardinality + 1. This is done without using a pruning list as in the otherparallel combinatorial algorithm. This is suited for particularly large problems where an exponential number of prunedactive sets are stored, causing a large memory overhead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>program</strong> – </p></li>
+<li><p><strong>active_set</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_parrallel_combinatorial_exp.solve">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_parrallel_combinatorial_exp.</span></span><span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a><a class="headerlink" href="#ppopt.mp_solvers.mpqp_parrallel_combinatorial_exp.solve" title="Permalink to this definition"></a></dt>
+<dd><p>Solves the MPQP program with a modified algorithm described in Gupta et. al. 2011</p>
+<p>This is the parallel version of the combinatorial.</p>
+<p>url: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0005109811003190">https://www.sciencedirect.com/science/article/pii/S0005109811003190</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_cores</strong> – Sets the number of cores that are allocated to run this algorithm</p></li>
+<li><p><strong>program</strong> – MPQP to be solved</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the solution of the MPQP</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.mp_solvers.mpqp_parrallel_graph">
+<span id="ppopt-mp-solvers-mpqp-parrallel-graph-module"></span><h2>ppopt.mp_solvers.mpqp_parrallel_graph module<a class="headerlink" href="#module-ppopt.mp_solvers.mpqp_parrallel_graph" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_parrallel_graph.full_process">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_parrallel_graph.</span></span><span class="sig-name descname"><span class="pre">full_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">murder_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mp_solvers.mpqp_parrallel_graph.full_process" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>program</strong> – A multiparametric program</p></li>
+<li><p><strong>candidate</strong> – the active set combination that we are expanding on</p></li>
+<li><p><strong>murder_list</strong> – the list containing all previously found</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of the following form [List[Active Set combinations], active set to prune, Optional[CriticalRegion]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_parrallel_graph.solve">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_parrallel_graph.</span></span><span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_active_sets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a><a class="headerlink" href="#ppopt.mp_solvers.mpqp_parrallel_graph.solve" title="Permalink to this definition"></a></dt>
+<dd><p>Solves the MPQP program with a modified algorithm described in Oberdieck et. al. 2016</p>
+<p>url: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0005109816303971">https://www.sciencedirect.com/science/article/pii/S0005109816303971</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>program</strong> – MPQP to be solved</p>
+</dd>
+</dl>
+<p>:param initial_active_sets:An initial critical region to start this algorithm with, otherwise one will be found
+:param num_cores: number of cores to run this calculation on, default of -1 means use all available cores
+:return: the solution of the MPQP</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.mpqp_parrallel_graph.solve_no_murder">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.mpqp_parrallel_graph.</span></span><span class="sig-name descname"><span class="pre">solve_no_murder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_active_sets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a><a class="headerlink" href="#ppopt.mp_solvers.mpqp_parrallel_graph.solve_no_murder" title="Permalink to this definition"></a></dt>
+<dd><p>Solves the MPQP program with a modified algorithm described in Oberdieck et. al. 2016</p>
+<p>url: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0005109816303971">https://www.sciencedirect.com/science/article/pii/S0005109816303971</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>program</strong> – MPQP to be solved</p>
+</dd>
+</dl>
+<p>:param initial_active_sets:An initial critical region to start this algorithm with, otherwise one will be found
+:param num_cores: number of cores to run this calculation on, default of -1 means use all available cores
+:return: the solution of the MPQP</p>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.mp_solvers.solve_mplp">
+<span id="ppopt-mp-solvers-solve-mplp-module"></span><h2>ppopt.mp_solvers.solve_mplp module<a class="headerlink" href="#module-ppopt.mp_solvers.solve_mplp" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solve_mplp.mplp_solver">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.solve_mplp.</span></span><span class="sig-name descname"><span class="pre">mplp_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mp_solvers.solve_mplp.mplp_solver" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solve_mplp.mplp_solver.Dustin">
+<span class="sig-name descname"><span class="pre">Dustin</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'1'</span></em><a class="headerlink" href="#ppopt.mp_solvers.solve_mplp.mplp_solver.Dustin" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solve_mplp.solve_mplp">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.solve_mplp.</span></span><span class="sig-name descname"><span class="pre">solve_mplp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">problem:</span> <span class="pre">ppopt.mplp_program.MPLP_Program</span></em>, <em class="sig-param"><span class="pre">algorithm:</span> <span class="pre">ppopt.mp_solvers.solve_mplp.mplp_solver</span> <span class="pre">=</span> <span class="pre">&lt;mplp_solver.Dustin:</span> <span class="pre">'1'&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mp_solvers.solve_mplp.solve_mplp" title="Permalink to this definition"></a></dt>
+<dd><p>This is the main solver interface for MPLP type problems</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>problem</strong> – </p></li>
+<li><p><strong>algorithm</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.mp_solvers.solve_mpqp">
+<span id="ppopt-mp-solvers-solve-mpqp-module"></span><h2>ppopt.mp_solvers.solve_mpqp module<a class="headerlink" href="#module-ppopt.mp_solvers.solve_mpqp" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solve_mpqp.filter_solution">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.solve_mpqp.</span></span><span class="sig-name descname"><span class="pre">filter_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a><a class="headerlink" href="#ppopt.mp_solvers.solve_mpqp.filter_solution" title="Permalink to this definition"></a></dt>
+<dd><p>This is a place holder function, in the future this will be used to process and operate on the solution before it is returned to the user</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>solution</strong> – a multi parametric solution</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A processed solution</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solve_mpqp.mpqp_algorithm">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.solve_mpqp.</span></span><span class="sig-name descname"><span class="pre">mpqp_algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mp_solvers.solve_mpqp.mpqp_algorithm" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>Enum that selects the mpqp algorithm to be used</p>
+<p>This is done by passing the argument mpqp_algorithm.algorithm</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.combinatorial">
+<span class="sig-name descname"><span class="pre">combinatorial</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'combinatorial'</span></em><a class="headerlink" href="#ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.combinatorial" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.combinatorial_parallel">
+<span class="sig-name descname"><span class="pre">combinatorial_parallel</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'p</span> <span class="pre">combinatorial'</span></em><a class="headerlink" href="#ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.combinatorial_parallel" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.combinatorial_parallel_exp">
+<span class="sig-name descname"><span class="pre">combinatorial_parallel_exp</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'p</span> <span class="pre">combinatorial</span> <span class="pre">exp'</span></em><a class="headerlink" href="#ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.combinatorial_parallel_exp" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.geometric">
+<span class="sig-name descname"><span class="pre">geometric</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'geometric'</span></em><a class="headerlink" href="#ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.geometric" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.geometric_parallel">
+<span class="sig-name descname"><span class="pre">geometric_parallel</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'p</span> <span class="pre">geometric'</span></em><a class="headerlink" href="#ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.geometric_parallel" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.geometric_parallel_exp">
+<span class="sig-name descname"><span class="pre">geometric_parallel_exp</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'p</span> <span class="pre">geometric</span> <span class="pre">exp'</span></em><a class="headerlink" href="#ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.geometric_parallel_exp" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.graph">
+<span class="sig-name descname"><span class="pre">graph</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'graph'</span></em><a class="headerlink" href="#ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.graph" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.graph_exp">
+<span class="sig-name descname"><span class="pre">graph_exp</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'graph</span> <span class="pre">exp'</span></em><a class="headerlink" href="#ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.graph_exp" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.graph_parallel">
+<span class="sig-name descname"><span class="pre">graph_parallel</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'p</span> <span class="pre">graph'</span></em><a class="headerlink" href="#ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.graph_parallel" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.graph_parallel_exp">
+<span class="sig-name descname"><span class="pre">graph_parallel_exp</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'p</span> <span class="pre">graph</span> <span class="pre">exp'</span></em><a class="headerlink" href="#ppopt.mp_solvers.solve_mpqp.mpqp_algorithm.graph_parallel_exp" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solve_mpqp.solve_mpqp">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.solve_mpqp.</span></span><span class="sig-name descname"><span class="pre">solve_mpqp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">problem:</span> <span class="pre">ppopt.mpqp_program.MPQP_Program</span></em>, <em class="sig-param"><span class="pre">algorithm:</span> <span class="pre">ppopt.mp_solvers.solve_mpqp.mpqp_algorithm</span> <span class="pre">=</span> <span class="pre">&lt;mpqp_algorithm.combinatorial:</span> <span class="pre">'combinatorial'&gt;</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="ppopt.html#ppopt.solution.Solution" title="ppopt.solution.Solution"><span class="pre">ppopt.solution.Solution</span></a><a class="headerlink" href="#ppopt.mp_solvers.solve_mpqp.solve_mpqp" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Takes a mpqp programming problem and solves it in a specified manner, In addition this solves MPLPs. The default</dt><dd><p>solve algorithm is the Combinatorial algorithm by Gupta. et al.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>problem</strong> – Multiparametric Program to be solved</p></li>
+<li><p><strong>algorithm</strong> – Selects the algorithm to be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the solution of the MPQP, returns an empty solution if there is not an implemented algorithm</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.mp_solvers.solver_utils">
+<span id="ppopt-mp-solvers-solver-utils-module"></span><h2>ppopt.mp_solvers.solver_utils module<a class="headerlink" href="#module-ppopt.mp_solvers.solver_utils" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solver_utils.CombinationTester">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.solver_utils.</span></span><span class="sig-name descname"><span class="pre">CombinationTester</span></span><a class="headerlink" href="#ppopt.mp_solvers.solver_utils.CombinationTester" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This keeps track of all of the infeasible active set combinations and filters prospective active set combinations</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solver_utils.CombinationTester.add_combo">
+<span class="sig-name descname"><span class="pre">add_combo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">active_set</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#ppopt.mp_solvers.solver_utils.CombinationTester.add_combo" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solver_utils.CombinationTester.add_combos">
+<span class="sig-name descname"><span class="pre">add_combos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">set_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#ppopt.mp_solvers.solver_utils.CombinationTester.add_combos" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solver_utils.CombinationTester.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">active_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#ppopt.mp_solvers.solver_utils.CombinationTester.check" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if the provided active set combination is a superset of a previously tested infeasible active set
+:param active_set:
+:return: False if it should be culled and not tested any further, True if the set could be feasible</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solver_utils.fathem_facet">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.solver_utils.</span></span><span class="sig-name descname"><span class="pre">fathem_facet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">program</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indexed_region_as</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_active_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ppopt.html#ppopt.critical_region.CriticalRegion" title="ppopt.critical_region.CriticalRegion"><span class="pre">ppopt.critical_region.CriticalRegion</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mp_solvers.solver_utils.fathem_facet" title="Permalink to this definition"></a></dt>
+<dd><p>This explores the feasible space looking out from a chebychev center of a critical region facet.</p>
+<p>Starts from a point with a slight offset from the facet ;= center + D*normal and then check if this is feasible, check if for numerical reasons we accidentally hit ourselves,
+check to see if we stepped into a found region, if the active set is full rank we can try to build the critical region, return if full dimensional else double the distance from the facet we are considering</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>center</strong> – chebychev center of</p></li>
+<li><p><strong>normal</strong> – the normal of the polytope facet</p></li>
+<li><p><strong>radius</strong> – chebychev radius of the polytope facet</p></li>
+<li><p><strong>program</strong> – the multiparametric program being considered</p></li>
+<li><p><strong>indexed_region_as</strong> – set of all indexed critical region active sets</p></li>
+<li><p><strong>current_active_set</strong> – the cir</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a critical region of the other side of the facet if one exists otherwise none</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solver_utils.find_optimal_set">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.solver_utils.</span></span><span class="sig-name descname"><span class="pre">find_optimal_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.mp_solvers.solver_utils.find_optimal_set" title="Permalink to this definition"></a></dt>
+<dd><p>This is a simple combinatorial algorithm for finding the first optimal active set. This is more or less only here for
+implementation completeness as this should never be used in practice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>problem</strong> – a multiparametric optimization program</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An optimal active set combination</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solver_utils.generate_children_sets">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.solver_utils.</span></span><span class="sig-name descname"><span class="pre">generate_children_sets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">active_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_constraints</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">murder_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mp_solvers.solver_utils.generate_children_sets" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solver_utils.generate_extra">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.solver_utils.</span></span><span class="sig-name descname"><span class="pre">generate_extra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">candidate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expansion_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">murder_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attempted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="headerlink" href="#ppopt.mp_solvers.solver_utils.generate_extra" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>candidate</strong> – </p></li>
+<li><p><strong>expansion_set</strong> – </p></li>
+<li><p><strong>murder_list</strong> – </p></li>
+<li><p><strong>attempted</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solver_utils.generate_reduce">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.solver_utils.</span></span><span class="sig-name descname"><span class="pre">generate_reduce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">candidate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">murder_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attempted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="headerlink" href="#ppopt.mp_solvers.solver_utils.generate_reduce" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.mp_solvers.solver_utils.get_facet_centers">
+<span class="sig-prename descclassname"><span class="pre">ppopt.mp_solvers.solver_utils.</span></span><span class="sig-name descname"><span class="pre">get_facet_centers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="headerlink" href="#ppopt.mp_solvers.solver_utils.get_facet_centers" title="Permalink to this definition"></a></dt>
+<dd><p>This takes the polytope P := {x in R^n : Ax &lt;= b} and finds all of the chebychev centers and normal vectors of each
+facet and the radius</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – The LHS constraint matrix</p></li>
+<li><p><strong>b</strong> – The RHS constraint matrix</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list with an tuple for each facet in the polytope (chebychev center, facet normal vector, chebychev radius)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.mp_solvers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ppopt.mp_solvers" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ppopt.geometry.html" class="btn btn-neutral float-left" title="ppopt.geometry package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ppopt.solver_interface.html" class="btn btn-neutral float-right" title="ppopt.solver_interface package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dustin Kenefake, Efstratios Pistikopoulos.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

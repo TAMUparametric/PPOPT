@@ -1,5 +1,6 @@
-import numpy
 from typing import Iterable, Optional
+
+import numpy
 
 try:
     import gurobipy as gp
@@ -9,21 +10,28 @@ except ImportError:
 
 from ..solver_interface.solver_interface_utils import SolverOutput, get_program_parameters
 
+
 def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None, A: numpy.ndarray = None,
                       b: numpy.ndarray = None,
                       equality_constraints: Iterable[int] = None,
                       bin_vars: Iterable[int] = None, verbose: bool = False,
                       get_duals: bool = True) -> Optional[SolverOutput]:
-    """
+    r"""
     This is the breakout for solving mixed integer quadratic programs with gruobi
 
     The Mixed Integer Quadratic program programming problem
-    min_{xy} 1/2 [xy]^T*Q*[xy] + c^T*[xy]
 
-    s.t.    A[xy] <= b
-            Aeq*[xy] = beq
+    .. math::
 
-            xy is the parameter vector of mixed real and binary inputs
+        \min_{xy} \frac{1}{2} [xy]^TQ[xy] + c^T[xy]
+
+    .. math::
+        \begin{align}
+        A[xy] &\leq b\\
+        A_{eq}[xy] &= b_{eq}\\
+        x &\in R^n\\
+        y &\in \{0, 1\}^m
+        \end{align}
 
     :param Q: Square matrix, can be None
     :param c: Column Vector, can be None
@@ -129,16 +137,19 @@ def solve_qp_gurobi(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: num
                     equality_constraints: Iterable[int] = None,
                     verbose=False,
                     get_duals=True) -> Optional[SolverOutput]:
-    """
-    This is the breakout for solving mixed integer quadratic programs with gruobi
+    r"""
+    This is the breakout for solving quadratic programs with gruobi
 
-    The Mixed Integer Quadratic program programming problem
-        min_{xy} 1/2 [xy]^T*Q*[xy] + c^T*[xy]
+    .. math::
 
-        s.t.   A[xy] <= b
-              Aeq*[xy] = beq
+        \min_{x} \frac{1}{2}x^TQx + c^Tx
 
-              xy is the parameter vector of mixed real and binary inputs
+    .. math::
+        \begin{align}
+        Ax &\leq b\\
+        A_{eq}x &= b_{eq}\\
+        x &\in R^n\\
+        \end{align}
 
     :param Q: Square matrix, can be None
     :param c: Column Vector, can be None
@@ -158,17 +169,19 @@ def solve_qp_gurobi(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: num
 def solve_lp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray, equality_constraints: Iterable[int] = None,
                     verbose: bool = False,
                     get_duals: bool = True) -> Optional[SolverOutput]:
-    """
-    This is the breakout for solving mixed integer linear programs with gruobi, This is feed directly into the
-    MIQP Solver that is defined in the same file.
+    r"""
+    This is the breakout for solving linear programs with gruobi.
 
-    The Mixed Integer Linear program programming problem
-        min_{xy} c^T*[xy]
+    .. math::
 
-        s.t.    A[xy] <= b
-                Aeq*[xy] = beq
+        \min_{x} c^Tx
 
-                xy is the parameter vector of mixed real and binary inputs
+    .. math::
+        \begin{align}
+        Ax &\leq b\\
+        A_{eq}x &= b_{eq}\\
+        x &\in R^n\\
+        \end{align}
 
     :param c: Column Vector, can be None
     :param A: Constraint LHS matrix, can be None
@@ -196,17 +209,22 @@ def solve_milp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
                       equality_constraints: Iterable[int] = None,
                       bin_vars: Iterable[int] = None, verbose=False, get_duals=True) -> Optional[
     SolverOutput]:
-    """
+    r"""
     This is the breakout for solving mixed integer linear programs with gruobi, This is feed directly into the
     MIQP Solver that is defined in the same file.
 
-    The Mixed Integer Linear program programming problem
-        min_{xy} c^T*[xy]
+    .. math::
 
-        s.t.   A[xy] <= b
-               Aeq*[xy] = beq
+        \min_{xy} c^T[xy]
 
-                xy is the parameter vector of mixed real and binary inputs
+    .. math::
+
+        \begin{align}
+        A[xy] &\leq b\\
+        A_{eq}[xy] &= b_{eq}\\
+        x &\in R^n\\
+        y &\in \{0, 1\}^m
+        \end{align}
 
     :param c: Column Vector, can be None
     :param A: Constraint LHS matrix, can be None

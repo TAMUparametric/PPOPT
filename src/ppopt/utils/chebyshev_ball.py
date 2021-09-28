@@ -1,5 +1,6 @@
-import numpy
 from typing import Iterable
+
+import numpy
 
 from ..solver_interface.solver_interface import solve_milp, solve_lp
 from ..utils.constraint_utilities import constraint_norm
@@ -8,18 +9,21 @@ from ..utils.general_utils import make_column
 
 def chebyshev_ball(A: numpy.ndarray, b: numpy.ndarray, equality_constraints: Iterable[int] = None,
                    bin_vars: Iterable[int] = None, deterministic_solver='glpk'):
-    """
+    r"""
     Chebyshev ball finds the largest ball inside of a polytope defined by Ax <= b
     This is solved by the following LP
 
-    min{x,r} -r
+    .. math::
 
-    st:
-            Ax + ||A_i||r <= b
+        \min_{x,r} -r
 
-            A_{eq}*x = b_{eq}
+    .. math::
 
-            r >=0
+        \begin{align*}
+        \text{s.t. } Ax + ||A_i||_2r &\leq b\\
+        A_{eq} x &= b_{eq}\\
+        r &\geq 0
+        \end{align*}
 
     :param A: LHS Constraint Matrix
     :param b: RHS Constraint column vector
@@ -64,32 +68,31 @@ def chebyshev_ball(A: numpy.ndarray, b: numpy.ndarray, equality_constraints: Ite
 # noinspection PyUnusedLocal
 def chebyshev_ball_max(A: numpy.ndarray, b: numpy.ndarray, equality_constraints: Iterable[int] = None,
                        bin_vars: Iterable[int] = (), deterministic_solver='glpk'):
-    """
+    r"""
 
     Chebyshev ball finds the smallest l-infinity ball the contains the polytope defined by Ax <= b. Where A has n hyper planes and d dimensions.
 
-    This is solved by the following LP
+    This is solved by the following Linear program
 
     .. math::
 
         \min_{x_{c} ,r ,y_{j} ,u_{j}} \quad r
 
+    .. math::
 
-    st:
-            A^Ty_{j} = e_{j}, \forall j \in {1, .., d}
-            A^Tu_{j} = -e_{j}, \forall j \in {1, .., d}
-
-            -x_c[j] + b.T@y_{j} \leq r
-            x_c[j] + b.T@u_{j} \leq r
-
-            r >=0
-            y_{j} >= 0
-            u_{j} >= 0
-
-            r \in R
-            y_{j} \in R^n
-            u_{j} \in R^n
-            x_c \in R^d
+        \begin{align*}
+            A^Ty_{j} &= e_{j}, \forall j \in {1, .., d}\\
+            A^Tu_{j} &= -e_{j}, \forall j \in {1, .., d}\\
+            -x_{cj} + b^Ty_{j} &\leq r\\
+            x_{cj} + b^Tu_{j} &\leq r\\
+            r &\geq 0\\
+            y_{j} &\geq 0\\
+            u_{j} &\geq 0\\
+            r &\in R\\
+            y_{j} &\in R^n\\
+            u_{j} &\in R^n\\
+            x_c &\in R^d
+        \end{align*}
 
     Source: Simon Foucart's excellent book
 

@@ -46,7 +46,6 @@ def solve(program: MPQP_Program, initial_active_sets=None, num_cores=-1) -> Solu
 
     url: https://www.sciencedirect.com/science/article/pii/S0005109816303971
 
-
     :param program: MPQP to be solved
     :param initial_active_sets:An initial critical region to start this algorithm with, otherwise one will be found
     :param num_cores: number of cores to run this calculation on, default of -1 means use all available cores
@@ -126,8 +125,6 @@ def solve_no_murder(program: MPQP_Program, initial_active_sets=None, num_cores=-
     Solves the MPQP program with a modified algorithm described in Oberdieck et. al. 2016
 
     url: https://www.sciencedirect.com/science/article/pii/S0005109816303971
-
-
 
     :param program: MPQP to be solved
     :param initial_active_sets:An initial critical region to start this algorithm with, otherwise one will be found

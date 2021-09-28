@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solving a MPQP Program &mdash; PPOPT 1.0.2 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Multiparametric Algorithms" href="algorithm_overview.html" />
+    <link rel="prev" title="Readme File" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> PPOPT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Solving a MPQP Program</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithm_overview.html">Multiparametric Algorithms</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">ppopt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PPOPT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Solving a MPQP Program</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/tutorial.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="solving-a-mpqp-program">
+<h1>Solving a MPQP Program<a class="headerlink" href="#solving-a-mpqp-program" title="Permalink to this headline"></a></h1>
+<p>Here we are going to solve a classic transportation problem with multiparametric uncertainty. We have a set of plants and a set of markets with corresponding supplies and demand, and we want to minimize the transport cost between the plants and ensuring we satisfy all market demand. The multiparametric formulation is fleshed out in more detail in Multiparametric Optimization and Control by Pistikopolous et al.</p>
+<p>This optimization problem leads to the following multiparametric optimization problem, with θ representing the markets’ uncertain demands.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\min_{x} \frac{1}{2}\left[\begin{matrix}x_0\\x_1\\x_2\\x_3\end{matrix}\right]^{T}\left[\begin{matrix}306.0 &amp; 0 &amp; 0 &amp; 0\\0 &amp; 324.0 &amp; 0 &amp; 0\\0 &amp; 0 &amp; 324.0 &amp; 0\\0 &amp; 0 &amp; 0 &amp; 252.0\end{matrix}\right]\left[\begin{matrix}x_0\\x_1\\x_2\\x_3\end{matrix}\right]+\left[\begin{matrix}25.0\\25.0\\25.0\\25.0\end{matrix}\right]^T\left[\begin{matrix}x_0\\x_1\\x_2\\x_3\end{matrix}\right]\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{equation*}
+\begin{split}
+\text{s.t. }\left[\begin{matrix}1.0 &amp; 1.0 &amp; 0 &amp; 0\\0 &amp; 0 &amp; 1.0 &amp; 1.0\\-1.0 &amp; 0 &amp; -1.0 &amp; 0\\0 &amp; -1.0 &amp; 0 &amp; -1.0\\-1.0 &amp; 0 &amp; 0 &amp; 0\\0 &amp; -1.0 &amp; 0 &amp; 0\\0 &amp; 0 &amp; -1.0 &amp; 0\\0 &amp; 0 &amp; 0 &amp; -1.0\end{matrix}\right]\left[\begin{matrix}x_0\\x_1\\x_2\\x_3\end{matrix}\right] &amp; \leq\left[\begin{matrix}350.0\\600.0\\0\\0\\0\\0\\0\\0\end{matrix}\right]+\left[\begin{matrix}0 &amp; 0\\0 &amp; 0\\-1.0 &amp; 0\\0 &amp; -1.0\\0 &amp; 0\\0 &amp; 0\\0 &amp; 0\\0 &amp; 0\end{matrix}\right]\left[\begin{matrix}\theta_0\\\theta_1\end{matrix}\right]\\
+\left[\begin{matrix}1.0 &amp; 0\\0 &amp; 1.0\\-1.0 &amp; 0\\0 &amp; -1.0\end{matrix}\right]\left[\begin{matrix}\theta_0\\\theta_1\end{matrix}\right] &amp; \leq\left[\begin{matrix}1e+03\\1e+03\\0\\0\end{matrix}\right]
+\end{split}
+\end{equation*}\end{split}\]</div>
+<p>Using PPOPT, this is translated as the following python code. (The latex above was generated for me with <code class="docutils literal notranslate"><span class="pre">prog.latex()</span></code> if you were wondering if I typed that all out by hand.)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">350</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mi">25</span> <span class="o">*</span> <span class="n">make_column</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">F</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="n">Q</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mi">153</span><span class="p">,</span> <span class="mi">162</span><span class="p">,</span> <span class="mi">162</span><span class="p">,</span> <span class="mi">126</span><span class="p">])</span>
+
+<span class="n">CRa</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">numpy</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="o">-</span><span class="n">numpy</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">)))</span>
+<span class="n">CRb</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">H</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">F</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">Q</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+<span class="n">prog</span> <span class="o">=</span> <span class="n">MPQP_Program</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">CRa</span><span class="p">,</span> <span class="n">CRb</span><span class="p">,</span> <span class="n">F</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>But before you go forward and solve this, I would always recommend processing the constraints. Removing all strongly and weakly redundant constraints and rescaling them leads to significant performance increases and robustifying the numerical stability. In MPO, processing the constraints is a simple task.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prog</span><span class="o">.</span><span class="n">process_constraints</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This results in the following (identical) multiparametric optimization problem. We were able to remove 2 constraints! And we reduced the condition number of the constraints.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\min_{x} \frac{1}{2}\left[\begin{matrix}x_0\\x_1\\x_2\\x_3\end{matrix}\right]^{T}\left[\begin{matrix}306.0 &amp; 0 &amp; 0 &amp; 0\\0 &amp; 324.0 &amp; 0 &amp; 0\\0 &amp; 0 &amp; 324.0 &amp; 0\\0 &amp; 0 &amp; 0 &amp; 252.0\end{matrix}\right]\left[\begin{matrix}x_0\\x_1\\x_2\\x_3\end{matrix}\right]+\left[\begin{matrix}25.0\\25.0\\25.0\\25.0\end{matrix}\right]^T\left[\begin{matrix}x_0\\x_1\\x_2\\x_3\end{matrix}\right]\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{equation*}
+\begin{split}
+\text{s.t. }\left[\begin{matrix}0.7071 &amp; 0.7071 &amp; 0 &amp; 0\\0 &amp; 0 &amp; 0.7071 &amp; 0.7071\\-0.5774 &amp; 0 &amp; -0.5774 &amp; 0\\0 &amp; -0.5774 &amp; 0 &amp; -0.5774\\-1.0 &amp; 0 &amp; 0 &amp; 0\\0 &amp; -1.0 &amp; 0 &amp; 0\\0 &amp; 0 &amp; -1.0 &amp; 0\\0 &amp; 0 &amp; 0 &amp; -1.0\end{matrix}\right]\left[\begin{matrix}x_0\\x_1\\x_2\\x_3\end{matrix}\right] &amp; \leq\left[\begin{matrix}247.5\\424.3\\0\\0\\0\\0\\0\\0\end{matrix}\right]+\left[\begin{matrix}0 &amp; 0\\0 &amp; 0\\-0.5774 &amp; 0\\0 &amp; -0.5774\\0 &amp; 0\\0 &amp; 0\\0 &amp; 0\\0 &amp; 0\end{matrix}\right]\left[\begin{matrix}\theta_0\\\theta_1\end{matrix}\right]\\
+\left[\begin{matrix}1.0 &amp; 0\\0 &amp; 1.0\\-1.0 &amp; 0\\0 &amp; -1.0\end{matrix}\right]\left[\begin{matrix}\theta_0\\\theta_1\end{matrix}\right] &amp; \leq\left[\begin{matrix}1e+03\\1e+03\\0\\0\end{matrix}\right]
+\end{split}
+\end{equation*}\end{split}\]</div>
+<p>That wasn’t that bad, and we were able to cut away some constraints that didn’t matter in the process! Now we are ready to solve it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solution</span> <span class="o">=</span> <span class="n">ppopt</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">prog</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we have the solution, we can either export the solution via the micropop module, or we can plot it. Let’s plot it here. The extra arguments mean we are saving a picture of the plot and displaying it to the user (you can give a file path, so it saves somewhere that is not the current working directory).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parametric_plot</span><span class="p">(</span><span class="n">solution</span><span class="p">,</span> <span class="s1">&#39;transport.png&#39;</span> <span class="p">,</span> <span class="n">show</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Readme File" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="algorithm_overview.html" class="btn btn-neutral float-right" title="Multiparametric Algorithms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dustin Kenefake, Efstratios Pistikopoulos.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

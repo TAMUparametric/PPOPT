@@ -14,15 +14,19 @@ import os
 import sys
 import sphinx_rtd_theme
 
-sys.path.insert(0, os.path.abspath('../src/ppopt'))
+for x in os.walk('../src'):
+    sys.path.insert(0, x[0])
 
+sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../src/ppopt/*'))
+sys.path.insert(0, os.path.abspath('../'))
 sys.setrecursionlimit(10000)
 
 # -- Project information -----------------------------------------------------
 
 project = 'PPOPT'
-copyright = '2021, Dustin Kenefake'
-author = 'Dustin Kenefake'
+copyright = '2021, Dustin Kenefake, Efstratios Pistikopoulos'
+author = 'Dustin Kenefake, Efstratios Pistikopoulos'
 
 # The full version, including alpha/beta/rc tags
 release = '1.0.2'
@@ -32,7 +36,7 @@ release = '1.0.2'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx_rtd_theme', ]
+extensions = ['sphinx.ext.autodoc', 'sphinx_rtd_theme', 'm2r2']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -53,3 +57,4 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+source_suffix = ['.rst', '.md']

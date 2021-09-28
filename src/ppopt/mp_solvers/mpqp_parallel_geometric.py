@@ -1,7 +1,8 @@
+from typing import Optional
+
 import numpy
 # noinspection PyProtectedMember
 from pathos.multiprocessing import ProcessingPool as Pool
-from typing import Optional
 
 from .solver_utils import get_facet_centers, fathem_facet
 from ..mpqp_program import MPQP_Program

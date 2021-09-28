@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ppopt.solver_interface package &mdash; PPOPT 1.0.2 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ppopt.upop package" href="ppopt.upop.html" />
+    <link rel="prev" title="ppopt.mp_solvers package" href="ppopt.mp_solvers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> PPOPT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Solving a MPQP Program</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithm_overview.html">Multiparametric Algorithms</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">ppopt</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ppopt.html">ppopt package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="ppopt.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ppopt.geometry.html">ppopt.geometry package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ppopt.mp_solvers.html">ppopt.mp_solvers package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">ppopt.solver_interface package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ppopt.upop.html">ppopt.upop package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ppopt.utils.html">ppopt.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.critical_region">ppopt.critical_region module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.mplp_program">ppopt.mplp_program module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.mpqp_program">ppopt.mpqp_program module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.plot">ppopt.plot module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.problem_generator">ppopt.problem_generator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.solution">ppopt.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.solver">ppopt.solver module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PPOPT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">ppopt</a> &raquo;</li>
+          <li><a href="ppopt.html">ppopt package</a> &raquo;</li>
+      <li>ppopt.solver_interface package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ppopt.solver_interface.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ppopt-solver-interface-package">
+<h1>ppopt.solver_interface package<a class="headerlink" href="#ppopt-solver-interface-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-ppopt.solver_interface.cvxopt_interface">
+<span id="ppopt-solver-interface-cvxopt-interface-module"></span><h2>ppopt.solver_interface.cvxopt_interface module<a class="headerlink" href="#module-ppopt.solver_interface.cvxopt_interface" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver_interface.cvxopt_interface.process_cvxopt_solution">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver_interface.cvxopt_interface.</span></span><span class="sig-name descname"><span class="pre">process_cvxopt_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inequality_constraints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_constraints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_duals</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solver_interface.cvxopt_interface.process_cvxopt_solution" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver_interface.cvxopt_interface.separate_constraints">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver_interface.cvxopt_interface.</span></span><span class="sig-name descname"><span class="pre">separate_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ineq</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.solver_interface.cvxopt_interface.separate_constraints" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – </p></li>
+<li><p><strong>b</strong> – </p></li>
+<li><p><strong>equality_constraints</strong> – </p></li>
+<li><p><strong>ineq</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver_interface.cvxopt_interface.solve_fully_constraints">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver_interface.cvxopt_interface.</span></span><span class="sig-name descname"><span class="pre">solve_fully_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solver_interface.cvxopt_interface.solve_fully_constraints" title="Permalink to this definition"></a></dt>
+<dd><p>This solves a fully constrained linear system by directly solving the linear system. This is NOT complete</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> – Column Vector</p></li>
+<li><p><strong>A</strong> – Constraint LHS matrix</p></li>
+<li><p><strong>b</strong> – Constraint RHS matrix</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A SolverOutput Object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver_interface.cvxopt_interface.solve_lp_cvxopt">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver_interface.cvxopt_interface.</span></span><span class="sig-name descname"><span class="pre">solve_lp_cvxopt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_duals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cvx_solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'glpk'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solver_interface.cvxopt_interface.solve_lp_cvxopt" title="Permalink to this definition"></a></dt>
+<dd><p>This is the breakout for solving linear programs with cvxopt, This is the preferred Solver as it has the lowest interface cost of all of the other solvers</p>
+<div class="math notranslate nohighlight">
+\[\min_{x} c^Tx\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+Ax &amp;\leq b\\
+A_{eq}x &amp;= b_{eq}\\
+x &amp;\in R^n\\
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> – Column Vector, can be None</p></li>
+<li><p><strong>A</strong> – Constraint LHS matrix, can be None</p></li>
+<li><p><strong>b</strong> – Constraint RHS matrix, can be None</p></li>
+<li><p><strong>equality_constraints</strong> – List of Equality constraints</p></li>
+<li><p><strong>verbose</strong> – Flag for output of underlying Solver, default False</p></li>
+<li><p><strong>get_duals</strong> – Flag for returning dual variable of problem, default True</p></li>
+<li><p><strong>cvx_solver</strong> – selects the cvxopt Solver, default is glpk</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A SolverOutput Object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver_interface.cvxopt_interface.solve_qp_cvxopt">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver_interface.cvxopt_interface.</span></span><span class="sig-name descname"><span class="pre">solve_qp_cvxopt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_duals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cvx_solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'quadprog'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solver_interface.cvxopt_interface.solve_qp_cvxopt" title="Permalink to this definition"></a></dt>
+<dd><p>This is the breakout for QP with cvxopt</p>
+<div class="math notranslate nohighlight">
+\[\min_{x} \frac{1}{2}x^TQx + c^Tx\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+Ax &amp;\leq b\\
+A_{eq}x &amp;= b_{eq}\\
+x &amp;\in R^n\\
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Q</strong> – </p></li>
+<li><p><strong>c</strong> – </p></li>
+<li><p><strong>A</strong> – </p></li>
+<li><p><strong>b</strong> – </p></li>
+<li><p><strong>equality_constraints</strong> – </p></li>
+<li><p><strong>verbose</strong> – </p></li>
+<li><p><strong>get_duals</strong> – </p></li>
+<li><p><strong>cvx_solver</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.solver_interface.gurobi_solver_interface">
+<span id="ppopt-solver-interface-gurobi-solver-interface-module"></span><h2>ppopt.solver_interface.gurobi_solver_interface module<a class="headerlink" href="#module-ppopt.solver_interface.gurobi_solver_interface" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver_interface.gurobi_solver_interface.solve_lp_gurobi">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver_interface.gurobi_solver_interface.</span></span><span class="sig-name descname"><span class="pre">solve_lp_gurobi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_duals</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solver_interface.gurobi_solver_interface.solve_lp_gurobi" title="Permalink to this definition"></a></dt>
+<dd><p>This is the breakout for solving linear programs with gruobi.</p>
+<div class="math notranslate nohighlight">
+\[\min_{x} c^Tx\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+Ax &amp;\leq b\\
+A_{eq}x &amp;= b_{eq}\\
+x &amp;\in R^n\\
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> – Column Vector, can be None</p></li>
+<li><p><strong>A</strong> – Constraint LHS matrix, can be None</p></li>
+<li><p><strong>b</strong> – Constraint RHS matrix, can be None</p></li>
+<li><p><strong>equality_constraints</strong> – List of Equality constraints</p></li>
+<li><p><strong>verbose</strong> – Flag for output of underlying Solver, default False</p></li>
+<li><p><strong>get_duals</strong> – Flag for returning dual variable of problem, default True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A SolverOutput Object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver_interface.gurobi_solver_interface.solve_milp_gurobi">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver_interface.gurobi_solver_interface.</span></span><span class="sig-name descname"><span class="pre">solve_milp_gurobi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_vars</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_duals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solver_interface.gurobi_solver_interface.solve_milp_gurobi" title="Permalink to this definition"></a></dt>
+<dd><p>This is the breakout for solving mixed integer linear programs with gruobi, This is feed directly into the
+MIQP Solver that is defined in the same file.</p>
+<div class="math notranslate nohighlight">
+\[\min_{xy} c^T[xy]\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+A[xy] &amp;\leq b\\
+A_{eq}[xy] &amp;= b_{eq}\\
+x &amp;\in R^n\\
+y &amp;\in \{0, 1\}^m
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> – Column Vector, can be None</p></li>
+<li><p><strong>A</strong> – Constraint LHS matrix, can be None</p></li>
+<li><p><strong>b</strong> – Constraint RHS matrix, can be None</p></li>
+<li><p><strong>equality_constraints</strong> – List of Equality constraints</p></li>
+<li><p><strong>bin_vars</strong> – List of binary variable indices</p></li>
+<li><p><strong>verbose</strong> – Flag for output of underlying Solver, default False</p></li>
+<li><p><strong>get_duals</strong> – Flag for returning dual variable of problem, default True (false for all mixed integer models)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A SolverOutput Object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver_interface.gurobi_solver_interface.solve_miqp_gurobi">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver_interface.gurobi_solver_interface.</span></span><span class="sig-name descname"><span class="pre">solve_miqp_gurobi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_vars</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_duals</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solver_interface.gurobi_solver_interface.solve_miqp_gurobi" title="Permalink to this definition"></a></dt>
+<dd><p>This is the breakout for solving mixed integer quadratic programs with gruobi</p>
+<p>The Mixed Integer Quadratic program programming problem</p>
+<div class="math notranslate nohighlight">
+\[\min_{xy} \frac{1}{2} [xy]^TQ[xy] + c^T[xy]\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+A[xy] &amp;\leq b\\
+A_{eq}[xy] &amp;= b_{eq}\\
+x &amp;\in R^n\\
+y &amp;\in \{0, 1\}^m
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Q</strong> – Square matrix, can be None</p></li>
+<li><p><strong>c</strong> – Column Vector, can be None</p></li>
+<li><p><strong>A</strong> – Constraint LHS matrix, can be None</p></li>
+<li><p><strong>b</strong> – Constraint RHS matrix, can be None</p></li>
+<li><p><strong>equality_constraints</strong> – List of Equality constraints</p></li>
+<li><p><strong>bin_vars</strong> – List of binary variable indices</p></li>
+<li><p><strong>verbose</strong> – Flag for output of underlying Solver, default False</p></li>
+<li><p><strong>get_duals</strong> – Flag for returning dual variable of problem, default True (false for all mixed integer models)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary of the Solver outputs, or none if infeasible or unbounded. \n output[‘sol’] = primal</p>
+</dd>
+</dl>
+<p>variables, output[‘dual’] = dual variables, output[‘obj’] = objective value, output[‘const’] = slacks,
+output[‘active’] = active constraints.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver_interface.gurobi_solver_interface.solve_qp_gurobi">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver_interface.gurobi_solver_interface.</span></span><span class="sig-name descname"><span class="pre">solve_qp_gurobi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_duals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solver_interface.gurobi_solver_interface.solve_qp_gurobi" title="Permalink to this definition"></a></dt>
+<dd><p>This is the breakout for solving quadratic programs with gruobi</p>
+<div class="math notranslate nohighlight">
+\[\min_{x} \frac{1}{2}x^TQx + c^Tx\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+Ax &amp;\leq b\\
+A_{eq}x &amp;= b_{eq}\\
+x &amp;\in R^n\\
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Q</strong> – Square matrix, can be None</p></li>
+<li><p><strong>c</strong> – Column Vector, can be None</p></li>
+<li><p><strong>A</strong> – Constraint LHS matrix, can be None</p></li>
+<li><p><strong>b</strong> – Constraint RHS matrix, can be None</p></li>
+<li><p><strong>equality_constraints</strong> – List of Equality constraints</p></li>
+<li><p><strong>verbose</strong> – Flag for output of underlying Solver, default False</p></li>
+<li><p><strong>get_duals</strong> – Flag for returning dual variable of problem, default True (false for all mixed integer models)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A SolverOutput Object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.solver_interface.quad_prog_interface">
+<span id="ppopt-solver-interface-quad-prog-interface-module"></span><h2>ppopt.solver_interface.quad_prog_interface module<a class="headerlink" href="#module-ppopt.solver_interface.quad_prog_interface" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver_interface.quad_prog_interface.solve_qp_quadprog">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver_interface.quad_prog_interface.</span></span><span class="sig-name descname"><span class="pre">solve_qp_quadprog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_duals</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solver_interface.quad_prog_interface.solve_qp_quadprog" title="Permalink to this definition"></a></dt>
+<dd><p>Calls Quadprog to solve the following optimization problem</p>
+<div class="math notranslate nohighlight">
+\[\min_{x} \frac{1}{2}x^TQx + c^Tx\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+Ax &amp;\leq b\\
+A_{eq}x &amp;= b_{eq}\\
+x &amp;\in R^n\\
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Q</strong> – Square matrix, can be None</p></li>
+<li><p><strong>c</strong> – Column Vector, can be None</p></li>
+<li><p><strong>A</strong> – Constraint LHS matrix, can be None</p></li>
+<li><p><strong>b</strong> – Constraint RHS matrix, can be None</p></li>
+<li><p><strong>equality_constraints</strong> – List of Equality constraints</p></li>
+<li><p><strong>verbose</strong> – Flag for output of underlying Solver, default False</p></li>
+<li><p><strong>get_duals</strong> – Flag for returning dual variable of problem, default True (false for all mixed integer models)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A SolverOutput object if optima found, otherwise None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.solver_interface.solver_interface">
+<span id="ppopt-solver-interface-solver-interface-module"></span><h2>ppopt.solver_interface.solver_interface module<a class="headerlink" href="#module-ppopt.solver_interface.solver_interface" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver_interface.solver_interface.solve_lp">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver_interface.solver_interface.</span></span><span class="sig-name descname"><span class="pre">solve_lp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_duals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deterministic_solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'glpk'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solver_interface.solver_interface.solve_lp" title="Permalink to this definition"></a></dt>
+<dd><p>This is the breakout for solving linear programs</p>
+<div class="math notranslate nohighlight">
+\[\min_{x} c^Tx\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+Ax &amp;\leq b\\
+A_{eq}x &amp;= b_{eq}\\
+x &amp;\in R^n\\
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> – Column Vector, can be None</p></li>
+<li><p><strong>A</strong> – Constraint LHS matrix, can be None</p></li>
+<li><p><strong>b</strong> – Constraint RHS matrix, can be None</p></li>
+<li><p><strong>equality_constraints</strong> – List of Equality constraints</p></li>
+<li><p><strong>verbose</strong> – Flag for output of underlying Solver, default False</p></li>
+<li><p><strong>get_duals</strong> – Flag for returning dual variable of problem, default True (false for all mixed integer models)</p></li>
+<li><p><strong>deterministic_solver</strong> – The underlying Solver to use, eg. gurobi, ect</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A SolverOutput object if optima found, otherwise None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver_interface.solver_interface.solve_milp">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver_interface.solver_interface.</span></span><span class="sig-name descname"><span class="pre">solve_milp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_vars</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_duals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deterministic_solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gurobi'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solver_interface.solver_interface.solve_milp" title="Permalink to this definition"></a></dt>
+<dd><p>This is the breakout for solving mixed integer linear programs</p>
+<div class="math notranslate nohighlight">
+\[\min_{xy} c^T[xy]\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+A[xy] &amp;\leq b\\
+A_{eq}[xy] &amp;= b_{eq}\\
+x &amp;\in R^n\\
+y &amp;\in \{0, 1\}^m
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> – Column Vector, can be None</p></li>
+<li><p><strong>A</strong> – Constraint LHS matrix, can be None</p></li>
+<li><p><strong>b</strong> – Constraint RHS matrix, can be None</p></li>
+<li><p><strong>equality_constraints</strong> – List of Equality constraints</p></li>
+<li><p><strong>bin_vars</strong> – List of binary variable indices</p></li>
+<li><p><strong>verbose</strong> – Flag for output of underlying Solver, default False</p></li>
+<li><p><strong>get_duals</strong> – Flag for returning dual variable of problem, default True (false for all mixed integer models)</p></li>
+<li><p><strong>deterministic_solver</strong> – The underlying Solver to use, eg. gurobi, ect</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary of the Solver outputs, or none if infeasible or unbounded. output[‘sol’] = primal variables, output[‘dual’] = dual variables, output[‘obj’] = objective value, output[‘const’] = slacks, output[‘active’] = active constraints.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver_interface.solver_interface.solve_miqp">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver_interface.solver_interface.</span></span><span class="sig-name descname"><span class="pre">solve_miqp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_vars</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_duals</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deterministic_solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gurobi'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solver_interface.solver_interface.solve_miqp" title="Permalink to this definition"></a></dt>
+<dd><p>This is the breakout for solving mixed integer quadratic programs</p>
+<div class="math notranslate nohighlight">
+\[\min_{xy} \frac{1}{2} [xy]^TQ[xy] + c^T[xy]\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+A[xy] &amp;\leq b\\
+A_{eq}[xy] &amp;= b_{eq}\\
+x &amp;\in R^n\\
+y &amp;\in \{0, 1\}^m
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Q</strong> – Square matrix, can be None</p></li>
+<li><p><strong>c</strong> – Column Vector, can be None</p></li>
+<li><p><strong>A</strong> – Constraint LHS matrix, can be None</p></li>
+<li><p><strong>b</strong> – Constraint RHS matrix, can be None</p></li>
+<li><p><strong>equality_constraints</strong> – List of Equality constraints</p></li>
+<li><p><strong>bin_vars</strong> – List of binary variable indices</p></li>
+<li><p><strong>verbose</strong> – Flag for output of underlying Solver, default False</p></li>
+<li><p><strong>get_duals</strong> – Flag for returning dual variable of problem, default True (false for all mixed integer models)</p></li>
+<li><p><strong>deterministic_solver</strong> – The underlying Solver to use, eg. gurobi, ect</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A SolverOutput object if optima found, otherwise None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver_interface.solver_interface.solve_qp">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver_interface.solver_interface.</span></span><span class="sig-name descname"><span class="pre">solve_qp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_duals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deterministic_solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gurobi'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="ppopt.solver_interface.solver_interface_utils.SolverOutput"><span class="pre">ppopt.solver_interface.solver_interface_utils.SolverOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.solver_interface.solver_interface.solve_qp" title="Permalink to this definition"></a></dt>
+<dd><p>This is the breakout for solving quadratic programs</p>
+<div class="math notranslate nohighlight">
+\[\min_{x} \frac{1}{2}x^TQx + c^Tx\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+Ax &amp;\leq b\\
+A_{eq}x &amp;= b_{eq}\\
+x &amp;\in R^n\\
+\end{align}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Q</strong> – Square matrix, can be None</p></li>
+<li><p><strong>c</strong> – Column Vector, can be None</p></li>
+<li><p><strong>A</strong> – Constraint LHS matrix, can be None</p></li>
+<li><p><strong>b</strong> – Constraint RHS matrix, can be None</p></li>
+<li><p><strong>equality_constraints</strong> – List of Equality constraints</p></li>
+<li><p><strong>verbose</strong> – Flag for output of underlying Solver, default False</p></li>
+<li><p><strong>get_duals</strong> – Flag for returning dual variable of problem, default True (false for all mixed integer models)</p></li>
+<li><p><strong>deterministic_solver</strong> – The underlying Solver to use, eg. gurobi, ect</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A SolverOutput object if optima found, otherwise None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver_interface.solver_interface.solver_not_supported">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver_interface.solver_interface.</span></span><span class="sig-name descname"><span class="pre">solver_not_supported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solver_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#ppopt.solver_interface.solver_interface.solver_not_supported" title="Permalink to this definition"></a></dt>
+<dd><p>This is an internal method that throws an error and prompts the user when they use an unsupported Solver</p>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.solver_interface.solver_interface_utils">
+<span id="ppopt-solver-interface-solver-interface-utils-module"></span><h2>ppopt.solver_interface.solver_interface_utils module<a class="headerlink" href="#module-ppopt.solver_interface.solver_interface_utils" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ppopt.solver_interface.solver_interface_utils.SolverOutput">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ppopt.solver_interface.solver_interface_utils.</span></span><span class="sig-name descname"><span class="pre">SolverOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sol</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slack</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dual</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is the generic Solver information object. This will be the general return object from all of the back end solvers. This was done to remove the need for the user to specialize IO for any particular Solver. It containsall of the information you would need for the optimization solution including, optimal value, optimal solution, the active set, the value of the slack variables and the largange multipliers associated with every constraint (these are listed)</p>
+<blockquote>
+<div><p>as the dual variables.</p>
+</div></blockquote>
+<p>Members:
+obj: objective value of the optimal solution</p>
+<p>sol: x*, numpy array</p>
+<p>Optional Parameters -&gt; None or numpy.ndarray type</p>
+<p>slack: the slacks associated with every constraint</p>
+<p>equality_indices: the active set of the solution, including strongly and weakly active constraints</p>
+<p>dual: the lagrange multipliers associated with the problem</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.solver_interface.solver_interface_utils.SolverOutput.active_set">
+<span class="sig-name descname"><span class="pre">active_set</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput.active_set" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.solver_interface.solver_interface_utils.SolverOutput.dual">
+<span class="sig-name descname"><span class="pre">dual</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput.dual" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.solver_interface.solver_interface_utils.SolverOutput.obj">
+<span class="sig-name descname"><span class="pre">obj</span></span><em class="property"><span class="pre">:</span> <span class="pre">float</span></em><a class="headerlink" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput.obj" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.solver_interface.solver_interface_utils.SolverOutput.slack">
+<span class="sig-name descname"><span class="pre">slack</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput.slack" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ppopt.solver_interface.solver_interface_utils.SolverOutput.sol">
+<span class="sig-name descname"><span class="pre">sol</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.solver_interface.solver_interface_utils.SolverOutput.sol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.solver_interface.solver_interface_utils.get_program_parameters">
+<span class="sig-prename descclassname"><span class="pre">ppopt.solver_interface.solver_interface_utils.</span></span><span class="sig-name descname"><span class="pre">get_program_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.solver_interface.solver_interface_utils.get_program_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>Given a set of possibly None optimization parameters determine the number of variables and constraints</p>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.solver_interface">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ppopt.solver_interface" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ppopt.mp_solvers.html" class="btn btn-neutral float-left" title="ppopt.mp_solvers package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ppopt.upop.html" class="btn btn-neutral float-right" title="ppopt.upop package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dustin Kenefake, Efstratios Pistikopoulos.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

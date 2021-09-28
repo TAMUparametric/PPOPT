@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multiparametric Algorithms &mdash; PPOPT 1.0.2 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ppopt" href="modules.html" />
+    <link rel="prev" title="Solving a MPQP Program" href="tutorial.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> PPOPT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Solving a MPQP Program</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Multiparametric Algorithms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#geometric-algorithm">Geometric Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#combinatorial-algorithm">Combinatorial Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#graph-algorithm">Graph Algorithm</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">ppopt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PPOPT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Multiparametric Algorithms</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/algorithm_overview.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="multiparametric-algorithms">
+<h1>Multiparametric Algorithms<a class="headerlink" href="#multiparametric-algorithms" title="Permalink to this headline"></a></h1>
+<p>This section will give a basic overview of the algorithms used in this package for solving the multiparametric programming problems. All current algorithms depend on exploring the theta space of the problem, choosing differing ways to do so.</p>
+<section id="geometric-algorithm">
+<h2>Geometric Algorithm<a class="headerlink" href="#geometric-algorithm" title="Permalink to this headline"></a></h2>
+<p>The Geometric algorithm is based on exporing the feasible space. The name of the algorithm comes from the fact that it is geometrically exploring the space by flipping critical region facets.</p>
+<p>This is best used in situations where the number of theta dimensions is small and scales well with number of variables and constraints.</p>
+</section>
+<section id="combinatorial-algorithm">
+<h2>Combinatorial Algorithm<a class="headerlink" href="#combinatorial-algorithm" title="Permalink to this headline"></a></h2>
+<p>The combinatorial algorithm is based on exploring feasible active set combinations. It is called the combinatorial algorithm due the fact that th…. This is the most robust multiparametric algorithm as it handles both primal and dual degeneracy and will always fully solve the multiparametric programming problem.</p>
+<p>This is best used in situations where the number of constraints and variables is small and scales well with number of theta dimensions.</p>
+</section>
+<section id="graph-algorithm">
+<h2>Graph Algorithm<a class="headerlink" href="#graph-algorithm" title="Permalink to this headline"></a></h2>
+<p>The graph algorithm is based on exploring the connected graph of active set combinations. This can be viewed as a combination certain aspects of the Geometric algorithm and the Combinatorial algorithm.</p>
+<p>This is a general purpose algorithm that scales ok with number of variables, constraints, and parameters. However this algorithm has been shown to be unstable in that it fails to fully solve some multiparametric programs with poor conditioning.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial.html" class="btn btn-neutral float-left" title="Solving a MPQP Program" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-right" title="ppopt" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dustin Kenefake, Efstratios Pistikopoulos.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

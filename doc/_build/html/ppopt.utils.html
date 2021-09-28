@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ppopt.utils package &mdash; PPOPT 1.0.2 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="ppopt.upop package" href="ppopt.upop.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> PPOPT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Solving a MPQP Program</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithm_overview.html">Multiparametric Algorithms</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">ppopt</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ppopt.html">ppopt package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="ppopt.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ppopt.geometry.html">ppopt.geometry package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ppopt.mp_solvers.html">ppopt.mp_solvers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ppopt.solver_interface.html">ppopt.solver_interface package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ppopt.upop.html">ppopt.upop package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">ppopt.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.critical_region">ppopt.critical_region module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.mplp_program">ppopt.mplp_program module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.mpqp_program">ppopt.mpqp_program module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.plot">ppopt.plot module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.problem_generator">ppopt.problem_generator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.solution">ppopt.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt.solver">ppopt.solver module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ppopt.html#module-ppopt">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PPOPT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">ppopt</a> &raquo;</li>
+          <li><a href="ppopt.html">ppopt package</a> &raquo;</li>
+      <li>ppopt.utils package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ppopt.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ppopt-utils-package">
+<h1>ppopt.utils package<a class="headerlink" href="#ppopt-utils-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-ppopt.utils.chebyshev_ball">
+<span id="ppopt-utils-chebyshev-ball-module"></span><h2>ppopt.utils.chebyshev_ball module<a class="headerlink" href="#module-ppopt.utils.chebyshev_ball" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.chebyshev_ball.chebyshev_ball">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.chebyshev_ball.</span></span><span class="sig-name descname"><span class="pre">chebyshev_ball</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_vars</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deterministic_solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'glpk'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.utils.chebyshev_ball.chebyshev_ball" title="Permalink to this definition"></a></dt>
+<dd><p>Chebyshev ball finds the largest ball inside of a polytope defined by Ax &lt;= b
+This is solved by the following LP</p>
+<div class="math notranslate nohighlight">
+\[\min_{x,r} -r\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+\text{s.t. } Ax + ||A_i||_2r &amp;\leq b\\
+A_{eq} x &amp;= b_{eq}\\
+r &amp;\geq 0
+\end{align*}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – LHS Constraint Matrix</p></li>
+<li><p><strong>b</strong> – RHS Constraint column vector</p></li>
+<li><p><strong>equality_constraints</strong> – indices of rows that have strict equality A[eq] &#64; x = b[eq]</p></li>
+<li><p><strong>bin_vars</strong> – indices of binary variables</p></li>
+<li><p><strong>deterministic_solver</strong> – The underlying Solver to use, eg. gurobi, ect</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the SolverOutput object, None if infeasible</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.chebyshev_ball.chebyshev_ball_max">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.chebyshev_ball.</span></span><span class="sig-name descname"><span class="pre">chebyshev_ball_max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_constraints</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_vars</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deterministic_solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'glpk'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.utils.chebyshev_ball.chebyshev_ball_max" title="Permalink to this definition"></a></dt>
+<dd><p>Chebyshev ball finds the smallest l-infinity ball the contains the polytope defined by Ax &lt;= b. Where A has n hyper planes and d dimensions.</p>
+<p>This is solved by the following Linear program</p>
+<div class="math notranslate nohighlight">
+\[\min_{x_{c} ,r ,y_{j} ,u_{j}} \quad r\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    A^Ty_{j} &amp;= e_{j}, \forall j \in {1, .., d}\\
+    A^Tu_{j} &amp;= -e_{j}, \forall j \in {1, .., d}\\
+    -x_{cj} + b^Ty_{j} &amp;\leq r\\
+    x_{cj} + b^Tu_{j} &amp;\leq r\\
+    r &amp;\geq 0\\
+    y_{j} &amp;\geq 0\\
+    u_{j} &amp;\geq 0\\
+    r &amp;\in R\\
+    y_{j} &amp;\in R^n\\
+    u_{j} &amp;\in R^n\\
+    x_c &amp;\in R^d
+\end{align*}\end{split}\]</div>
+<p>Source: Simon Foucart’s excellent book</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – LHS Constraint Matrix</p></li>
+<li><p><strong>b</strong> – RHS Constraint column vector</p></li>
+<li><p><strong>equality_constraints</strong> – indices of rows that have strict equality A[eq] &#64; x = b[eq]</p></li>
+<li><p><strong>bin_vars</strong> – indices of binary variables</p></li>
+<li><p><strong>deterministic_solver</strong> – The underlying Solver to use, eg. gurobi, ect</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the SolverOutput object, None if infeasible</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.utils.constraint_utilities">
+<span id="ppopt-utils-constraint-utilities-module"></span><h2>ppopt.utils.constraint_utilities module<a class="headerlink" href="#module-ppopt.utils.constraint_utilities" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.constraint_utilities.calculate_redundant_constraints">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.constraint_utilities.</span></span><span class="sig-name descname"><span class="pre">calculate_redundant_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.utils.constraint_utilities.calculate_redundant_constraints" title="Permalink to this definition"></a></dt>
+<dd><p>Removes weakly redundant constraints, method is from the appendix of the Oberdieck paper</p>
+<p>url: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0005109816303971">https://www.sciencedirect.com/science/article/pii/S0005109816303971</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – LHS constraint matrix</p></li>
+<li><p><strong>b</strong> – RHS constraint column vector</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The processes constraint pair [A, b]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.constraint_utilities.cheap_remove_redundant_constraints">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.constraint_utilities.</span></span><span class="sig-name descname"><span class="pre">cheap_remove_redundant_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.utils.constraint_utilities.cheap_remove_redundant_constraints" title="Permalink to this definition"></a></dt>
+<dd><p>Removes zero rows, normalizes the constraint rows to ||A_i||_{L_2} = 1, and removes duplicate rows</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – LHS constraint matrix</p></li>
+<li><p><strong>b</strong> – RHS constraint column vector</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The processes constraint pair [A, b]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.constraint_utilities.constraint_norm">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.constraint_utilities.</span></span><span class="sig-name descname"><span class="pre">constraint_norm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#ppopt.utils.constraint_utilities.constraint_norm" title="Permalink to this definition"></a></dt>
+<dd><p>Finds the L2 norm of each row of a matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>A</strong> – numpy matrix</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A column vector of the row norms</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.constraint_utilities.detect_implicit_equalities">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.constraint_utilities.</span></span><span class="sig-name descname"><span class="pre">detect_implicit_equalities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.utils.constraint_utilities.detect_implicit_equalities" title="Permalink to this definition"></a></dt>
+<dd><p>Detects inequality constraints that form implicit equality constraints. This is important because inequality constraint pairs that\
+form equality constraints will actively mess with the true cardinality of the active set. Older solvers did not make check this and\
+that led to some problematic results.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+-\langle a, x \rangle &amp;\leq -b\\
+\langle a, x \rangle &amp;\leq b\\
+\end{align*} \implies \langle a, x \rangle = b\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – LHS of inequality set</p></li>
+<li><p><strong>b</strong> – RHS of inequality set</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of all implicit inequality pairs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.constraint_utilities.facet_ball_elimination">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.constraint_utilities.</span></span><span class="sig-name descname"><span class="pre">facet_ball_elimination</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.utils.constraint_utilities.facet_ball_elimination" title="Permalink to this definition"></a></dt>
+<dd><p>Removes weakly redundant constraints, method is from the appendix of the Oberdieck paper</p>
+<p>url: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0005109816303971">https://www.sciencedirect.com/science/article/pii/S0005109816303971</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – LHS constraint matrix</p></li>
+<li><p><strong>b</strong> – RHS constraint column vector</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The processes constraint pair [A, b]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.constraint_utilities.find_redundant_constraints">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.constraint_utilities.</span></span><span class="sig-name descname"><span class="pre">find_redundant_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'glpk'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.utils.constraint_utilities.find_redundant_constraints" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.constraint_utilities.is_full_rank">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.constraint_utilities.</span></span><span class="sig-name descname"><span class="pre">is_full_rank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#ppopt.utils.constraint_utilities.is_full_rank" title="Permalink to this definition"></a></dt>
+<dd><p>Tests if the matrix A[indices] is full rank
+Empty matrices e.g. A[[]] will default to be full rank</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – Matrix</p></li>
+<li><p><strong>indices</strong> – indices to consider in rank</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>if the matrix is full rank or not</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.constraint_utilities.process_region_constraints">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.constraint_utilities.</span></span><span class="sig-name descname"><span class="pre">process_region_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.utils.constraint_utilities.process_region_constraints" title="Permalink to this definition"></a></dt>
+<dd><p>Removes all strongly and weakly redundant constraints</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – LHS constraint matrix</p></li>
+<li><p><strong>b</strong> – RHS constraint column vector</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The processes constraint pair [A, b]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.constraint_utilities.remove_duplicate_rows">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.constraint_utilities.</span></span><span class="sig-name descname"><span class="pre">remove_duplicate_rows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.utils.constraint_utilities.remove_duplicate_rows" title="Permalink to this definition"></a></dt>
+<dd><p>Finds and removes duplicate rows in the constraints A &#64; x &lt;= b</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.constraint_utilities.remove_strongly_redundant_constraints">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.constraint_utilities.</span></span><span class="sig-name descname"><span class="pre">remove_strongly_redundant_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_kept_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.utils.constraint_utilities.remove_strongly_redundant_constraints" title="Permalink to this definition"></a></dt>
+<dd><p>Removes strongly redundant constraints by testing the feasibility of each constraint if activated</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.constraint_utilities.remove_zero_rows">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.constraint_utilities.</span></span><span class="sig-name descname"><span class="pre">remove_zero_rows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.utils.constraint_utilities.remove_zero_rows" title="Permalink to this definition"></a></dt>
+<dd><p>Finds rows equal to zero in A and then removes them from A and b</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – LHS Matrix constraint</p></li>
+<li><p><strong>b</strong> – RHS Column vector</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list[A_cleaned, b_cleaned] of filtered constraints</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.constraint_utilities.row_equality">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.constraint_utilities.</span></span><span class="sig-name descname"><span class="pre">row_equality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row_1</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row_2</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-16</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#ppopt.utils.constraint_utilities.row_equality" title="Permalink to this definition"></a></dt>
+<dd><p>Tests if 2 row vectors are approximately equal</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>row_1</strong> – </p></li>
+<li><p><strong>row_2</strong> – </p></li>
+<li><p><strong>tol</strong> – tolerable L2 norm of the difference</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if rows are equal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.constraint_utilities.scale_constraint">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.constraint_utilities.</span></span><span class="sig-name descname"><span class="pre">scale_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.utils.constraint_utilities.scale_constraint" title="Permalink to this definition"></a></dt>
+<dd><p>Normalizes constraints</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – LHS Matrix constraint</p></li>
+<li><p><strong>b</strong> – RHS column vector constraint</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list [A_scaled, b_scaled] of normalized constraints</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.utils.general_utils">
+<span id="ppopt-utils-general-utils-module"></span><h2>ppopt.utils.general_utils module<a class="headerlink" href="#module-ppopt.utils.general_utils" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.general_utils.latex_matrix">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.general_utils.</span></span><span class="sig-name descname"><span class="pre">latex_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#ppopt.utils.general_utils.latex_matrix" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a latex string for a given numpy array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>A</strong> – A numpy array</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A latex string for the matrix A</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.general_utils.make_column">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.general_utils.</span></span><span class="sig-name descname"><span class="pre">make_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#ppopt.utils.general_utils.make_column" title="Permalink to this definition"></a></dt>
+<dd><p>Makes x into a column vector
+:param x: a list or a numpy array
+:return: a numpy array that is a column vector</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.general_utils.make_row">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.general_utils.</span></span><span class="sig-name descname"><span class="pre">make_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#ppopt.utils.general_utils.make_row" title="Permalink to this definition"></a></dt>
+<dd><p>Makes x into a row vector
+:param x: a list or a numpy array
+:return: a numpy array that is a row column</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.general_utils.num_cpu_cores">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.general_utils.</span></span><span class="sig-name descname"><span class="pre">num_cpu_cores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.utils.general_utils.num_cpu_cores" title="Permalink to this definition"></a></dt>
+<dd><p>Finds the number of allocated cores,with different behavior in windows and linux.</p>
+<p>In Windows, returns number of physical cpu cores</p>
+<p>In Linux, returns number of available cores for processing (this is for running on cluster or managed environment)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>number of cores</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.general_utils.ppopt_block">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.general_utils.</span></span><span class="sig-name descname"><span class="pre">ppopt_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mat_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.utils.general_utils.ppopt_block" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.general_utils.remove_size_zero_matrices">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.general_utils.</span></span><span class="sig-name descname"><span class="pre">remove_size_zero_matrices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_matrices</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.utils.general_utils.remove_size_zero_matrices" title="Permalink to this definition"></a></dt>
+<dd><p>Removes size zero matrices from a list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>list_matrices</strong> – A list of numpy arrays</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>returns all matrices from the list that do not have a dimension of 0 in any index</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.general_utils.render_number">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.general_utils.</span></span><span class="sig-name descname"><span class="pre">render_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trade_off</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#ppopt.utils.general_utils.render_number" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.general_utils.select_not_in_list">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.general_utils.</span></span><span class="sig-name descname"><span class="pre">select_not_in_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#ppopt.utils.general_utils.select_not_in_list" title="Permalink to this definition"></a></dt>
+<dd><p>Filters a numpy array to select all rows that are not in a list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – a numpy array</p></li>
+<li><p><strong>list</strong> – a list of indices that you want to remove</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return a numpy array of A[not in <a href="#id1"><span class="problematic" id="id2">list_</span></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.utils.geometric">
+<span id="ppopt-utils-geometric-module"></span><h2>ppopt.utils.geometric module<a class="headerlink" href="#module-ppopt.utils.geometric" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.geometric.gen_tess_points_simplex">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.geometric.</span></span><span class="sig-name descname"><span class="pre">gen_tess_points_simplex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simplex</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.utils.geometric.gen_tess_points_simplex" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>simplex</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.geometric.make_domain_subdivision">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.geometric.</span></span><span class="sig-name descname"><span class="pre">make_domain_subdivision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_t</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.utils.geometric.make_domain_subdivision" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.geometric.make_simplex">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.geometric.</span></span><span class="sig-name descname"><span class="pre">make_simplex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.utils.geometric.make_simplex" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.geometric.make_subdomains">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.geometric.</span></span><span class="sig-name descname"><span class="pre">make_subdomains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.utils.geometric.make_subdomains" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.geometric.revised_tess_simplex">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.geometric.</span></span><span class="sig-name descname"><span class="pre">revised_tess_simplex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simplex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">half_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.utils.geometric.revised_tess_simplex" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-ppopt.utils.mpqp_utils">
+<span id="ppopt-utils-mpqp-utils-module"></span><h2>ppopt.utils.mpqp_utils module<a class="headerlink" href="#module-ppopt.utils.mpqp_utils" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.mpqp_utils.build_suboptimal_critical_region">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.mpqp_utils.</span></span><span class="sig-name descname"><span class="pre">build_suboptimal_critical_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.utils.mpqp_utils.build_suboptimal_critical_region" title="Permalink to this definition"></a></dt>
+<dd><p>Builds the critical region without considering culling facets or any other operation.</p>
+<p>Primary uses for this is based on culling lower dimensional feasible sets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>program</strong> – the MQMP_Program to be solved</p></li>
+<li><p><strong>active_set</strong> – the active set combination to build this critical region from</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns the associated critical region if fully dimensional else returns None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.mpqp_utils.gen_cr_from_active_set">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.mpqp_utils.</span></span><span class="sig-name descname"><span class="pre">gen_cr_from_active_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.mpqp_program.MPQP_Program" title="ppopt.mpqp_program.MPQP_Program"><span class="pre">ppopt.mpqp_program.MPQP_Program</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_full_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ppopt.html#ppopt.critical_region.CriticalRegion" title="ppopt.critical_region.CriticalRegion"><span class="pre">ppopt.critical_region.CriticalRegion</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#ppopt.utils.mpqp_utils.gen_cr_from_active_set" title="Permalink to this definition"></a></dt>
+<dd><p>Builds the critical region of the given mpqp from the active set.
+:param program: the MQMP_Program to be solved
+:param active_set: the active set combination to build this critical region from
+:param check_full_dim: Keyword Arg, if true will return null if the region has lower dimensionality
+:return: Returns the associated critical region if fully dimensional else returns None</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.mpqp_utils.get_boundary_types">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.mpqp_utils.</span></span><span class="sig-name descname"><span class="pre">get_boundary_types</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lagrange</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regular</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><a class="headerlink" href="#ppopt.utils.mpqp_utils.get_boundary_types" title="Permalink to this definition"></a></dt>
+<dd><p>Classifies the boundaries of a polytope into Omega constraints, Lagrange multiplier = 0 constraints, and Activated program constraints
+:param region:
+:param omega:
+:param lagrange:
+:param regular:
+:return:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ppopt.utils.mpqp_utils.is_full_dimensional">
+<span class="sig-prename descclassname"><span class="pre">ppopt.utils.mpqp_utils.</span></span><span class="sig-name descname"><span class="pre">is_full_dimensional</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ppopt.html#ppopt.solver.Solver" title="ppopt.solver.Solver"><span class="pre">ppopt.solver.Solver</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">Solver(solvers={'lp':</span> <span class="pre">'glpk',</span> <span class="pre">'qp':</span> <span class="pre">'gurobi',</span> <span class="pre">'milp':</span> <span class="pre">'gurobi',</span> <span class="pre">'miqp':</span> <span class="pre">'gurobi'})</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.utils.mpqp_utils.is_full_dimensional" title="Permalink to this definition"></a></dt>
+<dd><p>This checks the dimensionality of a polytope defined by P = {x: Ax≤b}. Current method is based on checking if the
+radii of the chebychev ball is nonzero. However this is numerically not so stable, and will eventually be replaced
+by looking at the ratio of the 2 chebychev balls
+:param A: LHS of polytope constraints
+:param b: RHS of polytope constraints
+:param solver: the solver interface to direct the deterministic solver
+:return: True if polytope is fully dimensional else False</p>
+</dd></dl>
+
+</section>
+<section id="module-ppopt.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ppopt.utils" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ppopt.upop.html" class="btn btn-neutral float-left" title="ppopt.upop package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dustin Kenefake, Efstratios Pistikopoulos.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

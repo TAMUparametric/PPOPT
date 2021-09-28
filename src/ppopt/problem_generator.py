@@ -6,11 +6,12 @@ from .mpqp_program import MPQP_Program
 
 def generate_mplp(x: int = 2, t: int = 2, m: int = 10) -> MPLP_Program:
     """
+    Generates a random mpLP problem with of the following characteristics
 
     :param x: number of parameters
     :param t: number of uncertain variables
     :param m: number of constraints
-    :return:
+    :return: A random mpLP of the specified type
     """
 
     mpqp = generate_mpqp(x, t, m)
@@ -20,12 +21,12 @@ def generate_mplp(x: int = 2, t: int = 2, m: int = 10) -> MPLP_Program:
 
 def generate_mpqp(x: int = 2, t: int = 2, m: int = 10) -> MPQP_Program:
     """
-    Generates a random mpqp problem with of the following characteristics
+    Generates a random mpQP problem with of the following characteristics
 
     :param x: number of x dimensions
     :param t: number of theta dimensions
     :param m: number of constraints
-    :return: A random mpqp problem of the specified type
+    :return: A random mpQP problem of the specified type
     """
     Q = numpy.random.random((x, x))
     Q = Q.T @ Q + numpy.eye(x)

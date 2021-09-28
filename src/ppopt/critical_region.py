@@ -1,23 +1,26 @@
-import numpy
 from dataclasses import dataclass, field
 from typing import List, Union
+
+import numpy
 
 from .utils.chebyshev_ball import chebyshev_ball
 
 
 @dataclass
 class CriticalRegion:
-    """
+    r"""
 
     Critical region is a polytope that defines a region in the uncertainty space
     with an associated optimal value, active set, lagrange multipliers and
     constraints
 
-    x(θ) = Aθ + b
+    .. math::
 
-    λ(θ) = Cθ + d
-
-    CR := {θ : Eθ <= f}
+        \begin{align}
+            x(\theta) &= A\theta + b\\
+            \lambda(\theta) &= C\theta + d\\
+            \Theta &:= \{\forall \theta \in \mathbf{R}^m: E\theta \leq f\}
+        \end{align}
 
     equality_indices: numpy array of indices
 
