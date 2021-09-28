@@ -16,9 +16,7 @@ def solver_not_supported(solver_name: str) -> None:
     supported_solvers = ['gurobi', 'cplex', 'glpk']
 
     message = f"Solver {solver_name} is not supported! \n" \
-              + f'MPO Supports the following solvers {str(supported_solvers)} \n' \
-              + f'If you have a supported Solver, please change the default ppopt Solver to your specific Solver when you load the package \n' \
-              + f'mpo.settings.optimization_solver = \'solver_name\''
+              + f'PPOPT Supports the following solvers {str(supported_solvers)} \n'
     raise RuntimeError(message)
 
 

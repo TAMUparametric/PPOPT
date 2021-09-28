@@ -80,8 +80,7 @@ def build_suboptimal_critical_region(program: MPQP_Program, active_set: List[int
 
 
 # noinspection PyUnusedLocal
-def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_full_dim=True) -> Optional[
-    CriticalRegion]:
+def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_full_dim=True) -> Optional[CriticalRegion]:
     """
     Builds the critical region of the given mpqp from the active set.
     :param program: the MQMP_Program to be solved

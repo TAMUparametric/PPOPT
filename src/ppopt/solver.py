@@ -98,8 +98,8 @@ class Solver:
         """This is an internal method that throws an error and prompts the user when they use an unsupported Solver"""
 
         message = f"Problem {problem_name} is not supported! \n" \
-                  + f'MPO Supports the following problems {str(Solver.supported_problems)} \n' \
-                  + f'If you have a misspelled a supported problem, please make sure you spelled it correctly \n'
+                  + f'PPOPT Supports the following problems {str(Solver.supported_problems)} \n' \
+                  + 'If you have a misspelled a supported problem, please make sure you spelled it correctly!! \n'
 
         raise RuntimeError(message)
 
@@ -108,9 +108,7 @@ class Solver:
         """This is an internal method that throws an error and prompts the user when they use an unsupported Solver"""
 
         message = f"Solver {solver_name} is not supported! \n" \
-                  + f'MPO Supports the following solvers {str(Solver.supported_solvers)} \n' \
-                  + f'If you have a supported Solver, please change the default ppopt Solver to your specific Solver when you load the package \n' \
-                  + f'mpo.settings.optimization_solver = \'solver_name\''
+                  + f'PPOPT Supports the following solvers {str(Solver.supported_solvers)} \n' \
 
         raise RuntimeError(message)
 

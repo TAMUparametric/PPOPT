@@ -638,7 +638,7 @@ class MPLP_Program:
 
     # noinspection SpellCheckingInspection
     def gen_feasible_theta_space(self):
-        """
+        r"""
         Generated the theta feasible space of a multiparametric program (with up to affine constraints)
 
         this is done by solving the following linear program for each reduced constraint

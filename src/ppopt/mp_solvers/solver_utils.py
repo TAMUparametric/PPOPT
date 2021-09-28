@@ -167,8 +167,8 @@ def generate_children_sets(active_set, num_constraints: int, murder_list=None):
 
 
 def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> list:
-    """
-    This takes the polytope P := {x\in R^n : Ax <= b} and finds all of the chebychev centers and normal vectors of each
+    r"""
+    This takes the polytope P := {x \in R^n : Ax <= b} and finds all of the chebychev centers and normal vectors of each
     facet and the radius
 
     :param A: The LHS constraint matrix
