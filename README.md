@@ -1,10 +1,14 @@
+# PPOPT
+
+[![Python package](https://github.com/TAMUparametric/PPOPT/actions/workflows/python-package.yml/badge.svg)](https://github.com/TAMUparametric/PPOPT/actions/workflows/python-package.yml)
+
 **P**ython **P**arametric **OP**timization **T**oolbox (**PPOPT**) is a software platform for solving and manipulating multiparametric programs in Python. This package is still in development but the following features are complete and are in full working order.
 
 #### Completed Features
 * Solver interface for mpLPs and mpQP with the following algorithms
   1. Serial and Parallel Combinatorial Algorithm
   2. Serial and Parallel Geometrical Algorithm
-  3.  Serial and Parallel Graph based algorithm
+  3.  Serial and Parallel Graph based Algorithm
 * Multiparametric solution export to C++, Javacript, Matlab, and Python
 * Plotting utilities
 * Presolver and Conditioning for Multiparametric Programs
