@@ -1,13 +1,14 @@
-import numpy
 from typing import List, Optional
+
+import numpy
 
 from .chebyshev_ball import chebyshev_ball
 from ..critical_region import CriticalRegion
 from ..mpqp_program import MPQP_Program
 from ..solver import Solver
-from ..utils.constraint_utilities import cheap_remove_redundant_constraints, remove_duplicate_rows, remove_strongly_redundant_constraints, scale_constraint
+from ..utils.constraint_utilities import cheap_remove_redundant_constraints, remove_duplicate_rows, \
+    scale_constraint
 from ..utils.general_utils import ppopt_block
-
 
 
 def get_boundary_types(region: numpy.ndarray, omega: numpy.ndarray, lagrange: numpy.ndarray, regular: numpy.ndarray) -> \
@@ -117,8 +118,8 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
     inactive_Anz = inactive_A[ineq_nonzeros]
     inactive_bnz = inactive_b[ineq_nonzeros]
 
-    CR_A = ppopt_block([[lambda_Anz],[inactive_Anz],[omega_A]])
-    CR_b = ppopt_block([[lambda_bnz],[inactive_bnz],[omega_b]])
+    CR_A = ppopt_block([[lambda_Anz], [inactive_Anz], [omega_A]])
+    CR_b = ppopt_block([[lambda_bnz], [inactive_bnz], [omega_b]])
 
     CR_As, CR_bs = scale_constraint(CR_A, CR_b)
 
@@ -159,11 +160,13 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
             kept_omega_indices.append(index)
 
     # create out reduced Critical region constraint block
-    CR_As = ppopt_block([[lambda_Anz[kept_lambda_indices]],[inactive_Anz[kept_inequality_indices]],[omega_A[kept_omega_indices]]])
-    CR_bs = ppopt_block([[lambda_bnz[kept_lambda_indices]],[inactive_bnz[kept_inequality_indices]],[omega_b[kept_omega_indices]]])
+    CR_As = ppopt_block(
+        [[lambda_Anz[kept_lambda_indices]], [inactive_Anz[kept_inequality_indices]], [omega_A[kept_omega_indices]]])
+    CR_bs = ppopt_block(
+        [[lambda_bnz[kept_lambda_indices]], [inactive_bnz[kept_inequality_indices]], [omega_b[kept_omega_indices]]])
 
     # recover the lambda boundaries that remain
-    relevant_lambda = [active_set[num_equality + index]  for index in kept_lambda_indices]
+    relevant_lambda = [active_set[num_equality + index] for index in kept_lambda_indices]
 
     real_regular = [inactive[index] for index in kept_inequality_indices]
     regular = [kept_inequality_indices, real_regular]
@@ -173,7 +176,8 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
     CR_As, CR_bs = remove_duplicate_rows(CR_As, CR_bs)
     CR_As, CR_bs = scale_constraint(CR_As, CR_bs)
 
-    return CriticalRegion(parameter_A, parameter_b, lagrange_A, lagrange_b, CR_As, CR_bs, active_set, kept_omega_indices, relevant_lambda, regular)
+    return CriticalRegion(parameter_A, parameter_b, lagrange_A, lagrange_b, CR_As, CR_bs, active_set,
+                          kept_omega_indices, relevant_lambda, regular)
 
 
 def is_full_dimensional(A, b, solver: Solver = Solver()):

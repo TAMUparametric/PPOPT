@@ -1,6 +1,7 @@
-import numpy
 from dataclasses import dataclass, field
 from typing import List, Union
+
+import numpy
 
 from .utils.chebyshev_ball import chebyshev_ball
 

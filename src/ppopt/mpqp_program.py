@@ -1,5 +1,6 @@
-import numpy
 from typing import List, Optional, Tuple
+
+import numpy
 
 from .mplp_program import MPLP_Program
 from .solver_interface.solver_interface import SolverOutput
@@ -48,7 +49,7 @@ class MPQP_Program(MPLP_Program):
         :param theta_point: θ input
         :return: Objective function evaluated at x, θ
         """
-        return 0.5*x.T@self.Q@x + theta_point.T@self.H.T@x + self.c.T@x
+        return 0.5 * x.T @ self.Q @ x + theta_point.T @ self.H.T @ x + self.c.T @ x
 
     def warnings(self) -> List[str]:
         """Checks the dimensions of the matrices to ensure consistency"""

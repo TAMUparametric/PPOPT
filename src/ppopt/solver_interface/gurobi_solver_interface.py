@@ -1,5 +1,6 @@
-import numpy
 from typing import Iterable, Optional
+
+import numpy
 
 try:
     import gurobipy as gp
@@ -8,6 +9,7 @@ except ImportError:
     pass
 
 from ..solver_interface.solver_interface_utils import SolverOutput, get_program_parameters
+
 
 def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None, A: numpy.ndarray = None,
                       b: numpy.ndarray = None,

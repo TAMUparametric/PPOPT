@@ -1,11 +1,11 @@
-import numpy
 from typing import Optional
+
+import numpy
 
 try:
     from cvxopt import matrix, solvers
 except ImportError:
     pass
-
 
 from ..solver_interface.solver_interface_utils import SolverOutput, get_program_parameters
 
@@ -99,7 +99,6 @@ def solve_fully_constraints(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray
 def solve_qp_cvxopt(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray, equality_constraints=None,
                     verbose=False,
                     get_duals=True, cvx_solver='quadprog') -> Optional[SolverOutput]:
-
     r"""
     This is the breakout for QP with cvxopt
 

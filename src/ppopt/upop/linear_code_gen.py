@@ -1,6 +1,7 @@
+from typing import List
+
 import numpy
 import scipy.io as sio
-from typing import List
 
 from ..solution import Solution
 from ..upop.language_generation import gen_array, gen_variable

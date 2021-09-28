@@ -1,11 +1,11 @@
-import numpy
 from typing import Optional, Iterable
+
+import numpy
 
 try:
     import quadprog
 except ImportError:
     pass
-
 
 from ..solver_interface.solver_interface_utils import SolverOutput
 from ..utils.general_utils import make_column
@@ -13,7 +13,7 @@ from ..utils.general_utils import make_column
 
 def solve_qp_quadprog(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
                       equality_constraints: Iterable[int] = None, verbose=False,
-                      get_duals:bool=True) -> Optional[SolverOutput]:
+                      get_duals: bool = True) -> Optional[SolverOutput]:
     r"""
     Calls Quadprog to solve the following optimization problem
 

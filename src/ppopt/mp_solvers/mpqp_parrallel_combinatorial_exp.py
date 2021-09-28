@@ -1,8 +1,9 @@
 import time
-# noinspection PyProtectedMember
-from pathos.multiprocessing import ProcessingPool as Pool
 from random import shuffle
 from typing import List
+
+# noinspection PyProtectedMember
+from pathos.multiprocessing import ProcessingPool as Pool
 
 from .solver_utils import generate_children_sets
 from ..mpqp_program import MPQP_Program

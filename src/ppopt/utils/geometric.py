@@ -3,6 +3,7 @@ import pypoman
 
 from numba import jit
 
+
 def make_subdomains(points):
     return numpy.array([0])
     # return scipy.spatial.Delaunay(points).simplices

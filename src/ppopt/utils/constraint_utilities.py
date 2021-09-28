@@ -2,8 +2,9 @@
 # Constraint manipulation utilities
 #
 
-import numpy
 from typing import List
+
+import numpy
 
 from ..solver_interface import solver_interface
 from ..utils.general_utils import make_column, ppopt_block

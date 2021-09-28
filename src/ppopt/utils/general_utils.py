@@ -1,6 +1,7 @@
-import numpy
 import os
 from typing import Iterable, List, Union
+
+import numpy
 
 
 def make_column(x: Union[List, numpy.ndarray]) -> numpy.ndarray:

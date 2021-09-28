@@ -1,6 +1,7 @@
-import numpy
 from dataclasses import dataclass
 from typing import List, Union, Optional, Tuple
+
+import numpy
 
 from .solver import Solver
 from .solver_interface.solver_interface_utils import SolverOutput
@@ -567,7 +568,6 @@ class MPLP_Program:
 
         :return: an optimal active set
         """
-
 
         sol = self.feasible_space_chebychev_ball()
 

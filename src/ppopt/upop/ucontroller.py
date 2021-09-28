@@ -3,8 +3,9 @@
 # or other language output to use solutions in other languages without needing a
 # new ppopt in every language
 
-import numpy
 from typing import List
+
+import numpy
 
 from ..critical_region import CriticalRegion
 from ..solution import Solution

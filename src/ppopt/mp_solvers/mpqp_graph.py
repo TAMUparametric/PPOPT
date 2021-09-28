@@ -1,5 +1,6 @@
-from settrie import SetTrie
 from typing import List
+
+from settrie import SetTrie
 
 from .solver_utils import generate_reduce, generate_extra
 from ..mpqp_program import MPQP_Program

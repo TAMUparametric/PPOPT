@@ -1,5 +1,6 @@
-import numpy
 from typing import Set, Tuple, Optional, List
+
+import numpy
 
 from ..critical_region import CriticalRegion
 from ..utils.chebyshev_ball import chebyshev_ball

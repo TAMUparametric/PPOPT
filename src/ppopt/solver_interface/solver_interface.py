@@ -1,5 +1,6 @@
-import numpy
 from typing import Optional, Iterable
+
+import numpy
 
 from .solver_interface_utils import SolverOutput
 from ..solver_interface.cvxopt_interface import solve_lp_cvxopt
@@ -8,6 +9,7 @@ from ..solver_interface.gurobi_solver_interface import solve_qp_gurobi, solve_lp
 from ..solver_interface.quad_prog_interface import solve_qp_quadprog
 
 Matrix = Optional[numpy.ndarray]
+
 
 def solver_not_supported(solver_name: str) -> None:
     """This is an internal method that throws an error and prompts the user when they use an unsupported Solver"""

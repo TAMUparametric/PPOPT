@@ -1,6 +1,7 @@
-import numpy
 from dataclasses import dataclass
 from typing import Union, List, Optional
+
+import numpy
 
 from .critical_region import CriticalRegion
 from .geometry.polytope_operations import get_chebyshev_information
@@ -24,7 +25,7 @@ class Solution:
         """
         self.critical_regions.append(region)
 
-    def evaluate(self, theta_point: numpy.ndarray) -> Union[None, numpy.ndarray]:
+    def evaluate(self, theta_point: numpy.ndarray) -> Optional[numpy.ndarray]:
         """
         returns the optimal x* from the solution
 
@@ -37,7 +38,7 @@ class Solution:
                 return region.evaluate(theta_point)
         return None
 
-    def get_region(self, theta_point: numpy.ndarray) -> Union[None, CriticalRegion]:
+    def get_region(self, theta_point: numpy.ndarray) -> Optional[CriticalRegion]:
         """
         Find the critical region in the solution that corresponds to the theta provided
 
@@ -102,7 +103,7 @@ class Solution:
 
         return False
 
-    def theta_dim(self):
+    def theta_dim(self) -> int:
         return self.program.num_t()
 
     def evaluate_objective(self, theta_point) -> Optional[numpy.ndarray]:
