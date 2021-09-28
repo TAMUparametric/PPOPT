@@ -26,7 +26,20 @@ def calc_weakly_redundant(A, b, equality_set: List[int] = None, deterministic_so
 
 @dataclass
 class MPLP_Program:
-    """The standard class for linear multiparametric programming"""
+    r"""
+    The standard class for linear multiparametric programming
+
+    .. math::
+        \min \theta^TH^Tx + c^Tx
+    .. math::
+        \begin{align}
+        Ax &\leq b + F\theta\\
+        A_{eq}x &= b_{eq}\\
+        A_\theta \theta &\leq b_\theta\\
+        x &\in R^n\\
+        \end{align}
+
+    """
 
     # uses dataclass to create the __init__  with post processing in the __post_init__
     # member variables of the MPLP_Program class

@@ -14,16 +14,20 @@ from ..utils.general_utils import make_column
 def solve_qp_quadprog(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
                       equality_constraints: Iterable[int] = None, verbose=False,
                       get_duals:bool=True) -> Optional[SolverOutput]:
-    """
+    r"""
     Calls Quadprog to solve the following optimization problem
 
-    The Quadratic programming problem
-        min_{x} 1/2 x^T@Q@x + c^T@x
+    .. math::
 
-        s.t.   A@x <= b
-               A_eq@x = beq
+        \min_{x} \frac{1}{2}x^TQx + c^Tx
 
-               x \in R^n
+    .. math::
+        \begin{align}
+        Ax &\leq b\\
+        A_{eq}x &= b_{eq}\\
+        x &\in R^n\\
+        \end{align}
+
 
     :param Q: Square matrix, can be None
     :param c: Column Vector, can be None

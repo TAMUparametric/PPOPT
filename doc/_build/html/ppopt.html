@@ -170,9 +170,12 @@
 <p>Critical region is a polytope that defines a region in the uncertainty space
 with an associated optimal value, active set, lagrange multipliers and
 constraints</p>
-<p>x(θ) = Aθ + b</p>
-<p>λ(θ) = Cθ + d</p>
-<p>CR := {θ : Eθ &lt;= f}</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+    x(\theta) &amp;= A\theta + b\\
+    \lambda(\theta) &amp;= C\theta + d\\
+    \Theta &amp;:= \{\forall \theta \in \mathbf{R}^m: E\theta \leq f\}
+\end{align}\end{split}\]</div>
 <p>equality_indices: numpy array of indices</p>
 <p>constraint_set: if this is a A&#64;x = b + <a class="reference external" href="mailto:F&#37;&#52;&#48;theta">F<span>&#64;</span>theta</a> boundary</p>
 <p>lambda_set: if this is a λ = 0 boundary</p>
@@ -266,6 +269,15 @@ constraints</p>
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ppopt.mplp_program.</span></span><span class="sig-name descname"><span class="pre">MPLP_Program</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_t</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_t</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_indices</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#ppopt.solver.Solver" title="ppopt.solver.Solver"><span class="pre">ppopt.solver.Solver</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">Solver(solvers={'lp':</span> <span class="pre">'glpk',</span> <span class="pre">'qp':</span> <span class="pre">'gurobi',</span> <span class="pre">'milp':</span> <span class="pre">'gurobi',</span> <span class="pre">'miqp':</span> <span class="pre">'gurobi'})</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The standard class for linear multiparametric programming</p>
+<div class="math notranslate nohighlight">
+\[\min \theta^TH^Tx + c^Tx\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+Ax &amp;\leq b + F\theta\\
+A_{eq}x &amp;= b_{eq}\\
+A_\theta \theta &amp;\leq b_\theta\\
+x &amp;\in R^n\\
+\end{align}\end{split}\]</div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="ppopt.mplp_program.MPLP_Program.A">
 <span class="sig-name descname"><span class="pre">A</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#ppopt.mplp_program.MPLP_Program.A" title="Permalink to this definition"></a></dt>
