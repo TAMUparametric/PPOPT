@@ -53,5 +53,5 @@ def test_qp_consistancy():
             print(f'On problem {i} there was a disagreement between Gurobi and Quadprog')
             print(quadprog_sol)
             print(gurobi_sol)
-            if numpy.linalg.norm(quadprog_sol.sol - gurobi.sol, 2) > 10**(-4):
+            if numpy.linalg.norm(quadprog_sol.sol - gurobi_sol.sol, 2) > 10**(-4):
                 assert False
