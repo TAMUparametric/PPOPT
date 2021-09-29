@@ -1,6 +1,8 @@
 # PPOPT
 
 [![Python package](https://github.com/TAMUparametric/PPOPT/actions/workflows/python-package.yml/badge.svg)](https://github.com/TAMUparametric/PPOPT/actions/workflows/python-package.yml)
+[![Documentation Status](https://readthedocs.org/projects/ppopt/badge/?version=latest)](https://ppopt.readthedocs.io/en/latest/?badge=latest)
+[![PyPI](https://img.shields.io/pypi/v/ppopt.svg)](https://pypi.org/project/ppopt)
 
 **P**ython **P**arametric **OP**timization **T**oolbox (**PPOPT**) is a software platform for solving and manipulating multiparametric programs in Python. This package is still in development but the following features are complete and are in full working order.
 
