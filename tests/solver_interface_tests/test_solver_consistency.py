@@ -50,11 +50,8 @@ def test_qp_consistancy():
         gurobi_sol = solve_qp_gurobi(Q, c, A, b, equality_constraints)
 
         if quadprog_sol != gurobi_sol:
-            # print(A)
-            # print(b)
-            # print(c)
-            # print(Q)
-            print(equality_constraints)
+            print(f'On problem {i} there was a disagreement between Gurobi and Quadprog')
             print(quadprog_sol)
             print(gurobi_sol)
-            assert False
+            if numpy.linalg.norm(quadprog_sol.sol - gurobi.sol, 2) > 10**(-4):
+                assert False
