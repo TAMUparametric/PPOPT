@@ -43,6 +43,7 @@ def test_qp_consistancy():
         c = numpy.random.random((dim))
         Q = numpy.random.random((dim, dim))
         Q = Q.T @ Q
+        Q = numpy.eye(dim)
         num_equals = numpy.random.randint(0, dim // 2)
         # equality_constraints = random.sample(range(num_constraints), num_equals)
         equality_constraints = []
