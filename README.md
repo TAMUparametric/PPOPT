@@ -6,11 +6,32 @@
 
 **P**ython **P**arametric **OP**timization **T**oolbox (**PPOPT**) is a software platform for solving and manipulating multiparametric programs in Python. This package is still in development but the following features are complete and are in full working order.
 
+## Installation
+
+Currently PPOPT requires Python 3.7 or higher and can be installed with the following commands.
+
+```bash
+pip install -e git+https://github.com/mmihaltz/pysettrie.git#egg=pysettrie
+pip install ppopt
+```
+
+## Quick Overview
+
+To give a fast primer of what we are doing, we are solving multiparametric programming problems (fast) by writting parallel algorithms efficently. Here is a quick sclaing analysis on a large multiparametric program.
+
+![image](https://github.com/TAMUparametric/PPOPT/blob/main/Figures/loglog_scaling.png)
+![image](https://github.com/TAMUparametric/PPOPT/blob/main/Figures/scaleing_eff.png)
+
+Here is a benchmark against the state of the art  multiparametric programming solvers. All tests run on the Terra Supercomputer at Texas A&M University. Matlab 2021b was used for solvers written in matlab and Python 3.8 was used for PPOPT.
+
+![image](https://github.com/TAMUparametric/PPOPT/blob/main/Figures/bench.png)
+
+
 #### Completed Features
 * Solver interface for mpLPs and mpQP with the following algorithms
   1. Serial and Parallel Combinatorial Algorithm
   2. Serial and Parallel Geometrical Algorithm
-  3.  Serial and Parallel Graph based Algorithm
+  3. Serial and Parallel Graph based Algorithm
 * Multiparametric solution export to C++, Javacript, Matlab, and Python
 * Plotting utilities
 * Presolver and Conditioning for Multiparametric Programs
@@ -24,11 +45,3 @@
 
 For more information about Multiparametric programming and it's applications, [this paper](https://www.frontiersin.org/articles/10.3389/fceng.2020.620168/full) is a good jumping point.
 
-## Installation
-
-Currently PPOPT requires Python 3.7 or higher and can be installed with the following commands.
-
-```bash
-pip install -e git+https://github.com/mmihaltz/pysettrie.git#egg=pysettrie
-pip install ppopt
-```
