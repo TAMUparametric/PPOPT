@@ -14,10 +14,4 @@ def solve(program: MPQP_Program) -> Optional[Solution]:
     :param program: a MPQP_Program
     :return: The solution of a MPQP Program
     """
-    # Phase one
-
-    # Explore the entire level-1
-
-    # generate_children(program, )
-
     pass

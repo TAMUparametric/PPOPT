@@ -17,7 +17,6 @@ def solve(program: MPQP_Program, active_set=None) -> Optional[Solution]:
     :param active_set: an initial optimal active set combination
     :return: the solution to the multiparametric optimization problem
     """
-
     if active_set is None:
         active_set = program.gen_optimal_active_set()
         print(f'Using a found active set {active_set}')

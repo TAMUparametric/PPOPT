@@ -39,7 +39,6 @@ def solve_qp_quadprog(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: n
 
     :return: A SolverOutput object if optima found, otherwise None.
     """
-
     try:
         if equality_constraints is None:
             equality_constraints = []

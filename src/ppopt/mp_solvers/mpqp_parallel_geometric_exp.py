@@ -65,12 +65,12 @@ def full_process_2(program, current_active_set):
 
 def fathem_initial_active_sets(program: MPQP_Program, initial_active_sets: List[List[int]] = None):
     """
+    Covers an inital active set
 
     :param program:
     :param initial_active_sets:
     :return:
     """
-
     cr_gen = lambda active_set: gen_cr_from_active_set(program=program, active_set=active_set, check_full_dim=True)
 
     crs = [cr for cr in map(cr_gen, initial_active_sets) if cr is not None]
@@ -95,7 +95,6 @@ def solve(program: MPQP_Program, initial_active_sets: List[List[int]] = None, nu
     :param num_cores: number of cores to run this calculation on, default of -1 means use all available cores
     :return: the solution to the multiparametric optimization problem
     """
-
     if initial_active_sets is None:
         initial_active_sets = [program.gen_optimal_active_set()]
         print(f'Using a found active set {initial_active_sets[-1]}')

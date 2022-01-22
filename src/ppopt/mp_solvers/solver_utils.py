@@ -9,7 +9,9 @@ from ..utils.mpqp_utils import gen_cr_from_active_set
 
 
 class CombinationTester:
-    """This keeps track of all of the infeasible active set combinations and filters prospective active set combinations"""
+
+    """This keeps track of all the infeasible active set combinations and filters prospective active set
+    combinations """
 
     def __init__(self):
         """
@@ -24,10 +26,10 @@ class CombinationTester:
     def check(self, active_set: Set[int]) -> bool:
         """
         Checks if the provided active set combination is a superset of a previously tested infeasible active set
+
         :param active_set:
         :return: False if it should be culled and not tested any further, True if the set could be feasible
         """
-
         if not isinstance(active_set, set):
             active_set = set(tuple(active_set))
 
@@ -80,6 +82,7 @@ def generate_reduce(candidate: tuple, murder_list=None, attempted=None) -> list:
 
 def generate_extra(candidate: tuple, expansion_set, murder_list=None, attempted=None) -> list:
     """
+    Special routine for graph based algorithm
 
     :param candidate:
     :param expansion_set:

@@ -65,7 +65,6 @@ def solve(program: MPQP_Program, num_cores=-1) -> Solution:
     :param program: MPQP to be solved
     :return: the solution of the MPQP
     """
-
     # thread pool that we will be using
     start = time.time()
 

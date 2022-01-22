@@ -74,7 +74,6 @@ def check_child_feasibility(program: MPQP_Program, set_list: List[List[int]], co
     :param combination_checker: The combination checker that prunes
     :return: The list of all feasible active sets
     """
-
     output = list()
     for child in set_list:
         if program.check_feasibility(child):

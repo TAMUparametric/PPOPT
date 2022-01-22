@@ -123,7 +123,6 @@ def row_equality(row_1: numpy.ndarray, row_2: numpy.ndarray, tol=10.0 ** (-16)) 
 
 def remove_duplicate_rows(A: numpy.ndarray, b: numpy.ndarray) -> List[numpy.ndarray]:
     """Finds and removes duplicate rows in the constraints A @ x <= b."""
-
     combined = numpy.hstack((A, b.reshape(b.size, 1)))
 
     if A.size == 0 or b.size == 0:

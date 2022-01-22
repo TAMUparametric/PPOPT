@@ -80,7 +80,6 @@ def solve_fully_constraints(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray
     :param b: Constraint RHS matrix
     :return: A SolverOutput Object
     """
-
     x = numpy.linalg.solve(A, b)
     dual = numpy.linalg.solve(A.T, -c)
     num_vars = A.shape[0]
@@ -169,7 +168,6 @@ def solve_lp_cvxopt(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray, equali
     :param cvx_solver: selects the cvxopt Solver, default is glpk
     :return: A SolverOutput Object
     """
-
     # this is to deal with immutability an copy constrictors
     if equality_constraints is None:
         equality_constraints = []
