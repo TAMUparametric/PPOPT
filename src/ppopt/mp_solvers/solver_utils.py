@@ -28,7 +28,7 @@ class CombinationTester:
         :return: False if it should be culled and not tested any further, True if the set could be feasible
         """
 
-        if type(active_set) is not Set:
+        if not isinstance(active_set, set):
             active_set = set(tuple(active_set))
 
         if not active_set:
@@ -41,13 +41,14 @@ class CombinationTester:
         return True
 
     def add_combo(self, active_set) -> None:
-        if type(active_set) is tuple:
+        if isinstance(active_set, tuple):
             self.combos.add(active_set)
-        if type(active_set) is not set:
+        if not isinstance(active_set, set):
             self.combos.add(tuple(active_set))
 
     def add_combos(self, set_list: Set[Tuple[int]]) -> None:
         self.combos.update(set_list)
+
 
 def manufacture_lambda(attempted, murder_list):
     if attempted is None:
@@ -149,10 +150,11 @@ def find_optimal_set(problem) -> List[int]:
 def generate_children_sets(active_set, num_constraints: int, murder_list=None):
     # takes the active set and then generates all super sets of higher cardinality
 
-    check = lambda x: True
-
-    if murder_list is not None:
-        check = lambda x: murder_list.check(x)
+    def check(x) -> bool:
+        if murder_list is not None:
+            return murder_list.check(x)
+        else:
+            return True
 
     if len(active_set) == 0:
         return [[i] for i in range(num_constraints) if check([i])]
@@ -169,7 +171,6 @@ def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> list:
     :param b: The RHS constraint matrix
     :return: a list with an tuple for each facet in the polytope (chebychev center, facet normal vector, chebychev radius)
     """
-
     facet_centers = []
 
     for facet_index in range(A.shape[0]):

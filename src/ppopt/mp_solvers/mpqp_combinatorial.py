@@ -15,7 +15,6 @@ def solve(program: MPQP_Program) -> Solution:
     :param program: MPQP to be solved
     :return: the solution of the MPQP
     """
-
     murder_list = CombinationTester()
 
     to_check = list()
