@@ -41,11 +41,7 @@ def test_qp_consistancy():
         A = numpy.random.random((num_constraints, dim))
         b = numpy.random.random((num_constraints, 1))
         c = numpy.random.random((dim))
-        Q = numpy.random.random((dim, dim))
-        Q = Q.T @ Q
         Q = numpy.eye(dim)
-        num_equals = numpy.random.randint(0, dim // 2)
-        # equality_constraints = random.sample(range(num_constraints), num_equals)
         equality_constraints = []
         quadprog_sol = solve_qp_quadprog(Q, c, A, b, equality_constraints)
         gurobi_sol = solve_qp_gurobi(Q, c, A, b, equality_constraints)

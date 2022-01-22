@@ -62,7 +62,7 @@ class Solution:
 
         print(len(self.critical_regions))
 
-        for i, region in enumerate(self.critical_regions):
+        for region in self.critical_regions:
             sol = get_chebyshev_information(region)
             theta = make_column(sol.sol)[0:numpy.size(sol.sol) - 1]
 

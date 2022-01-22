@@ -22,25 +22,25 @@ To give a fast primer of what we are doing, we are solving multiparametric progr
 ![image](https://github.com/TAMUparametric/PPOPT/blob/main/Figures/loglog_scaling.png)
 ![image](https://github.com/TAMUparametric/PPOPT/blob/main/Figures/scaleing_eff.png)
 
-Here is a benchmark against the state of the art  multiparametric programming solvers. All tests run on the Terra Supercomputer at Texas A&M University. Matlab 2021b was used for solvers written in matlab and Python 3.8 was used for PPOPT.
+Here is a benchmark against the state of the art multiparametric programming solvers. All tests run on the Terra Supercomputer at Texas A&M University. Matlab 2021b was used for solvers written in matlab and Python 3.8 was used for PPOPT.
 
 ![image](https://github.com/TAMUparametric/PPOPT/blob/main/Figures/bench.png)
 
 ### Completed Features
-* Solver interface for mpLPs and mpQP with the following algorithms
+
+- Solver interface for mpLPs and mpQP with the following algorithms
   1. Serial and Parallel Combinatorial Algorithm
   2. Serial and Parallel Geometrical Algorithm
   3. Serial and Parallel Graph based Algorithm
-* Multiparametric solution export to C++, Javacript, Matlab, and Python
-* Plotting utilities
-* Presolver and Conditioning for Multiparametric Programs
+- Multiparametric solution export to C++, Javacript, Matlab, and Python
+- Plotting utilities
+- Presolver and Conditioning for Multiparametric Programs
 
 ### Key Applications
 
-* Explicit Model Predictive Control
-* Multilevel Optimization 
-* Integrated Design, Control, and Scheduling
-* Robust Optimization
+- Explicit Model Predictive Control
+- Multilevel Optimization
+- Integrated Design, Control, and Scheduling
+- Robust Optimization
 
 For more information about Multiparametric programming and it's applications, [this paper](https://www.frontiersin.org/articles/10.3389/fceng.2020.620168/full) is a good jumping point.
-

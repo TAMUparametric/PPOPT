@@ -137,7 +137,7 @@ def parametric_plot_1D(solution: Solution, save_path: str = None, show=True) -> 
     # x_dim = solution.program.num_x()
 
     # set up the plotting object
-    fig, ax = pyplot.subplots()
+    _, ax = pyplot.subplots()
 
     # plot the critical regions w.r.t. x*
     for critical_region in solution.critical_regions:

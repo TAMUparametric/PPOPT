@@ -41,7 +41,7 @@ def test_lagrange_multipliers(region):
 
 def test_is_inside_1(region):
     num_tests = 10
-    for i in range(num_tests):
+    for _ in range(num_tests):
         theta = numpy.random.random((2, 1))
         assert region.is_inside(theta)
 

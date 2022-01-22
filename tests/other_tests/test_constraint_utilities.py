@@ -8,7 +8,7 @@ def test_constraint_norm_1():
     A = numpy.random.random((10, 10))
     b = numpy.random.random((10, 1))
 
-    [As, bs] = scale_constraint(A, b)
+    [As, _] = scale_constraint(A, b)
 
     results = numpy.linalg.norm(As, axis=1)
     assert numpy.allclose(numpy.ones(10), results)
