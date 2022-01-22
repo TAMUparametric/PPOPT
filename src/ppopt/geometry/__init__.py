@@ -1,3 +1,1 @@
-"""
-PPOPT.GEOMETRY INIT FILE - todo fill in
-"""
+"""PPOPT.GEOMETRY INIT FILE - todo fill in"""
