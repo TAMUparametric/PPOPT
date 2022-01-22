@@ -135,7 +135,7 @@ def test_warnings_10(linear_program):
 
 
 def test_latex_lp(linear_program):
-    output = linear_program.latex()
+    _ = linear_program.latex()
 
     # supress output of print
     sys_stdout = sys.stdout
@@ -188,7 +188,7 @@ def test_warnings_qp_4(quadratic_program):
 
 
 def test_latex(quadratic_program):
-    output = quadratic_program.latex()
+    _ = quadratic_program.latex()
 
     # supress output of print
     sys_stdout = sys.stdout

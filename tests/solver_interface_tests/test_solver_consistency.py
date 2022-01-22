@@ -1,6 +1,6 @@
-from src.ppopt.solver_interface.gurobi_solver_interface import *
-from src.ppopt.solver_interface.cvxopt_interface import *
-from src.ppopt.solver_interface.quad_prog_interface import *
+from src.ppopt.solver_interface.gurobi_solver_interface import solve_qp_gurobi, solve_lp_gurobi
+from src.ppopt.solver_interface.cvxopt_interface import solve_lp_cvxopt
+from src.ppopt.solver_interface.quad_prog_interface import solve_qp_quadprog
 import random
 
 import numpy
@@ -10,7 +10,7 @@ def test_lp_consistency():
     # test 100 random LPs
     num_lp = 100
 
-    for i in range(num_lp):
+    for _ in range(num_lp):
 
         dim = numpy.random.randint(3, 20)
         num_constraints = 3 * dim
@@ -34,7 +34,7 @@ def test_qp_consistancy():
 
     num_qp = 100
 
-    for i in range(num_qp):
+    for _ in range(num_qp):
         dim = numpy.random.randint(3, 20)
         num_constraints = 3 * dim
 

@@ -24,11 +24,6 @@ def test_check_optimality(simple_mpqp_problem):
 def test_build_cr_from_active_set(qp_problem):
     qp_problem.scale_constraints()
 
-    soln1 = qp_problem.check_optimality([2, 3])
-    soln2 = qp_problem.check_optimality([0, 2, 3])
-    soln3 = qp_problem.check_optimality([0, 2, 3, 4])
-    soln4 = qp_problem.check_optimality([0, 2, 3, 5])
-
     assert gen_cr_from_active_set(qp_problem, [2, 3]) is not None
     assert gen_cr_from_active_set(qp_problem, [0, 2, 3]) is not None
     assert gen_cr_from_active_set(qp_problem, [0, 2, 3, 4]) is not None
