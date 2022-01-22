@@ -26,8 +26,7 @@ Here is a benchmark against the state of the art  multiparametric programming so
 
 ![image](https://github.com/TAMUparametric/PPOPT/blob/main/Figures/bench.png)
 
-
-#### Completed Features
+### Completed Features
 * Solver interface for mpLPs and mpQP with the following algorithms
   1. Serial and Parallel Combinatorial Algorithm
   2. Serial and Parallel Geometrical Algorithm
@@ -36,7 +35,7 @@ Here is a benchmark against the state of the art  multiparametric programming so
 * Plotting utilities
 * Presolver and Conditioning for Multiparametric Programs
 
-## Key Applications
+### Key Applications
 
 * Explicit Model Predictive Control
 * Multilevel Optimization 

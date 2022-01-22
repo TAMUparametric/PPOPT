@@ -193,12 +193,8 @@ def solve_lp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray, equali
     :return: A SolverOutput Object
     """
 
-    # Simple short cuts that indicate a unbounded or infeasible LP
-
-    if A is None or b is None:
-        return None
-
-    if numpy.size(A) == 0 or numpy.size(b) == 0:
+    #
+    if not gurobi_pretest(A, b):
         return None
 
     return solve_miqp_gurobi(c=c, A=A, b=b, equality_constraints=equality_constraints, verbose=verbose,
@@ -236,11 +232,24 @@ def solve_milp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
 
     :return:  A SolverOutput Object
     """
-    if A is None or b is None:
+    if not gurobi_pretest(A, b):
         return None
-
-    if numpy.size(A) == 0 or numpy.size(b) == 0:
-        return None
-
     return solve_miqp_gurobi(c=c, A=A, b=b, equality_constraints=equality_constraints, bin_vars=bin_vars,
                              verbose=verbose, get_duals=get_duals)
+
+def gurobi_pretest(A,b) -> bool:
+
+    """
+    Simple short cuts that indicate a unbounded or infeasible LP
+
+    :param A: LHS Matrix
+    :param b: RHS Vector
+    :return: True is not trivial unbounded or infeasible constraints
+    """
+    if A is None or b is None:
+        return False
+
+    if numpy.size(A) == 0 or numpy.size(b) == 0:
+        return False
+
+    return True

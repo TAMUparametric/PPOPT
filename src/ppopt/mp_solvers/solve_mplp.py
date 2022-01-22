@@ -5,7 +5,7 @@ from ..mplp_program import MPLP_Program
 
 class mplp_solver(Enum):
     Dustin = '1'
-    pass
+
 
 
 def solve_mplp(problem: MPLP_Program, algorithm: mplp_solver = mplp_solver.Dustin):

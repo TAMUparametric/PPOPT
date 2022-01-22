@@ -5,6 +5,7 @@ from ..solution import Solution
 
 
 def solve(program: MPQP_Program) -> Optional[Solution]:
+
     """
     This solves a MPQP program with the method proposed by Parisa Ahmadi-Moshkenani et. al. This algorithm is similar to the \\
     graph algorithm implemented by Richard Oberdeik.

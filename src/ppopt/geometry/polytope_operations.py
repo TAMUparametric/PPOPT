@@ -27,7 +27,6 @@ def sample_region_convex_combination(region: CriticalRegion, dispersion=0, num_s
                                      deterministic_solver='glpk'):
     """
     This is a class to sample a polytopic critical region
-
     Not SUPPORTED YET
     :param region:
     :param dispersion:
@@ -45,7 +44,7 @@ def sample_region_convex_combination(region: CriticalRegion, dispersion=0, num_s
     if cheb_info is None:
         return None
 
-    for i in range(num_samples):
+    for _ in range(num_samples):
         sample_vertices = numpy.random.choice(num_vertices, num_combs, replace=False)
         print(type(sample_vertices))
         weight = numpy.random.random(num_combs)
@@ -85,7 +84,7 @@ def hit_and_run(p, x_0, n_steps: int = 10):
         vec = numpy.random.rand(size).reshape(size, -1)
         return vec / numpy.linalg.norm(vec, 2)
 
-    for i in range(n_steps):
+    for _ in range(n_steps):
         # generate a random direction
         random_direc = random_direction()
 

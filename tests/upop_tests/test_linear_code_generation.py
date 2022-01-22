@@ -11,4 +11,4 @@ def test_generate_cpp_export(factory_solution):
 
 
 def test_generate_matlab_export(factory_solution):
-    matlab_export = generate_code_matlab(factory_solution)
+    generate_code_matlab(factory_solution)

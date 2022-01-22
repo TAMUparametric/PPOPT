@@ -29,7 +29,6 @@ def calc_weakly_redundant(A, b, equality_set: List[int] = None, deterministic_so
 class MPLP_Program:
     r"""
     The standard class for linear multiparametric programming
-
     .. math::
         \min \theta^TH^Tx + c^Tx
     .. math::
@@ -58,6 +57,7 @@ class MPLP_Program:
     solver: Solver = Solver()
 
     def __post_init__(self):
+        """This is called after __init__ this is used as a post processing step after the dataclass generated __init__"""
         if self.equality_indices is None:
             self.equality_indices = []
 
@@ -77,15 +77,15 @@ class MPLP_Program:
         self.process_constraints()
 
     def num_x(self) -> int:
-        """Returns number of parameters"""
+        """Returns number of parameters."""
         return self.A.shape[1]
 
     def num_t(self) -> int:
-        """Returns number of uncertain variables"""
+        """Returns number of uncertain variables."""
         return self.F.shape[1]
 
     def num_constraints(self) -> int:
-        """Returns number of constraints"""
+        """Returns number of constraints."""
         return self.A.shape[0]
 
     def num_inequality_constraints(self) -> int:
@@ -98,7 +98,7 @@ class MPLP_Program:
         return theta_point.T @ self.H.T @ x + self.c.T @ x
 
     def warnings(self) -> List[str]:
-        """Checks the dimensions of the matrices to ensure consistency"""
+        """Checks the dimensions of the matrices to ensure consistency."""
 
         warning_list = list()
 
@@ -138,11 +138,11 @@ class MPLP_Program:
 
     # Checks warnings again and prints warnings
     def display_warnings(self) -> None:
-        """Displaces warnings"""
+        """Displaces warnings."""
         print(self.warnings())
 
     def display_latex(self) -> None:
-        """Displaces Latex text of the multiparametric problem"""
+        """Displaces Latex text of the multiparametric problem."""
         output = self.latex()
         for i in output:
             print(i)
@@ -150,7 +150,6 @@ class MPLP_Program:
     def latex(self) -> List[str]:
         """
         Generates latex of the multiparametric problem
-
         :return: returns latex of the
         """
 
@@ -194,7 +193,7 @@ class MPLP_Program:
         return output
 
     def scale_constraints(self) -> None:
-        """Rescales the constraints of the multiparametric problem to ||[A|-F]||_i = 1, in the L2 sense"""
+        """Rescales the constraints of the multiparametric problem to ||[A|-F]||_i = 1, in the L2 sense."""
         # scale the [A| b, F] constraint by the H = [A|-F] rows
         H = numpy.block([self.A, -self.F])
         norm = constraint_norm(H)
@@ -208,7 +207,7 @@ class MPLP_Program:
         self.b_t = self.b_t / norm
 
     def process_constraints(self, find_implicit_equalities=False) -> None:
-        """Removes redundant constraints from the multiparametric programming problem"""
+        """Removes redundant constraints from the multiparametric programming problem."""
         self.constraint_datatype_conversion()
         self.scale_constraints()
 
@@ -579,7 +578,7 @@ class MPLP_Program:
 
         max_iter = 500
 
-        for i in range(max_iter):
+        for _ in range(max_iter):
 
             pert = numpy.random.uniform(-radius, radius, (self.num_t(), 1))
             test_point = pert + theta_point
@@ -656,7 +655,6 @@ class MPLP_Program:
         """
 
         # find all of the A_i of the
-        for i in range(len(self.equality_indices), self.A.shape[0]):
-            pass
-
+        # for _ in range(len(self.equality_indices), self.A.shape[0]):
+        #     pass
         pass
