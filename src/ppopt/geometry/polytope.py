@@ -2,7 +2,6 @@ import numpy
 
 
 class Polytope:
-
     """
     This is a basic convex polytope class in n-dimensions. In future releases this will take the place of explicitly passing \\
     around matrix pairs [A, b] and lead to a simplification of the code base.
@@ -23,4 +22,3 @@ class Polytope:
         A_prime = numpy.block([[self.A], [other.A]])
         b_prime = numpy.block([[self.b], [other.b]])
         return A_prime, b_prime
-

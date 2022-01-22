@@ -35,7 +35,7 @@ def gen_tess_points_simplex(simplex):
     index = length
     extent = len(simplex)
     for i in range(extent):
-        for j in range(i + 1,extent):
+        for j in range(i + 1, extent):
             tess[index] = .5 * (simplex[i] + simplex[j])
             index += 1
     return tess

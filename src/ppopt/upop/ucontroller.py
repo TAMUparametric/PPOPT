@@ -104,10 +104,10 @@ def classify_polytope(region: CriticalRegion, hyper_plane: numpy.ndarray) -> int
 
 
 class BVH:
-
     """
     This is the Bounding Volume Hierarchy (BVH) class that decomposes the space that allows point location acceleration
     """
+
     def __init__(self, parent, fundamental_list, region_list, depth, index):
         """Initializes the BVH based on a recursive constructor."""
         self.depth = depth
