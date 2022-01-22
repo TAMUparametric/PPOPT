@@ -238,7 +238,6 @@ def solve_milp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
                              verbose=verbose, get_duals=get_duals)
 
 def gurobi_pretest(A,b) -> bool:
-
     """
     Simple short cuts that indicate a unbounded or infeasible LP
 

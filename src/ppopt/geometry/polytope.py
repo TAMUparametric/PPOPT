@@ -9,12 +9,12 @@ class Polytope:
     """
 
     def __init__(self, A: numpy.ndarray, b: numpy.ndarray):
-        """Initializes a Polytope"""
+        """Initializes a Polytope."""
         self.A = A
         self.b = b
 
     def __and__(self, other):  # -> Optional[Polytope]:
-        """ Takes the union of two convex polytopes"""
+        """ Takes the union of two convex polytopes."""
         if other is None:
             return Polytope(self.A.copy(), self.b.copy())
 

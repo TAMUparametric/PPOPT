@@ -106,8 +106,8 @@ def quadratic_program() -> MPQP_Program:
 
 @pytest.fixture()
 def blank_solution():
-    """Blank solution"""
-    """a simple mplp to test the dimensional correctness of its functions"""
+    """Blank solution
+    a simple mplp to test the dimensional correctness of its functions"""
     A = numpy.array(
         [[1, 1, 0, 0], [0, 0, 1, 1], [-1, 0, -1, 0], [0, -1, 0, -1], [-1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0],
          [0, 0, 0, -1]])
@@ -127,8 +127,8 @@ def blank_solution():
 
 @pytest.fixture()
 def filled_solution(region):
-    """Blank solution with the single square region"""
-    """a simple mplp to test the dimensional correctness of its functions"""
+    """Blank solution with the single square region
+    a simple mplp to test the dimensional correctness of its functions"""
     A = numpy.array(
         [[1, 1, 0, 0], [0, 0, 1, 1], [-1, 0, -1, 0], [0, -1, 0, -1], [-1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0],
          [0, 0, 0, -1]])

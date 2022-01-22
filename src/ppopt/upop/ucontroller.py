@@ -24,7 +24,6 @@ def determine_hyperplane(regions: List[CriticalRegion], hyper_planes: numpy.ndar
     :param hyper_planes:
     :return: []
     """
-
     best_index = 0
     best_support = list()
     best_not_support = list()
@@ -35,7 +34,7 @@ def determine_hyperplane(regions: List[CriticalRegion], hyper_planes: numpy.ndar
 
     # TODO: Implement redundant hyperplane removal for speedup
 
-    remove_hyper_plan = list()
+    # remove_hyper_plan = list()
 
     for i in range(hyper_planes.shape[0]):
 
@@ -106,6 +105,10 @@ def classify_polytope(region: CriticalRegion, hyper_plane: numpy.ndarray) -> int
 
 
 class BVH:
+
+    """
+    This is the Bounding Volume Hierarchy (BVH) class that decomposes the space that allows point location acceleration
+    """
     def __init__(self, parent, fundamental_list, region_list, depth, index):
         self.depth = depth
         self.is_leaf = False
@@ -134,8 +137,10 @@ def generate_code(solution: Solution) -> List[str]:
     :return: List of the strings of the C++17 datafiles that integrate with uPOP
     """
 
-    fundamental_c, original_c, parity_c = find_unique_region_hyperplanes(solution)
+    # TODO: Finish Implementation
 
-    fundamental_f, original_f, parity_f = find_unique_region_functions(solution)
+    # fundamental_c, original_c, parity_c = find_unique_region_hyperplanes(solution)
+
+    # fundamental_f, original_f, parity_f = find_unique_region_functions(solution)
 
     return ["None"]
