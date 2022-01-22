@@ -22,5 +22,5 @@ class Polytope:
 
         A_prime = numpy.block([[self.A], [other.A]])
         b_prime = numpy.block([[self.b], [other.b]])
-        return A_prime
+        return A_prime, b_prime
 

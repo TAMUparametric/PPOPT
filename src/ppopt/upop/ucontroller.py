@@ -10,7 +10,6 @@ import numpy
 from ..critical_region import CriticalRegion
 from ..solution import Solution
 from ..solver_interface.solver_interface import solve_lp
-from ..upop.upop_utils import find_unique_region_hyperplanes, find_unique_region_functions
 from ..utils.general_utils import make_column
 
 
@@ -110,6 +109,7 @@ class BVH:
     This is the Bounding Volume Hierarchy (BVH) class that decomposes the space that allows point location acceleration
     """
     def __init__(self, parent, fundamental_list, region_list, depth, index):
+        """Initializes the BVH based on a recursive constructor."""
         self.depth = depth
         self.is_leaf = False
         self.region = -1

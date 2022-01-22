@@ -46,7 +46,6 @@ def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None, A: numpy
     variables, output['dual'] = dual variables, output['obj'] = objective value, output['const'] = slacks,
     output['active'] = active constraints.
     """
-
     model = gp.Model()
 
     if not verbose:
