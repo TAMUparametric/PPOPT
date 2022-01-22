@@ -19,7 +19,6 @@ class mpqp_algorithm(Enum):
     Enum that selects the mpqp algorithm to be used
 
     This is done by passing the argument mpqp_algorithm.algorithm
-
     """
     combinatorial = 'combinatorial'
     combinatorial_parallel = 'p combinatorial'
@@ -42,7 +41,6 @@ def solve_mpqp(problem: MPQP_Program, algorithm: mpqp_algorithm = mpqp_algorithm
     :param algorithm: Selects the algorithm to be used
     :return: the solution of the MPQP, returns an empty solution if there is not an implemented algorithm
     """
-
     solution = Solution(problem, [])
 
     if algorithm is mpqp_algorithm.combinatorial:

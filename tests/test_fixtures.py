@@ -12,7 +12,7 @@ from src.ppopt.utils.general_utils import make_column
 
 @pytest.fixture()
 def qp_problem():
-    """The factory problem from the mp book by richard"""
+    """The factory problem from the mp book by Richard."""
     A = numpy.array(
         [[1, 1, 0, 0], [0, 0, 1, 1], [-1, 0, -1, 0], [0, -1, 0, -1], [-1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0],
          [0, 0, 0, -1]])
@@ -29,7 +29,7 @@ def qp_problem():
 
 @pytest.fixture()
 def factory_solution():
-    """The factory problem from the mp book by richard"""
+    """The factory problem from the mp book by Richard."""
     A = numpy.array(
         [[1, 1, 0, 0], [0, 0, 1, 1], [-1, 0, -1, 0], [0, -1, 0, -1], [-1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0],
          [0, 0, 0, -1]])
@@ -61,7 +61,7 @@ def simple_mpqp_problem():
 
 @pytest.fixture()
 def region() -> CriticalRegion:
-    """A square critical region with predictable properties"""
+    """A square critical region with predictable properties."""
     A = numpy.eye(2)
     b = numpy.zeros((2, 1))
     C = numpy.eye(2)

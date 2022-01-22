@@ -27,6 +27,7 @@ def calc_weakly_redundant(A, b, equality_set: List[int] = None, deterministic_so
 
 @dataclass
 class MPLP_Program:
+
     r"""
     The standard class for linear multiparametric programming
     .. math::
@@ -99,7 +100,6 @@ class MPLP_Program:
 
     def warnings(self) -> List[str]:
         """Checks the dimensions of the matrices to ensure consistency."""
-
         warning_list = list()
 
         # check if b is a column vector
@@ -150,9 +150,9 @@ class MPLP_Program:
     def latex(self) -> List[str]:
         """
         Generates latex of the multiparametric problem
+
         :return: returns latex of the
         """
-
         output = list()
 
         # create string variables for x and theta
@@ -301,7 +301,7 @@ class MPLP_Program:
 
     def constraint_datatype_conversion(self) -> None:
         """
-        Makes sure that all of the data types of the problem are in fp64, this is important as some solvers do not accept integral data types
+        Makes sure that all the data types of the problem are in fp64, this is important as some solvers do not accept integral data types
         """
         self.A = self.A.astype('float64')
         self.c = self.c.astype('float64')

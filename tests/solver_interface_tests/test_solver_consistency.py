@@ -34,7 +34,7 @@ def test_qp_consistancy():
 
     num_qp = 100
 
-    for _ in range(num_qp):
+    for i in range(num_qp):
         dim = numpy.random.randint(3, 20)
         num_constraints = 3 * dim
 

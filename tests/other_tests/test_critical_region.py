@@ -8,7 +8,7 @@ from src.ppopt.utils.general_utils import make_column
 
 @pytest.fixture()
 def region() -> CriticalRegion:
-    """A square critical region with predictable properties"""
+    """A square critical region with predictable properties."""
     A = numpy.eye(2)
     b = numpy.zeros((2, 1))
     C = numpy.eye(2)

@@ -7,10 +7,11 @@ import numpy
 def make_column(x: Union[List, numpy.ndarray]) -> numpy.ndarray:
     """
     Makes x into a column vector
+
     :param x: a list or a numpy array
     :return: a numpy array that is a column vector
     """
-    if type(x) is numpy.ndarray:
+    if isinstance(x, numpy.ndarray):
         return x.reshape(x.size, 1)
     return (numpy.array(x)).reshape(len(x), 1)
 
@@ -18,10 +19,11 @@ def make_column(x: Union[List, numpy.ndarray]) -> numpy.ndarray:
 def make_row(x: Union[List, numpy.ndarray]) -> numpy.ndarray:
     """
     Makes x into a row vector
+
     :param x: a list or a numpy array
     :return: a numpy array that is a row column
     """
-    if type(x) is numpy.ndarray:
+    if isinstance(x, numpy.ndarray):
         return x.reshape(1, x.size)
     return (numpy.array(x)).reshape(1, len(x))
 
@@ -38,7 +40,7 @@ def select_not_in_list(A: numpy.ndarray, list_: Iterable[int]) -> numpy.ndarray:
 
 
 def render_number(x, trade_off=1e-4) -> str:
-    if type(x) is str:
+    if isinstance(x,str):
         return x
 
     if abs(x) < 10 ** -14:
@@ -64,13 +66,13 @@ def latex_matrix(A: Union[List[str], numpy.ndarray]) -> str:
 
     rows = list()
 
-    if type(A) is numpy.ndarray:
+    if isinstance(A, numpy.ndarray):
         for i in range(A.shape[0]):
             rows.append(" & ".join([render_number(j) for j in A[i]]))
         return start + "\\\\".join(rows) + end
 
     # default lists as column matrix
-    if type(A) is list:
+    if isinstance(A, list):
         return start + "\\\\".join([render_number(x) for x in A]) + end
 
 
@@ -103,17 +105,11 @@ def num_cpu_cores():
 
 
 def ppopt_block(mat_list):
-    if type(mat_list[0]) is not list:
+    if not isinstance(mat_list[0], list):
         mat_list = [mat_list]
 
-    x_size = 0
-    y_size = 0
-
-    for i in mat_list[0]:
-        x_size += i.shape[1]
-
-    for j in range(len(mat_list)):
-        y_size += mat_list[j][0].shape[0]
+    x_size = sum(el.shape[1] for el in mat_list[0])
+    y_size = sum(el[0].shape[0] for el in mat_list)
 
     output_data = numpy.zeros((y_size, x_size))
 

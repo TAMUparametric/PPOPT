@@ -8,6 +8,7 @@ from .utils.general_utils import latex_matrix, remove_size_zero_matrices, ppopt_
 
 
 class MPQP_Program(MPLP_Program):
+
     r"""
     The standard class for quadratic multiparametric programming.
 
@@ -20,7 +21,6 @@ class MPQP_Program(MPLP_Program):
         A_\theta \theta &\leq b_\theta\\
         x &\in R^n\\
         \end{align}
-
     """
 
     def __init__(self, A: numpy.ndarray, b: numpy.ndarray, c: numpy.ndarray, H: numpy.ndarray, Q: numpy.ndarray,
@@ -40,10 +40,9 @@ class MPQP_Program(MPLP_Program):
 
     def evaluate_objective(self, x, theta_point):
         r"""
-        Evaluates the objective of the Mutliparametric program. for a given x and Θ.
+        Evaluates the objective of the multiparametric program. for a given x and Θ.
 
         .. math::
-
             \frac{1}{2}x^TQx + \theta^TH^Tx+c^Tx
 
         :param x: x input
@@ -107,7 +106,6 @@ class MPQP_Program(MPLP_Program):
         Substitutes theta into the multiparametric problem and solves the following optimization problem
 
         .. math::
-
             \min_{x} \frac{1}{2}x^TQx + \tilde{c}^Tx
 
         .. math::

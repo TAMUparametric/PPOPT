@@ -15,6 +15,7 @@ def get_boundary_types(region: numpy.ndarray, omega: numpy.ndarray, lagrange: nu
         List:
     """
     Classifies the boundaries of a polytope into Omega constraints, Lagrange multiplier = 0 constraints, and Activated program constraints
+
     :param region:
     :param omega:
     :param lagrange:
@@ -48,7 +49,6 @@ def get_boundary_types(region: numpy.ndarray, omega: numpy.ndarray, lagrange: nu
 def build_suboptimal_critical_region(program: MPQP_Program, active_set: List[int]):
     """
     Builds the critical region without considering culling facets or any other operation.
-
     Primary uses for this is based on culling lower dimensional feasible sets.
 
     :param program: the MQMP_Program to be solved
@@ -84,6 +84,7 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
     CriticalRegion]:
     """
     Builds the critical region of the given mpqp from the active set.
+
     :param program: the MQMP_Program to be solved
     :param active_set: the active set combination to build this critical region from
     :param check_full_dim: Keyword Arg, if true will return null if the region has lower dimensionality
@@ -185,6 +186,7 @@ def is_full_dimensional(A, b, solver: Solver = Solver()):
     This checks the dimensionality of a polytope defined by P = {x: Ax≤b}. Current method is based on checking if the
     radii of the chebychev ball is nonzero. However this is numerically not so stable, and will eventually be replaced
     by looking at the ratio of the 2 chebychev balls
+
     :param A: LHS of polytope constraints
     :param b: RHS of polytope constraints
     :param solver: the solver interface to direct the deterministic solver

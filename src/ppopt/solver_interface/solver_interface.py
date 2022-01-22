@@ -52,10 +52,8 @@ def solve_miqp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
 
     :return: A SolverOutput object if optima found, otherwise None.
     """
-
     if deterministic_solver == "gurobi":
         return solve_miqp_gurobi(Q, c, A, b, equality_constraints, bin_vars, verbose, get_duals)
-
     else:
         solver_not_supported(deterministic_solver)
 
@@ -88,7 +86,6 @@ def solve_qp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix, equality_constraints: I
 
     :return: A SolverOutput object if optima found, otherwise None.
     """
-
     if deterministic_solver == "gurobi":
         return solve_qp_gurobi(Q, c, A, b, equality_constraints, verbose, get_duals)
     elif deterministic_solver == "quadprog":
@@ -124,7 +121,6 @@ def solve_lp(c: Matrix, A: Matrix, b: Matrix, equality_constraints=None, verbose
 
     :return: A SolverOutput object if optima found, otherwise None.
     """
-
     if deterministic_solver == "gurobi":
         return solve_lp_gurobi(c, A, b, equality_constraints, verbose, get_duals)
     if deterministic_solver == 'glpk':
@@ -163,7 +159,6 @@ def solve_milp(c: Matrix, A: Matrix, b: Matrix, equality_constraints: Iterable[i
 
     :return: A dictionary of the Solver outputs, or none if infeasible or unbounded. output['sol'] = primal variables, output['dual'] = dual variables, output['obj'] = objective value, output['const'] = slacks, output['active'] = active constraints.
     """
-
     if deterministic_solver == "gurobi":
         return solve_milp_gurobi(c, A, b, equality_constraints, bin_vars, verbose, get_duals)
     else:

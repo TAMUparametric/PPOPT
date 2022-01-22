@@ -40,7 +40,6 @@ def detect_implicit_equalities(A: numpy.ndarray, b: numpy.ndarray) -> List[List[
     Detects inequality constraints that form implicit equality constraints. This is important because inequality constraint pairs that\\
     form equality constraints will actively mess with the true cardinality of the active set. Older solvers did not make check this and\\
     that led to some problematic results.
-
     .. math::
 
         \begin{align*}
@@ -119,13 +118,11 @@ def row_equality(row_1: numpy.ndarray, row_2: numpy.ndarray, tol=10.0 ** (-16)) 
     :param tol: tolerable L2 norm of the difference
     :return: True if rows are equal
     """
-
     return numpy.sum((row_1 - row_2) ** 2) < tol
 
 
 def remove_duplicate_rows(A: numpy.ndarray, b: numpy.ndarray) -> List[numpy.ndarray]:
-    """Finds and removes duplicate rows in the constraints A @ x <= b"""
-
+    """Finds and removes duplicate rows in the constraints A @ x <= b."""
     combined = numpy.hstack((A, b.reshape(b.size, 1)))
 
     if A.size == 0 or b.size == 0:
@@ -139,7 +136,6 @@ def remove_duplicate_rows(A: numpy.ndarray, b: numpy.ndarray) -> List[numpy.ndar
 def facet_ball_elimination(A: numpy.ndarray, b: numpy.ndarray) -> List[numpy.ndarray]:
     """
     Removes weakly redundant constraints, method is from the appendix of the Oberdieck paper
-
     url: https://www.sciencedirect.com/science/article/pii/S0005109816303971
 
     :param A: LHS constraint matrix
@@ -155,14 +151,13 @@ def facet_ball_elimination(A: numpy.ndarray, b: numpy.ndarray) -> List[numpy.nda
 
 def calculate_redundant_constraints(A, b):
     """
-        Removes weakly redundant constraints, method is from the appendix of the Oberdieck paper
+    Removes weakly redundant constraints, method is from the appendix of the Oberdieck paper
+    url: https://www.sciencedirect.com/science/article/pii/S0005109816303971
 
-        url: https://www.sciencedirect.com/science/article/pii/S0005109816303971
-
-        :param A: LHS constraint matrix
-        :param b: RHS constraint column vector
-        :return: The processes constraint pair [A, b]
-        """
+    :param A: LHS constraint matrix
+    :param b: RHS constraint column vector
+    :return: The processes constraint pair [A, b]
+    """
     [A_ps, b_ps] = scale_constraint(A, b)
 
     output = list()
@@ -200,7 +195,7 @@ def find_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, equality_set:
 
 
 def remove_strongly_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, include_kept_indices=False):
-    """Removes strongly redundant constraints by testing the feasibility of each constraint if activated"""
+    """Removes strongly redundant constraints by testing the feasibility of each constraint if activated."""
     keep_list = list()
     new_index = list()
     for i in range(A.shape[0]):

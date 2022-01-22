@@ -25,7 +25,6 @@ def full_process(program: MPQP_Program, active_set: List[int], murder_list, gen_
     :param gen_children: A boolean flag, that determines if we should generate the children subsets
     :return: a list of the following form [Optional[CriticalRegion], pruned active set combination,Possibly Feasible Active set combinations]
     """
-
     t_set = (*active_set,)
 
     return_list = [None, set(), list()]
@@ -67,7 +66,6 @@ def solve(program: MPQP_Program, num_cores=-1) -> Solution:
     :param program: MPQP to be solved
     :return: the solution of the MPQP
     """
-
     # thread pool that we will be using
     start = time.time()
 

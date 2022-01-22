@@ -32,7 +32,6 @@ def chebyshev_ball(A: numpy.ndarray, b: numpy.ndarray, equality_constraints: Ite
     :param deterministic_solver: The underlying Solver to use, eg. gurobi, ect
     :return: the SolverOutput object, None if infeasible
     """
-
     if bin_vars is None:
         bin_vars = []
 

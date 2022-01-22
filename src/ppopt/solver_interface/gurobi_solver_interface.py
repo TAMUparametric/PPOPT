@@ -191,8 +191,6 @@ def solve_lp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray, equali
 
     :return: A SolverOutput Object
     """
-
-    #
     if not gurobi_pretest(A, b):
         return None
 
@@ -233,6 +231,7 @@ def solve_milp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
     """
     if not gurobi_pretest(A, b):
         return None
+
     return solve_miqp_gurobi(c=c, A=A, b=b, equality_constraints=equality_constraints, bin_vars=bin_vars,
                              verbose=verbose, get_duals=get_duals)
 

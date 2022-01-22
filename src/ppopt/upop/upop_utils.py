@@ -32,8 +32,6 @@ def find_unique_hyperplanes(overall: numpy.ndarray) -> Tuple[List[int], List[int
     :param overall: The solution of a multiparametric programming problem
     :return: returns indices of fundamental hyperplanes, indices of constraints back to fundamental hyperplane, parity of constraint
     """
-
-    #
     overall_p = (overall * 1000000000).astype(numpy.int64).tolist()
     overall_n = (overall * -1000000000).astype(numpy.int64).tolist()
 
@@ -92,8 +90,6 @@ def get_outer_boundaries(indices: List[int], parity: List[int]):
     :param parity: the side of the hyperplane that the constraint represents
     :return:
     """
-    # forward iterate over all indices to place them in buckets
-
     visited = set()
     type_visited = dict()
 
@@ -129,7 +125,6 @@ def get_chebychev_centers(solution: Solution) -> List[numpy.ndarray]:
     :param solution: An mp programming Solution
     :return: A list of all of the chebychev centers of the regions in the solutions
     """
-
     return [get_chebyshev_information(region).sol[0:solution.program.num_t()].reshape((solution.program.num_t(), 1)) for
             region in solution.critical_regions]
 
@@ -138,8 +133,6 @@ def verify_outer_boundary(solution: Solution, hyper_indices: List[int], outer_in
                           chebychev_centers: List[numpy.ndarray] = None) -> List[int]:
     """
     This checks all of the possible outer boundary indices for errors, failures to solve for the minimal set of fundamental hyperplanes in the solution
-
-
 
     :param solution: An mp programming solution
     :param hyper_indices: The list of all fundamental hyperplane indices
