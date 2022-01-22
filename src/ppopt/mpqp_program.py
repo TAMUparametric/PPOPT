@@ -27,6 +27,7 @@ class MPQP_Program(MPLP_Program):
                  A_t: numpy.ndarray,
                  b_t: numpy.ndarray, F: numpy.ndarray,
                  active_set=None):
+        """Initialized the MPQP_Program."""
         # calls MPLP_Program's constructor to reduce out burden
         super(MPQP_Program, self).__init__(A, b, c, H, A_t, b_t, F, active_set)
 
@@ -52,7 +53,7 @@ class MPQP_Program(MPLP_Program):
         return 0.5 * x.T @ self.Q @ x + theta_point.T @ self.H.T @ x + self.c.T @ x
 
     def warnings(self) -> List[str]:
-        """Checks the dimensions of the matrices to ensure consistency"""
+        """Checks the dimensions of the matrices to ensure consistency."""
         warning_list = MPLP_Program.warnings(self)
 
         # Quadratic Problem specific warnings
@@ -70,7 +71,7 @@ class MPQP_Program(MPLP_Program):
 
         # check the condition number of the matrix and make sure it is invertible
         if self.Q.shape[0] == self.Q.shape[1]:
-            e_values, e_vectors = numpy.linalg.eig(self.Q)
+            e_values, _ = numpy.linalg.eig(self.Q)
             if len(e_values) < 0:
                 warning_list.append(f'Non-convex quadratic program detected, with eigenvalues {e_values}')
             elif len(e_values) < 10 ** -4:
@@ -80,7 +81,7 @@ class MPQP_Program(MPLP_Program):
         return warning_list
 
     def latex(self) -> List[str]:
-        """Creates a latex output for the multiparametric problem"""
+        """Creates a latex output for the multiparametric problem."""
         # calls the latex function inherited from MPLP to get most of the output
         output = super(MPQP_Program, self).latex()
 

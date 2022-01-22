@@ -1,4 +1,5 @@
-from src.ppopt.solver_interface.gurobi_solver_interface import *
+import numpy
+from src.ppopt.solver_interface.gurobi_solver_interface import solve_lp_gurobi, solve_qp_gurobi, solve_miqp_gurobi, solve_milp_gurobi
 
 
 def test_solve_lp_1():

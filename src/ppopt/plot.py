@@ -20,7 +20,6 @@ def sort_clockwise(vertices: List[numpy.ndarray]) -> List[numpy.ndarray]:
     :param vertices:
     :return:
     """
-
     # find the center
     x_center = 0
     y_center = 0
@@ -100,7 +99,7 @@ def parametric_plot(solution: Solution, save_path: str = None, show=True) -> Non
     vertex_list = gen_vertices(solution)
     polygon_list = [Polygon(v) for v in vertex_list]
 
-    fig, ax = pyplot.subplots()
+    _, ax = pyplot.subplots()
 
     cm = pyplot.cm.get_cmap('Paired')
     colors = 100 * numpy.random.rand(len(solution.critical_regions))
@@ -138,7 +137,7 @@ def parametric_plot_1D(solution: Solution, save_path: str = None, show=True) -> 
     # x_dim = solution.program.num_x()
 
     # set up the plotting object
-    fig, ax = pyplot.subplots()
+    _, ax = pyplot.subplots()
 
     # plot the critical regions w.r.t. x*
     for critical_region in solution.critical_regions:

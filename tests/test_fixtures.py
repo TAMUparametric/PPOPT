@@ -73,7 +73,7 @@ def region() -> CriticalRegion:
 
 @pytest.fixture()
 def linear_program() -> MPLP_Program:
-    """a simple mplp to test the dimensional correctness of its functions"""
+    """A simple mplp to test the dimensional correctness of its functions."""
     A = numpy.eye(3)
     b = numpy.zeros((3, 1))
     F = numpy.ones((3, 10))
@@ -86,7 +86,7 @@ def linear_program() -> MPLP_Program:
 
 @pytest.fixture()
 def quadratic_program() -> MPQP_Program:
-    """a simple mplp to test the dimensional correctness of its functions"""
+    """A simple mplp to test the dimensional correctness of its functions."""
     A = numpy.array(
         [[1, 1, 0, 0], [0, 0, 1, 1], [-1, 0, -1, 0], [0, -1, 0, -1], [-1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0],
          [0, 0, 0, -1]])
@@ -106,8 +106,11 @@ def quadratic_program() -> MPQP_Program:
 
 @pytest.fixture()
 def blank_solution():
-    """Blank solution"""
-    """a simple mplp to test the dimensional correctness of its functions"""
+    """
+    Blank solution
+
+    a simple mplp to test the dimensional correctness of its functions.
+    """
     A = numpy.array(
         [[1, 1, 0, 0], [0, 0, 1, 1], [-1, 0, -1, 0], [0, -1, 0, -1], [-1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0],
          [0, 0, 0, -1]])
@@ -127,8 +130,11 @@ def blank_solution():
 
 @pytest.fixture()
 def filled_solution(region):
-    """Blank solution with the single square region"""
-    """a simple mplp to test the dimensional correctness of its functions"""
+    """
+    Blank solution with the single square region
+
+    a simple mplp to test the dimensional correctness of its functions
+    """
     A = numpy.array(
         [[1, 1, 0, 0], [0, 0, 1, 1], [-1, 0, -1, 0], [0, -1, 0, -1], [-1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0],
          [0, 0, 0, -1]])
@@ -148,13 +154,13 @@ def filled_solution(region):
 
 @pytest.fixture()
 def blank_combo_tester():
-    """Blank murder list"""
+    """Blank murder list."""
     return CombinationTester()
 
 
 @pytest.fixture()
 def filled_combo_tester():
-    """partially filled murder list"""
+    """Partially filled murder list."""
     c = CombinationTester()
     c.add_combo([1])
     c.add_combo([2])

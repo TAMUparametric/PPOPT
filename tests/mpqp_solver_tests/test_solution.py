@@ -48,7 +48,3 @@ def test_verify_1(factory_solution):
     print(factory_solution.program.solve_theta(theta))
 
     assert factory_solution.verify_solution()
-
-
-def test_verify_2():
-    pass

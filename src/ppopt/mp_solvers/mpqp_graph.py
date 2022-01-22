@@ -121,7 +121,7 @@ def solve_no_murder(program: MPQP_Program, initial_active_sets: List[List[int]] 
 
     # TODO: This still misses some Critical Regions. USE Geometric Repair?
 
-    attempted, solution, murder_list, to_attempt = graph_initialization(program, initial_active_sets)
+    attempted, solution, _, to_attempt = graph_initialization(program, initial_active_sets)
 
     while len(to_attempt) > 0:
 

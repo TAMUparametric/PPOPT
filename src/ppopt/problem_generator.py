@@ -33,14 +33,9 @@ def generate_mpqp(x: int = 2, t: int = 2, m: int = 10) -> MPQP_Program:
 
     rand = lambda: numpy.random.random(1)
 
-    LowerBound = -10 * numpy.ones((t, 1))
-    UpperBound = - LowerBound
     RangeValue = numpy.round(20 * numpy.random.random(1) + 5)
-    ConstraintFactor = numpy.round(3 * rand() + 1)
     XBorder = numpy.round(8 * rand() + 1) / 10
     XShift = numpy.round(8 * rand() + 1) / 10
-    YBorder = numpy.round(8 * rand() + 1) / 10
-    YShift = numpy.round(8 * rand() + 1) / 10
     TBorder = numpy.round(8 * rand() + 1) / 10
     TShift = numpy.round(8 * rand() + 1) / 10
 

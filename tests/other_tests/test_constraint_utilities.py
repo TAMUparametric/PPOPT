@@ -1,5 +1,5 @@
 import numpy
-from src.ppopt.utils.constraint_utilities import *
+from src.ppopt.utils.constraint_utilities import scale_constraint,remove_zero_rows,row_equality,remove_duplicate_rows,is_full_rank,cheap_remove_redundant_constraints,process_region_constraints, remove_strongly_redundant_constraints
 from src.ppopt.utils.general_utils import make_row
 import pytest
 
@@ -8,7 +8,7 @@ def test_constraint_norm_1():
     A = numpy.random.random((10, 10))
     b = numpy.random.random((10, 1))
 
-    [As, bs] = scale_constraint(A, b)
+    [As, _] = scale_constraint(A, b)
 
     results = numpy.linalg.norm(As, axis=1)
     assert numpy.allclose(numpy.ones(10), results)
@@ -17,12 +17,7 @@ def test_constraint_norm_1():
 def test_constraint_norm_2():
     A = -numpy.random.random((10, 10))
     b = numpy.random.random((10, 1))
-    [As, bs] = scale_constraint(A, b)
-
-    # print(A)
-    #
-    # print(A[0] / As[0])
-    # print(b[0] / bs[0])
+    [_, _] = scale_constraint(A, b)
 
 def test_scale_constraint():
     A = 2 * numpy.eye(3)
@@ -141,6 +136,5 @@ def test_facet_ball_elimination():
     A_r = numpy.block([[A], [A_t]])
     b_r = numpy.block([[b], [b_t]])
 
-    [A_l, b_l] = process_region_constraints(A_r, b_r)
+    [_, _] = process_region_constraints(A_r, b_r)
 
-    # assert numpy.allclose(A_l, A_r[[2, 3, 4]])

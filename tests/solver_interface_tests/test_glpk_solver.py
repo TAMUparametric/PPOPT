@@ -1,4 +1,5 @@
-from src.ppopt.solver_interface.cvxopt_interface import *
+import numpy
+from src.ppopt.solver_interface.cvxopt_interface import solve_lp_cvxopt
 
 
 def test_solve_lp_1():

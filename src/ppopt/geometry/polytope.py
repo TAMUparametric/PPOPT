@@ -8,10 +8,12 @@ class Polytope:
     """
 
     def __init__(self, A: numpy.ndarray, b: numpy.ndarray):
+        """Initializes a Polytope."""
         self.A = A
         self.b = b
 
     def __and__(self, other):  # -> Optional[Polytope]:
+        """Takes the union of two convex polytopes."""
         if other is None:
             return Polytope(self.A.copy(), self.b.copy())
 
@@ -19,7 +21,4 @@ class Polytope:
 
         A_prime = numpy.block([[self.A], [other.A]])
         b_prime = numpy.block([[self.b], [other.b]])
-        return A_prime
-        # ball = chebyshev_ball(A_prime, b_prime)
-        #
-        # return ball
+        return A_prime, b_prime

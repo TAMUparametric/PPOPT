@@ -1,4 +1,4 @@
-from src.ppopt.solver_interface.solver_interface import *
+from src.ppopt.solver_interface.solver_interface import solve_lp, solve_qp, solve_milp, solve_miqp
 
 def test_solver_not_supported_1():
     try:

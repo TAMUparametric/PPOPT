@@ -38,8 +38,6 @@ class PointLocation:
         self.outer_A = self.overall_A[self.original_indices][outer_indices].copy()
         self.outer_b = self.overall_b[self.original_indices][outer_indices].copy()
 
-        border = numpy.array(self.original_indices)[outer_indices].copy()
-
         # create region idx
         num_regions = len(self.solution.critical_regions)
         self.num_regions = num_regions
@@ -53,7 +51,6 @@ class PointLocation:
         # this is the secret sauce, the core point location code is compiled to native instructions this reduces most overheads
 
         num_x = solution.program.num_x()
-        num_t = solution.program.num_t()
 
         @numba.njit
         def eval_(theta: numpy.ndarray) -> int:
