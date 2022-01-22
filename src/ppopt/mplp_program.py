@@ -57,7 +57,7 @@ class MPLP_Program:
     solver: Solver = Solver()
 
     def __post_init__(self):
-        """This is called after __init__ this is used as a post processing step after the dataclass generated __init__."""
+        """Called after __init__ this is used as a post-processing step after the dataclass generated __init__."""
         if self.equality_indices is None:
             self.equality_indices = []
 
