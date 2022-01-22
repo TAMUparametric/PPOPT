@@ -7,6 +7,7 @@ import numpy
 def make_column(x: Union[List, numpy.ndarray]) -> numpy.ndarray:
     """
     Makes x into a column vector
+
     :param x: a list or a numpy array
     :return: a numpy array that is a column vector
     """
@@ -18,6 +19,7 @@ def make_column(x: Union[List, numpy.ndarray]) -> numpy.ndarray:
 def make_row(x: Union[List, numpy.ndarray]) -> numpy.ndarray:
     """
     Makes x into a row vector
+
     :param x: a list or a numpy array
     :return: a numpy array that is a row column
     """
