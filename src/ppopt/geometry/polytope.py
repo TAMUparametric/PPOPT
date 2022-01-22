@@ -14,7 +14,7 @@ class Polytope:
         self.b = b
 
     def __and__(self, other):  # -> Optional[Polytope]:
-        """ Takes the union of two convex polytopes."""
+        """Takes the union of two convex polytopes."""
         if other is None:
             return Polytope(self.A.copy(), self.b.copy())
 
