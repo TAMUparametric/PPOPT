@@ -1,4 +1,4 @@
-from src.ppopt.upop.language_generation import *
+from src.ppopt.upop.language_generation import gen_array, gen_variable
 
 
 def test_array_cpp_1():

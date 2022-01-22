@@ -49,10 +49,7 @@ class CombinationTester:
     def add_combos(self, set_list: Set[Tuple[int]]) -> None:
         self.combos.update(set_list)
 
-
-def generate_reduce(candidate: tuple, murder_list=None, attempted=None) -> list:
-    # check = lambda x: True
-
+def manufacture_lambda(attempted, murder_list):
     if attempted is None:
         if murder_list is None:
             check = lambda x: True
@@ -63,6 +60,12 @@ def generate_reduce(candidate: tuple, murder_list=None, attempted=None) -> list:
             check = lambda x: x not in attempted
         else:
             check = lambda x: x not in attempted and not murder_list.hassubset(x)
+
+    return check
+
+
+def generate_reduce(candidate: tuple, murder_list=None, attempted=None) -> list:
+    check = manufacture_lambda(attempted, murder_list)
 
     accepted_sets = list()
 
@@ -83,17 +86,8 @@ def generate_extra(candidate: tuple, expansion_set, murder_list=None, attempted=
     :param attempted:
     :return:
     """
-    # TODO simplify this and the above version of this problem (perhaps extract and subs?)
-    if attempted is None:
-        if murder_list is None:
-            check = lambda x: True
-        else:
-            check = lambda x: not murder_list.hassubset(x)
-    else:
-        if murder_list is None:
-            check = lambda x: x not in attempted
-        else:
-            check = lambda x: x not in attempted and not murder_list.hassubset(x)
+    check = manufacture_lambda(attempted, murder_list)
+
     accepted_sets = list()
 
     for regular_constraint in expansion_set:

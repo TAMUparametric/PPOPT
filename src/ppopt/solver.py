@@ -1,4 +1,3 @@
-import numpy
 import sys
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Iterable
@@ -108,8 +107,7 @@ class Solver:
         """This is an internal method that throws an error and prompts the user when they use an unsupported Solver"""
 
         message = f"Solver {solver_name} is not supported! \n" \
-                  + f'PPOPT Supports the following solvers {str(Solver.supported_solvers)} \n' \
-
+                  + f'PPOPT Supports the following solvers {str(Solver.supported_solvers)} \n'
         raise RuntimeError(message)
 
     def check_supported_problem(self, problem_name: str) -> None:

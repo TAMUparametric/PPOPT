@@ -19,7 +19,6 @@ def get_vertices(region: CriticalRegion, deterministic_solver='glpk'):
     :param deterministic_solver: The optimization Solver to use
     :return: A numpy array of the vertices of a critical region with vertices stored in rows
     """
-
     return numpy.array(pypoman.compute_polytope_vertices(*region.get_constraints()))
 
 

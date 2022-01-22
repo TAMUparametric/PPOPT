@@ -8,6 +8,7 @@ from .utils.chebyshev_ball import chebyshev_ball
 
 @dataclass
 class CriticalRegion:
+
     r"""
     Critical region is a polytope that defines a region in the uncertainty space
     with an associated optimal value, active set, lagrange multipliers and
