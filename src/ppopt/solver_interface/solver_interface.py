@@ -96,7 +96,7 @@ def solve_qp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix, equality_constraints: I
 
 # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
 def solve_lp(c: Matrix, A: Matrix, b: Matrix, equality_constraints=None, verbose=False,
-             get_duals=True, deterministic_solver='glpk') -> Optional[SolverOutput]:
+             get_duals=True, deterministic_solver='gurobi') -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving linear programs
 

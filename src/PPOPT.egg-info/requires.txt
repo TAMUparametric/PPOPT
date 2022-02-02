@@ -1,5 +1,4 @@
 numpy
-pypoman
 matplotlib
 scipy
 numba
@@ -9,8 +8,6 @@ setuptools
 psutil
 pathos
 plotly
-cvxopt
-quadprog
 
 [tests]
 pytest

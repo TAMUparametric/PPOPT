@@ -32,7 +32,7 @@ Here is a benchmark against the state of the art multiparametric programming sol
   1. Serial and Parallel Combinatorial Algorithm
   2. Serial and Parallel Geometrical Algorithm
   3. Serial and Parallel Graph based Algorithm
-- Multiparametric solution export to C++, Javacript, Matlab, and Python
+- Multiparametric solution export to C++, JavaScript, Matlab, and Python
 - Plotting utilities
 - Presolver and Conditioning for Multiparametric Programs
 

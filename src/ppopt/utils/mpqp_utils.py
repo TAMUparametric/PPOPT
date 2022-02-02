@@ -130,7 +130,7 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
         if not is_full_dimensional(CR_As, CR_bs, program.solver):
             return None
 
-    # if it is fully dimensional we get to reduce the classify the constraints and then reduce them (important)!
+    # if it is fully dimensional we get to classify the constraints and then reduce them (important)!
 
     kept_lambda_indices = []
     kept_inequality_indices = []

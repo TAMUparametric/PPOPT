@@ -4,7 +4,7 @@ from typing import List
 
 import numpy
 import plotly.graph_objects as go
-import pypoman
+from .solver import Solver
 from matplotlib import pyplot
 from matplotlib.collections import PatchCollection
 from matplotlib.patches import Polygon
@@ -13,6 +13,22 @@ from .solution import Solution
 from .utils.general_utils import make_column
 
 
+def vertex_enumeration_2d(A:numpy.ndarray, b:numpy.ndarray, solver:Solver) -> List[numpy.ndarray]:
+    """
+    Computes the vertices of a 2D polytope from the half space representation
+
+    :param solver:
+    :param A:
+    :param b:
+    :return:
+    """
+
+    num_consters = A.shape[0]
+    trials = [[i,j] for i in range(num_consters) for j in range(i+1, num_consters)]
+    res = map(lambda comb: solver.solve_lp(None, A, b, comb), trials)
+    filtered_res = filter(lambda x: x is not None, res)
+    return list(map(lambda x: x.sol, filtered_res))
+
 def sort_clockwise(vertices: List[numpy.ndarray]) -> List[numpy.ndarray]:
     """
     Sorts the vertices in clockwise order. This is important for rendering as if they were not sorted then you would see nonsense.
@@ -20,16 +36,9 @@ def sort_clockwise(vertices: List[numpy.ndarray]) -> List[numpy.ndarray]:
     :param vertices:
     :return:
     """
-    # find the center
-    x_center = 0
-    y_center = 0
-    for i in vertices:
-        x_center += i[0]
-        y_center += i[1]
 
-    x_center = x_center / len(vertices)
-    y_center = y_center / len(vertices)
-    return sorted(vertices, key=lambda x: atan2((x[1] - y_center), (x[0] - x_center)))
+    center = sum(vertices, numpy.array([0,0])) / len(vertices)
+    return sorted(vertices, key=lambda x: atan2((x[1] - center[1]), (x[0] - center[0])))
 
 
 # TODO: specify dimensions to fix
@@ -41,11 +50,11 @@ def gen_vertices(solution: Solution):
     :return: a list of a collection of vertices sorted counterclockwise that correspond to the specific region
 
     """
-    vertex_list = list()
-    for region in solution.critical_regions:
-        vertices = pypoman.compute_polytope_vertices(region.E, region.f)
-        vertex_list.append(sort_clockwise(vertices))
-    return vertex_list
+
+    solver_obj = solution.program.solver
+    cr_vertices = map(lambda cr: vertex_enumeration_2d(cr.E, cr.f, solver_obj), solution.critical_regions)
+    sorted_vertices = map(lambda verts: sort_clockwise(verts), cr_vertices)
+    return list(sorted_vertices)
 
 
 def plotly_plot(solution: Solution, save_path: str = None, show=True) -> None:
