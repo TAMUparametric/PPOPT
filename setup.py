@@ -18,9 +18,11 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     license='MIT',
-    extras_require=dict(tests=['pytest']),
+    extras_require={
+        'tests':['pytest'],
+        'gpl':['cvxopt', 'quadprog'],
+    },
     install_requires=[  "numpy",
-                        "pypoman",
                         "matplotlib",
                         "scipy",
                         "numba",
@@ -29,9 +31,7 @@ setup(
                         "setuptools",
                         "psutil",
                         "pathos",
-                        "plotly",
-                        "cvxopt",
-                        "quadprog"],
+                        "plotly"],
     packages=find_packages(where='src'),
-    package_dir={'': 'src'},
+    package_dir={'': 'src'}
 )

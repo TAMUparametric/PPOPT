@@ -8,7 +8,7 @@ from ..utils.general_utils import make_column
 
 
 def chebyshev_ball(A: numpy.ndarray, b: numpy.ndarray, equality_constraints: Iterable[int] = None,
-                   bin_vars: Iterable[int] = None, deterministic_solver='glpk'):
+                   bin_vars: Iterable[int] = None, deterministic_solver='gurobi'):
     r"""
     Chebyshev ball finds the largest ball inside of a polytope defined by Ax <= b
     This is solved by the following LP

@@ -11,7 +11,7 @@ from .utils.constraint_utilities import constraint_norm, is_full_rank, \
 from .utils.general_utils import make_column, latex_matrix, select_not_in_list, ppopt_block, remove_size_zero_matrices
 
 
-def calc_weakly_redundant(A, b, equality_set: List[int] = None, deterministic_solver='glpk'):
+def calc_weakly_redundant(A, b, equality_set: List[int] = None, deterministic_solver='gurobi'):
     if equality_set is None:
         equality_set = []
 
@@ -265,7 +265,7 @@ class MPLP_Program:
         problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
         problem_b = ppopt_block([[self.b], [self.b_t]])
 
-        saved_indices = find_redundant_constraints(problem_A, problem_b, self.equality_indices)
+        saved_indices = find_redundant_constraints(problem_A, problem_b, self.equality_indices, solver=self.solver.solvers['lp'])
         # saved_indices = calculate_redundant_constraints(problem_A, problem_b)
 
         saved_upper = [i for i in saved_indices if i < self.A.shape[0]]

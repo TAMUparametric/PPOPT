@@ -182,7 +182,7 @@ def calculate_redundant_constraints(A, b):
     return output
 
 
-def find_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, equality_set: List[int] = None, solver='glpk'):
+def find_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, equality_set: List[int] = None, solver='gurobi'):
     if equality_set is None:
         equality_set = []
 
@@ -194,12 +194,12 @@ def find_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, equality_set:
     return [i for i in range(A.shape[0]) if i not in redundant]
 
 
-def remove_strongly_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, include_kept_indices=False):
+def remove_strongly_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, include_kept_indices=False, deterministic_solver:str = 'gurobi'):
     """Removes strongly redundant constraints by testing the feasibility of each constraint if activated."""
     keep_list = list()
     new_index = list()
     for i in range(A.shape[0]):
-        sol = solver_interface.solve_lp(make_column(numpy.zeros(A.shape[1])), A, b, [i])
+        sol = solver_interface.solve_lp(None, A, b, [i], deterministic_solver=deterministic_solver)
         if sol is not None:
             keep_list.append(i)
             if len(new_index) == 0:
@@ -249,18 +249,19 @@ def cheap_remove_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray) -> Li
     return [A, b]
 
 
-def process_region_constraints(A: numpy.ndarray, b: numpy.ndarray) -> List[numpy.ndarray]:
+def process_region_constraints(A: numpy.ndarray, b: numpy.ndarray, detemanistic_solver :str = 'gurobi') -> List[numpy.ndarray]:
     """
     Removes all strongly and weakly redundant constraints
 
     :param A: LHS constraint matrix
     :param b: RHS constraint column vector
+    :param detemanistic_solver:
     :return: The processes constraint pair [A, b]
     """
     A, b = cheap_remove_redundant_constraints(A, b)
 
     # expensive step, this solves LPs to remove all redundant constraints remaining
-    A, b = remove_strongly_redundant_constraints(A, b)
+    A, b = remove_strongly_redundant_constraints(A, b, deterministic_solver=detemanistic_solver)
 
     A, b = facet_ball_elimination(A, b)
 

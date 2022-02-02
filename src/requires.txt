@@ -1,5 +1,4 @@
 numpy
-pypoman
 matplotlib
 scipy
 numba
