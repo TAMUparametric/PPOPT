@@ -4,7 +4,7 @@ from typing import List
 
 import numpy
 import plotly.graph_objects as go
-from ppopt.solver import Solver
+from .solver import Solver
 from matplotlib import pyplot
 from matplotlib.collections import PatchCollection
 from matplotlib.patches import Polygon
