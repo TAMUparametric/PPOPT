@@ -9,5 +9,9 @@ psutil
 pathos
 plotly
 
-[tests]
+[optional]
+cvxopt
+quadprog
+
+[test]
 pytest
