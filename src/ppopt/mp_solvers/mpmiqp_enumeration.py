@@ -11,6 +11,14 @@ from pathos.multiprocessing import ProcessingPool as Pool
 def solve_mpmiqp_enumeration(program: Union[MPQP_Program, MPLP_Program], bin_variable_indices: list = None,
                              num_cores: int = -1,
                              cont_algorithm: mpqp_algorithm = mpqp_algorithm.combinatorial) -> Solution:
+    """
+
+    :param program: An mpQP/mpLP of a problem with the binary variables withot added constraints for the binary variables
+    :param bin_variable_indices: the indices of the binary variables
+    :param num_cores: the number of cores to use in this calculation to solve the mpLP/mpQPs
+    :param cont_algorithm: the algorithm to solve the mpLP/mpQP algorithms
+    :return: a solution that containts
+    """
     # if core count is unspecified use all avalible cores
     if num_cores == -1:
         num_cores = num_cpu_cores()

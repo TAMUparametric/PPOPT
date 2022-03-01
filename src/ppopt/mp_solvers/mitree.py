@@ -34,13 +34,13 @@ class MITree:
 
             if right_prob.check_feasibility(right_prob.equality_indices):
                 # right_prob.process_constraints()
-                self.right = BBTree(right_prob, bin_indices, depth + 1)
+                self.right = MITree(right_prob, bin_indices, depth + 1)
             else:
                 self.right = None
 
             if left_prob.check_feasibility(left_prob.equality_indices):
                 # left_prob.process_constraints()
-                self.left = BBTree(left_prob, bin_indices, depth + 1)
+                self.left = MITree(left_prob, bin_indices, depth + 1)
             else:
                 self.left = None
 
