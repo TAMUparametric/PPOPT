@@ -271,7 +271,7 @@ class MPLP_Program:
         saved_upper = [i for i in saved_indices if i < self.A.shape[0]]
         # saved_lower = [i - self.A.shape[0] for i in saved_indices if i >= self.A.shape[0]]
 
-        print(f'Removed {self.A.shape[0] - len(saved_upper)} Strongly Redundant Constraints')
+        # print(f'Removed {self.A.shape[0] - len(saved_upper)} Strongly Redundant Constraints')
 
         self.A = self.A[saved_upper]
         self.F = self.F[saved_upper]
@@ -281,7 +281,7 @@ class MPLP_Program:
         problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
         problem_b = ppopt_block([[self.b], [self.b_t]])
 
-        saved_indices = calc_weakly_redundant(problem_A, problem_b, self.equality_indices)
+        # saved_indices = calc_weakly_redundant(problem_A, problem_b, self.equality_indices)
         # saved_indices = calculate_redundant_constraints(problem_A, problem_b)
 
         saved_upper = [i for i in saved_indices if i < self.A.shape[0]]
@@ -291,7 +291,7 @@ class MPLP_Program:
         self.F = self.F[saved_upper]
         self.b = self.b[saved_upper]
 
-        print(f'Removed {self.A.shape[0] - len(saved_upper)} Weakly Redundant Constraints')
+        # print(f'Removed {self.A.shape[0] - len(saved_upper)} Weakly Redundant Constraints')
 
         # Need to keep these constraints even iff they are unreachable
         # self.A_t = self.A_t[saved_lower]

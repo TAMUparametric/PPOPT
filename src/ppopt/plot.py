@@ -120,7 +120,7 @@ def parametric_plot(solution: Solution, save_path: str = None, show=True) -> Non
     pyplot.autoscale()
 
     if save_path is not None:
-        pyplot.savefig(save_path + str(time.time()) + ".png", dpi=1000)
+        pyplot.savefig(save_path + ".png", dpi=1000)
 
     if show:
         pyplot.show()
