@@ -1,6 +1,6 @@
 from typing import Union
 
-from mitree import MITree
+from .mitree import MITree
 from .solve_mpqp import mpqp_algorithm, solve_mpqp
 from ..mpqp_program import MPQP_Program, MPLP_Program
 from ..solution import Solution
