@@ -9,8 +9,7 @@ from ..utils.mpqp_utils import gen_cr_from_active_set
 
 
 class CombinationTester:
-
-    """This keeps track of all the infeasible active set combinations and filters prospective active set
+    """Keeps track of all the infeasible active set combinations and filters prospective active set
     combinations """
 
     def __init__(self):
@@ -55,16 +54,14 @@ class CombinationTester:
 def manufacture_lambda(attempted, murder_list):
     if attempted is None:
         if murder_list is None:
-            check = lambda x: True
+            return lambda x: True
         else:
-            check = lambda x: not murder_list.hassubset(x)
+            return lambda x: not murder_list.hassubset(x)
     else:
         if murder_list is None:
-            check = lambda x: x not in attempted
+            return lambda x: x not in attempted
         else:
-            check = lambda x: x not in attempted and not murder_list.hassubset(x)
-
-    return check
+            return lambda x: x not in attempted and not murder_list.hassubset(x)
 
 
 def generate_reduce(candidate: tuple, murder_list=None, attempted=None) -> list:
@@ -116,8 +113,6 @@ def find_optimal_set(problem) -> List[int]:
     super_checker = CombinationTester()
 
     feasible_set = [problem.equality_indices]
-
-    # feasible_set = generate_children(problem.equality_indices, problem.num_constraints(), super_checker)
 
     print(feasible_set)
     while True:

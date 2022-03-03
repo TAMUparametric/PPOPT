@@ -27,7 +27,6 @@ def calc_weakly_redundant(A, b, equality_set: List[int] = None, deterministic_so
 
 @dataclass
 class MPLP_Program:
-
     r"""
     The standard class for linear multiparametric programming
     .. math::

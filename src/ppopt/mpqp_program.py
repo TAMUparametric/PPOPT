@@ -8,7 +8,6 @@ from .utils.general_utils import latex_matrix, remove_size_zero_matrices, ppopt_
 
 
 class MPQP_Program(MPLP_Program):
-
     r"""
     The standard class for quadratic multiparametric programming.
 
