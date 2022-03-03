@@ -36,10 +36,12 @@ Here is a benchmark against the state of the art multiparametric programming sol
 
 ### Completed Features
 
-- Solver interface for mpLPs and mpQP with the following algorithms
+- Solver interface for mpLPs and mpQPs with the following algorithms
   1. Serial and Parallel Combinatorial Algorithm
   2. Serial and Parallel Geometrical Algorithm
   3. Serial and Parallel Graph based Algorithm
+- Solver interface for mpMILPs and mpMIQPs with the following algorithms
+  1. Enumeration based algorithm
 - Multiparametric solution export to C++, JavaScript, Matlab, and Python
 - Plotting utilities
 - Presolver and Conditioning for Multiparametric Programs
