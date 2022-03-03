@@ -81,7 +81,7 @@ def linear_program() -> MPLP_Program:
     b_t = numpy.ones((10, 1))
     c = numpy.ones((3, 1))
     H = numpy.zeros((A.shape[1], F.shape[1]))
-    return MPLP_Program(A, b, c, H, A_t, b_t, F, [0])
+    return MPLP_Program(A, b, c, H, A_t, b_t, F, None, None, None, equality_indices = [0])
 
 
 @pytest.fixture()

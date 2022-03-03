@@ -51,10 +51,45 @@ class MPLP_Program:
     A_t: numpy.ndarray
     b_t: numpy.ndarray
     F: numpy.ndarray
+    c_c: numpy.ndarray
+    c_t: numpy.ndarray
+    Q_t: numpy.ndarray
 
     equality_indices: Union[List[int], numpy.ndarray]
 
     solver: Solver = Solver()
+
+    def __init__(self, A, b, c, H, A_t, b_t, F, c_c=None, c_t=None, Q_t=None, equality_indices=None, solver=None):
+
+        self.A = A
+        self.b = b
+        self.c = c
+        self.H = H
+        self.A_t = A_t
+        self.b_t = b_t
+        self.F = F
+
+        if c_c is None:
+            c_c = numpy.array([[0.0]])
+        self.c_c = c_c
+
+        if c_t is None:
+            c_t = numpy.zeros((self.num_t(), 1))
+        self.c_t = c_t
+
+        if Q_t is None:
+            Q_t = numpy.zeros((self.num_t(), self.num_t()))
+        self.Q_t = Q_t
+
+        if equality_indices is None:
+            equality_indices = []
+
+        self.equality_indices = equality_indices
+
+        if solver is None:
+            solver = Solver()
+
+        self.solver = solver
 
     def __post_init__(self):
         """Called after __init__ this is used as a post-processing step after the dataclass generated __init__."""
@@ -95,7 +130,7 @@ class MPLP_Program:
         return len(self.equality_indices)
 
     def evaluate_objective(self, x: numpy.ndarray, theta_point: numpy.ndarray):
-        return theta_point.T @ self.H.T @ x + self.c.T @ x
+        return theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ self.Q_t
 
     def warnings(self) -> List[str]:
         """Checks the dimensions of the matrices to ensure consistency."""
@@ -264,7 +299,8 @@ class MPLP_Program:
         problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
         problem_b = ppopt_block([[self.b], [self.b_t]])
 
-        saved_indices = find_redundant_constraints(problem_A, problem_b, self.equality_indices, solver=self.solver.solvers['lp'])
+        saved_indices = find_redundant_constraints(problem_A, problem_b, self.equality_indices,
+                                                   solver=self.solver.solvers['lp'])
         # saved_indices = calculate_redundant_constraints(problem_A, problem_b)
 
         saved_upper = [i for i in saved_indices if i < self.A.shape[0]]
@@ -309,6 +345,9 @@ class MPLP_Program:
         self.A_t = self.A_t.astype('float64')
         self.b_t = self.b_t.astype('float64')
         self.H = self.H.astype('float64')
+        self.c_c = self.c_c.astype('float64')
+        self.c_t = self.c_t.astype('float64')
+        self.Q_t = self.Q_t.astype('float64')
 
     def solve_theta(self, theta_point: numpy.ndarray, deterministic_solver='gurobi') -> Optional[SolverOutput]:
         r"""
@@ -333,8 +372,14 @@ class MPLP_Program:
         if not numpy.all(self.A_t @ theta_point <= self.b_t):
             return None
 
-        return self.solver.solve_lp(c=self.H @ theta_point + self.c, A=self.A, b=self.b + self.F @ theta_point,
-                                    equality_constraints=self.equality_indices)
+        sol_obj = self.solver.solve_lp(c=self.H @ theta_point + self.c, A=self.A, b=self.b + self.F @ theta_point,
+                                       equality_constraints=self.equality_indices)
+
+        if sol_obj is not None:
+            sol_obj.obj += self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ theta_point
+            return sol_obj
+
+        return None
 
     def solve_theta_variable(self) -> Optional[SolverOutput]:
         """
