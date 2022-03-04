@@ -108,8 +108,8 @@ class MPLP_Program:
             self.equality_indices = [i for i in range(len(self.equality_indices))]
 
         # ensures that
-
-        self.process_constraints()
+        self.warnings()
+        self.process_constraints(find_implicit_equalities=True)
 
     def num_x(self) -> int:
         """Returns number of parameters."""
@@ -285,15 +285,15 @@ class MPLP_Program:
             self.b = ppopt_block([[b_eq], [b_ineq]])
             self.F = ppopt_block([[F_eq], [F_ineq]])
 
-            print(self.A.shape)
-            print(self.b.shape)
-            print(self.F.shape)
+            # print(self.A.shape)
+            # print(self.b.shape)
+            # print(self.F.shape)
 
             # update problem active set
             self.equality_indices = [i for i in range(len(temp_active_set))]
 
-            print(
-                f"Found {len(constraint_pairs)} Equality constraints pairs with {len(keep)} unique equality constraints and removed {problem_A.shape[0] - self.A.shape[0]}")
+            # print(
+            #     f"Found {len(constraint_pairs)} Equality constraints pairs with {len(keep)} unique equality constraints and removed {problem_A.shape[0] - self.A.shape[0]}")
 
         # recalculate bc we have moved everything around
         problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])

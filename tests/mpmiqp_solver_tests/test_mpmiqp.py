@@ -13,10 +13,15 @@ def test_mpmilp_process_constraints(simple_mpMILP):
 def test_mpmilp_sub_problem(simple_mpMILP):
     sub_problem = simple_mpMILP.generate_substituted_problem([0 ,1])
 
-    print(sub_problem.A)
-    print(sub_problem.b)
-    print(sub_problem.F)
-    print(sub_problem.equality_indices)
+    assert(sub_problem.A.shape == (2,1))
+    assert(sub_problem.equality_indices == [0])
+
+def test_mpmilp_partial_feasibility(simple_mpMILP):
+
+    assert(simple_mpMILP.check_feasibility([0,0]))
+    assert(simple_mpMILP.check_feasibility([1, 0]))
+    assert(simple_mpMILP.check_feasibility([0, 1]))
+    assert(not simple_mpMILP.check_feasibility([1, 1]))
 
     # this should generate the following determanistic problem
     # min -3x_1 s.t. x = 0, x <= theta, |theta| <= 2

@@ -45,8 +45,11 @@ class MPMILP_Program(MPLP_Program):
 
     solver: Solver = Solver()
 
-    def __init__(self, A:numpy.ndarray, b:numpy.ndarray, c:numpy.ndarray, H:numpy.ndarray, A_t:numpy.ndarray, b_t:numpy.ndarray, F:numpy.ndarray,binary_indices=None, c_c:Optional[numpy.ndarray]=None, c_t:Optional[numpy.ndarray]=None, Q_t:Optional[numpy.ndarray]=None, equality_indices:List[int]=None,
-                solver:Solver = Solver(), ):
+    def __init__(self, A: numpy.ndarray, b: numpy.ndarray, c: numpy.ndarray, H: numpy.ndarray, A_t: numpy.ndarray,
+                 b_t: numpy.ndarray, F: numpy.ndarray, binary_indices=None, c_c: Optional[numpy.ndarray] = None,
+                 c_t: Optional[numpy.ndarray] = None, Q_t: Optional[numpy.ndarray] = None,
+                 equality_indices: List[int] = None,
+                 solver: Solver = Solver(), ):
 
         super().__init__(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices, solver)
         self.binary_indices = binary_indices
@@ -165,14 +168,14 @@ class MPMILP_Program(MPLP_Program):
         A_cont = self.A[:, self.cont_indices]
         A_bin = self.A[:, self.binary_indices]
 
-        fixed_combination = numpy.array(fixed_combination).reshape(-1,1)
+        fixed_combination = numpy.array(fixed_combination).reshape(-1, 1)
 
         # find any integer only constraints and yeet them to hell
         kept_constraints = []
         for i in range(self.num_constraints()):
 
             # constraint of the type sum(y_i, i in I) ?? b -> we do not need this
-            if numpy.allclose(A_cont[i], 0*A_cont[i]) and numpy.allclose(self.F[i], 0*self.F[i]):
+            if numpy.allclose(A_cont[i], 0 * A_cont[i]) and numpy.allclose(self.F[i], 0 * self.F[i]):
                 continue
             kept_constraints.append(i)
 
@@ -181,13 +184,38 @@ class MPMILP_Program(MPLP_Program):
 
         A_cont = A_cont[kept_constraints]
         A_bin = A_bin[kept_constraints]
-        b = self.b[kept_constraints] - A_bin@fixed_combination
+        b = self.b[kept_constraints] - A_bin @ fixed_combination
         F = self.F[kept_constraints]
 
         c = self.c[self.cont_indices]
-        c_c = self.c_c + self.c[self.binary_indices].T@fixed_combination
-        H = self.H[:,self.cont_indices]
+        c_c = self.c_c + self.c[self.binary_indices].T @ fixed_combination
+        H = self.H[:, self.cont_indices]
 
-        c_t =self.c_t + self.H[:,self.binary_indices]@fixed_combination
+        c_t = self.c_t + self.H[:, self.binary_indices] @ fixed_combination
 
-        return MPLP_Program(A_cont, b, c, H, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, equality_set, self.solver)
+        sub_problem = MPLP_Program(A_cont, b, c, H, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, equality_set, self.solver)
+        sub_problem.process_constraints(True)
+        return sub_problem
+
+    def check_feasibility(self, partial_fixed_bins:List = None) -> bool:
+        if partial_fixed_bins is None:
+            partial_fixed_bins = []
+
+        new_equ_rows_A = []
+        new_equ_rows_b = []
+
+        for i in range(len(partial_fixed_bins)):
+            new_row = [0 for _ in range(self.num_x() + self.num_t())]
+            new_row[self.binary_indices[i]] = 1
+            new_equ_rows_A.append(new_row)
+            new_equ_rows_b.append(partial_fixed_bins[i])
+
+        new_equ_rows_A = numpy.array(new_equ_rows_A)
+        new_equ_rows_b = numpy.array(new_equ_rows_b).reshape(-1,1)
+
+        # recalculate bc we have moved everything around
+        problem_A = ppopt_block([[new_equ_rows_A],[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
+        problem_b = ppopt_block([[new_equ_rows_b],[self.b], [self.b_t]])
+
+        eq = [*list(range(len(partial_fixed_bins))),*[i + len(partial_fixed_bins) for i in self.equality_indices]]
+        return self.solver.solve_milp(None,problem_A, problem_b, eq, bin_vars=self.binary_indices) is not None

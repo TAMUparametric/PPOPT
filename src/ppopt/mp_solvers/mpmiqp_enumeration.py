@@ -2,14 +2,14 @@ from typing import Union
 
 from .mitree import MITree
 from .solve_mpqp import mpqp_algorithm, solve_mpqp
+from ..mpmilp_program import MPMILP_Program
 from ..mpqp_program import MPQP_Program, MPLP_Program
 from ..solution import Solution
 from ..utils.general_utils import num_cpu_cores
 from pathos.multiprocessing import ProcessingPool as Pool
 
 
-def solve_mpmiqp_enumeration(program: Union[MPQP_Program, MPLP_Program], bin_variable_indices: list = None,
-                             num_cores: int = -1,
+def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
                              cont_algorithm: mpqp_algorithm = mpqp_algorithm.combinatorial) -> Solution:
     """
 
