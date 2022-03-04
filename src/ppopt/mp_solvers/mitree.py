@@ -45,7 +45,7 @@ class MITree:
                 self.left = None
 
         else:
-            # we are a leef node
+            # we are a leaf node
             self.is_leaf = True
             self.left = None
             self.right = None

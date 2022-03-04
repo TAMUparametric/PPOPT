@@ -16,6 +16,18 @@ class Solution:
     program: Union[MPLP_Program, MPQP_Program]
     critical_regions: List[CriticalRegion]
 
+    def __init__(self, program:Union[MPLP_Program, MPQP_Program], critical_regions:List[CriticalRegion], is_overlapping=False):
+        """
+        The explicit solution associated with
+
+        :param program: The multiparametric program that is considered here
+        :param critical_regions: The list of critical regions in the solution
+        :param is_overlapping: A Flag that tells the point location routine that there are overlapping critical regions
+        """
+        self.program = program
+        self.critical_regions = critical_regions
+        self.is_overlapping = is_overlapping
+
     def add_region(self, region: CriticalRegion) -> None:
         """
         Adds a region to the solution
@@ -27,35 +39,80 @@ class Solution:
 
     def evaluate(self, theta_point: numpy.ndarray) -> Optional[numpy.ndarray]:
         """
-        returns the optimal x* from the solution
+        returns the optimal x* from the solution, if it exists
 
         :param theta_point: an uncertainty realization
         :return: the calculated x* from theta
         """
 
-        for region in self.critical_regions:
-            if region.is_inside(theta_point):
-                return region.evaluate(theta_point)
-        return None
+        cr = self.get_region(theta_point)
+
+        if cr is None:
+            return None
+
+        return cr.evaluate(theta_point)
 
     def get_region(self, theta_point: numpy.ndarray) -> Optional[CriticalRegion]:
         """
         Find the critical region in the solution that corresponds to the theta provided
 
+        The method finds all critical regions that the solution is inside and returns the solutions, x*, with the lowest
+        objective function of all of these regions.
+
+        In the case of no overlap we can make a shortcut
+
         :param theta_point: an uncertainty realization
         :return: the region that contains theta
+        """
+        if self.is_overlapping:
+            return self.get_region_overlap(theta_point)
+        else:
+            return self.get_region_no_overlap(theta_point)
+
+    def get_region_no_overlap(self, theta_point: numpy.ndarray) -> Optional[CriticalRegion]:
+        """
+        Find the critical region in the solution that corresponds to the provided theta, assumes that no critcal regions overlap
+
+        :param theta_point:
+        :return:
         """
         for region in self.critical_regions:
             if region.is_inside(theta_point):
                 return region
         return None
 
+    def get_region_overlap(self, theta_point:numpy.ndarray) -> Optional[CriticalRegion]:
+        """
+        Find the critical region in the solution that corresponds to the provided theta
+
+        :param theta_point:
+        :return:
+        """
+
+        best_objective = float("inf")
+        best_x_star = None
+
+        for region in self.critical_regions:
+            if region.is_inside(theta_point):
+                # we are inside the critical region
+                x_star = region.evaluate(theta_point)
+                obj = self.program.evaluate_objective(x_star, theta_point)
+
+                if obj <= best_objective:
+                    best_x_star = x_star
+                    best_objective = obj
+
+        return best_x_star
+
+
     def verify_solution(self) -> bool:
         """
-        This can be called to verify that all of the critical regions agree with the optimization problem. With problems
+        This can be called to verify that all the critical regions agree with the optimization problem. With problems
         with numerically small critical regions the deterministic optimizer value could fail. This does NOT necessarily
         mean that the critical region is at fault but that perhaps more analysis should be done. This is especially
         apparent with critical regions with chebychev radii on the order of sqrt(machine epsilon).
+
+        In the case of overlapping critical regions this is not the proper analysis and a different method should be used.
 
         :return: True if all is verified, else False
         """

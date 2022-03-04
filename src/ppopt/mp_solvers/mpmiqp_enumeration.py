@@ -33,6 +33,8 @@ def solve_mpmiqp_enumeration(program: Union[MPQP_Program, MPLP_Program], bin_var
 
     # extract all critical region from the sub mpLPs
     region_list = [sol.critical_regions for sol in sols]
-    enum_sol = Solution(program, [item for sublist in region_list for item in sublist])
+
+    # this has the possibility for overlapping critical regions so we set the overlapping flag
+    enum_sol = Solution(program, [item for sublist in region_list for item in sublist], is_overlapping=True)
 
     return enum_sol
