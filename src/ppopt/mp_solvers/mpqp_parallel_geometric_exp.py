@@ -12,7 +12,7 @@ from ..utils.mpqp_utils import gen_cr_from_active_set
 
 
 def fathem_facet_exp(center: numpy.ndarray, normal: numpy.ndarray, radius: float, program, current_active_set: list) -> \
-Optional[List]:
+        Optional[List]:
     # make sure we are pointing in the correct direction
     center = make_column(center)
     normal = make_column(normal)

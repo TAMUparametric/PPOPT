@@ -75,7 +75,7 @@ def test_generate_children_7(blank_combo_tester, linear_program):
     CRa = numpy.vstack((numpy.eye(2), -numpy.eye(2)))
     CRb = numpy.array([1000, 1000, 0, 0]).reshape(4, 1)
     H = numpy.zeros((F.shape[1], Q.shape[0]))
-    program = MPQP_Program(A, b, c, H, Q, CRa, CRb, F, [0])
+    program = MPQP_Program(A, b, c, H, Q, CRa, CRb, F, equality_indices = [0])
 
     output = generate_children_sets(program.equality_indices, program.num_constraints(), blank_combo_tester)
     assert output == [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7]]
