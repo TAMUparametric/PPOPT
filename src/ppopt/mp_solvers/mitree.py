@@ -3,44 +3,48 @@ import copy
 import numpy
 
 from ..mplp_program import MPLP_Program
+from ..mpmilp_program import MPMILP_Program
 from ..utils.constraint_utilities import remove_strongly_redundant_constraints
 
 
 class MITree:
 
-    def __init__(self, problem: MPLP_Program, bin_indices: list, depth: int = 0):
+    def __init__(self, problem: MPMILP_Program, fixed_bins:list = None, depth: int = 0):
         self.b = None
         self.A = None
         self.problem = copy.deepcopy(problem)
         self.depth = depth
-        self.bin_indices = bin_indices
+        self.bin_indices = problem.binary_indices
 
-        def make_sub_problem(coeff: int):
-            new_prob = copy.deepcopy(self.problem)
-            new_row_A = numpy.array([[1 if i == self.bin_indices[depth] else 0 for i in range(new_prob.num_x())]])
-            new_row_F = numpy.array([[0 for _ in range(self.problem.num_t())]])
-            new_row_b = numpy.array([[coeff]])
-            new_prob.A = numpy.block([[new_row_A], [new_prob.A]])
-            new_prob.F = numpy.block([[new_row_F], [new_prob.F]])
-            new_prob.b = numpy.block([[new_row_b], [new_prob.b]])
-            new_prob.equality_indices = [0, *[i + 1 for i in new_prob.equality_indices]]
-            return new_prob
+        if fixed_bins is None:
+            fixed_bins = []
 
-        if depth < len(bin_indices):
+        self.fixed_bins = fixed_bins
+        #
+        # def make_sub_problem(coeff: int):
+        #     new_prob = copy.deepcopy(self.problem)
+        #     new_row_A = numpy.array([[1 if i == self.bin_indices[depth] else 0 for i in range(new_prob.num_x())]])
+        #     new_row_F = numpy.array([[0 for _ in range(self.problem.num_t())]])
+        #     new_row_b = numpy.array([[coeff]])
+        #     new_prob.A = numpy.block([[new_row_A], [new_prob.A]])
+        #     new_prob.F = numpy.block([[new_row_F], [new_prob.F]])
+        #     new_prob.b = numpy.block([[new_row_b], [new_prob.b]])
+        #     new_prob.equality_indices = [0, *[i + 1 for i in new_prob.equality_indices]]
+        #     return new_prob
+
+        if depth < len(self.bin_indices):
             self.is_leaf = False
 
-            right_prob = make_sub_problem(0)
-            left_prob = make_sub_problem(1)
+            right_fix = [*self.fixed_bins, 0]
+            left_fix = [*self.fixed_bins, 1]
 
-            if right_prob.check_feasibility(right_prob.equality_indices):
-                # right_prob.process_constraints()
-                self.right = MITree(right_prob, bin_indices, depth + 1)
+            if self.problem.check_feasibility(right_fix):
+                self.right = MITree(self.problem, right_fix, depth + 1)
             else:
                 self.right = None
 
-            if left_prob.check_feasibility(left_prob.equality_indices):
-                # left_prob.process_constraints()
-                self.left = MITree(left_prob, bin_indices, depth + 1)
+            if self.problem.check_feasibility(left_fix):
+                self.left = MITree(self.problem, left_fix, depth + 1)
             else:
                 self.left = None
 
@@ -102,7 +106,7 @@ class MITree:
         max_rows = []
 
         print(
-            f'PRocessing problem with {self.problem.num_constraints()} constraints and {self.problem.num_equality_constraints()}')
+            f'Processing problem with {self.problem.num_constraints()} constraints and {self.problem.num_equality_constraints()}')
         for constraint_index in range(self.problem.num_constraints()):
             zed = numpy.zeros((self.problem.num_x()))
             opt_row = numpy.block([zed, self.problem.F[constraint_index]])
@@ -137,7 +141,7 @@ class MITree:
         from ppopt.critical_region import CriticalRegion
         self.generate_theta_feasible()
         total_leaves = [CriticalRegion(None, None, None, None, self.A, self.b, None, None, None, None)]
-        if self.is_leaf and self.depth == len(self.bin_indices):
+        if self.is_leaf:
             return total_leaves
 
         if self.right is not None:

@@ -3,6 +3,7 @@
 import numpy
 
 from src.ppopt.mpmilp_program import MPMILP_Program
+from src.ppopt.mp_solvers.solve_mpmiqp import solve_mpmiqp
 from tests.test_fixtures import simple_mpMILP
 
 
@@ -26,3 +27,8 @@ def test_mpmilp_partial_feasibility(simple_mpMILP):
     # this should generate the following determanistic problem
     # min -3x_1 s.t. x = 0, x <= theta, |theta| <= 2
 
+def test_mpmilp_enumeration_solve(simple_mpMILP):
+
+    sol = solve_mpmiqp(simple_mpMILP)
+
+    print(sol)

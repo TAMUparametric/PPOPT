@@ -24,9 +24,10 @@ def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
         num_cores = num_cpu_cores()
 
     # generate problem tree
-    tree = MITree(program, bin_indices=bin_variable_indices, depth=0)
+    tree = MITree(program, depth=0)
 
-    problems = [leaf_nodes.problem for leaf_nodes in tree.get_full_leafs()]
+    feasible_combinations = [leaf_nodes.fixed_bins for leaf_nodes in tree.get_full_leafs()]
+    problems = [program.generate_substituted_problem(fixed_bins) for fixed_bins in feasible_combinations]
     pool = Pool(num_cores)
 
     sols = list(pool.map(lambda x: solve_mpqp(x, cont_algorithm), problems))

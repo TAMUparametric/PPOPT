@@ -43,13 +43,19 @@ class CriticalRegion:
     lambda_set: Union[List[int], numpy.ndarray] = field(default_factory=list)
     regular_set: Union[List[int], numpy.ndarray] = field(default_factory=list)
 
+    y_fixation: numpy.ndarray = None
+
     def __repr__(self):
         """Returns a String output of Critical Region."""
         return f"Critical region with active set {self.active_set}\nThe Omega Constraint indices are {self.omega_set}\nThe Lagrange multipliers Constraint indices are {self.lambda_set}\nThe Regular Constraint indices are {self.regular_set}\n  x(θ) = Aθ + b \n λ(θ) = Cθ + d \n  Eθ <= f \n A = {self.A} \n b = {self.b} \n C = {self.C} \n d = {self.d} \n E = {self.E} \n f = {self.f}"
 
     def evaluate(self, theta: numpy.ndarray) -> numpy.ndarray:
         """Evaluates x(θ) = Aθ + b."""
-        return self.A @ theta + self.b
+
+        if self.y_fixation is not None:
+            return numpy.block([[self.A @ theta + self.b], [self.y_fixation]])
+        else:
+            return self.A @ theta + self.b
 
     def lagrange_multipliers(self, theta: numpy.ndarray) -> numpy.ndarray:
         """Evaluates λ(θ) = Cθ + d."""
