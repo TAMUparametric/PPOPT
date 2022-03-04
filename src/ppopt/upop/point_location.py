@@ -1,7 +1,10 @@
 from typing import Optional
 
-import numba
+
 import numpy
+
+# Make this optional at some point, so we can run on more general platforms
+import numba
 
 from ..solution import Solution
 from ..upop.upop_utils import find_unique_region_hyperplanes, get_outer_boundaries, get_chebychev_centers
@@ -13,36 +16,30 @@ class PointLocation:
         """
         Creates a compiled point location solving object for the specified solution.
 
-        This is useful for real time applications on a server or desktop, as it solves the point location problem via direct enumeration in the order or single microseconds.
+        This is useful for real time applications on a server or desktop, as it solves the point location problem via
+        direct enumeration.
 
-        For example: A 200 region solution can be evaluated in ~5 uSecs
+        This is fast; for example a 200 region solution can be evaluated in single digit uSecs on modern computers
 
-        :param solution: A solution
+        :param solution: An explicit solution to a multiparametric program
         """
 
+        # take in the solution
         self.solution = solution
 
-        self.overall = numpy.block([[region.E, region.f] for region in self.solution.critical_regions])
-        A = self.overall[:, :-1].copy()
-        b = self.overall[:, -1].reshape((self.overall.shape[0], 1)).copy()
-        self.overall_A = A
-        self.overall_b = b
+        # build the overall matrix block - this is all of the region hyper plane constraints stacked ontop of each other
 
-        [self.unique_indices, self.original_indices, self.original_parity] = find_unique_region_hyperplanes(solution)
+        A = numpy.block([[region.E] for region in self.solution.critical_regions])
+        b = numpy.block([[region.f] for region in self.solution.critical_regions])
 
         self.region_centers = get_chebychev_centers(solution)
-
-        outer_indices = get_outer_boundaries(self.original_indices, self.original_parity)
-        # outer_indices = verify_outer_boundary(solution, self.unique_indices, outer_indices, self.region_centers)
-
-        self.outer_A = self.overall_A[self.original_indices][outer_indices].copy()
-        self.outer_b = self.overall_b[self.original_indices][outer_indices].copy()
 
         # create region idx
         num_regions = len(self.solution.critical_regions)
         self.num_regions = num_regions
 
-        region_constraints = numpy.array([0] * (num_regions + 1))
+        region_constraints = numpy.zeros((num_regions+1,))
+
         for i, region in enumerate(self.solution.critical_regions):
             region_constraints[i + 1] = (region.E.shape[0] + region_constraints[i])
 
@@ -50,10 +47,20 @@ class PointLocation:
 
         # this is the secret sauce, the core point location code is compiled to native instructions this reduces most overheads
 
-        num_x = solution.program.num_x()
 
         @numba.njit
-        def eval_(theta: numpy.ndarray) -> int:
+        def get_region_overlap(theta: numpy.ndarray) -> numpy.ndarray:
+            test = A @ theta <= b
+
+            region_indicator = numpy.zeros((num_regions,))
+            for j in range(num_regions):
+                if numpy.all(test[region_constraints[j]:region_constraints[j + 1]]):
+                    region_indicator[j] = 1
+
+            return region_indicator
+
+        @numba.njit
+        def get_region_no_overlap(theta: numpy.ndarray) -> int:
 
             test = A @ theta <= b
 
@@ -64,19 +71,20 @@ class PointLocation:
 
             return -1
 
-        @numba.njit
-        def eval__(j: int, theta: numpy.ndarray) -> numpy.ndarray:
+        if solution.is_overlapping:
+            self.get_region = get_region_overlap
+        else:
+            self.get_region = get_region_no_overlap
 
-            output = numpy.zeros((num_x, 1))
-            theta_ = theta.flatten()
+        def locate(theta:numpy.ndarray) -> int:
+            if solution.is_overlapping:
+                region_indicators = self.get_region(theta)
+                obj_vals = numpy.array(map(self.solution.program.evaluate_objective(cr.evaluate(theta), theta) for index, cr in self.solution.critical_regions if region_indicators[index] ==1))
+                return numpy.argmin(obj_vals)[0]
+            else:
+                return self.get_region(theta)
 
-            for k in range(num_x):
-                output[k] = numpy.dot(A[j * num_x + k], theta_) + b[j * num_x + k]
-
-            return output
-
-        self.eval_ = eval_
-        self.eval__ = eval__
+        self.eval_ = locate
 
     def is_inside(self, theta: numpy.ndarray) -> bool:
         """

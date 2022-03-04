@@ -86,6 +86,8 @@ def get_outer_boundaries(indices: List[int], parity: List[int]):
 
     This method is linear w.r.t. number of indices, by the use of sets and hash maps
 
+    Only works for solutions with non-overlapping critical regions!
+
     :param indices: list of indices that maps the solution constraints into the fundamental hyperplanes
     :param parity: the side of the hyperplane that the constraint represents
     :return:
