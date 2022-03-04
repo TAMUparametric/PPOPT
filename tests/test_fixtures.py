@@ -3,6 +3,7 @@ import numpy
 
 from src.ppopt.critical_region import CriticalRegion
 from src.ppopt.mplp_program import MPLP_Program
+from src.ppopt.mpmilp_program import MPMILP_Program
 from src.ppopt.mpqp_program import MPQP_Program
 from src.ppopt.mp_solvers.mpqp_combinatorial import CombinationTester
 from src.ppopt.mp_solvers.solve_mpqp import solve_mpqp
@@ -167,3 +168,16 @@ def filled_combo_tester():
     c.add_combo([3])
     c.add_combo([1, 5])
     return c
+
+@pytest.fixture()
+def simple_mpMILP():
+    A = numpy.array([[0, 1, 1], [1, 0, 0], [-1, 0, 0], [1, -1, 0], [1, 0, -1]])
+    b = numpy.array([1, 0, 0, 0, 0]).reshape(-1, 1)
+    F = numpy.array([0, 1, 0, 0, 0]).reshape(-1, 1)
+    c = numpy.array([-3, 0, 0]).reshape(-1, 1)
+    H = numpy.zeros((1, 3))
+    A_t = numpy.array([1, 1]).reshape(-1, 1)
+    b_t = numpy.array([2, 2]).reshape(-1, 1)
+
+    mpmilp = MPMILP_Program(A, b, c, H, A_t, b_t, F, binary_indices=[1, 2])
+    return mpmilp

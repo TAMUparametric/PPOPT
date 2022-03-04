@@ -240,7 +240,7 @@ class MPLP_Program:
         self.A_t = self.A_t / norm
         self.b_t = self.b_t / norm
 
-    def process_constraints(self, find_implicit_equalities=False) -> None:
+    def process_constraints(self, find_implicit_equalities=True) -> None:
         """Removes redundant constraints from the multiparametric programming problem."""
         self.constraint_datatype_conversion()
         self.scale_constraints()
