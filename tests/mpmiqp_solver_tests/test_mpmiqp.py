@@ -21,20 +21,20 @@ def test_mpmilp_sub_problem(simple_mpMILP):
 
 def test_mpmilp_partial_feasibility(simple_mpMILP):
 
-    assert(simple_mpMILP.check_feasibility([0,0]))
-    assert(simple_mpMILP.check_feasibility([1, 0]))
-    assert(simple_mpMILP.check_feasibility([0, 1]))
-    assert(not simple_mpMILP.check_feasibility([1, 1]))
+    assert(simple_mpMILP.check_bin_feasibility([0,0]))
+    assert(simple_mpMILP.check_bin_feasibility([1, 0]))
+    assert(simple_mpMILP.check_bin_feasibility([0, 1]))
+    assert(not simple_mpMILP.check_bin_feasibility([1, 1]))
 
     # this should generate the following determanistic problem
     # min -3x_1 s.t. x = 0, x <= theta, |theta| <= 2
 
 def test_mpmiqp_partial_feasibility(simple_mpMIQP):
 
-    assert(simple_mpMIQP.check_feasibility([0,0]))
-    assert(simple_mpMIQP.check_feasibility([1, 0]))
-    assert(simple_mpMIQP.check_feasibility([0, 1]))
-    assert(not simple_mpMIQP.check_feasibility([1, 1]))
+    assert(simple_mpMIQP.check_bin_feasibility([0,0]))
+    assert(simple_mpMIQP.check_bin_feasibility([1, 0]))
+    assert(simple_mpMIQP.check_bin_feasibility([0, 1]))
+    assert(not simple_mpMIQP.check_bin_feasibility([1, 1]))
 
     # this should generate the following determanistic problem
     # min -3x_1 s.t. x = 0, x <= theta, |theta| <= 2
