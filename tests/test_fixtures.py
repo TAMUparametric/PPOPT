@@ -175,7 +175,7 @@ def simple_mpMILP():
     b = numpy.array([1, 0, 0, 0, 0]).reshape(-1, 1)
     F = numpy.array([0, 1, 0, 0, 0]).reshape(-1, 1)
     c = numpy.array([-3, 0, 0]).reshape(-1, 1)
-    H = numpy.zeros((F.shape[1], A.shape[1]))
+    H = numpy.zeros((F.shape[1], A.shape[1])).T
     A_t = numpy.array([1, 1]).reshape(-1, 1)
     b_t = numpy.array([2, 2]).reshape(-1, 1)
 

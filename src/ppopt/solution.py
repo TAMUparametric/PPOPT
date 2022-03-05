@@ -90,7 +90,7 @@ class Solution:
         """
 
         best_objective = float("inf")
-        best_x_star = None
+        best_cr = None
 
         for region in self.critical_regions:
             if region.is_inside(theta_point):
@@ -99,10 +99,10 @@ class Solution:
                 obj = self.program.evaluate_objective(x_star, theta_point)
 
                 if obj <= best_objective:
-                    best_x_star = x_star
+                    best_cr = region
                     best_objective = obj
 
-        return best_x_star
+        return best_cr
 
 
     def verify_solution(self) -> bool:

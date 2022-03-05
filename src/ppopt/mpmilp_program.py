@@ -78,9 +78,6 @@ class MPMILP_Program(MPLP_Program):
         self.process_constraints()
 
     def evaluate_objective(self, x: numpy.ndarray, theta_point: numpy.ndarray):
-        print(x)
-        print(theta_point)
-        print(self.H.T)
         return theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ self.Q_t
 
     def process_constraints(self, find_implicit_equalities=True) -> None:
@@ -187,17 +184,10 @@ class MPMILP_Program(MPLP_Program):
 
         c = self.c[self.cont_indices]
         c_c = self.c_c + self.c[self.binary_indices].T @ fixed_combination
-        H_c = self.H[:,self.cont_indices]
-        H_d = self.H[:,self.binary_indices]
+        H_c = self.H[self.cont_indices]
+        H_d = self.H[self.binary_indices]
 
-        print(H_d)
-        print()
-        print(H_c)
-
-        print(H_d.T@fixed_combination)
-        print(fixed_combination)
-        print(self.H[:,self.binary_indices])
-        c_t = self.c_t + self.H[self.binary_indices,:] @ fixed_combination
+        c_t = self.c_t + fixed_combination.T@H_d
 
         sub_problem = MPLP_Program(A_cont, b, c, H_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, equality_set, self.solver)
         sub_problem.process_constraints(True)
