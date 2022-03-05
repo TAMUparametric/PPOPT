@@ -16,7 +16,8 @@ class Solution:
     program: Union[MPLP_Program, MPQP_Program]
     critical_regions: List[CriticalRegion]
 
-    def __init__(self, program:Union[MPLP_Program, MPQP_Program], critical_regions:List[CriticalRegion], is_overlapping=False):
+    def __init__(self, program: Union[MPLP_Program, MPQP_Program], critical_regions: List[CriticalRegion],
+                 is_overlapping=False):
         """
         The explicit solution associated with
 
@@ -81,29 +82,30 @@ class Solution:
                 return region
         return None
 
-    def get_region_overlap(self, theta_point:numpy.ndarray) -> Optional[CriticalRegion]:
+    def get_region_overlap(self, theta_point: numpy.ndarray) -> Optional[CriticalRegion]:
         """
         Find the critical region in the solution that corresponds to the provided theta
 
-        :param theta_point:
-        :return:
+        :param theta_point: realization of uncertainty
+        :return: the critical region that that theta is in with the lowest objective value or none
         """
 
+        # start with the worst value possible for the best objective and without a selected cr
         best_objective = float("inf")
         best_cr = None
 
         for region in self.critical_regions:
+            # check if theta is inside of the critical region
             if region.is_inside(theta_point):
-                # we are inside the critical region
+                # we are inside the critical region now evaluate x* and f*
                 x_star = region.evaluate(theta_point)
                 obj = self.program.evaluate_objective(x_star, theta_point)
-
+                # if better then update
                 if obj <= best_objective:
                     best_cr = region
                     best_objective = obj
 
         return best_cr
-
 
     def verify_solution(self) -> bool:
         """

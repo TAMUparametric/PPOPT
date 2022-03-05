@@ -198,3 +198,4 @@ def simple_mpMIQP():
 
     mpmiqp = MPMIQP_Program(A, b, c, H, Q,A_t, b_t, F, binary_indices=[1, 2])
     return mpmiqp
+

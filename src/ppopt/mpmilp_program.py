@@ -13,15 +13,17 @@ class MPMILP_Program(MPLP_Program):
     r"""
     The standard class for linear multiparametric programming
     .. math::
-        \min \theta^TH^Tx + c^Tx
+        \min \theta^TH^Tx + c^Tx + c_c + c_t^T\theta + \frac{1}{2}\theta^TQ_t\theta
     .. math::
         \begin{align}
+        A_{eq}x &= b_{eq} + F_{eq}\theta\\
         Ax &\leq b + F\theta\\
-        A_{eq}x &= b_{eq}\\
         A_\theta \theta &\leq b_\theta\\
-        x_i &\in R^M, B^N\\
+        x_i &\in \mathbb{R} \text{ or } \mathbb{B}\\
         \end{align}
 
+    Equality constraints containing only binary variables cannot also be parametric, as that generate a non-convex and
+    discrete feasible parameter space
     """
 
     # uses dataclass to create the __init__  with post processing in the __post_init__
@@ -50,7 +52,7 @@ class MPMILP_Program(MPLP_Program):
                  c_t: Optional[numpy.ndarray] = None, Q_t: Optional[numpy.ndarray] = None,
                  equality_indices: List[int] = None,
                  solver: Solver = Solver(), ):
-
+        """Initializes the MPMILP_Program"""
         super().__init__(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices, solver)
         self.binary_indices = binary_indices
         self.cont_indices = [i for i in range(self.num_x()) if i not in self.binary_indices]
@@ -78,6 +80,7 @@ class MPMILP_Program(MPLP_Program):
         self.process_constraints()
 
     def evaluate_objective(self, x: numpy.ndarray, theta_point: numpy.ndarray):
+        """Evaluates the objective f(x,theta)"""
         return theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ self.Q_t
 
     def process_constraints(self, find_implicit_equalities=True) -> None:
@@ -154,7 +157,7 @@ class MPMILP_Program(MPLP_Program):
 
     def generate_substituted_problem(self, fixed_combination: List[int]):
         """
-        Generates the fixed binary continuous version of the problem e.g. substitute all of the binary variables
+        Generates the fixed binary continuous version of the problem e.g. substitute all the binary variables
         :param fixed_combination:
         :return:
         """
@@ -187,13 +190,23 @@ class MPMILP_Program(MPLP_Program):
         H_c = self.H[self.cont_indices]
         H_d = self.H[self.binary_indices]
 
-        c_t = self.c_t + fixed_combination.T@H_d
+        c_t = self.c_t + fixed_combination.T @ H_d
 
-        sub_problem = MPLP_Program(A_cont, b, c, H_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, equality_set, self.solver)
+        sub_problem = MPLP_Program(A_cont, b, c, H_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, equality_set,
+                                   self.solver)
         sub_problem.process_constraints(True)
         return sub_problem
 
-    def check_feasibility(self, partial_fixed_bins:List = None) -> bool:
+    def check_bin_feasibility(self, partial_fixed_bins: List = None) -> bool:
+        """
+        Checks if a partial binary substitution is feasible in the MILP sense
+
+        if we have the following binary variables [x2, x3, x7 ,x9] and we pass the partial fix [1, 0] to this problem
+        then it will check the feasibility of the constraint set with x2 = 1 and x3 = 0
+
+        :param partial_fixed_bins: a set of values to fix binary variable with
+        :return: True of feasible, Falso otherwise
+        """
         if partial_fixed_bins is None:
             partial_fixed_bins = []
 
@@ -207,11 +220,12 @@ class MPMILP_Program(MPLP_Program):
             new_equ_rows_b.append(partial_fixed_bins[i])
 
         new_equ_rows_A = numpy.array(new_equ_rows_A)
-        new_equ_rows_b = numpy.array(new_equ_rows_b).reshape(-1,1)
+        new_equ_rows_b = numpy.array(new_equ_rows_b).reshape(-1, 1)
 
         # recalculate bc we have moved everything around
-        problem_A = ppopt_block([[new_equ_rows_A],[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
-        problem_b = ppopt_block([[new_equ_rows_b],[self.b], [self.b_t]])
+        problem_A = ppopt_block(
+            [[new_equ_rows_A], [self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
+        problem_b = ppopt_block([[new_equ_rows_b], [self.b], [self.b_t]])
 
-        eq = [*list(range(len(partial_fixed_bins))),*[i + len(partial_fixed_bins) for i in self.equality_indices]]
-        return self.solver.solve_milp(None,problem_A, problem_b, eq, bin_vars=self.binary_indices) is not None
+        eq = [*list(range(len(partial_fixed_bins))), *[i + len(partial_fixed_bins) for i in self.equality_indices]]
+        return self.solver.solve_milp(None, problem_A, problem_b, eq, bin_vars=self.binary_indices) is not None

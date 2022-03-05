@@ -13,21 +13,25 @@ from .solution import Solution
 from .utils.general_utils import make_column
 
 
-def vertex_enumeration_2d(A:numpy.ndarray, b:numpy.ndarray, solver:Solver) -> List[numpy.ndarray]:
+def vertex_enumeration_2d(A: numpy.ndarray, b: numpy.ndarray, solver: Solver) -> List[numpy.ndarray]:
     """
-    Computes the vertices of a 2D polytope from the half space representation
+    Computes the vertices of a 2D polytope from the half space representation, uses a naive O(n^2) algorithm but is
+    sufficient for plotting purposes
+
+    Generates vertices for the 2D polytope of the following structure Ax <= b
 
     :param solver:
-    :param A:
-    :param b:
-    :return:
+    :param A: The left hand side constraint matrix
+    :param b: The right hand side constraint matrix
+    :return: List of vertices
     """
 
     num_consters = A.shape[0]
-    trials = [[i,j] for i in range(num_consters) for j in range(i+1, num_consters)]
+    trials = [[i, j] for i in range(num_consters) for j in range(i + 1, num_consters)]
     res = map(lambda comb: solver.solve_lp(None, A, b, comb), trials)
     filtered_res = filter(lambda x: x is not None, res)
     return list(map(lambda x: x.sol, filtered_res))
+
 
 def sort_clockwise(vertices: List[numpy.ndarray]) -> List[numpy.ndarray]:
     """
@@ -37,7 +41,7 @@ def sort_clockwise(vertices: List[numpy.ndarray]) -> List[numpy.ndarray]:
     :return:
     """
 
-    center = sum(vertices, numpy.array([0,0])) / len(vertices)
+    center = sum(vertices, numpy.array([0, 0])) / len(vertices)
     return sorted(vertices, key=lambda x: atan2((x[1] - center[1]), (x[0] - center[0])))
 
 
@@ -105,6 +109,12 @@ def parametric_plot(solution: Solution, save_path: str = None, show=True) -> Non
     :param show: Keyword argument, if True displays the plot otherwise does not display
     :return: no return, creates graph of solution
     """
+
+    # check if the solution is actually 2 dimensional
+    if solution.theta_dim() != 2:
+        print(f"Solution is not 2D, the dimensionality of the solution is {solution.theta_dim()}")
+        return None
+
     vertex_list = gen_vertices(solution)
     polygon_list = [Polygon(v) for v in vertex_list]
 

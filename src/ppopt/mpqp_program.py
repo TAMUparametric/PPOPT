@@ -24,8 +24,9 @@ class MPQP_Program(MPLP_Program):
 
     def __init__(self, A: numpy.ndarray, b: numpy.ndarray, c: numpy.ndarray, H: numpy.ndarray, Q: numpy.ndarray,
                  A_t: numpy.ndarray,
-                 b_t: numpy.ndarray, F: numpy.ndarray, c_c: Optional[numpy.ndarray] = None, c_t: Optional[numpy.ndarray] = None, Q_t: Optional[numpy.ndarray] = None,
-                 equality_indices=None, solver = None):
+                 b_t: numpy.ndarray, F: numpy.ndarray, c_c: Optional[numpy.ndarray] = None,
+                 c_t: Optional[numpy.ndarray] = None, Q_t: Optional[numpy.ndarray] = None,
+                 equality_indices=None, solver=None):
         """Initialized the MPQP_Program."""
         # calls MPLP_Program's constructor to reduce out burden
         super(MPQP_Program, self).__init__(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices, solver)
@@ -48,7 +49,7 @@ class MPQP_Program(MPLP_Program):
         :param theta_point: θ input
         :return: Objective function evaluated at x, θ
         """
-        return 0.5 * x.T @ self.Q @ x + theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T@theta_point + 0.5*theta_point.T@self.Q_t@self.Q_t
+        return 0.5 * x.T @ self.Q @ x + theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ self.Q_t
 
     def warnings(self) -> List[str]:
         """Checks the dimensions of the matrices to ensure consistency."""
@@ -119,19 +120,18 @@ class MPQP_Program(MPLP_Program):
         :return: The Solver output of the substituted problem, returns None if not solvable
         """
 
-        if not numpy.all(self.A_t@theta_point <= self.b_t):
+        if not numpy.all(self.A_t @ theta_point <= self.b_t):
             return None
 
         sol_obj = self.solver.solve_qp(Q=self.Q, c=self.H @ theta_point + self.c, A=self.A,
-                                    b=self.b + (self.F @ theta_point),
-                                    equality_constraints=self.equality_indices)
+                                       b=self.b + (self.F @ theta_point),
+                                       equality_constraints=self.equality_indices)
 
         if sol_obj is not None:
             sol_obj.obj += self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ theta_point
             return sol_obj
 
         return None
-
 
     def optimal_control_law(self, active_set: List[int]) -> Tuple:
         r"""
