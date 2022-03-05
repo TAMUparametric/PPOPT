@@ -29,7 +29,7 @@ def solve(program: MPQP_Program) -> Solution:
 
     for i in range(max_depth):
         # if there are no other active sets to check break out of loop
-        print(len(to_check))
+        # print(len(to_check))
 
         future_sets = list()
         # creates the list of feasible active sets

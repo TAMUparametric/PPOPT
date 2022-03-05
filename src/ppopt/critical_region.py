@@ -5,7 +5,6 @@ import numpy
 
 from .utils.chebyshev_ball import chebyshev_ball
 
-
 @dataclass
 class CriticalRegion:
     r"""
@@ -44,6 +43,8 @@ class CriticalRegion:
     regular_set: Union[List[int], numpy.ndarray] = field(default_factory=list)
 
     y_fixation: numpy.ndarray = None
+    y_indices: numpy.ndarray = None
+    x_indices: numpy.ndarray = None
 
     def __repr__(self):
         """Returns a String output of Critical Region."""
@@ -53,7 +54,11 @@ class CriticalRegion:
         """Evaluates x(θ) = Aθ + b."""
 
         if self.y_fixation is not None:
-            return numpy.block([[self.A @ theta + self.b], [self.y_fixation]])
+            cont_vars = self.A @ theta + self.b
+            x_star = numpy.zeros((len(self.x_indices) + len(self.y_indices),))
+            x_star[self.x_indices] = cont_vars
+            x_star[self.y_indices] = self.y_fixation
+            return x_star.reshape(-1, 1)
         else:
             return self.A @ theta + self.b
 

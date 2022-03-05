@@ -105,8 +105,8 @@ class MITree:
         min_rows = []
         max_rows = []
 
-        print(
-            f'Processing problem with {self.problem.num_constraints()} constraints and {self.problem.num_equality_constraints()}')
+        # print(
+        #     f'Processing problem with {self.problem.num_constraints()} constraints and {self.problem.num_equality_constraints()}')
         for constraint_index in range(self.problem.num_constraints()):
             zed = numpy.zeros((self.problem.num_x()))
             opt_row = numpy.block([zed, self.problem.F[constraint_index]])

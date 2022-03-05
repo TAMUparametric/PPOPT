@@ -117,7 +117,7 @@ class Solution:
         :return: True if all is verified, else False
         """
 
-        print(len(self.critical_regions))
+        # print(len(self.critical_regions))
 
         for region in self.critical_regions:
             sol = get_chebyshev_information(region)

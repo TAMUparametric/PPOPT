@@ -279,21 +279,13 @@ class MPLP_Program:
             b_ineq = self.b[kept_ineqs]
             F_ineq = self.F[kept_ineqs]
 
-            print(self.A.shape)
-            # put active constraints on the top
             self.A = ppopt_block([[A_eq], [A_ineq]])
             self.b = ppopt_block([[b_eq], [b_ineq]])
             self.F = ppopt_block([[F_eq], [F_ineq]])
 
-            # print(self.A.shape)
-            # print(self.b.shape)
-            # print(self.F.shape)
-
             # update problem active set
             self.equality_indices = [i for i in range(len(temp_active_set))]
 
-            # print(
-            #     f"Found {len(constraint_pairs)} Equality constraints pairs with {len(keep)} unique equality constraints and removed {problem_A.shape[0] - self.A.shape[0]}")
 
         # recalculate bc we have moved everything around
         problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
@@ -306,7 +298,6 @@ class MPLP_Program:
         saved_upper = [i for i in saved_indices if i < self.A.shape[0]]
         # saved_lower = [i - self.A.shape[0] for i in saved_indices if i >= self.A.shape[0]]
 
-        # print(f'Removed {self.A.shape[0] - len(saved_upper)} Strongly Redundant Constraints')
 
         self.A = self.A[saved_upper]
         self.F = self.F[saved_upper]
@@ -327,10 +318,6 @@ class MPLP_Program:
         self.b = self.b[saved_upper]
 
         # print(f'Removed {self.A.shape[0] - len(saved_upper)} Weakly Redundant Constraints')
-
-        # Need to keep these constraints even iff they are unreachable
-        # self.A_t = self.A_t[saved_lower]
-        # self.b_t = self.b_t[saved_lower]
 
         self.scale_constraints()
 

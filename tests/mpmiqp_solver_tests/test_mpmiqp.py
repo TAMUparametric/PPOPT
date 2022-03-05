@@ -31,4 +31,8 @@ def test_mpmilp_enumeration_solve(simple_mpMILP):
 
     sol = solve_mpmiqp(simple_mpMILP)
 
-    print(sol)
+def test_mpmilp_evaluate(simple_mpMILP):
+
+    sol = solve_mpmiqp(simple_mpMILP)
+
+    sol.evaluate(numpy.array([[1.2]]))

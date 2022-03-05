@@ -77,6 +77,12 @@ class MPMILP_Program(MPLP_Program):
         # now we call the process constraints routine to polish the constraints before we move to solving
         self.process_constraints()
 
+    def evaluate_objective(self, x: numpy.ndarray, theta_point: numpy.ndarray):
+        print(x)
+        print(theta_point)
+        print(self.H.T)
+        return theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ self.Q_t
+
     def process_constraints(self, find_implicit_equalities=True) -> None:
         """
         This is the constraint processing function for the mixed integer multiparametric case, this is spearate from
@@ -123,21 +129,13 @@ class MPMILP_Program(MPLP_Program):
             b_ineq = self.b[kept_ineqs]
             F_ineq = self.F[kept_ineqs]
 
-            print(self.A.shape)
             # put active constraints on the top
             self.A = ppopt_block([[A_eq], [A_ineq]])
             self.b = ppopt_block([[b_eq], [b_ineq]])
             self.F = ppopt_block([[F_eq], [F_ineq]])
 
-            print(self.A.shape)
-            print(self.b.shape)
-            print(self.F.shape)
-
             # update problem active set
             self.equality_indices = [i for i in range(len(temp_active_set))]
-
-            print(
-                f"Found {len(constraint_pairs)} Equality constraints pairs with {len(keep)} unique equality constraints and removed {problem_A.shape[0] - self.A.shape[0]}")
 
         # recalculate bc we have moved everything around
         problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
@@ -189,11 +187,19 @@ class MPMILP_Program(MPLP_Program):
 
         c = self.c[self.cont_indices]
         c_c = self.c_c + self.c[self.binary_indices].T @ fixed_combination
-        H = self.H[:, self.cont_indices]
+        H_c = self.H[:,self.cont_indices]
+        H_d = self.H[:,self.binary_indices]
 
-        c_t = self.c_t + self.H[:, self.binary_indices] @ fixed_combination
+        print(H_d)
+        print()
+        print(H_c)
 
-        sub_problem = MPLP_Program(A_cont, b, c, H, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, equality_set, self.solver)
+        print(H_d.T@fixed_combination)
+        print(fixed_combination)
+        print(self.H[:,self.binary_indices])
+        c_t = self.c_t + self.H[self.binary_indices,:] @ fixed_combination
+
+        sub_problem = MPLP_Program(A_cont, b, c, H_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, equality_set, self.solver)
         sub_problem.process_constraints(True)
         return sub_problem
 

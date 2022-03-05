@@ -29,11 +29,19 @@ def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
     feasible_combinations = [leaf_nodes.fixed_bins for leaf_nodes in tree.get_full_leafs()]
     problems = [program.generate_substituted_problem(fixed_bins) for fixed_bins in feasible_combinations]
     pool = Pool(num_cores)
+    print(len(problems))
+    sols = list(map(lambda x: solve_mpqp(x, cont_algorithm), problems))
 
-    sols = list(pool.map(lambda x: solve_mpqp(x, cont_algorithm), problems))
+    # add the fixed binary values to the critical regions
+    region_list = []
+    for index, sol in enumerate(sols):
+        for i in range(len(sol.critical_regions)):
+            sol.critical_regions[i].y_fixation = feasible_combinations[index]
+            sol.critical_regions[i].y_indices = program.binary_indices
+            sol.critical_regions[i].x_indices = program.cont_indices
+        region_list.append(sol.critical_regions)
 
-    # extract all critical region from the sub mpLPs
-    region_list = [sol.critical_regions for sol in sols]
+    #add the fixed binaries and indices to the critical regions
 
     # this has the possibility for overlapping critical regions so we set the overlapping flag
     enum_sol = Solution(program, [item for sublist in region_list for item in sublist], is_overlapping=True)
