@@ -66,13 +66,17 @@ class MPMIQP_Program(MPMILP_Program):
         b = self.b[kept_constraints] - A_bin @ fixed_combination
         F = self.F[kept_constraints]
 
-        c = self.c[self.cont_indices]
-        c_c = self.c_c + self.c[self.binary_indices].T @ fixed_combination
+        Q_c = self.Q[:, self.cont_indices][self.cont_indices]
+        Q_d = self.Q[:, self.binary_indices][self.binary_indices]
+
+        H_alpha = self.Q[:, self.cont_indices][self.binary_indices]
+        c = self.c[self.cont_indices] + fixed_combination.T@H_alpha
+        c_c = self.c_c + self.c[self.binary_indices].T @ fixed_combination + 0.5*fixed_combination.T@Q_d@fixed_combination
         H_c = self.H[self.cont_indices]
         H_d = self.H[self.binary_indices]
 
         c_t = self.c_t + fixed_combination.T@H_d
-        Q_c = self.Q[:,self.cont_indices][self.cont_indices]
+
         # todo: Finish implimentation of subproblem genreation for other terms
         sub_problem = MPQP_Program(A_cont, b, c, H_c, Q_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, equality_set, self.solver)
         sub_problem.process_constraints(True)
