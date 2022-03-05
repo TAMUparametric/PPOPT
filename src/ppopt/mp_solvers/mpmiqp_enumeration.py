@@ -29,8 +29,7 @@ def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
     feasible_combinations = [leaf_nodes.fixed_bins for leaf_nodes in tree.get_full_leafs()]
     problems = [program.generate_substituted_problem(fixed_bins) for fixed_bins in feasible_combinations]
     pool = Pool(num_cores)
-    print(len(problems))
-    sols = list(map(lambda x: solve_mpqp(x, cont_algorithm), problems))
+    sols = list(pool.map(lambda x: solve_mpqp(x, cont_algorithm), problems))
 
     # add the fixed binary values to the critical regions
     region_list = []

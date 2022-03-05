@@ -5,14 +5,14 @@ import numpy
 from ..mplp_program import MPLP_Program
 from ..mpmilp_program import MPMILP_Program
 from ..utils.constraint_utilities import remove_strongly_redundant_constraints
-
+from ..critical_region import CriticalRegion
 
 class MITree:
 
     def __init__(self, problem: MPMILP_Program, fixed_bins:list = None, depth: int = 0):
         self.b = None
         self.A = None
-        self.problem = copy.deepcopy(problem)
+        self.problem = copy.copy(problem)
         self.depth = depth
         self.bin_indices = problem.binary_indices
 
@@ -20,17 +20,6 @@ class MITree:
             fixed_bins = []
 
         self.fixed_bins = fixed_bins
-        #
-        # def make_sub_problem(coeff: int):
-        #     new_prob = copy.deepcopy(self.problem)
-        #     new_row_A = numpy.array([[1 if i == self.bin_indices[depth] else 0 for i in range(new_prob.num_x())]])
-        #     new_row_F = numpy.array([[0 for _ in range(self.problem.num_t())]])
-        #     new_row_b = numpy.array([[coeff]])
-        #     new_prob.A = numpy.block([[new_row_A], [new_prob.A]])
-        #     new_prob.F = numpy.block([[new_row_F], [new_prob.F]])
-        #     new_prob.b = numpy.block([[new_row_b], [new_prob.b]])
-        #     new_prob.equality_indices = [0, *[i + 1 for i in new_prob.equality_indices]]
-        #     return new_prob
 
         if depth < len(self.bin_indices):
             self.is_leaf = False
@@ -138,7 +127,7 @@ class MITree:
         self.b = b
 
     def process_all(self):
-        from ppopt.critical_region import CriticalRegion
+
         self.generate_theta_feasible()
         total_leaves = [CriticalRegion(None, None, None, None, self.A, self.b, None, None, None, None)]
         if self.is_leaf:

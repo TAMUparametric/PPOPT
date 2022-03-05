@@ -90,8 +90,6 @@ def detect_implicit_equalities(A: numpy.ndarray, b: numpy.ndarray) -> List[List[
             if numpy.allclose(block[i], -block[j]):
                 checks += 1
 
-            print(checks)
-
             if checks >= 2:
                 implicit_pairs.append([i, j])
 

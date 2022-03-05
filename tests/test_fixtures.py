@@ -171,6 +171,7 @@ def filled_combo_tester():
 
 @pytest.fixture()
 def simple_mpMILP():
+    """Simple mpMILP to solve for """
     A = numpy.array([[0, 1, 1], [1, 0, 0], [-1, 0, 0], [1, -1, 0], [1, 0, -1]])
     b = numpy.array([1, 0, 0, 0, 0]).reshape(-1, 1)
     F = numpy.array([0, 1, 0, 0, 0]).reshape(-1, 1)
