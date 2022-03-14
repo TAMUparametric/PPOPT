@@ -56,7 +56,8 @@ class MPMIQP_Program(MPMILP_Program):
 
         fixed_combination = numpy.array(fixed_combination).reshape(-1, 1)
 
-        # find any integer only constraints and yeet them to hell
+        # find any integer only constraints and remove them (these are safe to remove as they are not used in the
+        # substituted problem)
         kept_constraints = []
         for i in range(self.num_constraints()):
 

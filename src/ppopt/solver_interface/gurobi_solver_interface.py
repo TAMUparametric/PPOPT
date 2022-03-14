@@ -63,6 +63,12 @@ def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None, A: numpy
     if len(bin_vars) == 0 and Q is None:
         model.setParam("Method", 0)
         model.setParam("Quad", 0)
+    # in the case of nonconvex QPs add the nonconvex flag, set the MIP gap the 0 we want exact solutions
+    if Q is not None:
+        if numpy.min(numpy.linalg.eigvalsh(Q)) < 0:
+            model.Params.NonConvex = 2
+            model.Params.MIPgap = 0
+
 
     # model.setParam('NumericFocus', 3)
     # model.setParam("FeasibilityTol", 10 ** (-9))

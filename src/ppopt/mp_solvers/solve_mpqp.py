@@ -2,6 +2,8 @@
 
 from enum import Enum
 
+import numpy
+
 from . import mpqp_geometric
 from ..mp_solvers import mpqp_combinatorial
 from ..mp_solvers import mpqp_graph
@@ -72,6 +74,12 @@ def solve_mpqp(problem: MPQP_Program, algorithm: mpqp_algorithm = mpqp_algorithm
 
     if algorithm is mpqp_algorithm.geometric_parallel_exp:
         solution = mpqp_parallel_geometric_exp.solve(problem)
+
+    # check if there needs to be a flag thrown in the case of overlapping critical regions
+    # happens if there are negative or zero eigen values
+    if isinstance(problem, MPQP_Program):
+        if min(numpy.linalg.eigvalsh(problem.Q)) <= 0:
+            solution.is_overlapping = True
 
     return filter_solution(solution)
 

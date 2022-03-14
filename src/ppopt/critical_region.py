@@ -56,7 +56,7 @@ class CriticalRegion:
         if self.y_fixation is not None:
             cont_vars = self.A @ theta + self.b
             x_star = numpy.zeros((len(self.x_indices) + len(self.y_indices),))
-            x_star[self.x_indices] = cont_vars
+            x_star[self.x_indices] = cont_vars.flatten()
             x_star[self.y_indices] = self.y_fixation
             return x_star.reshape(-1, 1)
         else:

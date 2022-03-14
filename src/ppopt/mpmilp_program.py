@@ -5,6 +5,7 @@ import numpy
 
 from .mplp_program import MPLP_Program
 from .solver import Solver
+from .solver_interface.solver_interface_utils import SolverOutput
 from .utils.constraint_utilities import detect_implicit_equalities, find_redundant_constraints
 from .utils.general_utils import ppopt_block
 
@@ -172,7 +173,7 @@ class MPMILP_Program(MPLP_Program):
         kept_constraints = []
         for i in range(self.num_constraints()):
 
-            # constraint of the type sum(y_i, i in I) ?? b -> we do not need this
+            # constraint of the type sum(a_i*y_i, i in I) ?? b -> we do not need this
             if numpy.allclose(A_cont[i], 0 * A_cont[i]) and numpy.allclose(self.F[i], 0 * self.F[i]):
                 continue
             kept_constraints.append(i)
@@ -196,6 +197,16 @@ class MPMILP_Program(MPLP_Program):
                                    self.solver)
         sub_problem.process_constraints(True)
         return sub_problem
+
+    def solve_theta(self, theta_point: numpy.ndarray, deterministic_solver='gurobi') -> Optional[SolverOutput]:
+        """
+        Solves the substituted problem,with the provided theta
+
+        :param theta_point:
+        :param deterministic_solver:
+        :return:
+        """
+        return self.solver.solve_milp(self.c + self.H@theta_point, self.A, self.b + self.F@theta_point,self.equality_indices, self.binary_indices)
 
     def check_bin_feasibility(self, partial_fixed_bins: List = None) -> bool:
         """
