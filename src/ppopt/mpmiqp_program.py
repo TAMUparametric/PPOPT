@@ -41,7 +41,7 @@ class MPMIQP_Program(MPMILP_Program):
 
     def evaluate_objective(self, x: numpy.ndarray, theta_point: numpy.ndarray):
         """Evaluates the objective f(x,theta)"""
-        return 0.5 * x.T @ self.Q @ x + theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ self.Q_t
+        return 0.5 * x.T @ self.Q @ x + theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ theta_point
 
     def generate_substituted_problem(self, fixed_combination: List[int]):
         """

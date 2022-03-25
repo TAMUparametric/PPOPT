@@ -7,8 +7,6 @@ import numpy
 import numba
 
 from ..solution import Solution
-from ..upop.upop_utils import find_unique_region_hyperplanes, get_outer_boundaries, get_chebychev_centers
-
 
 class PointLocation:
 
@@ -32,8 +30,6 @@ class PointLocation:
         A = numpy.block([[region.E] for region in self.solution.critical_regions])
         b = numpy.block([[region.f] for region in self.solution.critical_regions])
 
-        self.region_centers = get_chebychev_centers(solution)
-
         # create region idx
         num_regions = len(self.solution.critical_regions)
         self.num_regions = num_regions
@@ -45,9 +41,7 @@ class PointLocation:
 
         self.region_constraints = region_constraints
 
-        # this is the secret sauce, the core point location code is compiled to native instructions this reduces most overheads
-
-
+        #The core point location code is compiled to native instructions this reduces most overheads
         @numba.njit
         def get_region_overlap(theta: numpy.ndarray) -> numpy.ndarray:
             test = A @ theta <= b
@@ -79,8 +73,16 @@ class PointLocation:
         def locate(theta:numpy.ndarray) -> int:
             if solution.is_overlapping:
                 region_indicators = self.get_region(theta)
-                obj_vals = numpy.array(map(self.solution.program.evaluate_objective(cr.evaluate(theta), theta) for index, cr in self.solution.critical_regions if region_indicators[index] ==1))
-                return numpy.argmin(obj_vals)[0]
+                best_obj = float("inf")
+                best_region = -1
+
+                for i in range(self.num_regions):
+                    if region_indicators[i] == 1:
+                        obj = self.solution.program.evaluate_objective(self.solution.critical_regions[i].evaluate(theta), theta)
+                        if obj <= best_obj:
+                            best_region = i
+                            best_obj = obj
+                return best_region
             else:
                 return self.get_region(theta)
 
@@ -88,11 +90,11 @@ class PointLocation:
 
     def is_inside(self, theta: numpy.ndarray) -> bool:
         """
-        Determines if the theta point in inside of the feasible space
+        Determines if the theta point in inside the feasible space
 
         :param theta: A point in the theta space
 
-        :return: True, if theta in region \n False, if theta not in region
+        :return: True, if theta in region and False, if theta not in region
         """
         return self.eval_(theta) != -1
 
@@ -100,17 +102,17 @@ class PointLocation:
         """
         Finds the index of the critical region that theta is inside
 
-        :param theta:
-        :return:
+        :param theta: realization of uncertainty
+        :return: the index of the critical region found
         """
         return self.eval_(theta)
 
     def evaluate(self, theta: numpy.ndarray) -> Optional[numpy.ndarray]:
         """
-        Evaluates the value of x(theta), of the
+        Evaluates the value of x(theta)
 
-        :param theta:
-        :return:
+        :param theta: realization of uncertainty
+        :return: the solution to the optimization problem or None
         """
 
         idx = self.eval_(theta)

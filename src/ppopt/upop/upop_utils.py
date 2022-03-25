@@ -1,7 +1,9 @@
+import copy
 from typing import List, Tuple
 
 import numpy
 
+from ..critical_region import CriticalRegion
 from ..geometry.polytope_operations import get_chebyshev_information
 from ..solution import Solution
 
@@ -75,7 +77,35 @@ def find_unique_region_hyperplanes(solution: Solution) -> Tuple[List[int], List[
     return find_unique_hyperplanes(overall)
 
 
+def convert_mi_solution(sol:Solution) -> Solution:
+    if sol.is_mixed_integer_sol():
+        sol.critical_regions = [convert_mi_critical_region(cr) for cr in sol.critical_regions]
+    return sol
+
+def convert_mi_critical_region(cr: CriticalRegion) -> CriticalRegion:
+    """
+
+    :param cr: a CR with integer values
+    :return: an augmented CR that has the binary values promoted into the evaluation matrices
+    """
+    new_cr = copy.deepcopy(cr)
+
+    new_A = numpy.zeros((len(cr.x_indices) + len(cr.y_indices), new_cr.A.shape[1]))
+    new_b = numpy.zeros((len(cr.x_indices) + len(cr.y_indices), 1))
+
+    new_A[cr.x_indices] = cr.A
+    new_b[cr.x_indices] = cr.b
+    new_b[cr.y_indices] = numpy.array(cr.y_fixation).reshape(-1,1)
+
+    new_cr.A = new_A
+    new_cr.b = new_b
+
+    return new_cr
+
+
 def find_unique_region_functions(solution: Solution) -> Tuple[List[int], List[int], List[int]]:
+    # we augment this a bit in the case of mixed integer solutions, instead of CRs having assosiated binary values we have
+    # the following situation
     overall = numpy.block([[region.A, region.b] for region in solution.critical_regions])
     return find_unique_hyperplanes(overall)
 

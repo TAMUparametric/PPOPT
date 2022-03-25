@@ -1,3 +1,4 @@
+import copy
 from typing import List
 
 import numpy
@@ -7,7 +8,7 @@ from ..solution import Solution
 from ..upop.language_generation import gen_array, gen_variable
 from ..upop.lib_upop.upop_cpp_template import cpp_upop
 from ..upop.lib_upop.upop_js_template import js_upop
-from ..upop.upop_utils import find_unique_region_hyperplanes, find_unique_region_functions, get_descriptions
+from ..upop.upop_utils import find_unique_region_hyperplanes, find_unique_region_functions, get_descriptions, convert_mi_solution
 
 
 def generate_code_cpp(solution: Solution, float_type: str = 'float') -> str:
@@ -21,15 +22,19 @@ def generate_code_cpp(solution: Solution, float_type: str = 'float') -> str:
     :return: List of the strings of the C++17 datafiles that integrate with uPOP
     """
 
-    fundamental_c, original_c, parity_c = find_unique_region_hyperplanes(solution)
+    #if we need to create a new thing
 
-    fundamental_f, original_f, parity_f = find_unique_region_functions(solution)
+    sol = convert_mi_solution(copy.deepcopy(solution))
+
+    fundamental_c, original_c, parity_c = find_unique_region_hyperplanes(sol)
+
+    fundamental_f, original_f, parity_f = find_unique_region_functions(sol)
 
     # get the list range
     region_boundary_index = list()
     region_boundary_index.append(0)
 
-    for region in solution.critical_regions:
+    for region in sol.critical_regions:
         region_boundary_index.append(region.E.shape[0] + region_boundary_index[-1])
 
     to_augment = list()
@@ -42,15 +47,24 @@ def generate_code_cpp(solution: Solution, float_type: str = 'float') -> str:
     to_augment.append(gen_array(original_c, "constraint_indices", "uint16_t"))
     bit_string_c = ''.join(["1" if i == 1 else "0" for i in parity_c])
     to_augment.append(
-        f"const BitArray<{len(parity_c)}> constraint_parity = BitArray<{len(parity_c)}>(\"{bit_string_c}\");")
+        f"const std::bitset<{len(parity_c)}> constraint_parity(\"{bit_string_c}\");")
     to_augment.append("")
 
     to_augment.append(gen_array(original_f, "function_indices", "uint16_t"))
     bit_string_f = ''.join(["1" if i == 1 else "0" for i in parity_f])
     to_augment.append(
-        f"const BitArray<{len(parity_f)}> function_parity = BitArray<{len(parity_f)}>(\"{bit_string_f}\");")
+        f"const std::bitset<{len(parity_f)}> function_parity(\"{bit_string_f}\");")
 
-    desc = get_descriptions(solution)
+    # make the map back to c++ values
+    cpp_vals = {True:"true", False:"false"}
+    to_augment.append(f"const bool solution_overlap = {cpp_vals[sol.is_overlapping]};")
+
+    # check for a Q term this is gross
+    has_Q = "Q" in sol.program.__dict__
+
+    to_augment.append(f"const bool is_qp = {cpp_vals[has_Q]};")
+
+    desc = get_descriptions(sol)
 
     to_augment.append(gen_variable(desc['theta_dim'], "theta_dim", "int"))
     to_augment.append(gen_variable(desc['x_dim'], "x_dim", "int"))
@@ -60,24 +74,50 @@ def generate_code_cpp(solution: Solution, float_type: str = 'float') -> str:
 
     to_augment.append(gen_variable(len(fundamental_c), "num_fundamental_hyper_planes", "int"))
 
-    constraint_matrix = numpy.block([[region.E] for region in solution.critical_regions])
+    constraint_matrix = numpy.block([[region.E] for region in sol.critical_regions])
     constraint_matrix = constraint_matrix[fundamental_c].flatten().tolist()
 
-    constraint_rhs = numpy.block([[region.f] for region in solution.critical_regions])
+    constraint_rhs = numpy.block([[region.f] for region in sol.critical_regions])
     constraint_rhs = constraint_rhs[fundamental_c].flatten().tolist()
 
     to_augment.append(gen_array(constraint_matrix, "constraint_matrix_data", float_type))
     to_augment.append(gen_array(constraint_rhs, "constraint_vector_data", float_type))
 
-    function_matrix = numpy.block([[region.A] for region in solution.critical_regions])
+    function_matrix = numpy.block([[region.A] for region in sol.critical_regions])
     function_matrix = function_matrix[fundamental_f].flatten().tolist()
 
-    function_rhs = numpy.block([[region.b] for region in solution.critical_regions])
+    function_rhs = numpy.block([[region.b] for region in sol.critical_regions])
     function_rhs = function_rhs[fundamental_f].flatten().tolist()
 
     to_augment.append(gen_array(function_matrix, "function_matrix_data", float_type))
     to_augment.append(gen_array(function_rhs, "function_vector_data", float_type))
 
+    # add in the objective value terms
+
+    prog = sol.program
+
+    # add Q if there
+    if has_Q:
+        to_augment.append("const std::array<float_, x_dim*x_dim> Q ={" + ','.join([str(i) for i in prog.Q.flatten().tolist()]) + "};")
+    else:
+        to_augment.append("const std::array<float_, 1> Q = {1};")
+
+    # add c
+    to_augment.append(
+        "const std::array<float_, x_dim> c ={" + ','.join([str(i) for i in prog.c.flatten().tolist()]) + "};")
+
+    # add H
+    to_augment.append(
+        "const std::array<float_, x_dim*theta_dim> H ={" + ','.join([str(i) for i in prog.H.flatten().tolist()]) + "};")
+
+    to_augment.append(f"const float_ c_c = {prog.c_c.flatten().tolist()[0]};")
+
+    # add c_t
+    to_augment.append(
+        "const std::array<float_, theta_dim> c_t ={" + ','.join([str(i) for i in prog.c_t.flatten().tolist()]) + "};")
+    # add Q_t
+    to_augment.append(
+        "const std::array<float_, theta_dim*theta_dim> Q_t ={" + ','.join([str(i) for i in prog.Q_t.flatten().tolist()]) + "};")
     inset_data = "\n".join(to_augment)
 
     return cpp_upop.replace("<==PayloadHere==>", inset_data)

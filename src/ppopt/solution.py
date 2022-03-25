@@ -7,13 +7,15 @@ from .critical_region import CriticalRegion
 from .geometry.polytope_operations import get_chebyshev_information
 from .mplp_program import MPLP_Program
 from .mpqp_program import MPQP_Program
+from .mpmiqp_program import MPMIQP_Program
+from .mpmilp_program import MPMILP_Program
 from .utils.general_utils import make_column
 
 
 @dataclass
 class Solution:
     """The Solution object is the output of multiparametric solvers, it contains all of the critical regions as well as holds a copy of the original problem that was solved"""
-    program: Union[MPLP_Program, MPQP_Program]
+    program: Union[MPLP_Program, MPQP_Program, MPMIQP_Program, MPMILP_Program]
     critical_regions: List[CriticalRegion]
 
     def __init__(self, program: Union[MPLP_Program, MPQP_Program], critical_regions: List[CriticalRegion],
@@ -176,3 +178,6 @@ class Solution:
         if x_star is not None:
             return self.program.evaluate_objective(x_star, theta_point)
         return None
+
+    def is_mixed_integer_sol(self):
+        return isinstance(self.program, MPMILP_Program) or isinstance(self.program, MPMIQP_Program)

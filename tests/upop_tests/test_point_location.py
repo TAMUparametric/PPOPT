@@ -6,7 +6,9 @@ from tests.test_fixtures import factory_solution
 
 
 def test_point_location(factory_solution):
+    
     pl = PointLocation(factory_solution)
+    pl.is_overlapping = False
 
     theta = numpy.array([[200.0], [200.0]])
     print(pl.evaluate(theta))

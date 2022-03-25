@@ -130,7 +130,7 @@ class MPLP_Program:
         return len(self.equality_indices)
 
     def evaluate_objective(self, x: numpy.ndarray, theta_point: numpy.ndarray):
-        return theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ self.Q_t
+        return theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ theta_point
 
     def warnings(self) -> List[str]:
         """Checks the dimensions of the matrices to ensure consistency."""

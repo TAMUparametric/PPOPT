@@ -12,8 +12,11 @@ from pathos.multiprocessing import ProcessingPool as Pool
 def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
                              cont_algorithm: mpqp_algorithm = mpqp_algorithm.combinatorial) -> Solution:
     """
-    General back end to solve mpMILP and mpMIQPs
+    The enumeration algorithm is based on the following approach
 
+    1) Enumerating all feasible binary combinations
+    2) Solving the resulting continuous mpQP/mpLP subproblems for every feasible binary combination
+    3) Merging all solutions together
 
     :param program: An mpQP/mpLP of a problem with the binary variables withot added constraints for the binary variables
     :param num_cores: the number of cores to use in this calculation to solve the mpLP/mpQP sub-problems
