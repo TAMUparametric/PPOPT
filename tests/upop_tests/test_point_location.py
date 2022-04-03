@@ -6,7 +6,7 @@ from tests.test_fixtures import factory_solution
 
 
 def test_point_location(factory_solution):
-    
+
     pl = PointLocation(factory_solution)
     pl.is_overlapping = False
 
