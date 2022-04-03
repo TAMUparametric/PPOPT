@@ -48,7 +48,7 @@ def solve_miqp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
     :param bin_vars: List of binary variable indices
     :param verbose: Flag for output of underlying Solver, default False
     :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
-    :param deterministic_solver: The underlying Solver to use, eg. gurobi, ect
+    :param deterministic_solver: The underlying Solver to use, e.g. gurobi, ect
 
     :return: A SolverOutput object if optima found, otherwise None.
     """
@@ -82,7 +82,7 @@ def solve_qp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix, equality_constraints: I
     :param equality_constraints: List of Equality constraints
     :param verbose: Flag for output of underlying Solver, default False
     :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
-    :param deterministic_solver: The underlying Solver to use, eg. gurobi, ect
+    :param deterministic_solver: The underlying Solver to use, e.g. gurobi, ect
 
     :return: A SolverOutput object if optima found, otherwise None.
     """
@@ -117,7 +117,7 @@ def solve_lp(c: Matrix, A: Matrix, b: Matrix, equality_constraints=None, verbose
     :param equality_constraints: List of Equality constraints
     :param verbose: Flag for output of underlying Solver, default False
     :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
-    :param deterministic_solver: The underlying Solver to use, eg. gurobi, ect
+    :param deterministic_solver: The underlying Solver to use, e.g. gurobi, ect
 
     :return: A SolverOutput object if optima found, otherwise None.
     """
@@ -155,9 +155,11 @@ def solve_milp(c: Matrix, A: Matrix, b: Matrix, equality_constraints: Iterable[i
     :param bin_vars: List of binary variable indices
     :param verbose: Flag for output of underlying Solver, default False
     :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
-    :param deterministic_solver: The underlying Solver to use, eg. gurobi, ect
+    :param deterministic_solver: The underlying Solver to use, e.g. gurobi, ect
 
-    :return: A dictionary of the Solver outputs, or none if infeasible or unbounded. output['sol'] = primal variables, output['dual'] = dual variables, output['obj'] = objective value, output['const'] = slacks, output['active'] = active constraints.
+    :return: A dictionary of the Solver outputs, or none if infeasible or unbounded. output['sol'] = primal
+    variables, output['dual'] = dual variables, output['obj'] = objective value, output['const'] = slacks,
+    output['active'] = active constraints.
     """
     if deterministic_solver == "gurobi":
         return solve_milp_gurobi(c, A, b, equality_constraints, bin_vars, verbose, get_duals)

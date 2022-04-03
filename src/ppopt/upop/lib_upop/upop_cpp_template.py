@@ -1,5 +1,5 @@
 # flake8: noqa
-# noinspection SpellCheckingInspection
+# noinspection SpellCheckingInspection,PyPep8
 cpp_upop = """
 #include<inttypes.h>
 #include<string>

@@ -11,24 +11,24 @@ from .solver_interface.quad_prog_interface import solve_qp_quadprog
 from .solver_interface.solver_interface_utils import SolverOutput
 
 
-def check_modules(modules: Iterable):
+def check_modules(modules: Iterable) -> Iterable:
     """
     Given an iterable of module names, returns modules that are installed
     """
     return [module for module in modules if module in sys.modules]
 
 
-def check_solver_modules(module_map, packages):
+def check_solver_modules(module_map, packages) -> Iterable:
     """
-    Maps optimization python package names to internal names and returns an interable
+    Maps optimization python package names to internal names and returns an iterable
     """
-    avalable_packages = check_modules(packages)
-    return [module_map[package] for package in avalable_packages]
+    available_packages = check_modules(packages)
+    return [module_map[package] for package in available_packages]
 
 
-def avalable_LP_solvers():
+def available_LP_solvers() -> Iterable:
     """
-    Checks what LP solvers are avalable to use
+    Checks what LP solvers are available to use
 
     :return: Installed and supported solvers for linear programs
     """
@@ -37,7 +37,7 @@ def avalable_LP_solvers():
     return check_solver_modules(solver_map, check_packages)
 
 
-def avalable_QP_solvers():
+def available_QP_solvers():
     """
     Checks what QP solvers are avalable to use
 
@@ -56,10 +56,10 @@ def default_solver_options():
     """
     default_solver = {'lp': 'gurobi', 'qp': 'gurobi', 'milp': 'gurobi', 'miqp': 'gurobi'}
 
-    if 'glpk' in avalable_LP_solvers():
+    if 'glpk' in available_LP_solvers():
         default_solver['lp'] = 'glpk'
 
-    if 'quadprog' in avalable_LP_solvers():
+    if 'quadprog' in available_LP_solvers():
         default_solver['qp'] = 'quadprog'
 
     return default_solver
@@ -70,7 +70,7 @@ class Solver:
     """
     This is the primary user interface for deterministic solvers
 
-    The solvers can be changed by directly editing the solvers dict to different solver names
+    The solvers can be changed by directly editing the solver dict to different solver names
     """
     solvers: Dict[str, str] = field(default_factory=default_solver_options)
 
@@ -79,7 +79,7 @@ class Solver:
 
     def __post_init__(self):
         """
-        If the user gives only specifies some solvers then we need to make sure that whe can handle that instance or \\
+        If the user gives only specifies some solvers then we need to make sure that whe can handle that instance or
         handle the case that the Solver is not supported
         """
 

@@ -98,6 +98,7 @@ def num_cpu_cores():
     """
     cores = os.cpu_count()
 
+    # noinspection SpellCheckingInspection
     if 'sched_getaffinity' in dir(os):
         cores = len(os.sched_getaffinity(0))
 

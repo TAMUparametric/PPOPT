@@ -69,7 +69,7 @@ function evaluate_objective(t:number[], x:number[], include_theta_therms):number
     // the
     let obj:number = c_c*2.0;
 
-    // checks to see if we need to include the Q term in the calulcation
+    // checks to see if we need to include the Q term in the calculation
     if (is_qp){
         for (let i = 0; i <x_dim; i++) {
             for (let j = 0; j <x_dim; j++) {
@@ -100,7 +100,7 @@ function evaluate_objective(t:number[], x:number[], include_theta_therms):number
         return obj;
     }
 
-    // calcuate and add the c_t't term
+    // calculate and add the c_t't term
     for (let i = 0; i <theta_dim; i++) {
         obj += t[i]*c_t[i];
     }
@@ -140,7 +140,7 @@ function evaluate_region(region_id:number, t:number[]):number[]{
         return null;
     }
 
-    // exstatiate the x(theta) array
+    // create the x(theta) array
     let x_star:number[] = Array(x_dim);
 
     for (let i = 0; i < x_dim; i++) {

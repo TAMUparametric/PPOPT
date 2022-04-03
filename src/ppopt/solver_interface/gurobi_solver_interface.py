@@ -63,17 +63,13 @@ def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None, A: numpy
     if len(bin_vars) == 0 and Q is None:
         model.setParam("Method", 0)
         model.setParam("Quad", 0)
-    # in the case of nonconvex QPs add the nonconvex flag, set the MIP gap the 0 we want exact solutions
+
+    # in the case of non-convex QPs add the non-convex flag, set the MIP gap the 0 we want exact solutions
     if Q is not None:
         if numpy.min(numpy.linalg.eigvalsh(Q)) < 0:
             model.Params.NonConvex = 2
+            # noinspection SpellCheckingInspection
             model.Params.MIPgap = 0
-
-
-    # model.setParam('NumericFocus', 3)
-    # model.setParam("FeasibilityTol", 10 ** (-9))
-    # model.setParam("OptimalityTol", 10 ** (-9))
-    # model.setParam("Presolve", 2)
 
     # define num variables and num constraints variables
     num_vars, num_constraints = get_program_parameters(Q, c, A, b)
@@ -244,7 +240,7 @@ def solve_milp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
 
 def gurobi_pretest(A, b) -> bool:
     """
-    Simple short cuts that indicate a unbounded or infeasible LP
+    Simple shortcuts that indicate an unbounded or infeasible LP
 
     :param A: LHS Matrix
     :param b: RHS Vector

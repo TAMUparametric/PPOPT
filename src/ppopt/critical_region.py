@@ -5,6 +5,7 @@ import numpy
 
 from .utils.chebyshev_ball import chebyshev_ball
 
+
 @dataclass
 class CriticalRegion:
     r"""
@@ -22,11 +23,11 @@ class CriticalRegion:
 
     equality_indices: numpy array of indices
 
-    constraint_set: if this is a A@x = b + F@theta boundary
+    constraint_set: if this is an A@x = b + F@theta boundary
 
     lambda_set: if this is a λ = 0 boundary
 
-    boundary_set: if this is a Eθ <= f boundary
+    boundary_set: if this is an Eθ <= f boundary
 
     """
 
@@ -67,7 +68,7 @@ class CriticalRegion:
         return self.C @ theta + self.d
 
     def is_inside(self, theta: numpy.ndarray) -> numpy.ndarray:
-        """Tests if point θ is inside of the critical region."""
+        """Tests if point θ is inside the critical region."""
         return numpy.all(self.E @ theta - self.f < 0)
 
     # depreciated

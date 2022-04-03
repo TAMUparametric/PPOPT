@@ -45,7 +45,7 @@ class MPMIQP_Program(MPMILP_Program):
 
     def generate_substituted_problem(self, fixed_combination: List[int]):
         """
-        Generates the fixed binary continuous version of the problem e.g. substitute all of the binary variables
+        Generates the fixed binary continuous version of the problem e.g. substitute all the binary variables
         :param fixed_combination:
         :return:
         """

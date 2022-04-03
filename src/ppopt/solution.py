@@ -14,7 +14,8 @@ from .utils.general_utils import make_column
 
 @dataclass
 class Solution:
-    """The Solution object is the output of multiparametric solvers, it contains all of the critical regions as well as holds a copy of the original problem that was solved"""
+    """The Solution object is the output of multiparametric solvers, it contains all the critical regions as well
+    as holds a copy of the original problem that was solved. """
     program: Union[MPLP_Program, MPQP_Program, MPMIQP_Program, MPMILP_Program]
     critical_regions: List[CriticalRegion]
 
@@ -74,7 +75,7 @@ class Solution:
 
     def get_region_no_overlap(self, theta_point: numpy.ndarray) -> Optional[CriticalRegion]:
         """
-        Find the critical region in the solution that corresponds to the provided theta, assumes that no critcal regions overlap
+        Find the critical region in the solution that corresponds to the provided theta, assumes that no critical regions overlap
 
         :param theta_point:
         :return:
@@ -97,7 +98,7 @@ class Solution:
         best_cr = None
 
         for region in self.critical_regions:
-            # check if theta is inside of the critical region
+            # check if theta is inside the critical region
             if region.is_inside(theta_point):
                 # we are inside the critical region now evaluate x* and f*
                 x_star = region.evaluate(theta_point)

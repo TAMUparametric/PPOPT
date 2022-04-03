@@ -93,7 +93,7 @@ def solve(program: MPQP_Program, active_set=None, num_cores=-1) -> Optional[Solu
 
                 # check to see if we have found this region before
                 if tuple(found_cr.active_set) not in indexed_region_as:
-                    # if we haven't add it to the active set index
+                    # if we haven't added it to the active set index
                     indexed_region_as.add(tuple(found_cr.active_set))
                     # add it to the solution
                     solution.add_region(found_cr)

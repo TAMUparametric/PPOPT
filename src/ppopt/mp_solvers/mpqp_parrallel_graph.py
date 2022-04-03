@@ -42,7 +42,7 @@ def full_process(program, candidate, murder_list):
 
 def solve(program: MPQP_Program, initial_active_sets=None, num_cores=-1) -> Solution:
     """
-    Solves the MPQP program with a modified algorithm described in Oberdieck et. al. 2016
+    Solves the MPQP program with a modified algorithm described in Oberdieck et al. 2016
 
     url: https://www.sciencedirect.com/science/article/pii/S0005109816303971
 
@@ -54,7 +54,7 @@ def solve(program: MPQP_Program, initial_active_sets=None, num_cores=-1) -> Solu
     if initial_active_sets is None:
         initial_active_sets = [program.gen_optimal_active_set()]
 
-    # This will contain all of the attempted active sets
+    # This will contain all the attempted active sets
     attempted = set()
 
     murder_list = SetTrie()
@@ -63,7 +63,7 @@ def solve(program: MPQP_Program, initial_active_sets=None, num_cores=-1) -> Solu
     to_attempt.append(tuple([]))
     to_attempt.extend([tuple([i]) for i in range(len(program.equality_indices), program.num_constraints())])
 
-    # This will contain all of the attempted active sets
+    # This will contain all the attempted active sets
     attempted = set()
     in_process = set()
 
@@ -119,7 +119,8 @@ def solve(program: MPQP_Program, initial_active_sets=None, num_cores=-1) -> Solu
 
 def solve_no_murder(program: MPQP_Program, initial_active_sets=None, num_cores=-1) -> Solution:
     """
-    Solves the MPQP program with a modified algorithm described in Oberdieck et. al. 2016
+    Solves the MPQP program with a modified algorithm described in Oberdieck et al. 2016 without excluding active
+    sets based on an exclusion list.
 
     url: https://www.sciencedirect.com/science/article/pii/S0005109816303971
 
@@ -131,14 +132,14 @@ def solve_no_murder(program: MPQP_Program, initial_active_sets=None, num_cores=-
     if initial_active_sets is None:
         initial_active_sets = program.sample_theta_space()
 
-    # This will contain all of the attempted active sets
+    # This will contain all the attempted active sets
     attempted = set()
 
     to_attempt = [tuple(a_set) for a_set in initial_active_sets]
     to_attempt.append(tuple([]))
     to_attempt.extend([tuple([i]) for i in range(len(program.equality_indices), program.num_constraints())])
 
-    # This will contain all of the attempted active sets
+    # This will contain all the attempted active sets
     attempted = set()
     in_process = set()
 

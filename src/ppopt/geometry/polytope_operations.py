@@ -38,7 +38,7 @@ def hit_and_run(p, x_0, n_steps: int = 10):
         # generate a random direction
         random_direc = random_direction()
 
-        # find the extend in the direction of the random direction and the opposite direction
+        # find the extent in the direction of the random direction and the opposite direction
         extent_forward = find_extents(p.A, p.b, random_direc, x_0)
         extend_backward = find_extents(p.A, p.b, -random_direc, x_0)
 

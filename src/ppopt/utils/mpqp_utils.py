@@ -184,7 +184,7 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
 def is_full_dimensional(A, b, solver: Solver = Solver()):
     """
     This checks the dimensionality of a polytope defined by P = {x: Ax≤b}. Current method is based on checking if the
-    radii of the chebychev ball is nonzero. However this is numerically not so stable, and will eventually be replaced
+    radii of the chebychev ball is nonzero. However, this is numerically not so stable, and will eventually be replaced
     by looking at the ratio of the 2 chebychev balls
 
     :param A: LHS of polytope constraints

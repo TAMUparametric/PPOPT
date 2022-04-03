@@ -20,7 +20,7 @@ def graph_initialization(program, initial_active_sets):
     if initial_active_sets is None:
         initial_active_sets = program.sample_theta_space()
 
-    # This will contain all of the attempted active sets
+    # This will contain all the attempted active sets
     attempted = set()
 
     solution = Solution(program, [])
@@ -42,7 +42,7 @@ def graph_initialization(program, initial_active_sets):
 
 def solve(program: MPQP_Program, initial_active_sets: List[List[int]] = None) -> Solution:
     """
-    Solves the MPQP program with a modified algorithm described in Oberdieck et. al. 2016
+    Solves the MPQP program with a modified algorithm described in Oberdieck et al. 2016
 
     url: https://www.sciencedirect.com/science/article/pii/S0005109816303971
 
@@ -109,7 +109,7 @@ def solve(program: MPQP_Program, initial_active_sets: List[List[int]] = None) ->
 
 def solve_no_murder(program: MPQP_Program, initial_active_sets: List[List[int]] = None) -> Solution:
     """
-    Solves the MPQP program with a modified algorithm described in Oberdieck et. al. 2016
+    Solves the MPQP program with a modified algorithm described in Oberdieck et al. 2016
 
     url: https://www.sciencedirect.com/science/article/pii/S0005109816303971
 

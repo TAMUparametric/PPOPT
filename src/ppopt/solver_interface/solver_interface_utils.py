@@ -7,11 +7,11 @@ import numpy
 @dataclass
 class SolverOutput:
     """
-    This is the generic Solver information object. This will be the general return object from all of the back end \\
-    solvers. This was done to remove the need for the user to specialize IO for any particular Solver. It contains\\
-    all of the information you would need for the optimization solution including, optimal value, optimal solution, the \\
-    active set, the value of the slack variables and the largange multipliers associated with every constraint (these are listed)\\
-     as the dual variables.
+    This is the generic Solver information object. This will be the general return object from all the back end
+    solvers. This was done to remove the need for the user to specialize IO for any particular Solver. It contains
+    all the information you would need for the optimization solution including, optimal value, optimal solution,
+    the active set, the value of the slack variables and the largange multipliers associated with every constraint (
+    these are listed) as the dual variables.
 
     Members:
     obj: objective value of the optimal solution \n

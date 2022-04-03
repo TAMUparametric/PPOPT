@@ -9,7 +9,7 @@ class mplp_solver(Enum):
 
 def solve_mplp(problem: MPLP_Program, algorithm: mplp_solver = mplp_solver.Dustin):
     """
-    This is the main solver interface for MPLP type problems
+    This is the main solver interface for MPLP type problems.
 
     :param problem:
     :param algorithm:

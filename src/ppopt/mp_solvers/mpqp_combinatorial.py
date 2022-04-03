@@ -8,7 +8,7 @@ from ..utils.mpqp_utils import gen_cr_from_active_set
 
 def solve(program: MPQP_Program) -> Solution:
     """
-    Solves the MPQP program with a modified algorithm described in Gupta et. al. 2011.
+    Solves the MPQP program with a modified algorithm described in Gupta et al. 2011.
     The algorithm is described in this paper https://www.sciencedirect.com/science/article/pii/S0005109811003190
 
     :param program: MPQP to be solved

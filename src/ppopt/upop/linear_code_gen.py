@@ -9,7 +9,8 @@ from ..solution import Solution
 from ..upop.language_generation import gen_array, gen_variable
 from ..upop.lib_upop.upop_cpp_template import cpp_upop
 from ..upop.lib_upop.upop_js_template import js_upop
-from ..upop.upop_utils import find_unique_region_hyperplanes, find_unique_region_functions, get_descriptions, convert_mi_solution
+from ..upop.upop_utils import find_unique_region_hyperplanes, find_unique_region_functions, get_descriptions, \
+    convert_mi_solution
 
 
 def generate_code_cpp(solution: Solution, float_type: str = 'float') -> str:
@@ -57,7 +58,7 @@ def generate_code_cpp(solution: Solution, float_type: str = 'float') -> str:
         f"const std::bitset<{len(parity_f)}> function_parity(\"{bit_string_f}\");")
 
     # make the map back to c++ values
-    cpp_vals = {True:"true", False:"false"}
+    cpp_vals = {True: "true", False: "false"}
     to_augment.append(f"const bool solution_overlap = {cpp_vals[sol.is_overlapping]};")
 
     # check for a Q term, this can be done with instance checks instead
@@ -99,7 +100,8 @@ def generate_code_cpp(solution: Solution, float_type: str = 'float') -> str:
 
     # add Q if there
     if has_Q:
-        to_augment.append("const std::array<float_, x_dim*x_dim> Q ={" + ','.join([str(i) for i in prog.Q.flatten().tolist()]) + "};")
+        to_augment.append(
+            "const std::array<float_, x_dim*x_dim> Q ={" + ','.join([str(i) for i in prog.Q.flatten().tolist()]) + "};")
     else:
         to_augment.append("const std::array<float_, 1> Q = {1};")
 
@@ -118,7 +120,8 @@ def generate_code_cpp(solution: Solution, float_type: str = 'float') -> str:
         "const std::array<float_, theta_dim> c_t ={" + ','.join([str(i) for i in prog.c_t.flatten().tolist()]) + "};")
     # add Q_t
     to_augment.append(
-        "const std::array<float_, theta_dim*theta_dim> Q_t ={" + ','.join([str(i) for i in prog.Q_t.flatten().tolist()]) + "};")
+        "const std::array<float_, theta_dim*theta_dim> Q_t ={" + ','.join(
+            [str(i) for i in prog.Q_t.flatten().tolist()]) + "};")
     inset_data = "\n".join(to_augment)
 
     return cpp_upop.replace("<==PayloadHere==>", inset_data)
@@ -151,14 +154,16 @@ def generate_code_js(solution: Solution) -> List[str]:
     to_augment.append(gen_array(region_boundary_index, 'region_indices', "int", lang='js'))
     to_augment.append("var NOT_IN_FEASIBLE_SPACE = -1;")
     to_augment.append(gen_array(original_c, "constraint_indices", "int", lang='js'))
-    to_augment.append(gen_array(['true' if i == 1 else 'false' for i in parity_c], "constraint_parity", "bool", lang='js'))
+    to_augment.append(
+        gen_array(['true' if i == 1 else 'false' for i in parity_c], "constraint_parity", "bool", lang='js'))
 
     to_augment.append(gen_array(original_f, "function_indices", "int", lang='js'))
-    to_augment.append(gen_array(['true' if i == 1 else 'false' for i in parity_f], "function_parity", "bool", lang='js'))
+    to_augment.append(
+        gen_array(['true' if i == 1 else 'false' for i in parity_f], "function_parity", "bool", lang='js'))
 
-    js_booler =  {True:'true', False:'false'}
+    js_bool = {True: 'true', False: 'false'}
 
-    to_augment.append(f"var solution_overlap = {js_booler[sol.is_overlapping]};")
+    to_augment.append(f"var solution_overlap = {js_bool[sol.is_overlapping]};")
     desc = get_descriptions(sol)
 
     to_augment.append(gen_variable(desc['theta_dim'], "theta_dim", "int", lang='js'))
@@ -217,18 +222,21 @@ def generate_code_js(solution: Solution) -> List[str]:
         "var Q_t =[" + ','.join([str(i) for i in prog.Q_t.flatten().tolist()]) + "];")
     inset_data = "\n".join(to_augment)
 
-    return js_upop.replace("<==PayloadHere==>", inset_data).replace("<==DATESTAMP==>", datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+    return js_upop.replace("<==PayloadHere==>", inset_data).replace("<==DATESTAMP==>",
+                                                                    datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
 
 
 def generate_code_matlab(solution: Solution, path: str = '') -> None:
     """
-    This code gen does not bother with memory compression as it is running in the matlab environment and takes ~1 gb to run anyways
+    This code gen does not bother with memory compression as it is running in the matlab environment and takes ~1 gb
+    to run regardless.
 
     :param solution:
     :param path: File export path, if not specified will save in current working directory
     :return:
     """
-    # if we need to create a new thing
+
+    # here all solutions are assumed to be overlapping
 
     sol = convert_mi_solution(copy.deepcopy(solution))
 
@@ -249,7 +257,17 @@ def generate_code_matlab(solution: Solution, path: str = '') -> None:
     num_regions = len(region_list) - 1
     region_list = numpy.array(region_list) + 1
 
+    has_Q = "Q" in sol.program.__dict__
+
+    if not has_Q:
+        # just add a Q to simplify
+        sol.program.Q = 0.0 * numpy.eye(sol.program.num_x())
+
+    p = sol.program
+
     solution_information = {"constraint_block": const_block, "constraint_vector": const_vec,
                             "function_block": func_block, "function_vec": func_vec, "region_list": region_list,
-                            "num_regions": num_regions}
+                            "num_regions": num_regions, "Q": p.Q, "H": p.H, "c": p.c, "c_c": p.c_c, "c_t": p.c_t,
+                            "Q_t": p.Q_t}
+
     sio.savemat(path, {'upop_solution': solution_information})

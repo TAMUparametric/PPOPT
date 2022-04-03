@@ -92,16 +92,12 @@ def solve_mpqp(problem: MPQP_Program, algorithm: mpqp_algorithm = mpqp_algorithm
 
 def filter_solution(solution: Solution) -> Solution:
     """
-    This is a place holder function, in the future this will be used to process and operate on the solution before it is returned to the user
+    This is a placeholder function, in the future this will be used to process and operate on the solution before it
+    is returned to the user.
 
     :param solution: a multi parametric solution
 
     :return: A processed solution
     """
-    # filtered_solution = Solution(solution.program, [])
-    #
-    # for region in solution.critical_regions:
-    #    if get_chebyshev_information(region).sol[-1] > 10 ** -5:
-    #         filtered_solution.add_region(region)
 
     return solution

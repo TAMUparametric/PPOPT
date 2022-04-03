@@ -56,7 +56,7 @@ def full_process(program: MPQP_Program, active_set: List[int], murder_list, gen_
 
 def solve(program: MPQP_Program, num_cores=-1) -> Solution:
     """
-    Solves the MPQP program with a modified algorithm described in Gupta et. al. 2011
+    Solves the MPQP program with a modified algorithm described in Gupta et al. 2011
 
     This is the parallel version of the combinatorial.
 

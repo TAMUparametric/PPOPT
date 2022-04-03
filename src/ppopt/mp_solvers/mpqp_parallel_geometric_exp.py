@@ -29,7 +29,7 @@ def fathem_facet_exp(center: numpy.ndarray, normal: numpy.ndarray, radius: float
         sol = program.solve_theta(test_point)
 
         # test to see if the theta substituted optimization function is not feasible
-        # this happens when we are looking outside of the feasible space -> no longer need to look further
+        # this happens when we are looking outside the feasible space -> no longer need to look further
         if sol is None:
             return None
 
@@ -65,7 +65,7 @@ def full_process_2(program, current_active_set):
 
 def fathem_initial_active_sets(program: MPQP_Program, initial_active_sets: List[List[int]] = None):
     """
-    Covers an inital active set
+    Covers an initial active set
 
     :param program:
     :param initial_active_sets:
@@ -151,7 +151,7 @@ def solve(program: MPQP_Program, initial_active_sets: List[List[int]] = None, nu
 
             # check to see if we have found this region before
             if tuple(found_cr.active_set) not in indexed_region_as:
-                # if we haven't add it to the active set index
+                # if we haven't added it to the active set index
                 indexed_region_as.add(tuple(found_cr.active_set))
                 # add it to the solution
                 solution.add_region(found_cr)

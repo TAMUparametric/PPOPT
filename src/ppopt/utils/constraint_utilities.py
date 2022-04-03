@@ -15,8 +15,8 @@ def constraint_norm(A: numpy.ndarray) -> numpy.ndarray:
     """
     Finds the L2 norm of each row of a matrix
 
-    :param A: numpy matrix
-    :return: A column vector of the row norms
+    :param A: numpy matrix.
+    :return: A column vector of the row norms.
     """
     return numpy.linalg.norm(A, axis=1, keepdims=True)
 
@@ -24,7 +24,7 @@ def constraint_norm(A: numpy.ndarray) -> numpy.ndarray:
 # returns [A,b] scaled to mag of one
 def scale_constraint(A: numpy.ndarray, b: numpy.ndarray) -> List[numpy.ndarray]:
     """
-    Normalizes constraints
+    Normalizes constraints based on the L2 norm.
 
     :param A: LHS Matrix constraint
     :param b: RHS column vector constraint
@@ -34,12 +34,13 @@ def scale_constraint(A: numpy.ndarray, b: numpy.ndarray) -> List[numpy.ndarray]:
     return [A * norm_val, b * norm_val]
 
 
-# noinspection SpellCheckingInspection
+# noinspection SpellCheckingInspection,GrazieInspection
 def detect_implicit_equalities(A: numpy.ndarray, b: numpy.ndarray) -> List[List[int]]:
     r"""
-    Detects inequality constraints that form implicit equality constraints. This is important because inequality constraint pairs that\\
-    form equality constraints will actively mess with the true cardinality of the active set. Older solvers did not make check this and\\
-    that led to some problematic results.
+    Detects inequality constraints that form implicit equality constraints. This is important because inequality
+    constraint pairs that form equality constraints will actively mess with the true cardinality of the active set.
+    Older solvers did not make check this and that led to some problematic results.
+
     .. math::
 
         \begin{align*}
@@ -56,7 +57,7 @@ def detect_implicit_equalities(A: numpy.ndarray, b: numpy.ndarray) -> List[List[
     block[:, :A.shape[1]] = A
     block[:, A.shape[1]:A.shape[1] + 1] = b
 
-    # scale all of the constraints again so we don't have weird numerical problems
+    # scale all the constraints again, so we don't have weird numerical problems
     block = block / numpy.linalg.norm(block, axis=1, keepdims=True)
 
     # scale again for extra measure
@@ -140,7 +141,7 @@ def facet_ball_elimination(A: numpy.ndarray, b: numpy.ndarray) -> List[numpy.nda
 
     :param A: LHS constraint matrix
     :param b: RHS constraint column vector
-    :return: The processes constraint pair [A, b]
+    :return: The processes' constraint pair [A, b]
     """
     [A_ps, b_ps] = scale_constraint(A, b)
 
@@ -156,7 +157,7 @@ def calculate_redundant_constraints(A, b):
 
     :param A: LHS constraint matrix
     :param b: RHS constraint column vector
-    :return: The processes constraint pair [A, b]
+    :return: The processes' constraint pair [A, b]
     """
     [A_ps, b_ps] = scale_constraint(A, b)
 
@@ -194,7 +195,8 @@ def find_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, equality_set:
     return [i for i in range(A.shape[0]) if i not in redundant]
 
 
-def remove_strongly_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, include_kept_indices=False, deterministic_solver:str = 'gurobi'):
+def remove_strongly_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, include_kept_indices=False,
+                                          deterministic_solver: str = 'gurobi'):
     """Removes strongly redundant constraints by testing the feasibility of each constraint if activated."""
     keep_list = list()
     new_index = list()
@@ -235,7 +237,7 @@ def cheap_remove_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray) -> Li
 
     :param A: LHS constraint matrix
     :param b: RHS constraint column vector
-    :return: The processes constraint pair [A, b]
+    :return: The processes' constraint pair [A, b]
     """
     # removes zeroed rows
     A, b = remove_zero_rows(A, b)
@@ -249,19 +251,20 @@ def cheap_remove_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray) -> Li
     return [A, b]
 
 
-def process_region_constraints(A: numpy.ndarray, b: numpy.ndarray, detemanistic_solver :str = 'gurobi') -> List[numpy.ndarray]:
+def process_region_constraints(A: numpy.ndarray, b: numpy.ndarray, deterministic_solver: str = 'gurobi') -> List[
+    numpy.ndarray]:
     """
     Removes all strongly and weakly redundant constraints
 
     :param A: LHS constraint matrix
     :param b: RHS constraint column vector
-    :param detemanistic_solver:
-    :return: The processes constraint pair [A, b]
+    :param deterministic_solver: the exact solver to be used
+    :return: The processes' constraint pair [A, b]
     """
     A, b = cheap_remove_redundant_constraints(A, b)
 
     # expensive step, this solves LPs to remove all redundant constraints remaining
-    A, b = remove_strongly_redundant_constraints(A, b, deterministic_solver=detemanistic_solver)
+    A, b = remove_strongly_redundant_constraints(A, b, deterministic_solver=deterministic_solver)
 
     A, b = facet_ball_elimination(A, b)
 

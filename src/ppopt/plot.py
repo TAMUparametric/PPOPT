@@ -21,13 +21,13 @@ def vertex_enumeration_2d(A: numpy.ndarray, b: numpy.ndarray, solver: Solver) ->
     Generates vertices for the 2D polytope of the following structure Ax <= b
 
     :param solver:
-    :param A: The left hand side constraint matrix
-    :param b: The right hand side constraint matrix
+    :param A: The left-hand side constraint matrix
+    :param b: The right-hand side constraint matrix
     :return: List of vertices
     """
 
-    num_consters = A.shape[0]
-    trials = [[i, j] for i in range(num_consters) for j in range(i + 1, num_consters)]
+    num_constrs = A.shape[0]
+    trials = [[i, j] for i in range(num_constrs) for j in range(i + 1, num_constrs)]
     res = map(lambda comb: solver.solve_lp(None, A, b, comb), trials)
     filtered_res = filter(lambda x: x is not None, res)
     return list(map(lambda x: x.sol, filtered_res))

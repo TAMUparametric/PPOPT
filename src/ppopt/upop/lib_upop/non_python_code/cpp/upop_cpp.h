@@ -68,7 +68,7 @@ namespace UPOP {
 			// cache the results for next time
 			is_eval[fundamental_plane_index] = true;
 
-			// check parity and assing in positive parity refrence
+			// check parity and passing in positive parity reference
 			what_eval[fundamental_plane_index] = value == constraint_parity[i];
 
 			return value;
@@ -107,7 +107,7 @@ namespace UPOP {
 			}
 		}
 
-		// this is a fairly common occurance
+		// this is a fairly common occurrence
 		if (!include_theta_terms)
 			return obj;
 

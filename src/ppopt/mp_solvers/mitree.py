@@ -8,9 +8,10 @@ from ..mpmiqp_program import MPMIQP_Program
 from ..utils.constraint_utilities import remove_strongly_redundant_constraints
 from ..critical_region import CriticalRegion
 
+
 class MITree:
 
-    def __init__(self, problem: Union[MPMILP_Program,MPMIQP_Program], fixed_bins:list = None, depth: int = 0):
+    def __init__(self, problem: Union[MPMILP_Program, MPMIQP_Program], fixed_bins: list = None, depth: int = 0):
         """
         This is the main data structure for the enumeration based algorithm were we are attempting to find feasible
         binary combinations in a more efficient manner
@@ -114,6 +115,7 @@ class MITree:
 
         return count
 
+    # noinspection SpellCheckingInspection
     def generate_theta_feasible(self) -> None:
         """
         Given a feasible space of the following type, find an approximation of the theta feasible space, that while
@@ -183,14 +185,15 @@ class MITree:
         self.A = A
         self.b = b
 
-    def process_all(self) -> List[CriticalRegion]:
+    def process_all(self) -> List[List[numpy.ndarray]]:
         """
-        Calls generate_theta_feasible on all descendent nodes and returns the regions assosiated with this as a list of critical regions
+        Calls generate_theta_feasible on all descendent nodes and returns the regions associated with this as a list
+        of critical regions
 
         :return: A list of critical regions relating to the feasible space in the tree
         """
         self.generate_theta_feasible()
-        total_leaves = [CriticalRegion(None, None, None, None, self.A, self.b, None, None, None, None)]
+        total_leaves = [[self.A, self.b]]
         if self.is_leaf:
             return total_leaves
 

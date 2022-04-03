@@ -13,7 +13,7 @@ class mpmiqp_algorithm(Enum):
 
     This is done by passing the argument mpmiqp_algorithm.algorithm
 
-    This is typically combined in conjunction with an mpqp_algorithm to solve subproblems when they arise
+    This is typically combined in conjunction with a mpqp_algorithm to solve sub-problems when they arise
     """
     enumerate = 'enumerate'
 
@@ -23,11 +23,12 @@ def solve_mpmiqp(problem: MPMILP_Program, mpmiqp_algo: mpmiqp_algorithm = mpmiqp
     # the case of a continuous problem just solve it and return
     if len(problem.binary_indices) == 0:
         print("The PROBLEM DOES NOT HAVE ANY BINARY VARIABLES!!!")
-        return None
+        # noinspection PyTypeChecker
+        return solve_mpqp(problem, cont_algo)
 
     # listing of all available algorithms
     if mpmiqp_algo == mpmiqp_algorithm.enumerate:
         return solve_mpmiqp_enumeration(problem, num_cores, cont_algo)
 
-    # this shouldn't happen but if you ask for an unavalible algorithm you get an emtpy solution
+    # this shouldn't happen but if you ask for an unavailable algorithm you get an emtpy solution
     return Solution(problem, [])

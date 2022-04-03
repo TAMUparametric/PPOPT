@@ -25,6 +25,7 @@ def calc_weakly_redundant(A, b, equality_set: List[int] = None, deterministic_so
     return [*equality_set, *kept_indices]
 
 
+# noinspection GrazieInspection
 @dataclass
 class MPLP_Program:
     r"""
@@ -41,7 +42,7 @@ class MPLP_Program:
 
     """
 
-    # uses dataclass to create the __init__  with post processing in the __post_init__
+    # uses dataclass to create the __init__  with post-processing in the __post_init__
     # member variables of the MPLP_Program class
 
     A: numpy.ndarray
@@ -286,7 +287,6 @@ class MPLP_Program:
             # update problem active set
             self.equality_indices = [i for i in range(len(temp_active_set))]
 
-
         # recalculate bc we have moved everything around
         problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
         problem_b = ppopt_block([[self.b], [self.b_t]])
@@ -297,7 +297,6 @@ class MPLP_Program:
 
         saved_upper = [i for i in saved_indices if i < self.A.shape[0]]
         # saved_lower = [i - self.A.shape[0] for i in saved_indices if i >= self.A.shape[0]]
-
 
         self.A = self.A[saved_upper]
         self.F = self.F[saved_upper]
@@ -410,6 +409,7 @@ class MPLP_Program:
 
         return parameter_A, parameter_b, lagrange_A, lagrange_b
 
+    # noinspection SpellCheckingInspection
     def check_active_set_rank(self, active_set):
         r"""
         Checks the rank of the matrix is equal to the cardinality of the active set
@@ -637,7 +637,8 @@ class MPLP_Program:
 
     def sample_theta_space(self, num_samples: int = 100) -> Optional[list]:
         """
-        Samples the theta feasible space with a diken walk algorithm. This is typically used to initate the graph and geometric algorithm
+        Samples the theta feasible space with a Diken walk algorithm. This is typically used to initiate the graph
+        and geometric algorithm.
 
         :return: list of found optimal active sets
         """

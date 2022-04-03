@@ -10,8 +10,7 @@ from ..utils.general_utils import make_column
 def chebyshev_ball(A: numpy.ndarray, b: numpy.ndarray, equality_constraints: Iterable[int] = None,
                    bin_vars: Iterable[int] = None, deterministic_solver='gurobi'):
     r"""
-    Chebyshev ball finds the largest ball inside of a polytope defined by Ax <= b
-    This is solved by the following LP
+    Chebyshev ball finds the largest ball inside a polytope defined by Ax <= b. This is solved by the following LP.
 
     .. math::
 
@@ -29,7 +28,7 @@ def chebyshev_ball(A: numpy.ndarray, b: numpy.ndarray, equality_constraints: Ite
     :param b: RHS Constraint column vector
     :param equality_constraints: indices of rows that have strict equality A[eq] @ x = b[eq]
     :param bin_vars: indices of binary variables
-    :param deterministic_solver: The underlying Solver to use, eg. gurobi, ect
+    :param deterministic_solver: The underlying Solver to use, e.g. gurobi, ect
     :return: the SolverOutput object, None if infeasible
     """
     if bin_vars is None:
@@ -69,7 +68,8 @@ def chebyshev_ball_max(A: numpy.ndarray, b: numpy.ndarray, equality_constraints:
                        bin_vars: Iterable[int] = (), deterministic_solver='glpk'):
     r"""
 
-    Chebyshev ball finds the smallest l-infinity ball the contains the polytope defined by Ax <= b. Where A has n hyper planes and d dimensions.
+    Chebyshev ball finds the smallest l-infinity ball the contains the polytope defined by Ax <= b. Where A has n
+    hyper planes and d dimensions.
 
     This is solved by the following Linear program
 
@@ -93,13 +93,13 @@ def chebyshev_ball_max(A: numpy.ndarray, b: numpy.ndarray, equality_constraints:
             x_c &\in R^d
         \end{align*}
 
-    Source: Simon Foucart's excellent book
+    Source: Simon Foucart's excellent book.
 
     :param A: LHS Constraint Matrix
     :param b: RHS Constraint column vector
     :param equality_constraints: indices of rows that have strict equality A[eq] @ x = b[eq]
     :param bin_vars: indices of binary variables
-    :param deterministic_solver: The underlying Solver to use, eg. gurobi, ect
+    :param deterministic_solver: The underlying Solver to use, e.g. gurobi, ect
     :return: the SolverOutput object, None if infeasible
     """
     pass

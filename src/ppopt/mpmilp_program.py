@@ -11,23 +11,24 @@ from .utils.general_utils import ppopt_block
 
 
 class MPMILP_Program(MPLP_Program):
+    # noinspection SpellCheckingInspection
     r"""
-    The standard class for linear multiparametric programming
-    .. math::
-        \min \theta^TH^Tx + c^Tx + c_c + c_t^T\theta + \frac{1}{2}\theta^TQ_t\theta
-    .. math::
-        \begin{align}
-        A_{eq}x &= b_{eq} + F_{eq}\theta\\
-        Ax &\leq b + F\theta\\
-        A_\theta \theta &\leq b_\theta\\
-        x_i &\in \mathbb{R} \text{ or } \mathbb{B}\\
-        \end{align}
+        The standard class for linear multiparametric programming
+        .. math::
+            \min \theta^TH^Tx + c^Tx + c_c + c_t^T\theta + \frac{1}{2}\theta^TQ_t\theta
+        .. math::
+            \begin{align}
+            A_{eq}x &= b_{eq} + F_{eq}\theta\\
+            Ax &\leq b + F\theta\\
+            A_\theta \theta &\leq b_\theta\\
+            x_i &\in \mathbb{R} \lxor \{0,1\}\\
+            \end{align}
 
-    Equality constraints containing only binary variables cannot also be parametric, as that generate a non-convex and
-    discrete feasible parameter space
-    """
+        Equality constraints containing only binary variables cannot also be parametric, as that generate a non-convex and
+        discrete feasible parameter space
+        """
 
-    # uses dataclass to create the __init__  with post processing in the __post_init__
+    # uses dataclass to create the __init__  with post-processing in the __post_init__
     # member variables of the MPLP_Program class
 
     A: numpy.ndarray
@@ -86,7 +87,7 @@ class MPMILP_Program(MPLP_Program):
 
     def process_constraints(self, find_implicit_equalities=True) -> None:
         """
-        This is the constraint processing function for the mixed integer multiparametric case, this is spearate from
+        This is the constraint processing function for the mixed integer multiparametric case, this is separate from
         the continuous case as we need to use milps to remove the strongly redundant constraints. Doesn't support
         weakly redundant constraint removal but that is taken care of via when the integers are substituted
 
@@ -169,7 +170,7 @@ class MPMILP_Program(MPLP_Program):
 
         fixed_combination = numpy.array(fixed_combination).reshape(-1, 1)
 
-        # find any integer only constraints and yeet them to hell
+        # find any integer only constraints and ignore them
         kept_constraints = []
         for i in range(self.num_constraints()):
 
@@ -206,7 +207,8 @@ class MPMILP_Program(MPLP_Program):
         :param deterministic_solver:
         :return:
         """
-        return self.solver.solve_milp(self.c + self.H@theta_point, self.A, self.b + self.F@theta_point,self.equality_indices, self.binary_indices)
+        return self.solver.solve_milp(self.c + self.H @ theta_point, self.A, self.b + self.F @ theta_point,
+                                      self.equality_indices, self.binary_indices)
 
     def check_bin_feasibility(self, partial_fixed_bins: List = None) -> bool:
         """
@@ -216,7 +218,7 @@ class MPMILP_Program(MPLP_Program):
         then it will check the feasibility of the constraint set with x2 = 1 and x3 = 0
 
         :param partial_fixed_bins: a set of values to fix binary variable with
-        :return: True of feasible, Falso otherwise
+        :return: True of feasible, False otherwise
         """
         if partial_fixed_bins is None:
             partial_fixed_bins = []

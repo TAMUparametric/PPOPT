@@ -1,12 +1,12 @@
 from typing import Optional
 
-
 import numpy
 
 # Make this optional at some point, so we can run on more general platforms
 import numba
 
 from ..solution import Solution
+
 
 class PointLocation:
 
@@ -15,9 +15,8 @@ class PointLocation:
         Creates a compiled point location solving object for the specified solution.
 
         This is useful for real time applications on a server or desktop, as it solves the point location problem via
-        direct enumeration.
-
-        This is fast; for example a 200 region solution can be evaluated in single digit uSecs on modern computers
+        direct enumeration. This is fast; for example a 200 region solution can be evaluated in single digit uSecs on
+        modern computers.
 
         :param solution: An explicit solution to a multiparametric program
         """
@@ -25,7 +24,7 @@ class PointLocation:
         # take in the solution
         self.solution = solution
 
-        # build the overall matrix block - this is all of the region hyper plane constraints stacked ontop of each other
+        # build the overall matrix block - this is all the region hyper plane constraints stacked on top of each other
 
         A = numpy.block([[region.E] for region in self.solution.critical_regions])
         b = numpy.block([[region.f] for region in self.solution.critical_regions])
@@ -34,14 +33,14 @@ class PointLocation:
         num_regions = len(self.solution.critical_regions)
         self.num_regions = num_regions
 
-        region_constraints = numpy.zeros((num_regions+1,))
+        region_constraints = numpy.zeros((num_regions + 1,))
 
         for i, region in enumerate(self.solution.critical_regions):
             region_constraints[i + 1] = (region.E.shape[0] + region_constraints[i])
 
         self.region_constraints = region_constraints
 
-        #The core point location code is compiled to native instructions this reduces most overheads
+        # The core point location code is compiled to native instructions this reduces most overheads
         @numba.njit
         def get_region_overlap(theta: numpy.ndarray) -> numpy.ndarray:
             test = A @ theta <= b
@@ -70,7 +69,7 @@ class PointLocation:
         else:
             self.get_region = get_region_no_overlap
 
-        def locate(theta:numpy.ndarray) -> int:
+        def locate(theta: numpy.ndarray) -> int:
             if solution.is_overlapping:
                 region_indicators = self.get_region(theta)
                 best_obj = float("inf")
@@ -78,7 +77,8 @@ class PointLocation:
 
                 for i in range(self.num_regions):
                     if region_indicators[i] == 1:
-                        obj = self.solution.program.evaluate_objective(self.solution.critical_regions[i].evaluate(theta), theta)
+                        obj = self.solution.program.evaluate_objective(
+                            self.solution.critical_regions[i].evaluate(theta), theta)
                         if obj <= best_obj:
                             best_region = i
                             best_obj = obj
@@ -90,7 +90,7 @@ class PointLocation:
 
     def is_inside(self, theta: numpy.ndarray) -> bool:
         """
-        Determines if the theta point in inside the feasible space
+        Determines if the theta point in inside the feasible space.
 
         :param theta: A point in the theta space
 
@@ -100,7 +100,7 @@ class PointLocation:
 
     def locate(self, theta: numpy.ndarray) -> int:
         """
-        Finds the index of the critical region that theta is inside
+        Finds the index of the critical region that theta is inside.
 
         :param theta: realization of uncertainty
         :return: the index of the critical region found
@@ -109,7 +109,7 @@ class PointLocation:
 
     def evaluate(self, theta: numpy.ndarray) -> Optional[numpy.ndarray]:
         """
-        Evaluates the value of x(theta)
+        Evaluates the value of x(theta).
 
         :param theta: realization of uncertainty
         :return: the solution to the optimization problem or None
