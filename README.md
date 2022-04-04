@@ -30,7 +30,7 @@ pip install ppopt[optional]
   3. Serial and Parallel Graph based Algorithm
 - Solver interface for mpMILPs and mpMIQPs with the following algorithms
   1. Enumeration based algorithm
-- Multiparametric solution export to C++, JavaScript, Matlab, and Python
+- Multiparametric solution export to C++, JavaScript, and Python
 - Plotting utilities
 - Presolver and Conditioning for Multiparametric Programs
 
