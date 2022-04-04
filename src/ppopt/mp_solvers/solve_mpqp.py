@@ -2,6 +2,8 @@
 
 from enum import Enum
 
+import numpy
+
 from . import mpqp_geometric
 from ..mp_solvers import mpqp_combinatorial
 from ..mp_solvers import mpqp_graph
@@ -10,6 +12,7 @@ from ..mp_solvers import mpqp_parallel_geometric_exp
 from ..mp_solvers import mpqp_parrallel_combinatorial
 from ..mp_solvers import mpqp_parrallel_combinatorial_exp
 from ..mp_solvers import mpqp_parrallel_graph
+from ..mplp_program import MPLP_Program
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 
@@ -73,21 +76,28 @@ def solve_mpqp(problem: MPQP_Program, algorithm: mpqp_algorithm = mpqp_algorithm
     if algorithm is mpqp_algorithm.geometric_parallel_exp:
         solution = mpqp_parallel_geometric_exp.solve(problem)
 
+    # check if there needs to be a flag thrown in the case of overlapping critical regions
+    # happens if there are negative or zero eigen values for mpQP (kkt conditions can find a lot of saddle points)
+    if isinstance(problem, MPQP_Program):
+        if min(numpy.linalg.eigvalsh(problem.Q)) <= 0:
+            solution.is_overlapping = True
+
+    # in the case of degenerate problems there are overlapping critical regions, unless a check is performed to prove
+    # no overlap it is generally safer to consider that the mpLP case is overlapping
+    if isinstance(problem, MPLP_Program):
+        solution.is_overlapping = True
+
     return filter_solution(solution)
 
 
 def filter_solution(solution: Solution) -> Solution:
     """
-    This is a place holder function, in the future this will be used to process and operate on the solution before it is returned to the user
+    This is a placeholder function, in the future this will be used to process and operate on the solution before it
+    is returned to the user.
 
     :param solution: a multi parametric solution
 
     :return: A processed solution
     """
-    # filtered_solution = Solution(solution.program, [])
-    #
-    # for region in solution.critical_regions:
-    #    if get_chebyshev_information(region).sol[-1] > 10 ** -5:
-    #         filtered_solution.add_region(region)
 
     return solution

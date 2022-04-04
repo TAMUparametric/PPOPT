@@ -40,7 +40,7 @@ def select_not_in_list(A: numpy.ndarray, list_: Iterable[int]) -> numpy.ndarray:
 
 
 def render_number(x, trade_off=1e-4) -> str:
-    if isinstance(x,str):
+    if isinstance(x, str):
         return x
 
     if abs(x) < 10 ** -14:
@@ -98,6 +98,7 @@ def num_cpu_cores():
     """
     cores = os.cpu_count()
 
+    # noinspection SpellCheckingInspection
     if 'sched_getaffinity' in dir(os):
         cores = len(os.sched_getaffinity(0))
 

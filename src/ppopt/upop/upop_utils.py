@@ -1,36 +1,42 @@
+import copy
 from typing import List, Tuple
 
 import numpy
 
+from ..critical_region import CriticalRegion
 from ..geometry.polytope_operations import get_chebyshev_information
 from ..solution import Solution
 
 
 def find_unique_hyperplanes(overall: numpy.ndarray) -> Tuple[List[int], List[int], List[int]]:
     """
-    Generates the list of indices of the fundamental hyperplanes of the solution, as well as the indices of the associated hyperplanes from the original solution and the parity of the constraint
+    Generates the list of indices of the fundamental hyperplanes of the solution, as well as the indices of the
+    associated hyperplanes from the original solution and the parity of the constraint
 
     This is linear w.r.t. number of hyper planes and is quite quick ~25 ns per constraint in the solution
 
     It first creates approximate(near exact) integer representations for each constraint for each region in the solution
 
-    This approximation step is justified in that it will find equality between 2 constraints if the L2 norm of the difference is below 10E-12
+    This approximation step is justified in that it will find equality between 2 constraints if the L2 norm of the
+    difference is below 10E-12
 
-    Then the positive and negative versions of these constraints [ -x < -1, x < 1 are on different sides of the same hyperplane] are made into a format that can be hashed (tuples of ints)
+    Then the positive and negative versions of these constraints [ -x < -1, x < 1 are on different sides of the same
+    hyperplane] are made into a format that can be hashed (tuples of ints)
 
-    With this is is relatively strait forward to check for uniqueness with the set
+    With this is relatively strait forward to check for uniqueness with the set
 
-    The first loop scans thru all of the constraints and if the constraint contains a unique hyperplane
+    The first loop scans through all the constraints and if the constraint contains a unique hyperplane
 
-    1) if it is a unique hyper plane store the index, add the integer representation to the set, then index the integer representation to the index
+    1) if it is a unique hyper plane store the index, add the integer representation to the set, then index the
+    integer representation to the index
 
     2) if it is not a unique hyperplane do nothing
 
-    The second loop scans thru the constraints again and assigns them unique hyper plane indices and the parity(what side of the hyper plane that they are on)
+    The second loop scans through the constraints again and assigns them unique hyper plane indices and the parity(
+    what side of the hyper plane that they are on).
 
-
-    :param overall: The solution of a multiparametric programming problem
-    :return: returns indices of fundamental hyperplanes, indices of constraints back to fundamental hyperplane, parity of constraint
+    :param overall: The solution of a multiparametric programming problem :return: returns indices of fundamental
+    hyperplanes, indices of constraints back to fundamental hyperplane, parity of constraint
     """
     overall_p = (overall * 1000000000).astype(numpy.int64).tolist()
     overall_n = (overall * -1000000000).astype(numpy.int64).tolist()
@@ -66,7 +72,7 @@ def find_unique_hyperplanes(overall: numpy.ndarray) -> Tuple[List[int], List[int
 
 def find_unique_region_hyperplanes(solution: Solution) -> Tuple[List[int], List[int], List[int]]:
     """
-    This is an overload of the find_unique_hyperplane function
+    This is an overload of the find_unique_hyperplane function.
 
     :param solution:
     :return:
@@ -75,16 +81,50 @@ def find_unique_region_hyperplanes(solution: Solution) -> Tuple[List[int], List[
     return find_unique_hyperplanes(overall)
 
 
+def convert_mi_solution(sol: Solution) -> Solution:
+    if sol.is_mixed_integer_sol():
+        sol.critical_regions = [convert_mi_critical_region(cr) for cr in sol.critical_regions]
+    return sol
+
+
+def convert_mi_critical_region(cr: CriticalRegion) -> CriticalRegion:
+    """
+    The purpose of this function, is that this generates a new explicit expression for critical regions of programs
+    with mixed integer solutions that is compatible with  the exported code libraries.
+
+    :param cr: a CR with integer values
+    :return: an augmented CR that has the binary values promoted into the evaluation matrices
+    """
+    new_cr = copy.deepcopy(cr)
+
+    new_A = numpy.zeros((len(cr.x_indices) + len(cr.y_indices), new_cr.A.shape[1]))
+    new_b = numpy.zeros((len(cr.x_indices) + len(cr.y_indices), 1))
+
+    new_A[cr.x_indices] = cr.A
+    new_b[cr.x_indices] = cr.b
+    new_b[cr.y_indices] = numpy.array(cr.y_fixation).reshape(-1, 1)
+
+    new_cr.A = new_A
+    new_cr.b = new_b
+
+    return new_cr
+
+
 def find_unique_region_functions(solution: Solution) -> Tuple[List[int], List[int], List[int]]:
+    # we augment this a bit in the case of mixed integer solutions, instead of CRs having assosiated binary values we have
+    # the following situation
     overall = numpy.block([[region.A, region.b] for region in solution.critical_regions])
     return find_unique_hyperplanes(overall)
 
 
 def get_outer_boundaries(indices: List[int], parity: List[int]):
     """
-    Takes in the global constraint indices to the fundamental hyperplanes and their parity finds all planes with only one parity version aka only one verity of them appears in the original set.
+    Takes in the global constraint indices to the fundamental hyperplanes and their parity finds all planes with only
+    one parity version aka only one verity of them appears in the original set.
 
     This method is linear w.r.t. number of indices, by the use of sets and hash maps
+
+    Only works for solutions with non-overlapping critical regions!
 
     :param indices: list of indices that maps the solution constraints into the fundamental hyperplanes
     :param parity: the side of the hyperplane that the constraint represents
@@ -120,10 +160,10 @@ def get_outer_boundaries(indices: List[int], parity: List[int]):
 
 def get_chebychev_centers(solution: Solution) -> List[numpy.ndarray]:
     """
-    Calculates and returns a list of all of the theta chebychev centers for the critical regions in the solution
+    Calculates and returns a list of all the theta chebychev centers for the critical regions in the solution.
 
     :param solution: An mp programming Solution
-    :return: A list of all of the chebychev centers of the regions in the solutions
+    :return: A list of all the chebychev centers of the regions in the solutions
     """
     return [get_chebyshev_information(region).sol[0:solution.program.num_t()].reshape((solution.program.num_t(), 1)) for
             region in solution.critical_regions]
@@ -132,7 +172,8 @@ def get_chebychev_centers(solution: Solution) -> List[numpy.ndarray]:
 def verify_outer_boundary(solution: Solution, hyper_indices: List[int], outer_indices: List[int],
                           chebychev_centers: List[numpy.ndarray] = None) -> List[int]:
     """
-    This checks all of the possible outer boundary indices for errors, failures to solve for the minimal set of fundamental hyperplanes in the solution
+    This checks all the possible outer boundary indices for errors, failures to solve for the minimal set of
+    fundamental hyperplanes in the solution.
 
     :param solution: An mp programming solution
     :param hyper_indices: The list of all fundamental hyperplane indices

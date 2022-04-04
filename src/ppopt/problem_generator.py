@@ -16,7 +16,7 @@ def generate_mplp(x: int = 2, t: int = 2, m: int = 10) -> MPLP_Program:
 
     mpqp = generate_mpqp(x, t, m)
 
-    return MPLP_Program(mpqp.A, mpqp.b, mpqp.c, mpqp.H, mpqp.A_t, mpqp.b_t, mpqp.F, [])
+    return MPLP_Program(mpqp.A, mpqp.b, mpqp.c, mpqp.H, mpqp.A_t, mpqp.b_t, mpqp.F)
 
 
 def generate_mpqp(x: int = 2, t: int = 2, m: int = 10) -> MPQP_Program:

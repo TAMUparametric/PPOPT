@@ -1,10 +1,11 @@
 from typing import Optional
 
-import numba
 import numpy
 
+# Make this optional at some point, so we can run on more general platforms
+import numba
+
 from ..solution import Solution
-from ..upop.upop_utils import find_unique_region_hyperplanes, get_outer_boundaries, get_chebychev_centers
 
 
 class PointLocation:
@@ -13,47 +14,46 @@ class PointLocation:
         """
         Creates a compiled point location solving object for the specified solution.
 
-        This is useful for real time applications on a server or desktop, as it solves the point location problem via direct enumeration in the order or single microseconds.
+        This is useful for real time applications on a server or desktop, as it solves the point location problem via
+        direct enumeration. This is fast; for example a 200 region solution can be evaluated in single digit uSecs on
+        modern computers.
 
-        For example: A 200 region solution can be evaluated in ~5 uSecs
-
-        :param solution: A solution
+        :param solution: An explicit solution to a multiparametric program
         """
 
+        # take in the solution
         self.solution = solution
 
-        self.overall = numpy.block([[region.E, region.f] for region in self.solution.critical_regions])
-        A = self.overall[:, :-1].copy()
-        b = self.overall[:, -1].reshape((self.overall.shape[0], 1)).copy()
-        self.overall_A = A
-        self.overall_b = b
+        # build the overall matrix block - this is all the region hyper plane constraints stacked on top of each other
 
-        [self.unique_indices, self.original_indices, self.original_parity] = find_unique_region_hyperplanes(solution)
-
-        self.region_centers = get_chebychev_centers(solution)
-
-        outer_indices = get_outer_boundaries(self.original_indices, self.original_parity)
-        # outer_indices = verify_outer_boundary(solution, self.unique_indices, outer_indices, self.region_centers)
-
-        self.outer_A = self.overall_A[self.original_indices][outer_indices].copy()
-        self.outer_b = self.overall_b[self.original_indices][outer_indices].copy()
+        A = numpy.block([[region.E] for region in self.solution.critical_regions])
+        b = numpy.block([[region.f] for region in self.solution.critical_regions])
 
         # create region idx
         num_regions = len(self.solution.critical_regions)
         self.num_regions = num_regions
 
-        region_constraints = numpy.array([0] * (num_regions + 1))
+        region_constraints = numpy.zeros((num_regions + 1,))
+
         for i, region in enumerate(self.solution.critical_regions):
             region_constraints[i + 1] = (region.E.shape[0] + region_constraints[i])
 
         self.region_constraints = region_constraints
 
-        # this is the secret sauce, the core point location code is compiled to native instructions this reduces most overheads
+        # The core point location code is compiled to native instructions this reduces most overheads
+        @numba.njit
+        def get_region_overlap(theta: numpy.ndarray) -> numpy.ndarray:
+            test = A @ theta <= b
 
-        num_x = solution.program.num_x()
+            region_indicator = numpy.zeros((num_regions,))
+            for j in range(num_regions):
+                if numpy.all(test[region_constraints[j]:region_constraints[j + 1]]):
+                    region_indicator[j] = 1
+
+            return region_indicator
 
         @numba.njit
-        def eval_(theta: numpy.ndarray) -> int:
+        def get_region_no_overlap(theta: numpy.ndarray) -> int:
 
             test = A @ theta <= b
 
@@ -64,45 +64,55 @@ class PointLocation:
 
             return -1
 
-        @numba.njit
-        def eval__(j: int, theta: numpy.ndarray) -> numpy.ndarray:
+        if solution.is_overlapping:
+            self.get_region = get_region_overlap
+        else:
+            self.get_region = get_region_no_overlap
 
-            output = numpy.zeros((num_x, 1))
-            theta_ = theta.flatten()
+        def locate(theta: numpy.ndarray) -> int:
+            if solution.is_overlapping:
+                region_indicators = self.get_region(theta)
+                best_obj = float("inf")
+                best_region = -1
 
-            for k in range(num_x):
-                output[k] = numpy.dot(A[j * num_x + k], theta_) + b[j * num_x + k]
+                for i in range(self.num_regions):
+                    if region_indicators[i] == 1:
+                        obj = self.solution.program.evaluate_objective(
+                            self.solution.critical_regions[i].evaluate(theta), theta)
+                        if obj <= best_obj:
+                            best_region = i
+                            best_obj = obj
+                return best_region
+            else:
+                return self.get_region(theta)
 
-            return output
-
-        self.eval_ = eval_
-        self.eval__ = eval__
+        self.eval_ = locate
 
     def is_inside(self, theta: numpy.ndarray) -> bool:
         """
-        Determines if the theta point in inside of the feasible space
+        Determines if the theta point in inside the feasible space.
 
         :param theta: A point in the theta space
 
-        :return: True, if theta in region \n False, if theta not in region
+        :return: True, if theta in region and False, if theta not in region
         """
         return self.eval_(theta) != -1
 
     def locate(self, theta: numpy.ndarray) -> int:
         """
-        Finds the index of the critical region that theta is inside
+        Finds the index of the critical region that theta is inside.
 
-        :param theta:
-        :return:
+        :param theta: realization of uncertainty
+        :return: the index of the critical region found
         """
         return self.eval_(theta)
 
     def evaluate(self, theta: numpy.ndarray) -> Optional[numpy.ndarray]:
         """
-        Evaluates the value of x(theta), of the
+        Evaluates the value of x(theta).
 
-        :param theta:
-        :return:
+        :param theta: realization of uncertainty
+        :return: the solution to the optimization problem or None
         """
 
         idx = self.eval_(theta)

@@ -9,8 +9,7 @@ from ..utils.mpqp_utils import gen_cr_from_active_set
 
 
 class CombinationTester:
-
-    """This keeps track of all the infeasible active set combinations and filters prospective active set
+    """Keeps track of all the infeasible active set combinations and filters prospective active set
     combinations """
 
     def __init__(self):
@@ -55,16 +54,14 @@ class CombinationTester:
 def manufacture_lambda(attempted, murder_list):
     if attempted is None:
         if murder_list is None:
-            check = lambda x: True
+            return lambda x: True
         else:
-            check = lambda x: not murder_list.hassubset(x)
+            return lambda x: not murder_list.hassubset(x)
     else:
         if murder_list is None:
-            check = lambda x: x not in attempted
+            return lambda x: x not in attempted
         else:
-            check = lambda x: x not in attempted and not murder_list.hassubset(x)
-
-    return check
+            return lambda x: x not in attempted and not murder_list.hassubset(x)
 
 
 def generate_reduce(candidate: tuple, murder_list=None, attempted=None) -> list:
@@ -117,8 +114,6 @@ def find_optimal_set(problem) -> List[int]:
 
     feasible_set = [problem.equality_indices]
 
-    # feasible_set = generate_children(problem.equality_indices, problem.num_constraints(), super_checker)
-
     print(feasible_set)
     while True:
 
@@ -167,12 +162,12 @@ def generate_children_sets(active_set, num_constraints: int, murder_list=None):
 
 def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> list:
     r"""
-    This takes the polytope P := {x \in R^n : Ax <= b} and finds all of the chebychev centers and normal vectors of each
+    This takes the polytope P := {x \in R^n : Ax <= b} and finds all the chebychev centers and normal vectors of each
     facet and the radius
 
     :param A: The LHS constraint matrix
     :param b: The RHS constraint matrix
-    :return: a list with an tuple for each facet in the polytope (chebychev center, facet normal vector, chebychev radius)
+    :return: a list with a tuple for each facet in the polytope (chebychev center, facet normal vector, chebychev radius)
     """
     facet_centers = []
 
@@ -238,7 +233,7 @@ def fathem_facet(center: numpy.ndarray, normal: numpy.ndarray, radius: float, pr
         sol = program.solve_theta(test_point)
 
         # test to see if the theta substituted optimization function is not feasible
-        # this happens when we are looking outside of the feasible space -> no longer need to look further
+        # this happens when we are looking outside the feasible space -> no longer need to look further
         if sol is None:
             # print('Is not Feasible!')
             return None

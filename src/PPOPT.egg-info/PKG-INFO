@@ -39,7 +39,7 @@ pip install ppopt[optional]
 
 ## Quick Overview
 
-To give a fast primer of what we are doing, we are solving multiparametric programming problems (fast) by writting parallel algorithms efficently. Here is a quick sclaing analysis on a large multiparametric program.
+To give a fast primer of what we are doing, we are solving multiparametric programming problems (fast) by writting parallel algorithms efficiently. Here is a quick scaling analysis on a large multiparametric program.
 
 ![image](https://github.com/TAMUparametric/PPOPT/blob/main/Figures/loglog_scaling.png)
 ![image](https://github.com/TAMUparametric/PPOPT/blob/main/Figures/scaleing_eff.png)

@@ -1,6 +1,3 @@
-# flake8: noqa
-# noinspection SpellCheckingInspection,PyPep8
-cpp_upop = """
 #include<inttypes.h>
 #include<string>
 #include<array>
@@ -11,8 +8,34 @@ cpp_upop = """
 
 namespace UPOP {
 #define NOT_IN_FEASIBLE_SPACE -1
-<==PayloadHere==>
-template<int num_fundamental_planes>
+	typedef float float_;
+	const uint16_t region_indicies[4] = { 0,2,4,6 };
+
+	const uint16_t constraint_indices[6] = { 0,1,0,1,0,1 };
+	const std::bitset<6> constraint_parity("111111");
+
+	const uint16_t function_indices[9] = { 0,0,0,0,0,1,0,1,0 };
+	const std::bitset<9> function_parity("111111111");
+	const bool solution_overlap = true;
+	const bool is_qp = false;
+	const int theta_dim = 1;
+	const int x_dim = 3;
+	const int num_hyperplanes = 6;
+	const int num_functions = 9;
+	const int num_regions = 3;
+	const int num_fundamental_hyper_planes = 2;
+	const float constraint_matrix_data[2] = { -1.0,1.0 };
+	const float constraint_vector_data[2] = { 0.0,2.0 };
+	const float function_matrix_data[2] = { 0.0,0.0 };
+	const float function_vector_data[2] = { 0.0,1.0 };
+	const std::array<float_, 1> Q = { 1 };
+	const std::array<float_, x_dim> c = { -3,0,0 };
+	const std::array<float_, x_dim*theta_dim> H = { 0.0,0.0,0.0 };
+	const float_ c_c = 0.0;
+	const std::array<float_, theta_dim> c_t = { 0.0 };
+	const std::array<float_, theta_dim*theta_dim> Q_t = { 0.0 };
+
+	template<int num_fundamental_planes>
 	class Constraints {
 	public:
 		// Constructors Destructors
@@ -29,7 +52,7 @@ template<int num_fundamental_planes>
 			float_ eval = 0.0;
 
 			if (is_eval[fundamental_plane_index]) {
-				// get the result 
+				// get the result
 				auto result = what_eval[fundamental_plane_index];
 				return constraint_parity[i] == result;
 			}
@@ -45,7 +68,7 @@ template<int num_fundamental_planes>
 			// cache the results for next time
 			is_eval[fundamental_plane_index] = true;
 
-			// check parity and assing in positive parity refrence
+			// check parity and passing in positive parity reference
 			what_eval[fundamental_plane_index] = value == constraint_parity[i];
 
 			return value;
@@ -58,7 +81,7 @@ template<int num_fundamental_planes>
 
 	float_ evaluate_objective(float_* t, float_* x, bool include_theta_terms) {
 
-		float_ obj = c_c;
+		float_ obj = c_c*float_(2.0);
 
 		if (is_qp) {
 			// is this is not a qp then we  can skip this term
@@ -84,7 +107,7 @@ template<int num_fundamental_planes>
 			}
 		}
 
-		// this is a fairly common occurance
+		// this is a fairly common occurrence
 		if (!include_theta_terms)
 			return obj;
 
@@ -222,4 +245,3 @@ template<int num_fundamental_planes>
 }
 
 #endif // !UPOP_CPP_HEADER
-"""

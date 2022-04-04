@@ -8,7 +8,7 @@ from ..utils.mpqp_utils import gen_cr_from_active_set
 
 def solve(program: MPQP_Program) -> Solution:
     """
-    Solves the MPQP program with a modified algorithm described in Gupta et. al. 2011.
+    Solves the MPQP program with a modified algorithm described in Gupta et al. 2011.
     The algorithm is described in this paper https://www.sciencedirect.com/science/article/pii/S0005109811003190
 
     :param program: MPQP to be solved
@@ -29,7 +29,7 @@ def solve(program: MPQP_Program) -> Solution:
 
     for i in range(max_depth):
         # if there are no other active sets to check break out of loop
-        print(len(to_check))
+        # print(len(to_check))
 
         future_sets = list()
         # creates the list of feasible active sets

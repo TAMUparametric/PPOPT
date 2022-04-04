@@ -3,6 +3,8 @@ import numpy
 
 from src.ppopt.critical_region import CriticalRegion
 from src.ppopt.mplp_program import MPLP_Program
+from src.ppopt.mpmilp_program import MPMILP_Program
+from src.ppopt.mpmiqp_program import MPMIQP_Program
 from src.ppopt.mpqp_program import MPQP_Program
 from src.ppopt.mp_solvers.mpqp_combinatorial import CombinationTester
 from src.ppopt.mp_solvers.solve_mpqp import solve_mpqp
@@ -81,7 +83,7 @@ def linear_program() -> MPLP_Program:
     b_t = numpy.ones((10, 1))
     c = numpy.ones((3, 1))
     H = numpy.zeros((A.shape[1], F.shape[1]))
-    return MPLP_Program(A, b, c, H, A_t, b_t, F, [0])
+    return MPLP_Program(A, b, c, H, A_t, b_t, F, None, None, None, equality_indices = [0])
 
 
 @pytest.fixture()
@@ -167,3 +169,33 @@ def filled_combo_tester():
     c.add_combo([3])
     c.add_combo([1, 5])
     return c
+
+@pytest.fixture()
+def simple_mpMILP():
+    """Simple mpMILP to solve for """
+    A = numpy.array([[0, 1, 1], [1, 0, 0], [-1, 0, 0], [1, -1, 0], [1, 0, -1]])
+    b = numpy.array([1, 0, 0, 0, 0]).reshape(-1, 1)
+    F = numpy.array([0, 1, 0, 0, 0]).reshape(-1, 1)
+    c = numpy.array([-3, 0, 0]).reshape(-1, 1)
+    H = numpy.zeros((F.shape[1], A.shape[1])).T
+    A_t = numpy.array([1, 1]).reshape(-1, 1)
+    b_t = numpy.array([2, 2]).reshape(-1, 1)
+
+    mpmilp = MPMILP_Program(A, b, c, H, A_t, b_t, F, binary_indices=[1, 2])
+    return mpmilp
+
+@pytest.fixture()
+def simple_mpMIQP():
+    """Simple mpMILP to solve for """
+    A = numpy.array([[0, 1, 1], [1, 0, 0], [-1, 0, 0], [1, -1, 0], [1, 0, -1]])
+    b = numpy.array([1, 0, 0, 0, 0]).reshape(-1, 1)
+    F = numpy.array([0, 1, 0, 0, 0]).reshape(-1, 1)
+    c = numpy.array([-3, 0, 0]).reshape(-1, 1)
+    H = numpy.zeros((F.shape[1], A.shape[1])).T
+    Q = numpy.eye(3)
+    A_t = numpy.array([1, 1]).reshape(-1, 1)
+    b_t = numpy.array([2, 2]).reshape(-1, 1)
+
+    mpmiqp = MPMIQP_Program(A, b, c, H, Q,A_t, b_t, F, binary_indices=[1, 2])
+    return mpmiqp
+

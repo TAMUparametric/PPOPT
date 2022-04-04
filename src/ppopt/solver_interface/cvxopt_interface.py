@@ -73,7 +73,7 @@ def separate_constraints(A, b, equality_constraints, ineq):
 
 def solve_fully_constraints(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray) -> Optional[SolverOutput]:
     """
-    This solves a fully constrained linear system by directly solving the linear system. This is NOT complete
+    This solves a fully constrained linear system by directly solving the linear system. This is NOT complete!
 
     :param c: Column Vector
     :param A: Constraint LHS matrix
@@ -123,7 +123,7 @@ def solve_qp_cvxopt(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: num
     :param cvx_solver:
     :return:
     """
-    # this is to deal with immutability an copy constrictors
+    # this is to deal with immutability a copy constrictors
     if equality_constraints is None:
         equality_constraints = []
 
@@ -146,7 +146,8 @@ def solve_qp_cvxopt(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: num
 def solve_lp_cvxopt(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray, equality_constraints=None, verbose=False,
                     get_duals=True, cvx_solver='glpk') -> Optional[SolverOutput]:
     r"""
-    This is the breakout for solving linear programs with cvxopt, This is the preferred Solver as it has the lowest interface cost of all of the other solvers
+    This is the breakout for solving linear programs with cvxopt, This is the preferred Solver as it has the lowest
+    interface cost of all the other solvers
 
     .. math::
 
@@ -168,7 +169,7 @@ def solve_lp_cvxopt(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray, equali
     :param cvx_solver: selects the cvxopt Solver, default is glpk
     :return: A SolverOutput Object
     """
-    # this is to deal with immutability an copy constrictors
+    # this is to deal with immutability a copy constrictors
     if equality_constraints is None:
         equality_constraints = []
 

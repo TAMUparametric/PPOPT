@@ -1,4 +1,4 @@
-# The purpose of this is to generate C++ code for to use for micro controller but
+# The purpose of this is to generate C++ code for to use for microcontroller but
 # There are hopes to expand to further outreach such as generating dlls or .so
 # or other language output to use solutions in other languages without needing a
 # new ppopt in every language
@@ -15,9 +15,10 @@ from ..utils.general_utils import make_column
 
 def determine_hyperplane(regions: List[CriticalRegion], hyper_planes: numpy.ndarray):
     """
-    Finds the 'best' splitting hyper plane for this task\n
+    Finds the 'best' splitting hyper plane for this task.
 
-    In this case best means minimizing the number of intersected regions while also maximizing the difference between supported and not supported regions
+    In this case best means minimizing the number of intersected regions while also maximizing the difference between
+    supported and not supported regions.
 
     :param regions:
     :param hyper_planes:
@@ -72,7 +73,7 @@ def classify_polytope(region: CriticalRegion, hyper_plane: numpy.ndarray) -> int
     max ||<x,A>||-d for x in Critical region \n
     min ||<x,A>||-d for x in Critical region \n
 
-    The result of the objective function will tell us the side of the hyper plane the point is on
+    The result of the objective function will tell us the side of the hyper plane the point is on.
 
     :param region: Critical region
     :param hyper_plane: A fundamental hyperplane
@@ -127,11 +128,8 @@ class BVH:
 
 def generate_code(solution: Solution) -> List[str]:
     """
-    Generates C++17 code for point location and function evaluation on microcontrollers \n
-
-    This forms a BVH to accelerate solution times \n
-
-    WARNING: This breaks down at high dimensions
+    Generates C++17 code for point location and function evaluation on microcontrollers. This forms a BVH to
+    accelerate solution times. WARNING: This breaks down at high dimensions.
 
     :param solution: a solution to a MPLP or MPQP solution
     :return: List of the strings of the C++17 datafiles that integrate with uPOP

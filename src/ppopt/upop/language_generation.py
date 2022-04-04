@@ -61,7 +61,7 @@ def gen_js_array(data: list, name: str, vartype: str, options: list = ("const",)
     return f"{name} = [" + ",".join(data_payload) + "];"
 
 
-def gen_js_variable(data, name: str, vartype: str, options: list = ("const",)) -> str:
+def gen_js_variable(data, name: str, vartype: str = None, options: list = ("const",)) -> str:
     if "const" in options:
         name = "const " + name
 
@@ -86,7 +86,7 @@ def gen_array(data: list, name: str, vartype: str, options=("const",), lang='cpp
         return gen_js_array(data, name, vartype, options=options)
 
 
-def gen_variable(data, name: str, vartype: str, options=("const",), lang='cpp') -> str:
+def gen_variable(data, name: str, vartype: str = None, options=("const",), lang='cpp') -> str:
     if lang == 'cpp':
         return gen_cpp_variable(data, name, vartype, options=options)
 
