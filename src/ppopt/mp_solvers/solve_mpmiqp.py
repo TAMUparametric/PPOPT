@@ -7,6 +7,7 @@ from ..solution import Solution
 
 from .mpmiqp_enumeration import solve_mpmiqp_enumeration
 
+
 class mpmiqp_algorithm(Enum):
     """
     Enum that selects the mpmiqp algorithm to be used
@@ -18,8 +19,8 @@ class mpmiqp_algorithm(Enum):
     enumerate = 'enumerate'
 
 
-def solve_mpmiqp(problem: MPMILP_Program, mpmiqp_algo: mpmiqp_algorithm = mpmiqp_algorithm.enumerate, cont_algo: mpqp_algorithm = mpqp_algorithm.combinatorial, num_cores = -1) -> Solution:
-
+def solve_mpmiqp(problem: MPMILP_Program, mpmiqp_algo: mpmiqp_algorithm = mpmiqp_algorithm.enumerate,
+                 cont_algo: mpqp_algorithm = mpqp_algorithm.combinatorial, num_cores=-1) -> Solution:
     # the case of a continuous problem just solve it and return
     if len(problem.binary_indices) == 0:
         print("The PROBLEM DOES NOT HAVE ANY BINARY VARIABLES!!!")
