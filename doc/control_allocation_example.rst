@@ -17,6 +17,7 @@ First we will define a vehicle model based on a simple octocopter with very
 simple, constant, thrust coefficient, torque coefficient, and figure of merit.
 
 .. code:: python
+
     import numpy as np
 
     # Vehicle Parameters
