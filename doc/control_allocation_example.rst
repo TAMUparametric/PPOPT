@@ -353,6 +353,8 @@ the nature of the roll and pitch errors introduced.
 
     mp.show()
 
+.. image:: roll-pitch_error_whisker.svg
+
 We see that there is very little error in the middle.  This is expected because
 none of the actuators should be saturated for smaller commands.  Very large
 requests for pitch and moment are outside of the vehicle's performance envelope,
@@ -431,6 +433,8 @@ errors for every evaluated point, and then plot them as contours.
             + "    max=" + str(np.round(np.max(errors), 3)))
 
     mp.show()
+
+.. image:: roll-pitch_error_contour.svg
 
 We can see roll and pitch being prioritized; errors in thrust and yaw jump up as
 soon as the system runs out of ablity to service roll or pitch.  Then resources
