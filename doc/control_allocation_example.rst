@@ -205,7 +205,7 @@ represented alternatively as:
 
     A * x <= b + F * FMCmd
 
-with:
+where:
 
 .. code:: python
 
@@ -220,7 +220,7 @@ we reformat the theta bounds as:
 
     CRa * FMCmd <= CRb
 
-with:
+where:
 
 .. code:: python
 
@@ -282,6 +282,8 @@ has a 4D theta vector).  First, a simple rotor layout plot:
     ax.set_title("Rotor Geometry")
 
     mp.show()
+
+.. image:: rotor_geometry.png
 
 Next, we will take a look at the relationship between the requested roll and
 pitch and the actual roll and pitch that results.  For this, we will fix thrust
