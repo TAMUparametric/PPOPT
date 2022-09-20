@@ -283,7 +283,7 @@ has a 4D theta vector).  First, a simple rotor layout plot:
 
     mp.show()
 
-.. image:: rotor_geometry.png
+.. image:: rotor_geometry.svg
 
 Next, we will take a look at the relationship between the requested roll and
 pitch and the actual roll and pitch that results.  For this, we will fix thrust
