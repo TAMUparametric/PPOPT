@@ -15,6 +15,7 @@ Tutorial
 
     tutorial
     algorithm_overview
+    control_allocation_example
 
 API
 ---
