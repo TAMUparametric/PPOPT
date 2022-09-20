@@ -51,6 +51,7 @@ objective function.  Linear forms are needed now because we will form a squared
 error term and a squared Euclidean distance term.
 
 .. code:: python
+
     # Generate hover control Jacobian: dFM/dTau
     # Ignore Fx and Fy (assume no cant on rotors)
     dFMdTau = np.zeros((m, n), float)
@@ -73,6 +74,7 @@ error term and a squared Euclidean distance term.
 Next we compute a trim point which will be useful for the objective function.
 
 .. code:: python
+
     # Force/Moment trim command, assuming CG is at origin 
     FMTrim = np.array([-m*g, 0.0, 0.0, 0.0], float) # 1g thrust, 0 moment commands
 
@@ -86,33 +88,39 @@ optimally, so we must parameterize the optimization problem based on thrust,
 roll, pitch, and yaw.  Let's therefore form the parameter (theta) vector:
 
 .. math::
+
     FMCmd = \left[\begin{matrix} F_{thrust} \\ M_{roll} \\ M_{pitch} \\ M_{yaw} \end{matrix}\right]
 
 We desire optimal selection of the motor throttle signals, so they will form the
 decision variable vector:
 
 .. math::
+
     x = \left[\begin{matrix} \delta_{motor 0} \\ \delta_{motor 1} \\ \delta_{motor 2} \\ \delta_{motor 3} \\ \delta_{motor 4} \\ \delta_{motor 5} \\ \delta_{motor 6} \\ \delta_{motor 7} \end{matrix}\right]
 
 Now form a (linear) trim error vector:
 
 .. math::
+
     e = dFMdTau * x - FMCmd
 
 and a (linear) control effort vector:
 
 .. math::
+
     f = dFMdTau * (x - xTrim)
 
 Now our objective is stated as:
 
 .. math::
+
     J = e^{T} * WFM * e + f^{T} * f
 
 where we have added a weighting matrix, WFM, which is a diagonal matrix with
 different weightings for thrust, roll, pitch, and yaw.  We will define it as:
 
-.. code::python
+.. code:: python
+
     WFM = np.diag([20.0, 100.0, 100.0, 5.0]) # Fz, Mx, My, Mz
 
 This matrix primarily
@@ -130,11 +138,13 @@ throttle signals are simple thrust values that are zero at the bottom end, and
 proportional the thrust ratio of the top end:
 
 .. math::
+
     xMin \leq x \leq xMax
 
 where:
 
-.. code::python
+.. code:: python
+
     xMin = np.zeros((n), float)
     xMax = thrustRatio*np.mean(xTrim)*np.ones((n), float)
 
@@ -144,7 +154,8 @@ necessary (some solvers can handle unbounded polytopes), but doing so can
 improve numerical conditioning and limit the number of polytopes to only what is
 necessary to solve the problem.  Therefore let:
 
-.. code::python
+.. code:: python
+
     rollPitchMomentLimits = np.array([-15.0, 15.0], float)
     yawMomentLimits = np.array([-3.0, 3.0], float)
     thrustLimits = np.array([-1.2*m*g, -0.8*m*g], float)
@@ -153,11 +164,13 @@ We will use these values to form constraint vectors.  Add 10% just to make sure
 the limit values themselves are allocated:
 
 .. math::
+
     FMCmdMin \leq FMCmd \leq FMCmdMax
 
 where:
 
-.. code::python
+.. code:: python
+
     FMCmdMin = np.array([thrustLimits[0], rollPitchMomentLimits[0],
         rollPitchMomentLimits[0], yawMomentLimits[0]])*1.1
     FMCmdMax = np.array([thrustLimits[1], rollPitchMomentLimits[1],
@@ -168,11 +181,13 @@ First we put the objective function into an explicit quadratic format in terms
 of x and FMCmd.  Expand the terms, combine like terms, and simplify to obtain:
 
 .. math::
+
     0.5 * J =  0.5 * x^{T} * Q * x + c^{T} * x + FMCmd^{T} * H^{T} * x + FMCmd^{T} * WFM * FMCmd + xTrim^{T} * dFMdTau^{T} * dFMdTau * xTrim
 
 where
 
-.. code::python
+.. code:: python
+
     Q = dFMdTau.T@WFM@dFMdTau + dFMdTau.T@dFMdTau
     c = -dFMdTau.T@dFMdTau@xTrim.reshape((n, 1))
     H = -dFMdTau.T@WFM
@@ -187,11 +202,13 @@ stacking them to form matrices and vectors.  The individual thrust limits can be
 represented alternatively as:
 
 .. math::
+
     A * x <= b + F * FMCmd
 
 with:
 
-.. code::python
+.. code:: python
+
     A = np.concatenate((-np.eye(n, n, 0, float), np.eye(n, n, 0, float)), 0)
     b = np.concatenate((-xMin.reshape((n, 1)), xMax.reshape((n, 1))), 0)
     F = np.zeros((2*n, m), float)
@@ -200,29 +217,34 @@ Note that F is zeros because we only have simple bound constraints.  Similarly,
 we reformat the theta bounds as:
 
 .. math::
+
     CRa * FMCmd <= CRb
 
 with:
 
 .. code:: python
+
     CRa = np.concatenate((-np.eye(m, m, 0, float), np.eye(m, m, 0, float)), 0)
     CRb = np.concatenate((-FMCmdMin.reshape((m, 1)), FMCmdMax.reshape((m, 1))), 0)
 
 Now that the formaulated problem is reformatted, we create the PPOPT
 mpqp_problem object:
 
-.. code::python
+.. code:: python
+
     from library.ppopt.src.ppopt.mpqp_program import MPQP_Program as mpqp_program
     prog = mpqp_program(A, b, c, H, Q, CRa, CRb, F)
 
 Always consider running this to improve numerics:
 
-.. code::python
+.. code:: python
+
     prog.process_constraints()
 
 Finally, we execute the optimization process:
 
-.. code::python
+.. code:: python
+
     from library.ppopt.src.ppopt.mp_solvers.solve_mpqp import solve_mpqp, mpqp_algorithm
     solution = solve_mpqp(prog, mpqp_algorithm.combinatorial)
 
@@ -234,7 +256,8 @@ Now that we have an allocation, let's take a look at it.  It can be difficult to
 see how an allocation is doing if it has more than three dimensions (our problem
 has a 4D theta vector).  First, a simple rotor layout plot:
 
-.. code::python
+.. code:: python
+
     # Plots
     import matplotlib.pyplot as mp
 
@@ -267,7 +290,8 @@ requests, we will draw a blue line from the request to the result.  We will add
 a red dot to the result to distinguish it from the request.  The line will show
 the nature of the roll and pitch errors introduced.
 
-.. code::python
+.. code:: python
+
     # Basic resolution of the plots
     res = 32
 
@@ -341,7 +365,8 @@ axes.  We will do so by once again fixing thrust and yaw to their trim values
 and sweeping roll and pitch.  We will compute thrust, roll, pitch, and yaw
 errors for every evaluated point, and then plot them as contours.
 
-.. code::python
+.. code:: python
+
     # Basic resolution of the plots
     res = 128
 
