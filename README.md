@@ -54,4 +54,18 @@ Here is a benchmark against the state of the art multiparametric programming sol
 
 ![image](https://github.com/TAMUparametric/PPOPT/blob/main/Figures/bench.png)
 
+## Citation
 
+Since a lot of time and effort has gone into PPOPT's development, please cite the following publication if you are using PPOPT for your own research.
+
+```text
+@incollection{kenefake2022ppopt,
+  title={PPOPT-Multiparametric Solver for Explicit MPC},
+  author={Kenefake, Dustin and Pistikopoulos, Efstratios N},
+  booktitle={Computer Aided Chemical Engineering},
+  volume={51},
+  pages={1273--1278},
+  year={2022},
+  publisher={Elsevier}
+}
+```
