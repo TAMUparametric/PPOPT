@@ -47,13 +47,13 @@ def generate_code_cpp(solution: Solution, float_type: str = 'float') -> str:
     to_augment.append("")
 
     to_augment.append(gen_array(original_c, "constraint_indices", "uint16_t"))
-    bit_string_c = ''.join(["1" if i == 1 else "0" for i in parity_c])
+    bit_string_c = ''.join(["1" if i == 1 else "0" for i in parity_c[::-1]])
     to_augment.append(
         f"const std::bitset<{len(parity_c)}> constraint_parity(\"{bit_string_c}\");")
     to_augment.append("")
 
     to_augment.append(gen_array(original_f, "function_indices", "uint16_t"))
-    bit_string_f = ''.join(["1" if i == 1 else "0" for i in parity_f])
+    bit_string_f = ''.join(["1" if i == 1 else "0" for i in parity_f[::-1]])
     to_augment.append(
         f"const std::bitset<{len(parity_f)}> function_parity(\"{bit_string_f}\");")
 
