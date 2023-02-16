@@ -11,6 +11,7 @@ from ..utils.mpqp_utils import gen_cr_from_active_set
 
 def full_process(program, candidate, murder_list):
     """
+    This function is the main kernel of the parallel graph algorithm.
 
     :param program: A multiparametric program
     :param candidate: the active set combination that we are expanding on

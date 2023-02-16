@@ -20,7 +20,7 @@ def vertex_enumeration_2d(A: numpy.ndarray, b: numpy.ndarray, solver: Solver) ->
 
     Generates vertices for the 2D polytope of the following structure Ax <= b
 
-    :param solver:
+    :param solver: A solver object to solve the LPs
     :param A: The left-hand side constraint matrix
     :param b: The right-hand side constraint matrix
     :return: List of vertices
@@ -38,7 +38,7 @@ def sort_clockwise(vertices: List[numpy.ndarray]) -> List[numpy.ndarray]:
     Sorts the vertices in clockwise order. This is important for rendering as if they were not sorted then you would
     see nonsense.
 
-    :param vertices:
+    :param vertices: a list of 2D vertices
     :return: List of vertices that have been sorted in a clockwise direction
     """
 
@@ -53,7 +53,6 @@ def gen_vertices(solution: Solution):
 
     :param solution: a multiparametric region
     :return: a list of a collection of vertices sorted counterclockwise that correspond to the specific region
-
     """
 
     solver_obj = solution.program.solver
@@ -67,7 +66,7 @@ def plotly_plot(solution: Solution, save_path: str = None, show=True) -> None:
     Makes a plot via the plotly library, this is good for interactive figures that you can embed into webpages and
     handle interactively.
 
-    :param solution:
+    :param solution: a 2D parametric solution
     :param save_path: Keyword argument, if a directory path is specified it will save a html copy and a png to that directory
     :param show: Keyword argument, if True displays the plot otherwise does not display
     :return: no return, creates a graph of the solution
@@ -140,22 +139,19 @@ def parametric_plot(solution: Solution, save_path: str = None, show=True) -> Non
 
 def parametric_plot_1D(solution: Solution, save_path: str = None, show=True) -> None:
     """
-    Makes a simple plot of a 1D parametric solution
+    Makes a simple plot from a 1D parametric solution. This uses matplotlib to generate a plot, it is the general
+    plotting backend.
 
-    :param solution:
-    :param save_path:
-    :param show:
-    :return:
+    :param solution: a multiparametric solution
+    :param save_path: if specified saves the plot in the directory
+    :param show: Keyword argument, if True displays the plot otherwise does not display
+    :return: no return, creates graph of solution
     """
 
     # check if the solution is actually 1 dimensional
     if solution.theta_dim() != 1:
         print(f"Solution is not 1D, the dimensionality of the solution is {solution.theta_dim()}")
         return None
-
-    # see the dimensionality of the response variable x*
-
-    # x_dim = solution.program.num_x()
 
     # set up the plotting object
     _, ax = pyplot.subplots()

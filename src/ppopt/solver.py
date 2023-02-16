@@ -244,12 +244,12 @@ class Solver:
 
         .. math::
 
-            \min_{xy} c^T[xy]
+            \min_{x,y} c^T[x,y]
 
         .. math::
             \begin{align}
-            A[xy] &\leq b\\
-            A_{eq}[xy] &= beq\\
+            A[x,y] &\leq b\\
+            A_{eq}[x,y] &= beq\\
             x &\in R^n\\
             y &\in \{0, 1\}^m
             \end{align}

@@ -1,8 +1,5 @@
 .. PPOPT documentation master file, created by Dustin Kenefake
 
-Readme File
-===========
-
 .. mdinclude:: ../README.md
 
 
@@ -25,7 +22,7 @@ API
     :maxdepth: 2
     :caption: API
 
-    modules
+    ppopt
 
 
 Indices and tables

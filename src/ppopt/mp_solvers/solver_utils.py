@@ -79,7 +79,7 @@ def generate_reduce(candidate: tuple, murder_list=None, attempted=None) -> list:
 
 def generate_extra(candidate: tuple, expansion_set, murder_list=None, attempted=None) -> list:
     """
-    Special routine for graph based algorithm
+    Special routine for graph based algorithm, where we look for optimal active sets that
 
     :param candidate:
     :param expansion_set:
@@ -162,11 +162,13 @@ def generate_children_sets(active_set, num_constraints: int, murder_list=None):
 
 def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> list:
     r"""
-    This takes the polytope P := {x \in R^n : Ax <= b} and finds all the chebychev centers and normal vectors of each
-    facet and the radius
+    This takes the polytope P, and finds all the chebychev centers and normal vectors of each facet and the radius.
+
+    .. math::
+        P =  \{x \in \mathbb{R}^n: Ax \leq b\}
 
     :param A: The LHS constraint matrix
-    :param b: The RHS constraint matrix
+    :param b: The RHS constraint vector
     :return: a list with a tuple for each facet in the polytope (chebychev center, facet normal vector, chebychev radius)
     """
     facet_centers = []

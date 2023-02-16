@@ -269,3 +269,17 @@ def process_region_constraints(A: numpy.ndarray, b: numpy.ndarray, deterministic
     A, b = facet_ball_elimination(A, b)
 
     return [A, b]
+
+# def process_program_constraints(A: numpy.ncarray, b: numpy.ndarray, F: numpy.ndarray, A_t: numpy.ndarray,
+#                                 b_t: numpy.ndarray):
+#     """
+#
+#
+#     :param A:
+#     :param b:
+#     :param F:
+#     :param A_t:
+#     :param b_t:
+#     :return:
+#     """
+#     pass

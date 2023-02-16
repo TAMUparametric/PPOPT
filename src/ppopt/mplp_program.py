@@ -32,6 +32,7 @@ class MPLP_Program:
     The standard class for linear multiparametric programming
     .. math::
         \min \theta^TH^Tx + c^Tx
+
     .. math::
         \begin{align}
         Ax &\leq b + F\theta\\
