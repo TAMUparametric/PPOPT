@@ -1,5 +1,4 @@
 import numpy
-import pypoman
 
 from numba import jit
 
@@ -79,15 +78,15 @@ def revised_tess_simplex(simplex, half_split=False):
             combinations[i] = [j for j in range(simplex.shape[0]) if j is not i]
 
 
-def make_domain_subdivision(A_t, b_t):
-    print(A_t)
-    print(b_t)
-
-    x = pypoman.compute_polytope_vertices(A_t, b_t)
-    print(x)
-
-    x.append(numpy.sum(x, axis=0))
-
-    simplices = numpy.array(make_subdomains(x))
-    x_ = numpy.array(x)
-    return [x_[i] for i in simplices]
+# def make_domain_subdivision(A_t, b_t):
+#     print(A_t)
+#     print(b_t)
+#
+#     x = pypoman.compute_polytope_vertices(A_t, b_t)
+#     print(x)
+#
+#     x.append(numpy.sum(x, axis=0))
+#
+#     simplices = numpy.array(make_subdomains(x))
+#     x_ = numpy.array(x)
+#     return [x_[i] for i in simplices]

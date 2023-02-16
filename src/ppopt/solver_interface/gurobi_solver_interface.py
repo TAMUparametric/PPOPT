@@ -202,8 +202,7 @@ def solve_lp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray, equali
 
 def solve_milp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
                       equality_constraints: Iterable[int] = None,
-                      bin_vars: Iterable[int] = None, verbose=False, get_duals=True) -> Optional[
-    SolverOutput]:
+                      bin_vars: Iterable[int] = None, verbose=False, get_duals=True) -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving mixed integer linear programs with gruobi, This is feed directly into the
     MIQP Solver that is defined in the same file.

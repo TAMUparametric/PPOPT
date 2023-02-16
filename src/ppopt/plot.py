@@ -16,7 +16,7 @@ from .utils.general_utils import make_column
 def vertex_enumeration_2d(A: numpy.ndarray, b: numpy.ndarray, solver: Solver) -> List[numpy.ndarray]:
     """
     Computes the vertices of a 2D polytope from the half space representation, uses a naive O(n^2) algorithm but is
-    sufficient for plotting purposes
+    sufficient for plotting purposes.
 
     Generates vertices for the 2D polytope of the following structure Ax <= b
 
@@ -35,10 +35,11 @@ def vertex_enumeration_2d(A: numpy.ndarray, b: numpy.ndarray, solver: Solver) ->
 
 def sort_clockwise(vertices: List[numpy.ndarray]) -> List[numpy.ndarray]:
     """
-    Sorts the vertices in clockwise order. This is important for rendering as if they were not sorted then you would see nonsense.
+    Sorts the vertices in clockwise order. This is important for rendering as if they were not sorted then you would
+    see nonsense.
 
     :param vertices:
-    :return:
+    :return: List of vertices that have been sorted in a clockwise direction
     """
 
     center = sum(vertices, numpy.array([0, 0])) / len(vertices)
@@ -57,13 +58,14 @@ def gen_vertices(solution: Solution):
 
     solver_obj = solution.program.solver
     cr_vertices = map(lambda cr: vertex_enumeration_2d(cr.E, cr.f, solver_obj), solution.critical_regions)
-    sorted_vertices = map(lambda verts: sort_clockwise(verts), cr_vertices)
+    sorted_vertices = map(sort_clockwise, cr_vertices)
     return list(sorted_vertices)
 
 
 def plotly_plot(solution: Solution, save_path: str = None, show=True) -> None:
     """
-    Makes a plot via the plotly library, this is good for interactive figures that you can embed into webpages and handle interactively.
+    Makes a plot via the plotly library, this is good for interactive figures that you can embed into webpages and
+    handle interactively.
 
     :param solution:
     :param save_path: Keyword argument, if a directory path is specified it will save a html copy and a png to that directory

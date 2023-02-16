@@ -1,9 +1,6 @@
-from typing import Union
-
 from .mitree import MITree
 from .solve_mpqp import mpqp_algorithm, solve_mpqp
 from ..mpmilp_program import MPMILP_Program
-from ..mpqp_program import MPQP_Program, MPLP_Program
 from ..solution import Solution
 from ..utils.general_utils import num_cpu_cores
 # noinspection PyProtectedMember

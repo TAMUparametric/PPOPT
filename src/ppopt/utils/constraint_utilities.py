@@ -7,7 +7,7 @@ from typing import List
 import numpy
 
 from ..solver_interface import solver_interface
-from ..utils.general_utils import make_column, ppopt_block
+from ..utils.general_utils import ppopt_block
 
 
 # returns the norm of the constraint

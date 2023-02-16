@@ -48,20 +48,28 @@ class CriticalRegion:
     x_indices: numpy.ndarray = None
 
     def __repr__(self):
-        """Returns a String output of Critical Region."""
-        return f"Critical region with active set {self.active_set}\nThe Omega Constraint indices are {self.omega_set}\nThe Lagrange multipliers Constraint indices are {self.lambda_set}\nThe Regular Constraint indices are {self.regular_set}\n  x(θ) = Aθ + b \n λ(θ) = Cθ + d \n  Eθ <= f \n A = {self.A} \n b = {self.b} \n C = {self.C} \n d = {self.d} \n E = {self.E} \n f = {self.f}"
+        """Returns a String representation of a Critical Region."""
+
+        output = f"Critical region with active set {self.active_set}"
+        output += f"\nThe Omega Constraint indices are {self.omega_set}"
+        output += f"\nThe Lagrange multipliers Constraint indices are {self.lambda_set}"
+        output += f"\nThe Regular Constraint indices are {self.regular_set}"
+        output += "\n  x(θ) = Aθ + b \n λ(θ) = Cθ + d \n  Eθ <= f"
+        output += f"\n A = {self.A} \n b = {self.b} \n C = {self.C} \n d = {self.d} \n E = {self.E} \n f = {self.f}"
+
+        return output
 
     def evaluate(self, theta: numpy.ndarray) -> numpy.ndarray:
         """Evaluates x(θ) = Aθ + b."""
 
-        if self.y_fixation is not None:
-            cont_vars = self.A @ theta + self.b
-            x_star = numpy.zeros((len(self.x_indices) + len(self.y_indices),))
-            x_star[self.x_indices] = cont_vars.flatten()
-            x_star[self.y_indices] = self.y_fixation
-            return x_star.reshape(-1, 1)
-        else:
+        if self.y_fixation is None:
             return self.A @ theta + self.b
+
+        cont_vars = self.A @ theta + self.b
+        x_star = numpy.zeros((len(self.x_indices) + len(self.y_indices),))
+        x_star[self.x_indices] = cont_vars.flatten()
+        x_star[self.y_indices] = self.y_fixation
+        return x_star.reshape(-1, 1)
 
     def lagrange_multipliers(self, theta: numpy.ndarray) -> numpy.ndarray:
         """Evaluates λ(θ) = Cθ + d."""
@@ -77,9 +85,11 @@ class CriticalRegion:
         # I think so
 
         soln = chebyshev_ball(self.E, self.f)
-        if soln is not None:
-            return soln.sol[-1] > 10 ** -8
-        return False
+
+        if soln is None:
+            return False
+
+        return soln.sol[-1] > 10 ** -8
 
     def get_constraints(self):
         return [self.E, self.f]

@@ -6,7 +6,6 @@ from typing import List, Union
 from ..mpmilp_program import MPMILP_Program
 from ..mpmiqp_program import MPMIQP_Program
 from ..utils.constraint_utilities import remove_strongly_redundant_constraints
-from ..critical_region import CriticalRegion
 
 
 class MITree:
@@ -117,7 +116,7 @@ class MITree:
 
     # noinspection SpellCheckingInspection
     def generate_theta_feasible(self) -> None:
-        """
+        r"""
         Given a feasible space of the following type, find an approximation of the theta feasible space, that while
         overestimates generates a fairly tight overestimation.
 
