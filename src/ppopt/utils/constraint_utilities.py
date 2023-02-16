@@ -270,16 +270,35 @@ def process_region_constraints(A: numpy.ndarray, b: numpy.ndarray, deterministic
 
     return [A, b]
 
-# def process_program_constraints(A: numpy.ncarray, b: numpy.ndarray, F: numpy.ndarray, A_t: numpy.ndarray,
-#                                 b_t: numpy.ndarray):
-#     """
-#
-#
-#     :param A:
-#     :param b:
-#     :param F:
-#     :param A_t:
-#     :param b_t:
-#     :return:
-#     """
-#     pass
+
+def process_program_constraints(A: numpy.ndarray, b: numpy.ndarray, F: numpy.ndarray, A_t: numpy.ndarray,
+                                b_t: numpy.ndarray):
+    """
+    This is the main routine for removing redundant constraints and filtering constraints to the correct constraint set
+
+    :param A:
+    :param b:
+    :param F:
+    :param A_t:
+    :param b_t:
+    :return:
+    """
+    
+    # if there are any constraints in the main constraint A@x <= b + F@theta with ||A_i|| = 0, then those can be
+    # moved to the parametric constraints as it is of the form 0 <= b_i + F_i@theta
+
+    # find the non-zero rows of A
+    kept_constrs = [x[1] for x in filter(lambda index, norm: norm != 0.0, enumerate(map(numpy.linalg.norm, A)))]
+    removed_consts = [x for x in range(A.shape[0]) if x not in kept_constrs]
+
+    if len(removed_consts) > 0:
+        A_t = ppopt_block([[A_t], [-F[removed_consts]]])
+        b_t = ppopt_block([[b_t], [b[removed_consts]]])
+
+    A = A[kept_constrs]
+    b = b[kept_constrs]
+    F = F[kept_constrs]
+
+
+
+
