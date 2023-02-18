@@ -1,4 +1,3 @@
-import asyncio.subprocess
 from dataclasses import dataclass
 from typing import List, Union, Optional, Tuple
 
@@ -7,8 +6,8 @@ import numpy
 from .solver import Solver
 from .solver_interface.solver_interface_utils import SolverOutput
 from .utils.chebyshev_ball import chebyshev_ball
-from .utils.constraint_utilities import constraint_norm, is_full_rank, \
-    detect_implicit_equalities, find_redundant_constraints, find_implicit_equalities, process_program_constraints
+from .utils.constraint_utilities import constraint_norm, is_full_rank, find_redundant_constraints, \
+    find_implicit_equalities, process_program_constraints
 from .utils.general_utils import make_column, latex_matrix, select_not_in_list, ppopt_block, remove_size_zero_matrices
 
 
