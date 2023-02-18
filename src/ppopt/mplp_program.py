@@ -93,6 +93,7 @@ class MPLP_Program:
             solver = Solver()
 
         self.solver = solver
+        self.__post_init__()
 
     def __post_init__(self):
         """Called after __init__ this is used as a post-processing step after the dataclass generated __init__."""
@@ -263,8 +264,6 @@ class MPLP_Program:
 
         saved_upper = [x for x in saved_indices if x < self.num_constraints()]
         saved_lower = [x - self.num_constraints() for x in saved_indices if x >= self.num_constraints()]
-        print(saved_indices)
-        print(saved_lower)
 
         self.A = self.A[saved_upper]
         self.F = self.F[saved_upper]
@@ -274,7 +273,6 @@ class MPLP_Program:
         self.b_t = self.b_t[saved_lower]
 
         self.scale_constraints()
-
 
 
     def constraint_datatype_conversion(self) -> None:
