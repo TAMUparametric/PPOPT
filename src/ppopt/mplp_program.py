@@ -1,3 +1,4 @@
+import asyncio.subprocess
 from dataclasses import dataclass
 from typing import List, Union, Optional, Tuple
 
@@ -7,7 +8,7 @@ from .solver import Solver
 from .solver_interface.solver_interface_utils import SolverOutput
 from .utils.chebyshev_ball import chebyshev_ball
 from .utils.constraint_utilities import constraint_norm, is_full_rank, \
-    detect_implicit_equalities, find_redundant_constraints
+    detect_implicit_equalities, find_redundant_constraints, find_implicit_equalities, process_program_constraints
 from .utils.general_utils import make_column, latex_matrix, select_not_in_list, ppopt_block, remove_size_zero_matrices
 
 
@@ -111,7 +112,7 @@ class MPLP_Program:
 
         # ensures that
         self.warnings()
-        self.process_constraints(find_implicit_equalities=True)
+        self.process_constraints()
 
     def num_x(self) -> int:
         """Returns number of parameters."""
@@ -238,55 +239,20 @@ class MPLP_Program:
         self.F = self.F / norm
 
         # scale the A_t constraint by the norm of it's rows
-        norm = constraint_norm(self.A_t)
-        self.A_t = self.A_t / norm
-        self.b_t = self.b_t / norm
+        # norm = constraint_norm(self.A_t)
+        # self.A_t = self.A_t
+        # self.b_t = self.b_t
 
-    def process_constraints(self, find_implicit_equalities=True) -> None:
+    def process_constraints(self) -> None:
         """Removes redundant constraints from the multiparametric programming problem."""
         self.constraint_datatype_conversion()
+
+        # TODO: add check for a purly parametric euqaility e.g. c^T theta = b in the main constraint body
+        self.A, self.b, self.F, self.A_t, self.b_t = process_program_constraints(self.A, self.b, self.F, self.A_t, self.b_t)
+
         self.scale_constraints()
 
-        if find_implicit_equalities:
-            problem_A = ppopt_block([[self.A, -self.F]])
-            problem_b = ppopt_block([[self.b]])
-
-            constraint_pairs = detect_implicit_equalities(problem_A, problem_b)
-
-            keep = [i[0] for i in constraint_pairs]
-            remove = [i[1] for i in constraint_pairs]
-
-            keep = list(set(keep))
-            keep.sort()
-
-            remove = list(set(remove))
-            remove.sort()
-
-            # make sure to only remove the unneeded inequalities -> only for duplicate constraints
-            remove = [i for i in remove if i not in keep]
-
-            # our temporary new active set for the problem
-            temp_active_set = [*self.equality_indices, *keep]
-
-            # what we are keeping
-            survive = lambda x: x not in temp_active_set and x not in remove
-            kept_ineqs = [i for i in range(self.num_constraints()) if survive(i)]
-
-            # data marshaling
-            A_eq = self.A[temp_active_set]
-            b_eq = self.b[temp_active_set]
-            F_eq = self.F[temp_active_set]
-
-            A_ineq = self.A[kept_ineqs]
-            b_ineq = self.b[kept_ineqs]
-            F_ineq = self.F[kept_ineqs]
-
-            self.A = ppopt_block([[A_eq], [A_ineq]])
-            self.b = ppopt_block([[b_eq], [b_ineq]])
-            self.F = ppopt_block([[F_eq], [F_ineq]])
-
-            # update problem active set
-            self.equality_indices = [i for i in range(len(temp_active_set))]
+        self.A, self.b, self.F, self.equality_indices = find_implicit_equalities(self.A, self.b, self.F, self.equality_indices)
 
         # recalculate bc we have moved everything around
         problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
@@ -294,32 +260,22 @@ class MPLP_Program:
 
         saved_indices = find_redundant_constraints(problem_A, problem_b, self.equality_indices,
                                                    solver=self.solver.solvers['lp'])
-        # saved_indices = calculate_redundant_constraints(problem_A, problem_b)
 
-        saved_upper = [i for i in saved_indices if i < self.A.shape[0]]
-        # saved_lower = [i - self.A.shape[0] for i in saved_indices if i >= self.A.shape[0]]
-
-        self.A = self.A[saved_upper]
-        self.F = self.F[saved_upper]
-        self.b = self.b[saved_upper]
-
-        # recalculate bc we have moved everything around
-        problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
-        problem_b = ppopt_block([[self.b], [self.b_t]])
-
-        # saved_indices = calc_weakly_redundant(problem_A, problem_b, self.equality_indices)
-        # saved_indices = calculate_redundant_constraints(problem_A, problem_b)
-
-        saved_upper = [i for i in saved_indices if i < self.A.shape[0]]
-        # saved_lower = [i - self.A.shape[0] for i in saved_indices if i >= self.A.shape[0]]
+        saved_upper = [x for x in saved_indices if x < self.num_constraints()]
+        saved_lower = [x - self.num_constraints() for x in saved_indices if x >= self.num_constraints()]
+        print(saved_indices)
+        print(saved_lower)
 
         self.A = self.A[saved_upper]
         self.F = self.F[saved_upper]
         self.b = self.b[saved_upper]
 
-        # print(f'Removed {self.A.shape[0] - len(saved_upper)} Weakly Redundant Constraints')
+        self.A_t = self.A_t[saved_lower]
+        self.b_t = self.b_t[saved_lower]
 
         self.scale_constraints()
+
+
 
     def constraint_datatype_conversion(self) -> None:
         """

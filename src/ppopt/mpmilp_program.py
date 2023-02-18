@@ -196,7 +196,7 @@ class MPMILP_Program(MPLP_Program):
 
         sub_problem = MPLP_Program(A_cont, b, c, H_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, equality_set,
                                    self.solver)
-        sub_problem.process_constraints(True)
+        sub_problem.process_constraints()
         return sub_problem
 
     def solve_theta(self, theta_point: numpy.ndarray, deterministic_solver='gurobi') -> Optional[SolverOutput]:
