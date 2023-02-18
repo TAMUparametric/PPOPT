@@ -30,13 +30,12 @@ def calc_weakly_redundant(A, b, equality_set: List[int] = None, deterministic_so
 @dataclass
 class MPLP_Program:
     r"""
-    The standard class for linear multiparametric programming
-    .. math::
-        \min \theta^TH^Tx + c^Tx
+    The standard class for multiparametric  linear programming
 
     .. math::
         \begin{align}
-        Ax &\leq b + F\theta\\
+        \min_x \quad \theta^TH^Tx& + c^Tx\\
+        \text{s.t.} \quad Ax &\leq b + F\theta\\
         A_{eq}x &= b_{eq}\\
         A_\theta \theta &\leq b_\theta\\
         x &\in R^n\\
@@ -248,35 +247,41 @@ class MPLP_Program:
         self.constraint_datatype_conversion()
 
         # TODO: add check for a purly parametric euqaility e.g. c^T theta = b in the main constraint body
-        self.A, self.b, self.F, self.A_t, self.b_t = process_program_constraints(self.A, self.b, self.F, self.A_t, self.b_t)
+        self.A, self.b, self.F, self.A_t, self.b_t = process_program_constraints(self.A, self.b, self.F, self.A_t,
+                                                                                 self.b_t)
 
+        # we can scale constraints after moving nonzero rows
         self.scale_constraints()
 
-        self.A, self.b, self.F, self.equality_indices = find_implicit_equalities(self.A, self.b, self.F, self.equality_indices)
+        # find implicit inequalities in the main constraint body, add them to the equality constraint set
+        self.A, self.b, self.F, self.equality_indices = find_implicit_equalities(self.A, self.b, self.F,
+                                                                                 self.equality_indices)
 
-        # recalculate bc we have moved everything around
+        # form a polytope P := {(x, theta) in R^K : Ax <= b + F theta and A_t theta <= b_t}
         problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
         problem_b = ppopt_block([[self.b], [self.b_t]])
 
+        # find the indices of the constraints that generate facets to the polytope P
         saved_indices = find_redundant_constraints(problem_A, problem_b, self.equality_indices,
                                                    solver=self.solver.solvers['lp'])
 
+        # calculate the incides in the main body and parametric constraints
         saved_upper = [x for x in saved_indices if x < self.num_constraints()]
         saved_lower = [x - self.num_constraints() for x in saved_indices if x >= self.num_constraints()]
 
+        # remove redundant constraints
         self.A = self.A[saved_upper]
         self.F = self.F[saved_upper]
         self.b = self.b[saved_upper]
 
+        # remove redundant constraints from the parametric constraints
         self.A_t = self.A_t[saved_lower]
         self.b_t = self.b_t[saved_lower]
 
-        self.scale_constraints()
-
-
     def constraint_datatype_conversion(self) -> None:
         """
-        Makes sure that all the data types of the problem are in fp64, this is important as some solvers do not accept integral data types
+        Makes sure that all the data types of the problem are in fp64, this is important as some solvers do not
+        accept integral data types.
         """
         self.A = self.A.astype('float64')
         self.c = self.c.astype('float64')
@@ -372,7 +377,7 @@ class MPLP_Program:
 
             \textrm{Rank}(A_{\mathcal{A}}) = |\mathcal{A}|
 
-        :param active_set:
+        :param active_set: an active set combination
         :return: True if full rank otherwise false
         """
         return is_full_rank(self.A, active_set)
@@ -382,30 +387,34 @@ class MPLP_Program:
         Checks the feasibility of an active set combination w.r.t. a multiparametric program.
 
         .. math::
-
-            \min_{x,\theta} 0
-
-        .. math::
             \begin{align}
-            Ax &\leq b + F\theta\\
+            \min_{x,\theta} \quad \quad &0\\
+            \text{s.t.}\quad Ax &\leq b + F\theta\\
             A_{i}x &= b_{i} + F_{i}\theta, \quad \forall i \in \mathcal{A}\\
             A_\theta \theta &\leq b_\theta\\
             x &\in R^n\\
             \theta &\in R^m
             \end{align}
 
-        :param active_set: an active set
+        :param active_set: an active set combination
         :param check_rank: Checks the rank of the LHS matrix for a violation of LINQ if True (default)
-        :return: True if active set feasible else False
+        :return: True if active set is feasible else False
         """
+
+        # a simple condition here is that the constraints must be linearly independent, if this is not true then we
+        # can skip the LP calculation
 
         if check_rank:
             if not is_full_rank(self.A, active_set):
                 return False
 
+        # form the polytope P := {(x,Θ) in R^K: Ax <= b + FΘ and A_t Θ <= b_t and A[i]x == b[i] + F[i]Θ forall i in
+        # active_set}
         A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.num_x())), self.A_t]])
         b = ppopt_block([[self.b], [self.b_t]])
         c = numpy.zeros((self.num_x() + self.num_t(), 1))
+
+        # check if P contains any point or is an empty set
         return self.solver.solve_lp(c, A, b, active_set) is not None
 
     def check_optimality(self, active_set):
@@ -432,9 +441,12 @@ class MPLP_Program:
         :param active_set: active set being considered in the optimality test
         :return: dictionary of parameters, or None if active set is not optimal
         """
+
+        # The cardinality of an active set less then x is impossible to be vertex defining
         if len(active_set) != self.num_x():
             return False
 
+        # make a helper function for making zero matrices
         zeros = lambda x, y: numpy.zeros((x, y))
 
         num_x = self.num_x()
@@ -472,9 +484,7 @@ class MPLP_Program:
             A_list.append(
                 [zeros(num_activated, num_x + num_theta + num_active - num_activated), -numpy.eye(num_activated),
                  zeros(num_activated, num_inactive), numpy.ones((num_activated, 1))])
-            # A_list.append([zeros(num_active, num_x + num_theta), -numpy.eye(num_active), zeros(num_active, num_inactive),numpy.ones((num_active, 1))])
             b_list.append([zeros(num_activated, 1)])
-            # b_list.append([zeros(num_active, 1)])
 
         # 5) t*e_2 <= s_Ji
         A_list.append([zeros(num_inactive, num_x + num_theta + num_active), -numpy.eye(num_inactive),
@@ -539,11 +549,14 @@ class MPLP_Program:
         :return:
         """
 
+        # calculates the chebyshev ball of the feasible space in (x, Θ)
         sol = self.feasible_space_chebychev_ball()
 
+        # if the problem is infeasible (e.g. the overall problem is also infeasible)
         if sol is None:
             return None
 
+        # else return the theta component of the center of the chebyshev ball
         return sol.sol[self.num_x(): self.num_x() + self.num_t()].reshape(-1, 1)
 
     def gen_optimal_active_set(self) -> Optional[List[int]]:
@@ -578,10 +591,10 @@ class MPLP_Program:
 
     def feasible_space_chebychev_ball(self):
         """
-        Formulates and solves the (x, \theta) chebychev ball of the multiparametric program.
+        Formulates and solves the (x, Θ) chebychev ball of the multiparametric program.
 
 
-        :return: makes a che
+        :return: the lp solution object of the chebychev ball
         """
         A = numpy.block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.num_x())), self.A_t]])
         b = numpy.block([[self.b], [self.b_t]])
@@ -622,25 +635,27 @@ class MPLP_Program:
         return [list(active_set) for active_set in set(found_active_sets)]
 
     # noinspection SpellCheckingInspection
-    def gen_feasible_theta_space(self):
-        r"""
-        Generated the theta feasible space of a multiparametric program (with up to affine constraints)
-
-        this is done by solving the following linear program for each reduced constraint
-
-        min -A_i x
-
-        s.t. Ax \leq F \theta + b
-
-        then the solutions are transformed into the following results
-
-        A' = [-F \theta; A_theta]
-        b' = [b - {A_i x} min, b_theta]
-
-        :return: A', b' for A' \theta \leq b'
-        """
-
-        # find all of the A_i of the
-        # for _ in range(len(self.equality_indices), self.A.shape[0]):
-        #     pass
-        pass
+    # def gen_feasible_theta_space(self):
+    #     r"""
+    #     Generated the theta feasible space of a multiparametric program (with up to affine constraints)
+    #
+    #     this is done by solving the following linear program for each reduced constraint
+    #
+    #     .. math::
+    #         \begin{align}
+    #         \min_{x} -A_i x
+    #
+    #     s.t. Ax \leq b + F \theta
+    #
+    #     then the solutions are transformed into the following results
+    #
+    #     A' = [-F \theta; A_theta]
+    #     b' = [b - {A_i x} min, b_theta]
+    #
+    #     :return: A', b' for A' \theta \leq b'
+    #     """
+    #
+    #     # find all of the A_i of the
+    #     # for _ in range(len(self.equality_indices), self.A.shape[0]):
+    #     #     pass
+    #     pass

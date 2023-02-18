@@ -12,10 +12,9 @@ class MPQP_Program(MPLP_Program):
     The standard class for quadratic multiparametric programming.
 
     .. math::
-        \min \frac{1}{2}x^TQx + \theta^TH^Tx + c^Tx
-    .. math::
         \begin{align}
-        Ax &\leq b + F\theta\\
+        \min_x\quad  \frac{1}{2}x^TQx& + \theta^TH^Tx + c^Tx\\
+        \text{s.t.}\quad Ax &\leq b + F\theta\\
         A_{eq}x &= b_{eq}\\
         A_\theta \theta &\leq b_\theta\\
         x &\in R^n\\
@@ -39,7 +38,7 @@ class MPQP_Program(MPLP_Program):
 
     def evaluate_objective(self, x, theta_point):
         r"""
-        Evaluates the objective of the multiparametric program. for a given x and Θ.
+        Evaluates the objective of the multiparametric program. for a given x and θ.
 
         .. math::
             \frac{1}{2}x^TQx + \theta^TH^Tx+c^Tx
@@ -102,16 +101,22 @@ class MPQP_Program(MPLP_Program):
 
     def solve_theta(self, theta_point: numpy.ndarray, deterministic_solver: str = 'gurobi') -> Optional[SolverOutput]:
         r"""
-        Substitutes theta into the multiparametric problem and solves the following optimization problem
-
-        .. math::
-            \min_{x} \frac{1}{2}x^TQx + \tilde{c}^Tx
+        Substitutes a particular realization of θ into the multiparametric problem and solves the resulting
+        optimization problem.
 
         .. math::
             \begin{align}
-            Ax &\leq \tilde{b}\\
+            \tilde{b} &= b + F\theta\\
+            \tilde{b}_eq &= b_{eq} + F_{eq}\theta\\
+            \tilde{c}^T &= c^T + \theta^T H^T
+            \end{align}
+
+        .. math::
+            \begin{align}
+            \min_{x}\quad  &\frac{1}{2}x^TQx + \tilde{c}^Tx\\
+            \text{s.t.} \quad Ax &\leq \tilde{b}\\
             A_{eq}x &= \tilde{b}_{eq}\\
-            x &\in R^n\\
+            x &\in \mathbb{R}^n
             \end{align}
 
         :param theta_point: An uncertainty realization
@@ -134,10 +139,14 @@ class MPQP_Program(MPLP_Program):
 
     def optimal_control_law(self, active_set: List[int]) -> Tuple:
         r"""
-        This function calculates the optimal control law corresponding to an active set combination
+        This function calculates the optimal control law corresponding to an active set combination. This is effectivley
+        just manipulating the stationarity conditions and active constraints for x, and λ
 
-        :param active_set: an active set combination
-        :return: a tuple of the optimal x* and λ* functions in the following form(A_x, b_x, A_l, b_l)
+        .. math::
+
+            Qx + c + H\theta + \hat{A}^T\hat{\lambda} = 0
+
+            \hat{A}x = \hat{b} + \hat{F}\theta
 
         .. math::
 
@@ -145,6 +154,11 @@ class MPQP_Program(MPLP_Program):
             x^*(\theta) &= A_x\theta + b_x\\
             \lambda^*(\theta) &= A_l\theta + b_l\\
             \end{align*}
+
+        :param active_set: an active set combination
+        :return: a tuple of the optimal x* and λ* functions in the following form(A_x, b_x, A_l, b_l)
+
+
         """
 
         inverse_Q = numpy.linalg.pinv(self.Q)

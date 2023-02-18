@@ -45,11 +45,10 @@ def process_cvxopt_solution(sol, equality_constraints, inequality_constraints, n
 
 def separate_constraints(A, b, equality_constraints, ineq):
     """
-
-    :param A:
-    :param b:
-    :param equality_constraints:
-    :param ineq:
+    :param A: The main constraint Matrix
+    :param b: The main constraint vector
+    :param equality_constraints: the indices of equations
+    :param ineq: the indices of inequalities
     :return:
     """
     if A is None or b is None:
@@ -113,15 +112,15 @@ def solve_qp_cvxopt(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: num
         \end{align}
 
 
-    :param Q:
-    :param c:
-    :param A:
-    :param b:
-    :param equality_constraints:
-    :param verbose:
-    :param get_duals:
-    :param cvx_solver:
-    :return:
+    :param Q: The hessian of the quadratic program, must be symmetric and positive definite
+    :param c: Column Vector, can be None
+    :param A: Constraint LHS matrix, can be None
+    :param b: Constraint RHS matrix, can be None
+    :param equality_constraints: List of Equality constraints
+    :param verbose: Flag for output of underlying Solver, default False
+    :param get_duals: Flag for returning dual variable of problem, default True
+    :param cvx_solver: the sub solver to use
+    :return: the solver object associated with the solution of this QP
     """
     # this is to deal with immutability a copy constrictors
     if equality_constraints is None:

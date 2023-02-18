@@ -42,9 +42,7 @@ def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None, A: numpy
     :param verbose: Flag for output of underlying Solver, default False
     :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
 
-    :return: A dictionary of the Solver outputs, or none if infeasible or unbounded. \\n output['sol'] = primal
-    variables, output['dual'] = dual variables, output['obj'] = objective value, output['const'] = slacks,
-    output['active'] = active constraints.
+    :return: A solver object relating to the solution of the optimization problem
     """
     model = gp.Model()
 

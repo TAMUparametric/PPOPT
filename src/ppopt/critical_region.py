@@ -50,6 +50,8 @@ class CriticalRegion:
     def __repr__(self):
         """Returns a String representation of a Critical Region."""
 
+        # create the output string
+
         output = f"Critical region with active set {self.active_set}"
         output += f"\nThe Omega Constraint indices are {self.omega_set}"
         output += f"\nThe Lagrange multipliers Constraint indices are {self.lambda_set}"
@@ -62,9 +64,11 @@ class CriticalRegion:
     def evaluate(self, theta: numpy.ndarray) -> numpy.ndarray:
         """Evaluates x(θ) = Aθ + b."""
 
+        # if there are not any binary variables in this problem evaluate and return
         if self.y_fixation is None:
             return self.A @ theta + self.b
 
+        # otherwise evalute AΘ+b for the continuous variables, then slice in the binaries at the correct locations
         cont_vars = self.A @ theta + self.b
         x_star = numpy.zeros((len(self.x_indices) + len(self.y_indices),))
         x_star[self.x_indices] = cont_vars.flatten()
@@ -77,19 +81,32 @@ class CriticalRegion:
 
     def is_inside(self, theta: numpy.ndarray) -> numpy.ndarray:
         """Tests if point θ is inside the critical region."""
+        # check if all constraints EΘ <= f
         return numpy.all(self.E @ theta - self.f < 0)
 
     # depreciated
     def is_full_dimension(self) -> bool:
-        """Tests dimensionality of critical region."""
-        # I think so
+        """Tests dimensionality of critical region. This is done by checking the radius of the chebyshev ball inside
+        the region
 
+        :return: a boolean value, of whether the critical region is full dimensional
+        """
+
+        # solve the chebyshev ball LP
         soln = chebyshev_ball(self.E, self.f)
 
+        # if this is infeasible, then it definitely is not full dimension as it is empty and doesn't have a good
+        # dimensional description
         if soln is None:
             return False
 
+        # if the chebyshev LP is feasible then we check if the radius is larger than some epsilon value
         return soln.sol[-1] > 10 ** -8
 
     def get_constraints(self):
+        """
+        An assessor function to quickly access the fields of the extends of the critical region
+
+        :return: a list with E, and f as elements
+        """
         return [self.E, self.f]
