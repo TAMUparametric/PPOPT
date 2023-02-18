@@ -93,7 +93,6 @@ class MPLP_Program:
             solver = Solver()
 
         self.solver = solver
-        self.__post_init__()
 
     def __post_init__(self):
         """Called after __init__ this is used as a post-processing step after the dataclass generated __init__."""

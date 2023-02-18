@@ -33,7 +33,6 @@ class MPQP_Program(MPLP_Program):
         super(MPQP_Program, self).__init__(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices, solver)
 
         # assignees member variables
-        self.__post_init__()
         self.constraint_datatype_conversion()
         # calls the MPLP __post_init__ to handle equality constraints
         # super(MPQP_Program, self).__post_init__()
