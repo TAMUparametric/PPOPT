@@ -5,13 +5,13 @@ The `Markowitz portfolio optimization <https://en.wikipedia.org/wiki/Modern_port
 
 .. math::
     \begin{align}
-    \min \frac{1}{2} w^T & \Sigma w\\
+    \min_w \quad \frac{1}{2} w^T & \Sigma w\\
     \sum \mu_i w_i &=R^* \\
     \sum w_i &= 1\\
     w_i &\geq 0, \forall i
     \end{align}
 
-This can be reformulated into an mpQP, or to say we can solve this for all possible realizations of our desired return and recover the Pareto front by switching out $R^* $ with an uncertain parameter $\theta$. Since there is only one uncertain dimension, the geometric algorithm is the most efficient for this problem, and even portfolios with hundreds of commodities can be solved in seconds. However since, trying to plot the optimal portfolio positions for hundreds of commodities, we instead are going to solve it for five commodities so we can still see what is happening under the hood.
+This can be reformulated into an mpQP, or to say we can solve this for all possible realizations of our desired return and recover the Pareto front by switching out :math:`R^*` with an uncertain parameter $\theta$. Since there is only one uncertain dimension, the geometric algorithm is the most efficient for this problem, and even portfolios with hundreds of commodities can be solved in seconds. However since, trying to plot the optimal portfolio positions for hundreds of commodities, we instead are going to solve it for five commodities so we can still see what is happening under the hood.
 
 Here the covariance matrix and the return coefficients were generated from random numbers as I do not have easy access to this sort of data (I got lazy). I followed YALMIPS suggestions on generating reasonable enough data from random numbers.
 
@@ -39,6 +39,18 @@ Here is the problem that we are going to be tackling in this post. Some of the c
     c = numpy.zeros((num_assets,1))
     H = numpy.zeros((A.shape[1],F.shape[1]))
     portfolio = MPQP_Program(A, b, c, H, Q, A_t, b_t, F,equality_indices= [0,1])
+
+This formulates the parametric problem as follows, we want to parameterize the return :math:`R^*` as :math:`\theta`, allowing up to solve over the upper and lower possible bounds for
+
+.. math::
+    \begin{align}
+    \min_w \quad \frac{1}{2} w^T & \Sigma w\\
+    \sum \mu_i w_i &=\theta \\
+    \sum w_i &= 1\\
+    w_i &\geq 0, \forall i\\
+    \min(\mu) \leq &\theta \leq \max(\mu)
+    \end{align}
+
 
 Now that we have formulated the mpQP, all we have to do is solve it. Which can be accomplished in with the following python code. We are using the geometric algorithm here, as it is very fast in this type of problem. For this problem it only took half a second to solve.
 
