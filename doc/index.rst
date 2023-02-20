@@ -14,6 +14,7 @@ Tutorial
     algorithm_overview
     control_allocation_example
     portfolio
+    mpc
 
 API
 ---

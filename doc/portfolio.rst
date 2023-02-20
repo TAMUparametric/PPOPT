@@ -11,9 +11,9 @@ The `Markowitz portfolio optimization <https://en.wikipedia.org/wiki/Modern_port
     w_i &\geq 0, \forall i
     \end{align}
 
-This can be reformulated into an mpQP, or to say we can solve this for all possible realizations of our desired return and recover the Pareto front by switching out :math:`R^*` with an uncertain parameter $\theta$. Since there is only one uncertain dimension, the geometric algorithm is the most efficient for this problem, and even portfolios with hundreds of commodities can be solved in seconds. However since, trying to plot the optimal portfolio positions for hundreds of commodities, we instead are going to solve it for five commodities so we can still see what is happening under the hood.
+This can be reformulated into an mpQP, or to say we can solve this for all possible realizations of our desired return and recover the Pareto front of optimal portfolios by switching out :math:`R^*` with an uncertain parameter $\theta$. Since there is only one uncertain parameter, the geometric algorithm is the most efficient for this problem, and even portfolios with hundreds of commodities can be solved in seconds. However since, trying to plot the optimal portfolio positions for hundreds of commodities, we instead are going to solve it for five commodities so we can still see what is happening under the hood.
 
-Here the covariance matrix and the return coefficients were generated from random numbers as I do not have easy access to this sort of data (I got lazy). I followed YALMIPS suggestions on generating reasonable enough data from random numbers.
+Here the covariance matrix and the return coefficients were generated from random numbers as I do not have easy access to this sort of data. I followed YALMIPS suggestions on generating reasonable enough data, `YALMIP <https://yalmip.github.io/example/portfolio/>`_.
 
 .. code-block:: python
 
@@ -85,3 +85,5 @@ That is fine an good an all, but typically we want to view how this effects the 
     plt.plot(risk,returns)
 
 .. image:: risk_return_port.svg
+
+
