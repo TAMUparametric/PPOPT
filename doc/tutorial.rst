@@ -68,4 +68,4 @@ Now we have the solution, we can either export the solution via the micropop mod
 .. code:: python
 
     from ppopt.plot import parametric_plot
-    parametric_plot(solution, 'transport.png' , show = True)
+    parametric_plot(solution, 'transport' , show = True)
