@@ -61,13 +61,14 @@ def gen_vertices(solution: Solution):
     return list(sorted_vertices)
 
 
-def plotly_plot(solution: Solution, save_path: str = None, show=True) -> None:
+def plotly_plot(solution: Solution, save_path: str = None, show=True, save_format: str = 'png') -> None:
     """
     Makes a plot via the plotly library, this is good for interactive figures that you can embed into webpages and
     handle interactively.
 
     :param solution: a 2D parametric solution
     :param save_path: Keyword argument, if a directory path is specified it will save a html copy and a png to that directory
+    :param save_format: changes the saved image format to the specified
     :param show: Keyword argument, if True displays the plot otherwise does not display
     :return: no return, creates a graph of the solution
     """
@@ -94,19 +95,20 @@ def plotly_plot(solution: Solution, save_path: str = None, show=True) -> None:
 
     if save_path is not None:
         file_tag = str(time.time())
-        fig.write_image(save_path + file_tag + ".png")
+        fig.write_image(save_path + file_tag + "." + save_format)
         fig.write_html(save_path + file_tag + ".html", include_plotyjs=False, full_html=False)
 
     if show:
         fig.show()
 
 
-def parametric_plot(solution: Solution, save_path: str = None, show=True) -> None:
+def parametric_plot(solution: Solution, save_path: str = None, show=True, save_format: str = 'png') -> None:
     """
     Makes a simple plot from a solution. This uses matplotlib to generate a plot, it is the general plotting backend.
 
     :param solution: a multiparametric solution
     :param save_path: if specified saves the plot in the directory
+    :param save_format: changes the saved image format to the specified
     :param show: Keyword argument, if True displays the plot otherwise does not display
     :return: no return, creates graph of solution
     """
@@ -131,19 +133,20 @@ def parametric_plot(solution: Solution, save_path: str = None, show=True) -> Non
     pyplot.autoscale()
 
     if save_path is not None:
-        pyplot.savefig(save_path + ".png", dpi=1000)
+        pyplot.savefig(save_path + str(time.time()) + "." + save_format, dpi=1000, format=save_format)
 
     if show:
         pyplot.show()
 
 
-def parametric_plot_1D(solution: Solution, save_path: str = None, show=True) -> None:
+def parametric_plot_1D(solution: Solution, save_path: str = None, show=True, save_format: str = 'png') -> None:
     """
     Makes a simple plot from a 1D parametric solution. This uses matplotlib to generate a plot, it is the general
     plotting backend.
 
     :param solution: a multiparametric solution
     :param save_path: if specified saves the plot in the directory
+    :param save_format: changes the saved image format to the specified
     :param show: Keyword argument, if True displays the plot otherwise does not display
     :return: no return, creates graph of solution
     """
@@ -164,7 +167,7 @@ def parametric_plot_1D(solution: Solution, save_path: str = None, show=True) -> 
         ax.plot(boundaries, y, solid_capstyle='round')
 
     if save_path is not None:
-        pyplot.savefig(save_path + str(time.time()) + ".png", dpi=1000)
+        pyplot.savefig(save_path + str(time.time()) + "." + save_format, dpi=1000, format=save_format)
 
     if show:
         pyplot.show()

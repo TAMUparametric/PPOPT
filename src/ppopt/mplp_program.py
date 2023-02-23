@@ -168,6 +168,12 @@ class MPLP_Program:
             warning_list.append(
                 f"The A and F matrices disagree in vertical dimension A{self.A.shape}, F {self.F.shape}")
 
+        # check the dimensions of the F and A_t matrix
+        if self.F.shape[0] != self.A_t.shape[0]:
+            warning_list.append(
+                f"The F and A_t matrices disagree in dimension A{self.A.shape}, F {self.F.shape}, inconsistent number "
+                f"of parameters")
+
         # return warnings
         return warning_list
 
