@@ -72,6 +72,7 @@ class MPLP_Program:
 
         if c_c is None:
             c_c = numpy.array([[0.0]])
+
         self.c_c = c_c
 
         if c_t is None:
@@ -169,9 +170,9 @@ class MPLP_Program:
                 f"The A and F matrices disagree in vertical dimension A{self.A.shape}, F {self.F.shape}")
 
         # check the dimensions of the F and A_t matrix
-        if self.F.shape[0] != self.A_t.shape[0]:
+        if self.F.shape[1] != self.A_t.shape[1]:
             warning_list.append(
-                f"The F and A_t matrices disagree in dimension A{self.A.shape}, F {self.F.shape}, inconsistent number "
+                f"The F and A_t matrices disagree in dimension A_t {self.A_t.shape}, F {self.F.shape}, inconsistent number "
                 f"of parameters")
 
         # return warnings

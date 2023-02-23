@@ -94,9 +94,8 @@ def plotly_plot(solution: Solution, save_path: str = None, show=True, save_forma
     )
 
     if save_path is not None:
-        file_tag = str(time.time())
-        fig.write_image(save_path + file_tag + "." + save_format)
-        fig.write_html(save_path + file_tag + ".html", include_plotyjs=False, full_html=False)
+        fig.write_image(save_path + "." + save_format)
+        fig.write_html(save_path + ".html", include_plotyjs=False, full_html=False)
 
     if show:
         fig.show()
@@ -133,7 +132,7 @@ def parametric_plot(solution: Solution, save_path: str = None, show=True, save_f
     pyplot.autoscale()
 
     if save_path is not None:
-        pyplot.savefig(save_path + str(time.time()) + "." + save_format, dpi=1000, format=save_format)
+        pyplot.savefig(save_path + "." + save_format, dpi=1000, format=save_format)
 
     if show:
         pyplot.show()
@@ -167,7 +166,7 @@ def parametric_plot_1D(solution: Solution, save_path: str = None, show=True, sav
         ax.plot(boundaries, y, solid_capstyle='round')
 
     if save_path is not None:
-        pyplot.savefig(save_path + str(time.time()) + "." + save_format, dpi=1000, format=save_format)
+        pyplot.savefig(save_path + "." + save_format, dpi=1000, format=save_format)
 
     if show:
         pyplot.show()

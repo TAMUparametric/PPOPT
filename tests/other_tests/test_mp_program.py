@@ -75,7 +75,7 @@ def test_num_constraints(linear_program):
 
 
 def test_warnings_1(linear_program):
-    assert linear_program.warnings() == []
+    assert len(linear_program.warnings()) > 0
 
 
 def test_warnings_2(linear_program):
