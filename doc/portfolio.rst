@@ -68,7 +68,7 @@ To plot the parametric solution of commodities that we should invest in as a fun
 
     parametric_plot_1D(sol)
 
-.. image:: port_soln.png
+.. image:: port_soln.svg
 
 That is fine an good an all, but typically we want to view how this effects the balance of risk and reward. Here we can see the classical shape of the risk-reward tradeoff. The pareto front of all portfolios is completely recovered and is algebraic form.
 

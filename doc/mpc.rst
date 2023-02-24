@@ -134,7 +134,7 @@ A plot of the solution can be seen via the plotting utilities included in ``ppop
 
     parametric_plot(sol)
 
-.. image:: mpmpc_sol_plot.png
+.. image:: mpmpc_sol_plot.svg
 
 Now that the full explicit solution is calculated, we can evaluate the solution instead of solving an optimization problem online, and do some post-analysis.
 
