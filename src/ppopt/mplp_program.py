@@ -281,12 +281,9 @@ class MPLP_Program:
         # find the indices of the constraints that generate facets to the polytope P
         saved_indices = find_redundant_constraints(problem_A, problem_b, self.equality_indices,
                                                    solver=self.solver.solvers['lp'])
-        print(saved_indices)
         # calculate the indices in the main body and parametric constraints
         saved_upper = [x for x in saved_indices if x < self.num_constraints()]
         saved_lower = [x - self.num_constraints() for x in saved_indices if x >= self.num_constraints()]
-
-        print(select_not_in_list(self.A, saved_upper))
 
         # remove redundant constraints
         self.A = self.A[saved_upper]
