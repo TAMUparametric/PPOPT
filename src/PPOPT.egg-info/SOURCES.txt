@@ -4,6 +4,8 @@ setup.py
 src/ppopt/__init__.py
 src/ppopt/critical_region.py
 src/ppopt/mplp_program.py
+src/ppopt/mpmilp_program.py
+src/ppopt/mpmiqp_program.py
 src/ppopt/mpqp_program.py
 src/ppopt/plot.py
 src/ppopt/problem_generator.py
@@ -18,8 +20,11 @@ src/ppopt/geometry/__init__.py
 src/ppopt/geometry/polytope.py
 src/ppopt/geometry/polytope_operations.py
 src/ppopt/mp_solvers/__init__.py
+src/ppopt/mp_solvers/mitree.py
+src/ppopt/mp_solvers/mpmiqp_enumeration.py
 src/ppopt/mp_solvers/mpqp_ahmadi.py
 src/ppopt/mp_solvers/mpqp_combinatorial.py
+src/ppopt/mp_solvers/mpqp_dist_combinatorial.py
 src/ppopt/mp_solvers/mpqp_geometric.py
 src/ppopt/mp_solvers/mpqp_graph.py
 src/ppopt/mp_solvers/mpqp_parallel_geometric.py
@@ -28,6 +33,7 @@ src/ppopt/mp_solvers/mpqp_parrallel_combinatorial.py
 src/ppopt/mp_solvers/mpqp_parrallel_combinatorial_exp.py
 src/ppopt/mp_solvers/mpqp_parrallel_graph.py
 src/ppopt/mp_solvers/solve_mplp.py
+src/ppopt/mp_solvers/solve_mpmiqp.py
 src/ppopt/mp_solvers/solve_mpqp.py
 src/ppopt/mp_solvers/solver_utils.py
 src/ppopt/solver_interface/__init__.py

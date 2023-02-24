@@ -86,6 +86,9 @@ class MPLP_Program:
         if equality_indices is None:
             equality_indices = []
 
+        if len(equality_indices) == 0:
+            equality_indices = []
+
         self.equality_indices = equality_indices
 
         if solver is None:
