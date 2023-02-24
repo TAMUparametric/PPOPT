@@ -22,18 +22,18 @@ def full_process(program, candidate, murder_list):
     to_murder = None
 
     if not program.check_feasibility(list(candidate)):
-        to_attempt.extend(generate_reduce(candidate, murder_list))
+        to_attempt.extend(generate_reduce(candidate, murder_list, None, set(program.equality_indices)))
         to_murder = candidate
         return [to_attempt, to_murder, None]
 
     if not program.check_optimality(list(candidate)):
-        to_attempt.extend(generate_reduce(candidate, murder_list))
+        to_attempt.extend(generate_reduce(candidate, murder_list, None, set(program.equality_indices)))
         return [to_attempt, to_murder, None]
 
     region = gen_cr_from_active_set(program, list(candidate), check_full_dim=False)
 
     if region.is_full_dimension():
-        to_attempt.extend(generate_reduce(candidate, murder_list))
+        to_attempt.extend(generate_reduce(candidate, murder_list, None, set(program.equality_indices)))
         to_attempt.extend(generate_extra(candidate, region.regular_set[1], murder_list))
 
         return [to_attempt, to_murder, region]
@@ -61,8 +61,8 @@ def solve(program: MPQP_Program, initial_active_sets=None, num_cores=-1) -> Solu
     murder_list = CombinationTester()
 
     to_attempt = [tuple(a_set) for a_set in initial_active_sets]
-    to_attempt.append(tuple([]))
-    to_attempt.extend([tuple([i]) for i in range(len(program.equality_indices), program.num_constraints())])
+    # to_attempt.append(tuple([]))
+    # to_attempt.extend([tuple([i]) for i in range(len(program.equality_indices), program.num_constraints())])
 
     # This will contain all the attempted active sets
     attempted = set()
@@ -137,8 +137,8 @@ def solve_no_murder(program: MPQP_Program, initial_active_sets=None, num_cores=-
     attempted = set()
 
     to_attempt = [tuple(a_set) for a_set in initial_active_sets]
-    to_attempt.append(tuple([]))
-    to_attempt.extend([tuple([i]) for i in range(len(program.equality_indices), program.num_constraints())])
+    # to_attempt.append(tuple([]))
+    # to_attempt.extend([tuple([i]) for i in range(len(program.equality_indices), program.num_constraints())])
 
     # This will contain all the attempted active sets
     attempted = set()

@@ -64,14 +64,17 @@ def manufacture_lambda(attempted, murder_list):
             return lambda x: x not in attempted and murder_list.check(x)
 
 
-def generate_reduce(candidate: tuple, murder_list=None, attempted=None) -> list:
+def generate_reduce(candidate: tuple, murder_list=None, attempted=None, equality_set: Set[int] = None) -> list:
+    if equality_set is None:
+        equality_set = set()
+
     check = manufacture_lambda(attempted, murder_list)
 
     accepted_sets = list()
 
     for i in candidate:
         possible = tuple(sorted([j for j in candidate if j != i]))
-        if check(possible):
+        if check(possible) and set(possible).issuperset(equality_set):
             accepted_sets.append(possible)
 
     return accepted_sets

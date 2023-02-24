@@ -27,9 +27,6 @@ def graph_initialization(program, initial_active_sets):
 
     to_attempt = [tuple(a_set) for a_set in initial_active_sets]
 
-    to_attempt.append(tuple([]))
-    to_attempt.extend([tuple([i]) for i in range(len(program.equality_indices), program.num_constraints())])
-
     if len(to_attempt) != 0:
         print(f'First region {to_attempt[0]}')
     else:
@@ -64,26 +61,23 @@ def solve(program: MPQP_Program, initial_active_sets: List[List[int]] = None) ->
         if candidate in attempted:
             continue
 
-        # print(f'Candidate {candidate}')
-
         attempted.add(candidate)
 
         # checks for infeasible subsets if so break and go to next candidate
 
         if not is_full_rank(program.A, list(candidate)):
-            to_attempt.extend(generate_reduce(candidate, murder_list, attempted))
+            to_attempt.extend(generate_reduce(candidate, murder_list, attempted, set(program.equality_indices)))
             murder_list.add_combo(candidate)
             continue
 
         if program.check_feasibility(list(candidate)) is None:
-            to_attempt.extend(generate_reduce(candidate, murder_list, attempted))
-            # murder_list.add(candidate)
+            to_attempt.extend(generate_reduce(candidate, murder_list, attempted, set(program.equality_indices)))
+
             murder_list.add_combo(candidate)
-            # print(f' MURDERED {candidate}')
             continue
 
         if not program.check_optimality(list(candidate)):
-            to_attempt.extend(generate_reduce(candidate, murder_list, attempted))
+            to_attempt.extend(generate_reduce(candidate, murder_list, attempted, set(program.equality_indices)))
             # not optimal do nothing with this
             continue
 
@@ -93,16 +87,12 @@ def solve(program: MPQP_Program, initial_active_sets: List[List[int]] = None) ->
             continue
 
         if region.is_full_dimension():
-
-            if set(tuple(program.equality_indices)).issuperset(candidate):
-                continue
-
             solution.add_region(region)
 
-            to_attempt.extend(generate_reduce(candidate, murder_list, attempted))
+            to_attempt.extend(generate_reduce(candidate, murder_list, attempted, set(program.equality_indices)))
 
             to_attempt.extend(generate_extra(candidate, region.regular_set[1], murder_list, attempted))
-        
+
     return solution
 
 
@@ -126,8 +116,8 @@ def solve_no_murder(program: MPQP_Program, initial_active_sets: List[List[int]] 
 
         # make sure I am grabbing from the lowest cardinality
         to_attempt.sort(key=len)
-
         # step 1: feasibility
+
         candidate = to_attempt.pop(0)
         # print(candidate)
         if candidate in attempted:
@@ -135,32 +125,30 @@ def solve_no_murder(program: MPQP_Program, initial_active_sets: List[List[int]] 
 
         attempted.add(candidate)
 
+        # checks for infeasible subsets if so break and go to next candidate
+
         if not is_full_rank(program.A, list(candidate)):
-            to_attempt.extend(generate_reduce(candidate, None, attempted))
+            to_attempt.extend(generate_reduce(candidate, None, attempted, set(program.equality_indices)))
             continue
 
         if program.check_feasibility(list(candidate)) is None:
-            to_attempt.extend(generate_reduce(candidate, None, attempted))
+            to_attempt.extend(generate_reduce(candidate, None, attempted, set(program.equality_indices)))
             continue
 
         if not program.check_optimality(list(candidate)):
-            to_attempt.extend(generate_reduce(candidate, None, attempted))
+            to_attempt.extend(generate_reduce(candidate, None, attempted, set(program.equality_indices)))
+            # not optimal do nothing with this
             continue
 
         region = gen_cr_from_active_set(program, list(candidate), check_full_dim=False)
 
         if region is None:
-            print('region is shit')
             continue
 
         if region.is_full_dimension():
-
-            if set(tuple(program.equality_indices)).issuperset(candidate):
-                continue
-
             solution.add_region(region)
 
-            to_attempt.extend(generate_reduce(candidate, None, attempted))
+            to_attempt.extend(generate_reduce(candidate, None, attempted, set(program.equality_indices)))
 
             to_attempt.extend(generate_extra(candidate, region.regular_set[1], None, attempted))
 
