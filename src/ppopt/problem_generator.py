@@ -39,7 +39,7 @@ def generate_mpqp(x: int = 2, t: int = 2, m: int = 10) -> MPQP_Program:
     TBorder = numpy.round(8 * rand() + 1) / 10
     TShift = numpy.round(8 * rand() + 1) / 10
 
-    c = numpy.round((numpy.random.random((x, 1)) - .5) / numpy.random.random(1))
+    c = (numpy.random.random((x, 1)) - .5) / numpy.random.random(1)
 
     eigen_values = numpy.linalg.eigvals(Q)
     Range = RangeValue * (max(eigen_values) - min(eigen_values))
