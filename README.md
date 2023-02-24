@@ -13,14 +13,12 @@ multiparametric programs in Python.
 Currently, PPOPT requires Python 3.7 or higher and can be installed with the following commands.
 
 ```bash
-pip install -e git+https://github.com/mmihaltz/pysettrie.git#egg=pysettrie
 pip install ppopt
 ```
 
 To install PPOPT and install all optional solvers the following installation is recommended.
 
 ```bash 
-pip install -e git+https://github.com/mmihaltz/pysettrie.git#egg=pysettrie
 pip install ppopt[optional]
 ```
 
