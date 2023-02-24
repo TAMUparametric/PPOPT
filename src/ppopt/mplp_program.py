@@ -100,14 +100,11 @@ class MPLP_Program:
 
         if len(self.equality_indices) != 0:
             # move all equality constraints to the top
-            self.A = numpy.block(
-                [[self.A[self.equality_indices]], [numpy.delete(self.A, self.equality_indices, axis=0)]])
-            self.b = numpy.block(
-                [[self.b[self.equality_indices]], [numpy.delete(self.b, self.equality_indices, axis=0)]])
-            self.F = numpy.block(
-                [[self.F[self.equality_indices]], [numpy.delete(self.F, self.equality_indices, axis=0)]])
-            # reassign the equality constraint indices to the top indices after move
-            self.equality_indices = [i for i in range(len(self.equality_indices))]
+            self.A = numpy.block([[self.A[self.equality_indices]], [select_not_in_list(self.A, self.equality_indices)]])
+            self.b = numpy.block([[self.b[self.equality_indices]], [select_not_in_list(self.b, self.equality_indices)]])
+            self.F = numpy.block([[self.F[self.equality_indices]], [select_not_in_list(self.F, self.equality_indices)]])
+
+            self.equality_indices = list(range(len(self.equality_indices)))
 
         # ensures that
         self.warnings()
@@ -174,6 +171,20 @@ class MPLP_Program:
             warning_list.append(
                 f"The F and A_t matrices disagree in dimension A_t {self.A_t.shape}, F {self.F.shape}, inconsistent number "
                 f"of parameters")
+
+        # only check if the matrix dimensions are consistent, e.g. makes a plausible LP
+        if len(warning_list) == 0:
+            # check the radius of the (x, theta) space
+            if self.feasible_space_chebychev_ball() is None:
+                warning_list.append(
+                    f"The chebychev ball has either a radius of zero, or the problem is not feasible!"
+                )
+
+            # check the feasibility of the multiparametric program
+            if not self.check_feasibility(self.equality_indices):
+                warning_list.append(
+                    f"The multiparametric program, as stated, is not feasible!"
+                )
 
         # return warnings
         return warning_list
