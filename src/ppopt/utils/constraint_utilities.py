@@ -336,7 +336,7 @@ def process_program_constraints(A: numpy.ndarray, b: numpy.ndarray, F: numpy.nda
 
     # if there are any constraints in the main constraint body A@x <= b + F@theta with ||A_i, F_i|| = 0, then this is
     # simply asking if b_i >= 0, we move this possible infeasibility to the parametric constraint set
-    keep, move = get_indices_of_zero_rows(ppopt_block([[A, F]]), epsilon)
+    keep, move = get_indices_of_zero_rows(ppopt_block([[A, -F]]), epsilon)
 
     # move all purely 0 <= b_i constraints into the parametric constraint set
     A, b, F, A_t, b_t = shuffle_processed_constraints(A, b, F, A_t, b_t, keep, move)
