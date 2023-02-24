@@ -54,6 +54,9 @@ def default_solver_options():
 
     :return: A dictionary of determanistic solvers to use
     """
+
+    # default to gurobi as a base solver
+
     default_solver = {'lp': 'gurobi', 'qp': 'gurobi', 'milp': 'gurobi', 'miqp': 'gurobi'}
 
     if 'glpk' in available_LP_solvers():

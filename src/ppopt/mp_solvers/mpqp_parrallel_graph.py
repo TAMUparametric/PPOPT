@@ -1,8 +1,8 @@
 # noinspection PyProtectedMember
 from pathos.multiprocessing import ProcessingPool as Pool
-from settrie import SetTrie
+# from settrie import SetTrie
 
-from .solver_utils import generate_reduce, generate_extra
+from .solver_utils import generate_reduce, generate_extra, CombinationTester
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.general_utils import num_cpu_cores
@@ -58,7 +58,7 @@ def solve(program: MPQP_Program, initial_active_sets=None, num_cores=-1) -> Solu
     # This will contain all the attempted active sets
     attempted = set()
 
-    murder_list = SetTrie()
+    murder_list = CombinationTester()
 
     to_attempt = [tuple(a_set) for a_set in initial_active_sets]
     to_attempt.append(tuple([]))
@@ -70,7 +70,7 @@ def solve(program: MPQP_Program, initial_active_sets=None, num_cores=-1) -> Solu
 
     solution = Solution(program, [])
 
-    murder_list = SetTrie()
+    murder_list = CombinationTester()
 
     if num_cores == -1:
         num_cores = num_cpu_cores()
@@ -82,7 +82,7 @@ def solve(program: MPQP_Program, initial_active_sets=None, num_cores=-1) -> Solu
 
     while sum([len(tier) for tier in tiered_to_attempt]) > 0:
 
-        check = lambda x: x not in attempted and not murder_list.hassubset(x)
+        check = lambda x: x not in attempted and murder_list.check(x)
 
         def f(x):
             return full_process(program, x, murder_list)
@@ -107,7 +107,7 @@ def solve(program: MPQP_Program, initial_active_sets=None, num_cores=-1) -> Solu
                     tiered_to_attempt[len(candidate)].append(candidate)
                     in_process.add(candidate)
             if output[1] is not None:
-                murder_list.add(output[1])
+                murder_list.add_combo(output[1])
             if output[2] is not None:
                 solution.add_region(output[2])
 
@@ -146,7 +146,7 @@ def solve_no_murder(program: MPQP_Program, initial_active_sets=None, num_cores=-
 
     solution = Solution(program, [])
 
-    murder_list = SetTrie()
+    murder_list = CombinationTester()
 
     if num_cores == -1:
         num_cores = num_cpu_cores()
@@ -158,7 +158,7 @@ def solve_no_murder(program: MPQP_Program, initial_active_sets=None, num_cores=-
 
     while sum([len(tier) for tier in tiered_to_attempt]) > 0:
 
-        check = lambda x: x not in attempted and not murder_list.hassubset(x)
+        check = lambda x: x not in attempted and murder_list.check(x)
 
         def f(x):
             return full_process(program, x, None)
@@ -184,7 +184,7 @@ def solve_no_murder(program: MPQP_Program, initial_active_sets=None, num_cores=-
                     in_process.add(candidate)
             if output[1] is not None:
                 # pass
-                murder_list.add(output[1])
+                murder_list.add_combo(output[1])
             if output[2] is not None:
                 solution.add_region(output[2])
 

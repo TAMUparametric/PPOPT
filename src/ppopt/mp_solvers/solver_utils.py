@@ -56,12 +56,12 @@ def manufacture_lambda(attempted, murder_list):
         if murder_list is None:
             return lambda x: True
         else:
-            return lambda x: not murder_list.hassubset(x)
+            return lambda x: murder_list.check(x)
     else:
         if murder_list is None:
             return lambda x: x not in attempted
         else:
-            return lambda x: x not in attempted and not murder_list.hassubset(x)
+            return lambda x: x not in attempted and murder_list.check(x)
 
 
 def generate_reduce(candidate: tuple, murder_list=None, attempted=None) -> list:

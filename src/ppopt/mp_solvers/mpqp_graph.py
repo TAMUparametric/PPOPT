@@ -1,8 +1,6 @@
 from typing import List
 
-from settrie import SetTrie
-
-from .solver_utils import generate_reduce, generate_extra
+from .solver_utils import generate_reduce, generate_extra, CombinationTester
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.constraint_utilities import is_full_rank
@@ -25,7 +23,7 @@ def graph_initialization(program, initial_active_sets):
 
     solution = Solution(program, [])
 
-    murder_list = SetTrie()
+    murder_list = CombinationTester()
 
     to_attempt = [tuple(a_set) for a_set in initial_active_sets]
 
@@ -74,12 +72,13 @@ def solve(program: MPQP_Program, initial_active_sets: List[List[int]] = None) ->
 
         if not is_full_rank(program.A, list(candidate)):
             to_attempt.extend(generate_reduce(candidate, murder_list, attempted))
-            murder_list.add(candidate)
+            murder_list.add_combo(candidate)
             continue
 
         if program.check_feasibility(list(candidate)) is None:
             to_attempt.extend(generate_reduce(candidate, murder_list, attempted))
-            murder_list.add(candidate)
+            # murder_list.add(candidate)
+            murder_list.add_combo(candidate)
             # print(f' MURDERED {candidate}')
             continue
 
@@ -103,7 +102,7 @@ def solve(program: MPQP_Program, initial_active_sets: List[List[int]] = None) ->
             to_attempt.extend(generate_reduce(candidate, murder_list, attempted))
 
             to_attempt.extend(generate_extra(candidate, region.regular_set[1], murder_list, attempted))
-
+        
     return solution
 
 

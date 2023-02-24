@@ -169,8 +169,8 @@ class MPLP_Program:
         # check the dimensions of the F and A_t matrix
         if self.F.shape[1] != self.A_t.shape[1]:
             warning_list.append(
-                f"The F and A_t matrices disagree in dimension A_t {self.A_t.shape}, F {self.F.shape}, inconsistent number "
-                f"of parameters")
+                f"The F and A_t matrices disagree in dimension A_t {self.A_t.shape}, F {self.F.shape}, inconsistent "
+                f"number of parameters")
 
         # only check if the matrix dimensions are consistent, e.g. makes a plausible LP
         if len(warning_list) == 0:
@@ -281,10 +281,12 @@ class MPLP_Program:
         # find the indices of the constraints that generate facets to the polytope P
         saved_indices = find_redundant_constraints(problem_A, problem_b, self.equality_indices,
                                                    solver=self.solver.solvers['lp'])
-
-        # calculate the incides in the main body and parametric constraints
+        print(saved_indices)
+        # calculate the indices in the main body and parametric constraints
         saved_upper = [x for x in saved_indices if x < self.num_constraints()]
         saved_lower = [x - self.num_constraints() for x in saved_indices if x >= self.num_constraints()]
+
+        print(select_not_in_list(self.A, saved_upper))
 
         # remove redundant constraints
         self.A = self.A[saved_upper]
