@@ -1,7 +1,9 @@
 Markowitz Portfolio Allocation
 ==============================
 
-The `Markowitz portfolio optimization <https://en.wikipedia.org/wiki/Modern_portfolio_theory>`_ problem is given as follows, where :math:`\Sigma` is the covariance of the commodities. In this example, we are considering only positive definite covariance matrices. :math:`R^*` is the return we wish to get, :math:`\mu` is the expected rate of return. The constraints are effectively specifying a return rate that we want, saying that the composition of our portfolio must sum to one (we only have one portfolio!) and that we can't have negative positions in any commodity.
+A fairly common trend in finance has been leveraging mathematical modeling and optimization to give better services to customers and drive better returns. For example, one of the most common decisions of someone who is investing in the stock market (or other markets) is how much of what thing to buy. One of the most common approaches utilizes the Markowitz Portfolio Theory (MPT) concept. Given some assumptions, we can assemble an optimization problem to solve that will give us what asset allocation in the portfolio should be. This concept was developed by the Economist Harry Markowitz, for which he was given the Nobel prize in Economics in 1990. 
+
+The `Markowitz portfolio optimization <https://en.wikipedia.org/wiki/Modern_portfolio_theory>`_ problem is given as follows, where :math:`\Sigma` is the covariance of the commodities. In this example, we are considering only positive definite covariance matrices. :math:`R^*` is the return we wish to get, and :math:`\mu` is the expected rate of return. The constraints effectively specify a return rate that we want, saying that the composition of our portfolio must sum to one (we only have one portfolio!) and that we cannot have negative positions in any commodity.
 
 .. math::
     \begin{align}
@@ -11,9 +13,9 @@ The `Markowitz portfolio optimization <https://en.wikipedia.org/wiki/Modern_port
     w_i &\geq 0, \forall i
     \end{align}
 
-This can be reformulated into an mpQP, or to say we can solve this for all possible realizations of our desired return and recover the Pareto front of optimal portfolios by switching out :math:`R^*` with an uncertain parameter $\theta$. Since there is only one uncertain parameter, the geometric algorithm is the most efficient for this problem, and even portfolios with hundreds of commodities can be solved in seconds. However since, trying to plot the optimal portfolio positions for hundreds of commodities, we instead are going to solve it for five commodities so we can still see what is happening under the hood.
+This can be reformulated into an parametric quadratic program (pQP), or to say we can solve this for all possible realizations of our desired return and recover the Pareto front of optimal portfolios by switching out :math:`R^*` with an uncertain parameter :math:`\theta`. Since there is only one uncertain parameter, the geometric algorithm is the most efficient for this problem, and even portfolios with hundreds of commodities can be solved in seconds. However since, trying to plot the optimal portfolio positions for hundreds of commodities can be visually busy, we instead are going to solve it for ten commodities so we can still see how the asset allocations change when risk is varried.
 
-Here the covariance matrix and the return coefficients were generated from random numbers as I do not have easy access to this sort of data. I followed YALMIPS suggestions on generating reasonable enough data, `YALMIP <https://yalmip.github.io/example/portfolio/>`_.
+Here the covariance matrix and the return coefficients were generated from random numbers. We followed `YALMIP's <https://yalmip.github.io/example/portfolio/>`_ suggestion on generating reasonable enough data. The code in python for how we generate the covariance matrix and the return can be seen below.
 
 .. code-block:: python
 
@@ -23,7 +25,7 @@ Here the covariance matrix and the return coefficients were generated from rando
     S = S@S.T / 10
     mu = numpy.random.rand(num_assets)/100
 
-Here is the problem that we are going to be tackling in this post. Some of the constraints have been noticeably modified. This is due to a standard preprocessing pass from the solver that I am using. This modification increases numerical stability for ill-conditioned optimization problems but has nearly no effect in this case.
+Here is the problem that we are going to be tackling in this post. Some of the constraints have been noticeably modified. This is due to a standard preprocessing pass that ``ppopt`` runs. This modification increases numerical stability for ill-conditioned optimization problems but has nearly for the problem we are looking at in this example, as it is numerically well conditioned. 
 
 .. code-block:: python
 
@@ -40,7 +42,7 @@ Here is the problem that we are going to be tackling in this post. Some of the c
     H = numpy.zeros((A.shape[1],F.shape[1]))
     portfolio = MPQP_Program(A, b, c, H, Q, A_t, b_t, F,equality_indices= [0,1])
 
-This formulates the parametric problem as follows, we want to parameterize the return :math:`R^*` as :math:`\theta`, allowing up to solve over the upper and lower possible bounds for
+This formulates the parametric problem as follows, we want to parameterize the return :math:`R^*` as :math:`\theta`, so that we can solve over all feasible bounds of return.
 
 .. math::
     \begin{align}
@@ -52,7 +54,7 @@ This formulates the parametric problem as follows, we want to parameterize the r
     \end{align}
 
 
-Now that we have formulated the mpQP, all we have to do is solve it. Which can be accomplished in with the following python code. We are using the geometric algorithm here, as it is very fast in this type of problem. For this problem it only took half a second to solve.
+Now that we have formulated the pQP, all we have to do is solve it. Which can be accomplished with the following python code. We are using the geometric algorithm here, as it is very fast in this type of problem. For this problem it only took half a second to solve.
 
 .. code-block:: python
 
