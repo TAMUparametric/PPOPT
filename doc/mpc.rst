@@ -4,14 +4,14 @@ Explicit MPC
 Explicit model predictive control (eMPC), alternatively referred to as multiparametric model predictive control (mpMPC) is the practice of recasting a control problem as a multiparametric program (mpp), then solving this mpp explicitly for all realizations of the uncertain parameters. The purpose of this is that, with the explicit solution in hand, one simply needs to evaluate the explicit solution for this realization (in control this is typically the state, :math:`x`, or setpoints, :math:`y_{\text{sp}}`) and one recovers the optimal input action(s) to apply to the system (typically denoted as :math:`u`). In this page, we will show the steps to reformulate a typically mpc application into a mpMPC and then solve it.
 
 
-In this example, we will produce an explicit controller for the discretized double integrator system, as seen bellow. In control, the uncertain parameters come quite naturally from the problem definition itself as we do not know what the state of the system is before the system realizes itself or we measure it. As such the parametric variables that we are going to use for this example are :math:`x_{0,0}` and :math:`x_{0,1}`, meaning both components of the initial state of the system, :math:`x_{0}`.
+In this example, we will produce an explicit controller for the discretized double integrator system, as seen below. In control, the uncertain parameters come quite naturally from the problem definition itself as we do not know what the state of the system is before the system realizes itself or we measure it. As such the parametric variables that we are going to use for this example are :math:`x_{0,0}` and :math:`x_{0,1}`, meaning both components of the initial state of the system, :math:`x_{0}`.
 
 .. math::
 
 	\begin{matrix} x_{t+1} = Ax_t + Bu_t  &\rightarrow x_{t+1} = \begin{bmatrix} 1 & 1\\ 0 & 1\end{bmatrix}x_t + \begin{bmatrix} 0.5\\ 1\end{bmatrix}u_t\end{matrix}
 
 
-In effect we would like to state the following mpc problem as a multiparametric problem. Where :math:`Q = \mathbf{I}_2`, :math:`R = 1`, :math:`N` is the control horizon of 3. Here :math:`\bar{u} = 1`, :math:`\underline{u} = -1`, and :math:`\bar{x} = -\underline{x} = \begin{bmatrix} 4\\ 4\end{bmatrix}`
+In effect we would like to state the following mpc problem as a multiparametric problem. Where :math:`Q = \mathbf{I}_2`, :math:`R = 1`, and :math:`N` is the control horizon of 3. Here :math:`\bar{u} = 1`, :math:`\underline{u} = -1`, and :math:`\bar{x} = -\underline{x} = \begin{bmatrix} 4\\ 4\end{bmatrix}`
 
 .. math::
 
@@ -32,7 +32,7 @@ For ease of demonstration we will not eliminate the :math:`x` variables (which i
     0&-A&\mathbf{I}&0&0&B
     \end{bmatrix}\begin{bmatrix}x_1\\x_2\\x_3\\u_0\\u_1\\u_2\end{bmatrix} = \begin{bmatrix}A\\0\\0\end{bmatrix}x_0
 
-We can rewrite the inequalities for the decision variables and uncertain parameters.
+We can rewrite the inequalities for the decision variables and uncertain parameters as follows.
 
 .. math::
 
@@ -52,7 +52,7 @@ We can rewrite the inequalities for the decision variables and uncertain paramet
     0&0&0&0&0&-\mathbf{I}\\
     \end{bmatrix}\begin{bmatrix}x_1\\x_2\\x_3\\u_0\\u_1\\u_2\end{bmatrix} \leq \begin{bmatrix}\bar{x}\\ \bar{x} \\ \bar{x}\\ \bar{u}\\ \bar{u}\\ \bar{u}\\  -\underline{x}\\ -\underline{x} \\ -\underline{x}\\ -\underline{u}\\ -\underline{u}\\ -\underline{u} \end{bmatrix} & \begin{bmatrix} \mathbf{I}_2\\-\mathbf{I}_2\end{bmatrix}x_0 \leq \begin{bmatrix}\bar{x}\\ \underline{x}\end{bmatrix}\end{matrix}
 
-As for as the objective, we can inspect that the hessian of the reformulated problem is :math:`Q = \mathbf{I}_{9}`. An exercise left to the reader is to show that this is in fact the true.
+As for the objective, we can inspect that the hessian of the reformulated problem is :math:`Q = \mathbf{I}_{9}`. An exercise left to the reader is to show that this is in fact true.
 
 .. math::
 
@@ -118,7 +118,7 @@ With all of this done, we are able to write down the mpMPC problem. People famil
     # process constraints
     mpmpc.process_constraints()
 
-The hardest parts are now over, as this is now just an mpQP (multiparametric Quadratic program) we can solve it with any of the mpQP algorithms offered in ``ppopt``. This can be accomplished with the following code. Here we are using the combinatorial algorithm, but any of the other algorithms can be access by changing ``mpqp_algorithm.combinatorial``. On modern computers, this should solve in under a second.
+The hardest parts are now over, as this is now just an mpQP (multiparametric Quadratic program) we can solve it with any of the mpQP algorithms offered in ``ppopt``. This can be accomplished with the following code. Here we are using the combinatorial algorithm, but any of the other algorithms can be accessed by changing ``mpqp_algorithm.combinatorial`` accordingly. On modern computers, this should solve in under a second.
 
 .. code:: python
 
@@ -138,7 +138,7 @@ A plot of the solution can be seen via the plotting utilities included in ``ppop
 
 Now that the full explicit solution is calculated, we can evaluate the solution instead of solving an optimization problem online, and do some post-analysis.
 
-For example one can ask what the sensitivity of the output of the initial states are on the final states and input actions that the MPC predicts and gives. A benefit of multiparametric programming is that as we know :math:`x_3`, as a function of :math:`x_0` and we know that this function is linear we can reconstruct exactly the space of possible final states, instead of needing to sample it. Here, we sample states from a rectangle around :math:`x_0 = (0,0)`, and compare how this fits the space of predicted outputs from the multiparametric solution.
+For example one can ask what the sensitivity of the output of the initial states are on the final states and input actions that the MPC predicts and gives. A benefit of multiparametric programming is that as we know the final state, :math:`x_3`, as a function of :math:`x_0`. We know that this function from the explicit solution so we can reconstruct exactly the space of possible final states, instead of needing to sample it. Here, we sample states from a rectangle around :math:`x_0 = (0,0)`, and compare how this fits into the space of predicted outputs from the multiparametric solution.
 
 .. code:: python
 
