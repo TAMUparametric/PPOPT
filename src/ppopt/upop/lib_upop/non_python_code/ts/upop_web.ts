@@ -41,7 +41,7 @@ class Constraints {
         if (this.is_value[fundamental_plant_index]){
             // if visited then grab the cached value
             const result = this.what_value[fundamental_plant_index];
-            return constraint_parity[i] == result;
+            return constraint_parity[i] === result;
         }
 
         // evaluate <A_i,t>
@@ -56,7 +56,7 @@ class Constraints {
 
         // cache the value
         this.is_value[fundamental_plant_index] = true;
-        this.what_value[fundamental_plant_index] = value == constraint_parity[i];
+        this.what_value[fundamental_plant_index] = value === constraint_parity[i];
 
         // return the computed value
         return value;
@@ -120,7 +120,7 @@ function evaluate_objective(t:number[], x:number[], include_theta_therms):number
 function is_inside_region(t:number[],region_id:number, constraints:Constraints):boolean{
     for (let constraint_index = region_indices[region_id]; constraint_index < region_indices[region_id+1]; constraint_index++) {
         if (!constraints.get_value(constraint_index, t)) {
-            return false
+            return false;
         }
     }
     return true;
@@ -131,7 +131,7 @@ function evaluate_region(region_id:number, t:number[]):number[]{
     const offset = x_dim*region_id;
 
     // check if we aren't in any region
-    if (region_id == NOT_IN_FEASIBLE_SPACE){
+    if (region_id === NOT_IN_FEASIBLE_SPACE){
         return null;
     }
 
@@ -156,7 +156,7 @@ function evaluate_region(region_id:number, t:number[]):number[]{
 
         value += function_vector_data[function_vector_index];
 
-        if (function_parity[i + offset] == false){
+        if (function_parity[i + offset] === false){
             value = -value;
         }
         x_star[i] = value;
@@ -165,12 +165,6 @@ function evaluate_region(region_id:number, t:number[]):number[]{
     return x_star;
 }
 
-function locate_region(t:number[]):number{
-    if (solution_overlap){
-        return locate_no_overlap(t);
-    }
-    return locate_with_overlap(t);
-}
 
 function locate_no_overlap(t:number[]):number {
     let constraints = new Constraints();
@@ -193,7 +187,7 @@ function locate_with_overlap(t:number[]):number {
     for (let region_id = 0; region_id < num_regions; region_id++) {
 
         if (!is_inside_region(t, region_id, constraints)){
-            continue
+            continue;
         }
         const x_curr = evaluate_region(region_id, t);
         const curr_obj = evaluate_objective(t, x_curr, false);
@@ -206,4 +200,11 @@ function locate_with_overlap(t:number[]):number {
     }
 
     return best_region_id;
+}
+
+function locate_region(t:number[]):number{
+    if (solution_overlap){
+        return locate_no_overlap(t);
+    }
+    return locate_with_overlap(t);
 }

@@ -286,7 +286,7 @@ def get_indices_of_zero_rows(A: numpy.array, epsilon: float = 10 ** (-6)) -> [li
 
 
 def shuffle_processed_constraints(A: numpy.ndarray, b: numpy.ndarray, F: numpy.ndarray, A_t: numpy.ndarray,
-                                  b_t: numpy.ndarray, kept, remove):
+                                  b_t: numpy.ndarray, kept: list, remove: list):
     """
 
 
@@ -296,7 +296,7 @@ def shuffle_processed_constraints(A: numpy.ndarray, b: numpy.ndarray, F: numpy.n
     :param A_t: the LHS constraint matrix for parametric constraints
     :param b_t: the RHS constraint vector for parametric constraints
     :param kept:
-    :param removed:
+    :param remove:
     :return:The filtered constraint matrix set A, b, F, A_t, b_t
     """
     # add the purely parametric constraints to the parametric constraint set A_t, b_t
@@ -411,6 +411,6 @@ def find_implicit_equalities(A: numpy.ndarray, b: numpy.ndarray, F: numpy.ndarra
     F = ppopt_block([[F_eq], [F_ineq]])
 
     # update problem active set
-    equality_indices = [i for i in range(len(temp_active_set))]
+    equality_indices = list(range(len(temp_active_set)))
 
     return A, b, F, equality_indices

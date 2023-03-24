@@ -180,13 +180,13 @@ class MPLP_Program:
             # check the radius of the (x, theta) space
             if self.feasible_space_chebychev_ball() is None:
                 warning_list.append(
-                    f"The chebychev ball has either a radius of zero, or the problem is not feasible!"
+                    "The chebychev ball has either a radius of zero, or the problem is not feasible!"
                 )
 
             # check the feasibility of the multiparametric program
             if not self.check_feasibility(self.equality_indices):
                 warning_list.append(
-                    f"The multiparametric program, as stated, is not feasible!"
+                    "The multiparametric program, as stated, is not feasible!"
                 )
 
         # return warnings
@@ -313,7 +313,7 @@ class MPLP_Program:
         self.c_t = self.c_t.astype('float64')
         self.Q_t = self.Q_t.astype('float64')
 
-    def solve_theta(self, theta_point: numpy.ndarray, deterministic_solver='gurobi') -> Optional[SolverOutput]:
+    def solve_theta(self, theta_point: numpy.ndarray) -> Optional[SolverOutput]:
         r"""
         Substitutes theta into the multiparametric problem and solves the following optimization problem
 
@@ -329,7 +329,6 @@ class MPLP_Program:
             \end{align}
 
         :param theta_point: An uncertainty realization
-        :param deterministic_solver: Deterministic solver to use to solve the above quadratic program
         :return: The Solver output of the substituted problem, returns None if not solvable
         """
 
@@ -543,7 +542,7 @@ class MPLP_Program:
         if num_active == 0:
             lp_active_limit = num_constraints
 
-        equality_indices = [i for i in range(0, lp_active_limit)]
+        equality_indices = list(range(0, lp_active_limit))
 
         sol = self.solver.solve_lp(c, A, b, equality_indices)
 
