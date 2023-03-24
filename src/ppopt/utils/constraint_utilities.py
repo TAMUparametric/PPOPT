@@ -411,6 +411,6 @@ def find_implicit_equalities(A: numpy.ndarray, b: numpy.ndarray, F: numpy.ndarra
     F = ppopt_block([[F_eq], [F_ineq]])
 
     # update problem active set
-    equality_indices = [i for i in range(len(temp_active_set))]
+    equality_indices = list(range(len(temp_active_set)))
 
     return A, b, F, equality_indices

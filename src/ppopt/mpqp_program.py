@@ -280,7 +280,7 @@ class MPQP_Program(MPLP_Program):
         if num_active == 0:
             lp_active_limit = num_constraints
 
-        equality_indices = [i for i in range(0, lp_active_limit)]
+        equality_indices = list(range(0, lp_active_limit))
 
         sol = self.solver.solve_lp(c, A, b, equality_indices)
 

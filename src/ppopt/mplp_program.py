@@ -180,7 +180,7 @@ class MPLP_Program:
             # check the radius of the (x, theta) space
             if self.feasible_space_chebychev_ball() is None:
                 warning_list.append(
-                    f"The chebychev ball has either a radius of zero, or the problem is not feasible!"
+                    "The chebychev ball has either a radius of zero, or the problem is not feasible!"
                 )
 
             # check the feasibility of the multiparametric program
