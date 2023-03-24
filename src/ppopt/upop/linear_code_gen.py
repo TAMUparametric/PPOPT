@@ -13,6 +13,8 @@ from ..upop.upop_utils import find_unique_region_hyperplanes, find_unique_region
     convert_mi_solution
 
 
+# suppress type checking warnings here, as the output in numpy.tolist() is not recognized as in iterable
+# noinspection PyTypeChecker
 def generate_code_cpp(solution: Solution, float_type: str = 'float') -> str:
     """
     Generates C++17 code for point location and function evaluation on microcontrollers \n
