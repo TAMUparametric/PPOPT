@@ -102,4 +102,4 @@ def chebyshev_ball_max(A: numpy.ndarray, b: numpy.ndarray, equality_constraints:
     :param deterministic_solver: The underlying Solver to use, e.g. gurobi, ect
     :return: the SolverOutput object, None if infeasible
     """
-    pass
+

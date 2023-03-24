@@ -14,4 +14,4 @@ def solve(program: MPQP_Program) -> Optional[Solution]:
     :param program: a MPQP_Program
     :return: The solution of a MPQP Program
     """
-    pass
+
