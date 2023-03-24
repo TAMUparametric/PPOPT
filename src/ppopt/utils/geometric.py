@@ -76,7 +76,8 @@ def revised_tess_simplex(simplex, half_split=False):
         combinations = [[0] * simplex.shape[0]] * simplex.shape[0]
         for i in range(simplex.shape[0]):
             combinations[i] = [j for j in range(simplex.shape[0]) if j is not i]
-
+    # TODO: implement the rest of the algorithm
+    pass
 
 # def make_domain_subdivision(A_t, b_t):
 #     print(A_t)

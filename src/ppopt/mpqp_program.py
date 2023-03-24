@@ -99,7 +99,7 @@ class MPQP_Program(MPLP_Program):
 
         return output
 
-    def solve_theta(self, theta_point: numpy.ndarray, deterministic_solver: str = 'gurobi') -> Optional[SolverOutput]:
+    def solve_theta(self, theta_point: numpy.ndarray) -> Optional[SolverOutput]:
         r"""
         Substitutes a particular realization of θ into the multiparametric problem and solves the resulting
         optimization problem.
@@ -120,7 +120,6 @@ class MPQP_Program(MPLP_Program):
             \end{align}
 
         :param theta_point: An uncertainty realization
-        :param deterministic_solver: Deterministic solver to use to solve the above quadratic program
         :return: The Solver output of the substituted problem, returns None if not solvable
         """
 

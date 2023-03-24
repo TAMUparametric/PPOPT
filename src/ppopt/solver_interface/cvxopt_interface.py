@@ -84,7 +84,7 @@ def solve_fully_constraints(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray
     num_vars = A.shape[0]
 
     sol = SolverOutput(sol=x, obj=c.T @ x, slack=numpy.zeros(num_vars),
-                       active_set=numpy.array([i for i in range(num_vars)]), dual=dual)
+                       active_set=numpy.array(list(range(num_vars))), dual=dual)
 
     # check if the system agrees with the equality constraints
 

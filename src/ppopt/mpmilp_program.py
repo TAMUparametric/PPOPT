@@ -6,7 +6,7 @@ from .mplp_program import MPLP_Program
 from .solver import Solver
 from .solver_interface.solver_interface_utils import SolverOutput
 from .utils.constraint_utilities import detect_implicit_equalities
-from .utils.general_utils import ppopt_block
+from .utils.general_utils import ppopt_block, select_not_in_list
 
 
 class MPMILP_Program(MPLP_Program):
@@ -68,14 +68,11 @@ class MPMILP_Program(MPLP_Program):
 
         if len(self.equality_indices) != 0:
             # move all equality constraints to the top
-            self.A = numpy.block(
-                [[self.A[self.equality_indices]], [numpy.delete(self.A, self.equality_indices, axis=0)]])
-            self.b = numpy.block(
-                [[self.b[self.equality_indices]], [numpy.delete(self.b, self.equality_indices, axis=0)]])
-            self.F = numpy.block(
-                [[self.F[self.equality_indices]], [numpy.delete(self.F, self.equality_indices, axis=0)]])
-            # reassign the equality constraint indices to the top indices after move
-            self.equality_indices = [i for i in range(len(self.equality_indices))]
+            self.A = numpy.block([[self.A[self.equality_indices]], [select_not_in_list(self.A, self.equality_indices)]])
+            self.b = numpy.block([[self.b[self.equality_indices]], [select_not_in_list(self.b, self.equality_indices)]])
+            self.F = numpy.block([[self.F[self.equality_indices]], [select_not_in_list(self.F, self.equality_indices)]])
+
+            self.equality_indices = list(range(len(self.equality_indices)))
 
         # now we call the process constraints routine to polish the constraints before we move to solving
         self.process_constraints()
@@ -136,7 +133,7 @@ class MPMILP_Program(MPLP_Program):
             self.F = ppopt_block([[F_eq], [F_ineq]])
 
             # update problem active set
-            self.equality_indices = [i for i in range(len(temp_active_set))]
+            self.equality_indices = list(range(len(temp_active_set)))
 
         # recalculate bc we have moved everything around
         problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
