@@ -56,7 +56,7 @@ def manufacture_lambda(attempted, murder_list):
         if murder_list is None:
             return lambda x: True
         else:
-            return lambda x: murder_list.check(x)
+            return lambda x: murder_list.check
     else:
         if murder_list is None:
             return lambda x: x not in attempted

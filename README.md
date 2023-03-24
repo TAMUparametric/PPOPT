@@ -4,6 +4,7 @@
 [![Documentation Status](https://readthedocs.org/projects/ppopt/badge/?version=latest)](https://ppopt.readthedocs.io/en/latest/?badge=latest)
 [![PyPI](https://img.shields.io/pypi/v/ppopt.svg)](https://pypi.org/project/ppopt)
 [![Downloads](https://static.pepy.tech/personalized-badge/ppopt?period=total&units=none&left_color=grey&right_color=brightgreen&left_text=Downloads)](https://pepy.tech/project/ppopt)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/a7df65fcf0104c2ab7fd0105f10854c6)](https://app.codacy.com/gh/TAMUparametric/PPOPT/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 **P**ython **P**arametric **OP**timization **T**oolbox (**PPOPT**) is a software platform for solving and manipulating
 multiparametric programs in Python.
