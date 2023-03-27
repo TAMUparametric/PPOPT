@@ -1,0 +1,8 @@
+select = ["F", "E", "W", "I", "NPY"]
+ignore = ["E501", "E741", "E402"]
+exclude = ['test', '.github', 'build', 'dist', 'doc', 'Figure']
+
+[per-file-ignores]
+
+[mccabe]
+max-complexity = 10
