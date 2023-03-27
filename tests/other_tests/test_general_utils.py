@@ -1,5 +1,11 @@
 import numpy
-from src.ppopt.utils.general_utils import make_column, make_row, select_not_in_list, remove_size_zero_matrices
+
+from src.ppopt.utils.general_utils import (
+    make_column,
+    make_row,
+    remove_size_zero_matrices,
+    select_not_in_list,
+)
 
 
 def test_make_column_1():

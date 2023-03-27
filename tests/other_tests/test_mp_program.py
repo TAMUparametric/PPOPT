@@ -1,14 +1,16 @@
 import copy
+
 # imports for suppressing output of display_tests
 import os
 import sys
 
 import numpy
 import pytest
+
 from src.ppopt.mplp_program import MPLP_Program
 from src.ppopt.mpqp_program import MPQP_Program
-from src.ppopt.utils.general_utils import make_column
 from src.ppopt.utils.constraint_utilities import constraint_norm
+from src.ppopt.utils.general_utils import make_column
 
 
 @pytest.fixture()

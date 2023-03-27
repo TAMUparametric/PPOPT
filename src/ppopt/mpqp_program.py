@@ -4,7 +4,12 @@ import numpy
 
 from .mplp_program import MPLP_Program
 from .solver_interface.solver_interface import SolverOutput
-from .utils.general_utils import latex_matrix, remove_size_zero_matrices, ppopt_block, make_column
+from .utils.general_utils import (
+    latex_matrix,
+    make_column,
+    ppopt_block,
+    remove_size_zero_matrices,
+)
 
 
 class MPQP_Program(MPLP_Program):

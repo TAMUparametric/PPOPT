@@ -1,7 +1,19 @@
 import numpy
-from src.ppopt.utils.constraint_utilities import find_implicit_equalities, process_program_constraints, scale_constraint,remove_zero_rows,row_equality,remove_duplicate_rows,is_full_rank,cheap_remove_redundant_constraints,process_region_constraints, remove_strongly_redundant_constraints
-from src.ppopt.utils.general_utils import make_row
 import pytest
+
+from src.ppopt.utils.constraint_utilities import (
+    cheap_remove_redundant_constraints,
+    find_implicit_equalities,
+    is_full_rank,
+    process_program_constraints,
+    process_region_constraints,
+    remove_duplicate_rows,
+    remove_strongly_redundant_constraints,
+    remove_zero_rows,
+    row_equality,
+    scale_constraint,
+)
+from src.ppopt.utils.general_utils import make_row
 
 
 def test_constraint_norm_1():

@@ -1,10 +1,10 @@
 from typing import Optional
 
-from .solver_utils import get_facet_centers, fathem_facet
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.general_utils import make_column
 from ..utils.mpqp_utils import gen_cr_from_active_set
+from .solver_utils import fathem_facet, get_facet_centers
 
 
 def solve(program: MPQP_Program, active_set=None) -> Optional[Solution]:

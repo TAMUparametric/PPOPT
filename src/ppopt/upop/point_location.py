@@ -1,9 +1,8 @@
 from typing import Optional
 
-import numpy
-
 # Make this optional at some point, so we can run on more general platforms
 import numba
+import numpy
 
 from ..solution import Solution
 

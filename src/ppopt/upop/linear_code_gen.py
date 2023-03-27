@@ -1,16 +1,20 @@
 import copy
+from datetime import datetime
 from typing import List
 
 import numpy
 import scipy.io as sio
-from datetime import datetime
 
 from ..solution import Solution
 from ..upop.language_generation import gen_array, gen_variable
 from ..upop.lib_upop.upop_cpp_template import cpp_upop
 from ..upop.lib_upop.upop_js_template import js_upop
-from ..upop.upop_utils import find_unique_region_hyperplanes, find_unique_region_functions, get_descriptions, \
-    convert_mi_solution
+from ..upop.upop_utils import (
+    convert_mi_solution,
+    find_unique_region_functions,
+    find_unique_region_hyperplanes,
+    get_descriptions,
+)
 
 
 # suppress type checking warnings here, as the output in numpy.tolist() is not recognized as in iterable

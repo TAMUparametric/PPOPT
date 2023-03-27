@@ -1,12 +1,16 @@
 import sys
 from dataclasses import dataclass, field
-from typing import Dict, Optional, Iterable
+from typing import Dict, Iterable, Optional
 
 import numpy
 
 from .solver_interface.cvxopt_interface import solve_lp_cvxopt
-from .solver_interface.gurobi_solver_interface import solve_lp_gurobi, solve_qp_gurobi, solve_milp_gurobi, \
-    solve_miqp_gurobi
+from .solver_interface.gurobi_solver_interface import (
+    solve_lp_gurobi,
+    solve_milp_gurobi,
+    solve_miqp_gurobi,
+    solve_qp_gurobi,
+)
 from .solver_interface.quad_prog_interface import solve_qp_quadprog
 from .solver_interface.solver_interface_utils import SolverOutput
 

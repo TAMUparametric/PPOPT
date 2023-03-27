@@ -1,10 +1,11 @@
-from .mitree import MITree
-from .solve_mpqp import mpqp_algorithm, solve_mpqp
+# noinspection PyProtectedMember
+from pathos.multiprocessing import ProcessingPool as Pool
+
 from ..mpmilp_program import MPMILP_Program
 from ..solution import Solution
 from ..utils.general_utils import num_cpu_cores
-# noinspection PyProtectedMember
-from pathos.multiprocessing import ProcessingPool as Pool
+from .mitree import MITree
+from .solve_mpqp import mpqp_algorithm, solve_mpqp
 
 
 def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,

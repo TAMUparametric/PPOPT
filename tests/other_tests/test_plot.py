@@ -1,5 +1,5 @@
-from src.ppopt.plot import parametric_plot, plotly_plot, parametric_plot_1D
 from src.ppopt.mp_solvers.solve_mpqp import solve_mpqp
+from src.ppopt.plot import parametric_plot, parametric_plot_1D, plotly_plot
 from tests.test_fixtures import factory_solution, simple_mpqp_problem
 
 

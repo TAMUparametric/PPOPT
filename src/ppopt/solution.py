@@ -1,14 +1,14 @@
 from dataclasses import dataclass
-from typing import Union, List, Optional
+from typing import List, Optional, Union
 
 import numpy
 
 from .critical_region import CriticalRegion
 from .geometry.polytope_operations import get_chebyshev_information
 from .mplp_program import MPLP_Program
-from .mpqp_program import MPQP_Program
-from .mpmiqp_program import MPMIQP_Program
 from .mpmilp_program import MPMILP_Program
+from .mpmiqp_program import MPMIQP_Program
+from .mpqp_program import MPQP_Program
 from .utils.general_utils import make_column
 
 

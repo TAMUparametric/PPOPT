@@ -1,7 +1,7 @@
 import copy
+from typing import List, Union
 
 import numpy
-from typing import List, Union
 
 from ..mpmilp_program import MPMILP_Program
 from ..mpmiqp_program import MPMIQP_Program

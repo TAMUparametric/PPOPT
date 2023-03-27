@@ -5,11 +5,11 @@ from typing import List
 # noinspection PyProtectedMember
 from pathos.multiprocessing import ProcessingPool as Pool
 
-from .solver_utils import generate_children_sets, CombinationTester
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.general_utils import num_cpu_cores
 from ..utils.mpqp_utils import gen_cr_from_active_set
+from .solver_utils import CombinationTester, generate_children_sets
 
 
 def full_process(program: MPQP_Program, active_set: List[int], murder_list, gen_children):

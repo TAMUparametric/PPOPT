@@ -1,6 +1,5 @@
-from src.ppopt.mp_solvers.solve_mpqp import solve_mpqp, mpqp_algorithm
+from src.ppopt.mp_solvers.solve_mpqp import mpqp_algorithm, solve_mpqp
 from src.ppopt.plot import parametric_plot
-
 from tests.test_fixtures import qp_problem, simple_mpLP
 
 

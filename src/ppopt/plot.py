@@ -3,12 +3,12 @@ from typing import List
 
 import numpy
 import plotly.graph_objects as go
-from .solver import Solver
 from matplotlib import pyplot
 from matplotlib.collections import PatchCollection
 from matplotlib.patches import Polygon
 
 from .solution import Solution
+from .solver import Solver
 from .utils.general_utils import make_column
 
 

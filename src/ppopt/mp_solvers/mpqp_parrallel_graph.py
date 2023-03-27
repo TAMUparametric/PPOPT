@@ -1,12 +1,13 @@
 # noinspection PyProtectedMember
 from pathos.multiprocessing import ProcessingPool as Pool
-# from settrie import SetTrie
 
-from .solver_utils import generate_reduce, generate_extra, CombinationTester
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.general_utils import num_cpu_cores
 from ..utils.mpqp_utils import gen_cr_from_active_set
+
+# from settrie import SetTrie
+from .solver_utils import CombinationTester, generate_extra, generate_reduce
 
 
 def full_process(program, candidate, murder_list):

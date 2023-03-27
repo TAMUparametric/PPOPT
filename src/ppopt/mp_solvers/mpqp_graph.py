@@ -1,10 +1,10 @@
 from typing import List
 
-from .solver_utils import generate_reduce, generate_extra, CombinationTester
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.constraint_utilities import is_full_rank
 from ..utils.mpqp_utils import gen_cr_from_active_set
+from .solver_utils import CombinationTester, generate_extra, generate_reduce
 
 
 def graph_initialization(program, initial_active_sets):

@@ -1,5 +1,8 @@
-from src.ppopt.upop.linear_code_gen import generate_code_js, generate_code_cpp, generate_code_matlab
-
+from src.ppopt.upop.linear_code_gen import (
+    generate_code_cpp,
+    generate_code_js,
+    generate_code_matlab,
+)
 from tests.test_fixtures import factory_solution
 
 

@@ -3,6 +3,7 @@ import numpy
 from src.ppopt.mp_solvers.mpqp_combinatorial import *
 from src.ppopt.mp_solvers.solver_utils import generate_children_sets
 from src.ppopt.mpqp_program import MPQP_Program
+
 from ..test_fixtures import *
 
 

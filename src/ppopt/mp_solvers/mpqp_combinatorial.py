@@ -1,9 +1,9 @@
 from typing import List
 
-from .solver_utils import generate_children_sets, CombinationTester
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.mpqp_utils import gen_cr_from_active_set
+from .solver_utils import CombinationTester, generate_children_sets
 
 
 def solve(program: MPQP_Program) -> Solution:

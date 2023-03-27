@@ -1,14 +1,25 @@
 from dataclasses import dataclass
-from typing import List, Union, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import numpy
 
 from .solver import Solver
 from .solver_interface.solver_interface_utils import SolverOutput
 from .utils.chebyshev_ball import chebyshev_ball
-from .utils.constraint_utilities import constraint_norm, is_full_rank, find_redundant_constraints, \
-    find_implicit_equalities, process_program_constraints
-from .utils.general_utils import make_column, latex_matrix, select_not_in_list, ppopt_block, remove_size_zero_matrices
+from .utils.constraint_utilities import (
+    constraint_norm,
+    find_implicit_equalities,
+    find_redundant_constraints,
+    is_full_rank,
+    process_program_constraints,
+)
+from .utils.general_utils import (
+    latex_matrix,
+    make_column,
+    ppopt_block,
+    remove_size_zero_matrices,
+    select_not_in_list,
+)
 
 
 def calc_weakly_redundant(A, b, equality_set: List[int] = None, deterministic_solver='gurobi'):

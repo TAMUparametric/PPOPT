@@ -1,13 +1,13 @@
-import pytest
 import numpy
+import pytest
 
 from src.ppopt.critical_region import CriticalRegion
+from src.ppopt.mp_solvers.mpqp_combinatorial import CombinationTester
+from src.ppopt.mp_solvers.solve_mpqp import solve_mpqp
 from src.ppopt.mplp_program import MPLP_Program
 from src.ppopt.mpmilp_program import MPMILP_Program
 from src.ppopt.mpmiqp_program import MPMIQP_Program
 from src.ppopt.mpqp_program import MPQP_Program
-from src.ppopt.mp_solvers.mpqp_combinatorial import CombinationTester
-from src.ppopt.mp_solvers.solve_mpqp import solve_mpqp
 from src.ppopt.solution import Solution
 from src.ppopt.utils.general_utils import make_column
 

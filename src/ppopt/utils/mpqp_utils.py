@@ -2,13 +2,16 @@ from typing import List, Optional
 
 import numpy
 
-from .chebyshev_ball import chebyshev_ball
 from ..critical_region import CriticalRegion
 from ..mpqp_program import MPQP_Program
 from ..solver import Solver
-from ..utils.constraint_utilities import cheap_remove_redundant_constraints, remove_duplicate_rows, \
-    scale_constraint
+from ..utils.constraint_utilities import (
+    cheap_remove_redundant_constraints,
+    remove_duplicate_rows,
+    scale_constraint,
+)
 from ..utils.general_utils import ppopt_block
+from .chebyshev_ball import chebyshev_ball
 
 
 def get_boundary_types(region: numpy.ndarray, omega: numpy.ndarray, lagrange: numpy.ndarray, regular: numpy.ndarray) -> \

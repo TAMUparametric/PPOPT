@@ -1,14 +1,15 @@
-from typing import Optional, List
+from typing import List, Optional
 
 import numpy
+
 # noinspection PyProtectedMember
 from pathos.multiprocessing import ProcessingPool as Pool
 
-from .solver_utils import get_facet_centers
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.general_utils import make_column, num_cpu_cores
 from ..utils.mpqp_utils import gen_cr_from_active_set
+from .solver_utils import get_facet_centers
 
 
 def fathem_facet_exp(center: numpy.ndarray, normal: numpy.ndarray, radius: float, program, current_active_set: list) -> \

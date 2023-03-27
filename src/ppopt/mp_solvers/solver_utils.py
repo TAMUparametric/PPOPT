@@ -1,4 +1,4 @@
-from typing import Set, Tuple, Optional, List
+from typing import List, Optional, Set, Tuple
 
 import numpy
 

@@ -7,7 +7,10 @@ try:
 except ImportError:
     pass
 
-from ..solver_interface.solver_interface_utils import SolverOutput, get_program_parameters
+from ..solver_interface.solver_interface_utils import (
+    SolverOutput,
+    get_program_parameters,
+)
 
 
 def process_cvxopt_solution(sol, equality_constraints, inequality_constraints, num_constraints, get_duals) -> Optional[
