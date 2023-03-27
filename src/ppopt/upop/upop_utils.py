@@ -140,7 +140,6 @@ def get_outer_boundaries(indices: List[int], parity: List[int]):
             type_visited[index] = parity[i]
         else:
             # we have visited this index before
-
             # check if we have scratched this index before
             if type_visited[index] == 5:
                 continue

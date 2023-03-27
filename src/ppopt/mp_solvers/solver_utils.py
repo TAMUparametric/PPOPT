@@ -57,11 +57,10 @@ def manufacture_lambda(attempted, murder_list):
             return lambda _: True
         else:
             return murder_list.check
+    elif murder_list is None:
+        return lambda x: x not in attempted
     else:
-        if murder_list is None:
-            return lambda x: x not in attempted
-        else:
-            return lambda x: x not in attempted and murder_list.check(x)
+        return lambda x: x not in attempted and murder_list.check(x)
 
 
 def generate_reduce(candidate: tuple, murder_list=None, attempted=None, equality_set: Set[int] = None) -> list:
@@ -117,7 +116,6 @@ def find_optimal_set(problem) -> List[int]:
 
     feasible_set = [problem.equality_indices]
 
-    print(feasible_set)
     while True:
 
         to_check = []

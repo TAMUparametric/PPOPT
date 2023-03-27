@@ -43,10 +43,10 @@ def solve(program: MPQP_Program, active_set=None) -> Optional[Solution]:
         for center, normal, radius in facet_information:
 
             # make sure we are pointing in the correct direction
-            center = make_column(center)
-            normal = make_column(normal)
+            center_c = make_column(center)
+            normal_c = make_column(normal)
 
-            possible_cr = fathem_facet(center, normal, radius, program, indexed_region_as, cur_region.active_set)
+            possible_cr = fathem_facet(center_c, normal_c, radius, program, indexed_region_as, cur_region.active_set)
 
             if possible_cr is not None:
                 indexed_region_as.add(tuple(possible_cr.active_set))
