@@ -184,7 +184,7 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
                           kept_omega_indices, relevant_lambda, regular)
 
 
-def is_full_dimensional(A, b, solver: Solver = Solver()):
+def is_full_dimensional(A, b, solver: Solver = None):
     """
     This checks the dimensionality of a polytope defined by P = {x: Ax≤b}. Current method is based on checking if the
     radii of the chebychev ball is nonzero. However, this is numerically not so stable, and will eventually be replaced
@@ -195,6 +195,9 @@ def is_full_dimensional(A, b, solver: Solver = Solver()):
     :param solver: the solver interface to direct the deterministic solver
     :return: True if polytope is fully dimensional else False
     """
+
+    if solver is None:
+        solver = Solver()
 
     # TODO: Add second chebychev ball to get a more accurate estimate of lower dimensionality
 

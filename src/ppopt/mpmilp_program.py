@@ -52,8 +52,12 @@ class MPMILP_Program(MPLP_Program):
                  b_t: numpy.ndarray, F: numpy.ndarray, binary_indices=None, c_c: Optional[numpy.ndarray] = None,
                  c_t: Optional[numpy.ndarray] = None, Q_t: Optional[numpy.ndarray] = None,
                  equality_indices: List[int] = None,
-                 solver: Solver = Solver() ):
+                 solver: Solver = None):
         """Initializes the MPMILP_Program"""
+
+        if solver is None:
+            solver = Solver()
+
         super().__init__(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices, solver)
         self.binary_indices = binary_indices
         self.cont_indices = [i for i in range(self.num_x()) if i not in self.binary_indices]

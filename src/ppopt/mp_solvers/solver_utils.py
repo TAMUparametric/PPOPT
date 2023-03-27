@@ -54,9 +54,9 @@ class CombinationTester:
 def manufacture_lambda(attempted, murder_list):
     if attempted is None:
         if murder_list is None:
-            return lambda x: True
+            return lambda _: True
         else:
-            return lambda x: murder_list.check
+            return murder_list.check
     else:
         if murder_list is None:
             return lambda x: x not in attempted

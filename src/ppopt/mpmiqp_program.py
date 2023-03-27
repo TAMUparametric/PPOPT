@@ -31,9 +31,13 @@ class MPMIQP_Program(MPMILP_Program):
                  A_t: numpy.ndarray,
                  b_t: numpy.ndarray, F: numpy.ndarray, binary_indices: List, c_c: Optional[numpy.ndarray] = None,
                  c_t: Optional[numpy.ndarray] = None, Q_t: Optional[numpy.ndarray] = None,
-                 equality_indices=None, solver: Solver = Solver()):
+                 equality_indices=None, solver: Solver = None):
         """Initialized the MPMIQP_Program."""
         # calls MPMILP_Program's constructor to reduce out burden
+
+        if solver is None:
+            solver = Solver()
+
         super(MPMIQP_Program, self).__init__(A, b, c, H, A_t, b_t, F, binary_indices, c_c, c_t, Q_t, equality_indices,
                                              solver)
         self.Q = Q
