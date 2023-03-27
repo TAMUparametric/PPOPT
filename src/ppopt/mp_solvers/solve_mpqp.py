@@ -61,13 +61,13 @@ def solve_mpqp(problem: MPQP_Program, algorithm: mpqp_algorithm = mpqp_algorithm
         solution = mpqp_graph.solve(problem)
 
     if algorithm is mpqp_algorithm.graph_exp:
-        solution = mpqp_graph.solve_no_murder(problem)
+        solution = mpqp_graph.solve(problem, use_pruning=False)
 
     if algorithm is mpqp_algorithm.graph_parallel:
         solution = mpqp_parrallel_graph.solve(problem)
 
     if algorithm is mpqp_algorithm.graph_parallel_exp:
-        solution = mpqp_parrallel_graph.solve_no_murder(problem)
+        solution = mpqp_parrallel_graph.solve(problem, use_pruning=False)
 
     if algorithm is mpqp_algorithm.geometric:
         solution = mpqp_geometric.solve(problem)
