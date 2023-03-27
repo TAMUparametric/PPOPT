@@ -30,7 +30,7 @@ class CombinationTester:
         :return: False if it should be culled and not tested any further, True if the set could be feasible
         """
         if not isinstance(active_set, set):
-            active_set = set(tuple(active_set))
+            active_set = set(active_set)
 
         if not active_set:
             return True
@@ -70,7 +70,7 @@ def generate_reduce(candidate: tuple, murder_list=None, attempted=None, equality
 
     check = manufacture_lambda(attempted, murder_list)
 
-    accepted_sets = list()
+    accepted_sets = []
 
     for i in candidate:
         possible = tuple(sorted([j for j in candidate if j != i]))
@@ -92,7 +92,7 @@ def generate_extra(candidate: tuple, expansion_set, murder_list=None, attempted=
     """
     check = manufacture_lambda(attempted, murder_list)
 
-    accepted_sets = list()
+    accepted_sets = []
 
     for regular_constraint in expansion_set:
         val = list(candidate)

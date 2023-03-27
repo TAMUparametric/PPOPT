@@ -50,6 +50,4 @@ def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
         region_list.append(sol.critical_regions)
 
     # this has the possibility for overlapping critical regions, so we set the overlapping flag
-    enum_sol = Solution(program, [item for sublist in region_list for item in sublist], is_overlapping=True)
-
-    return enum_sol
+    return Solution(program, [item for sublist in region_list for item in sublist], is_overlapping=True)

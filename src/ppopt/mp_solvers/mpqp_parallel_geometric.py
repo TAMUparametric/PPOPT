@@ -62,7 +62,7 @@ def solve(program: MPQP_Program, active_set=None, num_cores=-1) -> Optional[Solu
     solution = Solution(program, [initial_region])
 
     indexed_region_as = set()
-    indexed_region_as.add(tuple(list(active_set)))
+    indexed_region_as.add(tuple(active_set))
 
     # initiate by exploring first region
 

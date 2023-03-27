@@ -222,8 +222,8 @@ class MPQP_Program(MPLP_Program):
         num_theta = self.num_t()
 
         # this will be used to build the optimality expression
-        A_list = list()
-        b_list = list()
+        A_list = []
+        b_list = []
 
         # 1) Qu + H theta + (A_Ai)^T lambda_Ai + c = 0
         # if num_active > 0:

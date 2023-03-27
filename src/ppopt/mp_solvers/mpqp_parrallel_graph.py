@@ -38,8 +38,8 @@ def full_process(program, candidate, murder_list):
         to_attempt.extend(generate_extra(candidate, region.regular_set[1], murder_list))
 
         return [to_attempt, to_murder, region]
-    else:
-        return [to_attempt, to_murder, None]
+
+    return [to_attempt, to_murder, None]
 
 
 def solve(program: MPQP_Program, initial_active_sets=None, num_cores=-1) -> Solution:

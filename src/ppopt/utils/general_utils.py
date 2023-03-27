@@ -66,7 +66,7 @@ def latex_matrix(A: Union[List[str], numpy.ndarray]) -> str:
     end = "\\end{matrix}\\right]"
 
     # generate an empty list of rows
-    rows = list()
+    rows = []
 
     # if A is a matrix then make a matrix like object
     if isinstance(A, numpy.ndarray):
@@ -77,6 +77,8 @@ def latex_matrix(A: Union[List[str], numpy.ndarray]) -> str:
     # default lists as column matrix
     if isinstance(A, list):
         return start + "\\\\".join([render_number(x) for x in A]) + end
+
+    raise TypeError(f"When attempting to generate the latex rep of an object A, unsupported type {type(A)} was passed")
 
 
 def remove_size_zero_matrices(list_matrices: List[numpy.ndarray]) -> List[numpy.ndarray]:

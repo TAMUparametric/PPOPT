@@ -147,7 +147,7 @@ class MPLP_Program:
 
     def warnings(self) -> List[str]:
         """Checks the dimensions of the matrices to ensure consistency."""
-        warning_list = list()
+        warning_list = []
 
         # check if b is a column vector
         if len(self.b.shape) != 2:
@@ -191,13 +191,13 @@ class MPLP_Program:
             # check the radius of the (x, theta) space
             if self.feasible_space_chebychev_ball() is None:
                 warning_list.append(
-                    "The chebychev ball has either a radius of zero, or the problem is not feasible!"
+                    "The chebychev ball has either a radius of zero, or the problem is not feasible!",
                 )
 
             # check the feasibility of the multiparametric program
             if not self.check_feasibility(self.equality_indices):
                 warning_list.append(
-                    "The multiparametric program, as stated, is not feasible!"
+                    "The multiparametric program, as stated, is not feasible!",
                 )
 
         # return warnings
@@ -220,7 +220,7 @@ class MPLP_Program:
 
         :return: returns latex of the
         """
-        output = list()
+        output = []
 
         # create string variables for x and theta
         x = ['x_{' + f'{i}' + '}' for i in range(self.num_x())]
@@ -491,8 +491,8 @@ class MPLP_Program:
         num_theta = self.num_t()
 
         # this will be used to build the optimality expression
-        A_list = list()
-        b_list = list()
+        A_list = []
+        b_list = []
 
         # 1) Qu + H theta + (A_Ai)^T lambda_Ai + c = 0
         # if num_active > 0:
@@ -627,9 +627,8 @@ class MPLP_Program:
         """
         A = numpy.block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.num_x())), self.A_t]])
         b = numpy.block([[self.b], [self.b_t]])
-        sol = chebyshev_ball(A, b, equality_constraints=self.equality_indices,
-                             deterministic_solver=self.solver.solvers['lp'])
-        return sol
+        return chebyshev_ball(A, b, equality_constraints=self.equality_indices,
+                              deterministic_solver=self.solver.solvers['lp'])
 
     def sample_theta_space(self, num_samples: int = 100) -> Optional[list]:
         """

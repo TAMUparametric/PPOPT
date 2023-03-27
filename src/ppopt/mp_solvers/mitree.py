@@ -215,18 +215,18 @@ class MITree:
         if self.is_leaf:
             return True
         # if we are not we need to look at the child nodes
-        else:
-            left_chain = False
-            right_chain = False
 
-            # check if the right node has a connection to a leaf node
-            if self.right is not None:
-                right_chain = self.right.leaf_path()
-            # check if the left node has a connection to a leaf node
-            if self.left is not None:
-                left_chain = self.left.leaf_path()
-            # if at least one direct child node is connected to a leaf node then so is this node
-            return right_chain or left_chain
+        left_chain = False
+        right_chain = False
+
+        # check if the right node has a connection to a leaf node
+        if self.right is not None:
+            right_chain = self.right.leaf_path()
+        # check if the left node has a connection to a leaf node
+        if self.left is not None:
+            left_chain = self.left.leaf_path()
+        # if at least one direct child node is connected to a leaf node then so is this node
+        return right_chain or left_chain
 
     def trim(self) -> None:
         """

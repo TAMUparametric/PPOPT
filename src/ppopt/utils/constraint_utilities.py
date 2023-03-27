@@ -161,7 +161,7 @@ def calculate_redundant_constraints(A, b):
     """
     [A_ps, b_ps] = scale_constraint(A, b)
 
-    output = list()
+    output = []
 
     for i in range(A.shape[0]):
 
@@ -202,8 +202,8 @@ def find_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, equality_set:
 def remove_strongly_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, include_kept_indices=False,
                                           deterministic_solver: str = 'gurobi'):
     """Removes strongly redundant constraints by testing the feasibility of each constraint if activated."""
-    keep_list = list()
-    new_index = list()
+    keep_list = []
+    new_index = []
     for i in range(A.shape[0]):
         sol = solver_interface.solve_lp(None, A, b, [i], deterministic_solver=deterministic_solver)
         if sol is not None:

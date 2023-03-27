@@ -39,13 +39,13 @@ def generate_code_cpp(solution: Solution, float_type: str = 'float') -> str:
     fundamental_f, original_f, parity_f = find_unique_region_functions(sol)
 
     # get the list range
-    region_boundary_index = list()
+    region_boundary_index = []
     region_boundary_index.append(0)
 
     for region in sol.critical_regions:
         region_boundary_index.append(region.E.shape[0] + region_boundary_index[-1])
 
-    to_augment = list()
+    to_augment = []
 
     to_augment.append(f"typedef {float_type} float_;")
     to_augment.append(gen_array(region_boundary_index, 'region_indicies', 'uint16_t'))
@@ -149,13 +149,13 @@ def generate_code_js(solution: Solution) -> List[str]:
     fundamental_f, original_f, parity_f = find_unique_region_functions(sol)
 
     # get the list range
-    region_boundary_index = list()
+    region_boundary_index = []
     region_boundary_index.append(0)
 
     for region in sol.critical_regions:
         region_boundary_index.append(region.E.shape[0] + region_boundary_index[-1])
     has_Q = "Q" in sol.program.__dict__
-    to_augment = list()
+    to_augment = []
 
     to_augment.append(gen_array(region_boundary_index, 'region_indices', "int", lang='js'))
     to_augment.append("var NOT_IN_FEASIBLE_SPACE = -1;")
@@ -252,7 +252,7 @@ def generate_code_matlab(solution: Solution, path: str = '') -> None:
     func_block = numpy.block([[k.A] for k in sol.critical_regions])
     func_vec = numpy.block([[k.b] for k in sol.critical_regions])
 
-    region_list = list()
+    region_list = []
     region_list.append(0)
     cursor = 0
 

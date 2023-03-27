@@ -75,7 +75,7 @@ def solve(program: MPQP_Program, num_cores=-1) -> Solution:
 
     pool = Pool(num_cores)
 
-    to_check = list()
+    to_check = []
 
     solution = Solution(program, [])
 
@@ -100,7 +100,7 @@ def solve(program: MPQP_Program, num_cores=-1) -> Solution:
 
         f = lambda x: full_process(program, x)
 
-        future_list = list()
+        future_list = []
 
         shuffle(to_check)
 

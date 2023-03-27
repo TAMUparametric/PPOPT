@@ -135,7 +135,7 @@ def solve(program: MPQP_Program, initial_active_sets: List[List[int]] = None, nu
         found_active_sets = pool.map(f, work_items)
         work_items = [active_set for active_set in found_active_sets if active_set is not None]
         work_items = [active_set for active_set in work_items if (tuple(active_set)) not in indexed_region_as]
-        work_items = list(set([tuple(active_set) for active_set in work_items]))
+        work_items = list({tuple(active_set) for active_set in work_items})
         work_items = [list(active) for active in work_items]
         f = lambda x: full_process_2(program, x)
 

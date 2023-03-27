@@ -1,3 +1,4 @@
+import time
 from math import atan2
 from typing import List
 
@@ -27,9 +28,9 @@ def vertex_enumeration_2d(A: numpy.ndarray, b: numpy.ndarray, solver: Solver) ->
 
     num_constrs = A.shape[0]
     trials = [[i, j] for i in range(num_constrs) for j in range(i + 1, num_constrs)]
-    res = map(lambda comb: solver.solve_lp(None, A, b, comb), trials)
+    res = (solver.solve_lp(None, A, b, comb) for comb in trials)
     filtered_res = filter(lambda x: x is not None, res)
-    return list(map(lambda x: x.sol, filtered_res))
+    return [x.sol for x in filtered_res]
 
 
 def sort_clockwise(vertices: List[numpy.ndarray]) -> List[numpy.ndarray]:
@@ -55,7 +56,7 @@ def gen_vertices(solution: Solution):
     """
 
     solver_obj = solution.program.solver
-    cr_vertices = map(lambda cr: vertex_enumeration_2d(cr.E, cr.f, solver_obj), solution.critical_regions)
+    cr_vertices = (vertex_enumeration_2d(cr.E, cr.f, solver_obj) for cr in solution.critical_regions)
     sorted_vertices = map(sort_clockwise, cr_vertices)
     return list(sorted_vertices)
 
@@ -83,13 +84,13 @@ def plotly_plot(solution: Solution, save_path: str = None, show=True, save_forma
     fig.update_layout(
         autosize=False,
         width=1000,
-        height=1000
+        height=1000,
     )
 
     fig.update_layout(
-        hoverlabel=dict(
-            bgcolor='white'
-        )
+        hoverlabel={
+            'bgcolor': 'white',
+        },
     )
 
     if save_path is not None:
@@ -100,21 +101,27 @@ def plotly_plot(solution: Solution, save_path: str = None, show=True, save_forma
         fig.show()
 
 
-def parametric_plot(solution: Solution, save_path: str = None, show=True, save_format: str = 'png') -> None:
+def parametric_plot(solution: Solution, save_path: str = None, show=True, save_format: str = 'png',
+                    seed: int = None) -> None:
     """
     Makes a simple plot from a solution. This uses matplotlib to generate a plot, it is the general plotting backend.
+
 
     :param solution: a multiparametric solution
     :param save_path: if specified saves the plot in the directory
     :param save_format: changes the saved image format to the specified
     :param show: Keyword argument, if True displays the plot otherwise does not display
+    :param seed: If not set, will default to time in nanoseconds since the epoc
     :return: no return, creates graph of solution
     """
+
+    if seed is None:
+        seed = time.time_ns()
 
     # check if the solution is actually 2 dimensional
     if solution.theta_dim() != 2:
         print(f"Solution is not 2D, the dimensionality of the solution is {solution.theta_dim()}")
-        return None
+        return
 
     vertex_list = gen_vertices(solution)
     polygon_list = [Polygon(v) for v in vertex_list]
@@ -122,7 +129,10 @@ def parametric_plot(solution: Solution, save_path: str = None, show=True, save_f
     _, ax = pyplot.subplots()
 
     cm = pyplot.cm.get_cmap('Paired')
-    colors = 100 * numpy.random.rand(len(solution.critical_regions))
+
+    rng = numpy.random.default_rng(seed)
+
+    colors = 100 * rng.random(len(solution.critical_regions))
 
     p = PatchCollection(polygon_list, cmap=cm, alpha=.8, edgecolors='black', linewidths=1)
 
@@ -152,7 +162,7 @@ def parametric_plot_1D(solution: Solution, save_path: str = None, show=True, sav
     # check if the solution is actually 1 dimensional
     if solution.theta_dim() != 1:
         print(f"Solution is not 1D, the dimensionality of the solution is {solution.theta_dim()}")
-        return None
+        return
 
     # set up the plotting object
     _, ax = pyplot.subplots()

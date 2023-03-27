@@ -31,8 +31,8 @@ def get_boundary_types(region: numpy.ndarray, omega: numpy.ndarray, lagrange: nu
     is_labeled = numpy.zeros(num_constraints)
 
     def label(compare):
-        output = list()
-        output_2 = list()
+        output = []
+        output_2 = []
         for i in range(num_constraints):
             for j in range(compare.shape[0]):
                 if is_labeled[i] == 0:

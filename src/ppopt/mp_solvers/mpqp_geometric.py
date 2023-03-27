@@ -28,7 +28,7 @@ def solve(program: MPQP_Program, active_set=None) -> Optional[Solution]:
     unchecked_regions = [initial_region]
 
     indexed_region_as = set()
-    indexed_region_as.add(tuple(list(active_set)))
+    indexed_region_as.add(tuple(active_set))
 
     while len(unchecked_regions) > 0:
 

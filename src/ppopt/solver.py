@@ -162,8 +162,7 @@ class Solver:
         if self.solvers['miqp'] == "gurobi":
             return solve_miqp_gurobi(Q, c, A, b, equality_constraints, bin_vars, verbose, get_duals)
 
-        else:
-            self.solver_not_supported(self.solvers['miqp'])
+        return self.solver_not_supported(self.solvers['miqp'])
 
     def solve_qp(self, Q: Optional[numpy.ndarray], c: Optional[numpy.ndarray], A: Optional[numpy.ndarray],
                  b: Optional[numpy.ndarray], equality_constraints: Iterable[int] = None,
@@ -198,11 +197,11 @@ class Solver:
 
         if self.solvers['qp'] == "gurobi":
             return solve_qp_gurobi(Q, c, A, b, equality_constraints, verbose, get_duals)
-        elif self.solvers['qp'] == "quadprog":
+
+        if self.solvers['qp'] == "quadprog":
             return solve_qp_quadprog(Q, c, A, b, equality_constraints, verbose, get_duals)
-        else:
-            self.solver_not_supported(self.solvers['qp'])
-            return None
+
+        return self.solver_not_supported(self.solvers['qp'])
 
     # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
     def solve_lp(self, c: Optional[numpy.ndarray], A: Optional[numpy.ndarray], b: Optional[numpy.ndarray],
@@ -236,10 +235,11 @@ class Solver:
 
         if self.solvers['lp'] == "gurobi":
             return solve_lp_gurobi(c, A, b, equality_constraints, verbose, get_duals)
+
         if self.solvers['lp'] == 'glpk':
             return solve_lp_cvxopt(c, A, b, equality_constraints, verbose, get_duals)
-        else:
-            self.solver_not_supported(self.solvers['lp'])
+
+        return self.solver_not_supported(self.solvers['lp'])
 
     def solve_milp(self, c: Optional[numpy.ndarray], A: Optional[numpy.ndarray], b: Optional[numpy.ndarray],
                    equality_constraints: Iterable[int] = None,
@@ -274,5 +274,5 @@ class Solver:
 
         if self.solvers['milp'] == "gurobi":
             return solve_milp_gurobi(c, A, b, equality_constraints, bin_vars, verbose, get_duals)
-        else:
-            self.solver_not_supported(self.solvers['milp'])
+
+        return self.solver_not_supported(self.solvers['milp'])
