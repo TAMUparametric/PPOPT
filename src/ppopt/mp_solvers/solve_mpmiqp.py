@@ -1,11 +1,9 @@
 from enum import Enum
 
-from .solve_mpqp import mpqp_algorithm, solve_mpqp
 from ..mpmilp_program import MPMILP_Program
-from ..mpqp_program import MPQP_Program
 from ..solution import Solution
-
 from .mpmiqp_enumeration import solve_mpmiqp_enumeration
+from .solve_mpqp import mpqp_algorithm, solve_mpqp
 
 
 class mpmiqp_algorithm(Enum):

@@ -1,4 +1,4 @@
-from typing import Set, Tuple, Optional, List
+from typing import List, Optional, Set, Tuple
 
 import numpy
 
@@ -30,7 +30,7 @@ class CombinationTester:
         :return: False if it should be culled and not tested any further, True if the set could be feasible
         """
         if not isinstance(active_set, set):
-            active_set = set(tuple(active_set))
+            active_set = set(active_set)
 
         if not active_set:
             return True
@@ -54,24 +54,26 @@ class CombinationTester:
 def manufacture_lambda(attempted, murder_list):
     if attempted is None:
         if murder_list is None:
-            return lambda x: True
+            return lambda _: True
         else:
-            return lambda x: not murder_list.hassubset(x)
+            return murder_list.check
+    elif murder_list is None:
+        return lambda x: x not in attempted
     else:
-        if murder_list is None:
-            return lambda x: x not in attempted
-        else:
-            return lambda x: x not in attempted and not murder_list.hassubset(x)
+        return lambda x: x not in attempted and murder_list.check(x)
 
 
-def generate_reduce(candidate: tuple, murder_list=None, attempted=None) -> list:
+def generate_reduce(candidate: tuple, murder_list=None, attempted=None, equality_set: Set[int] = None) -> list:
+    if equality_set is None:
+        equality_set = set()
+
     check = manufacture_lambda(attempted, murder_list)
 
-    accepted_sets = list()
+    accepted_sets = []
 
     for i in candidate:
         possible = tuple(sorted([j for j in candidate if j != i]))
-        if check(possible):
+        if check(possible) and set(possible).issuperset(equality_set):
             accepted_sets.append(possible)
 
     return accepted_sets
@@ -79,7 +81,7 @@ def generate_reduce(candidate: tuple, murder_list=None, attempted=None) -> list:
 
 def generate_extra(candidate: tuple, expansion_set, murder_list=None, attempted=None) -> list:
     """
-    Special routine for graph based algorithm
+    Special routine for graph based algorithm, where we look for optimal active sets that
 
     :param candidate:
     :param expansion_set:
@@ -89,7 +91,7 @@ def generate_extra(candidate: tuple, expansion_set, murder_list=None, attempted=
     """
     check = manufacture_lambda(attempted, murder_list)
 
-    accepted_sets = list()
+    accepted_sets = []
 
     for regular_constraint in expansion_set:
         val = list(candidate)
@@ -114,7 +116,6 @@ def find_optimal_set(problem) -> List[int]:
 
     feasible_set = [problem.equality_indices]
 
-    print(feasible_set)
     while True:
 
         to_check = []
@@ -162,11 +163,13 @@ def generate_children_sets(active_set, num_constraints: int, murder_list=None):
 
 def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> list:
     r"""
-    This takes the polytope P := {x \in R^n : Ax <= b} and finds all the chebychev centers and normal vectors of each
-    facet and the radius
+    This takes the polytope P, and finds all the chebychev centers and normal vectors of each facet and the radius.
+
+    .. math::
+        P =  \{x \in \mathbb{R}^n: Ax \leq b\}
 
     :param A: The LHS constraint matrix
-    :param b: The RHS constraint matrix
+    :param b: The RHS constraint vector
     :return: a list with a tuple for each facet in the polytope (chebychev center, facet normal vector, chebychev radius)
     """
     facet_centers = []

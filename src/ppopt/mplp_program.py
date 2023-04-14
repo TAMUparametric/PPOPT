@@ -1,14 +1,25 @@
 from dataclasses import dataclass
-from typing import List, Union, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import numpy
 
 from .solver import Solver
 from .solver_interface.solver_interface_utils import SolverOutput
 from .utils.chebyshev_ball import chebyshev_ball
-from .utils.constraint_utilities import constraint_norm, is_full_rank, \
-    detect_implicit_equalities, find_redundant_constraints
-from .utils.general_utils import make_column, latex_matrix, select_not_in_list, ppopt_block, remove_size_zero_matrices
+from .utils.constraint_utilities import (
+    constraint_norm,
+    find_implicit_equalities,
+    find_redundant_constraints,
+    is_full_rank,
+    process_program_constraints,
+)
+from .utils.general_utils import (
+    latex_matrix,
+    make_column,
+    ppopt_block,
+    remove_size_zero_matrices,
+    select_not_in_list,
+)
 
 
 def calc_weakly_redundant(A, b, equality_set: List[int] = None, deterministic_solver='gurobi'):
@@ -29,12 +40,12 @@ def calc_weakly_redundant(A, b, equality_set: List[int] = None, deterministic_so
 @dataclass
 class MPLP_Program:
     r"""
-    The standard class for linear multiparametric programming
-    .. math::
-        \min \theta^TH^Tx + c^Tx
+    The standard class for multiparametric  linear programming
+
     .. math::
         \begin{align}
-        Ax &\leq b + F\theta\\
+        \min_x \quad \theta^TH^Tx& + c^Tx\\
+        \text{s.t.} \quad Ax &\leq b + F\theta\\
         A_{eq}x &= b_{eq}\\
         A_\theta \theta &\leq b_\theta\\
         x &\in R^n\\
@@ -72,6 +83,7 @@ class MPLP_Program:
 
         if c_c is None:
             c_c = numpy.array([[0.0]])
+
         self.c_c = c_c
 
         if c_t is None:
@@ -83,6 +95,9 @@ class MPLP_Program:
         self.Q_t = Q_t
 
         if equality_indices is None:
+            equality_indices = []
+
+        if len(equality_indices) == 0:
             equality_indices = []
 
         self.equality_indices = equality_indices
@@ -99,18 +114,15 @@ class MPLP_Program:
 
         if len(self.equality_indices) != 0:
             # move all equality constraints to the top
-            self.A = numpy.block(
-                [[self.A[self.equality_indices]], [numpy.delete(self.A, self.equality_indices, axis=0)]])
-            self.b = numpy.block(
-                [[self.b[self.equality_indices]], [numpy.delete(self.b, self.equality_indices, axis=0)]])
-            self.F = numpy.block(
-                [[self.F[self.equality_indices]], [numpy.delete(self.F, self.equality_indices, axis=0)]])
-            # reassign the equality constraint indices to the top indices after move
-            self.equality_indices = [i for i in range(len(self.equality_indices))]
+            self.A = numpy.block([[self.A[self.equality_indices]], [select_not_in_list(self.A, self.equality_indices)]])
+            self.b = numpy.block([[self.b[self.equality_indices]], [select_not_in_list(self.b, self.equality_indices)]])
+            self.F = numpy.block([[self.F[self.equality_indices]], [select_not_in_list(self.F, self.equality_indices)]])
+
+            self.equality_indices = list(range(len(self.equality_indices)))
 
         # ensures that
         self.warnings()
-        self.process_constraints(find_implicit_equalities=True)
+        self.process_constraints()
 
     def num_x(self) -> int:
         """Returns number of parameters."""
@@ -135,7 +147,7 @@ class MPLP_Program:
 
     def warnings(self) -> List[str]:
         """Checks the dimensions of the matrices to ensure consistency."""
-        warning_list = list()
+        warning_list = []
 
         # check if b is a column vector
         if len(self.b.shape) != 2:
@@ -168,6 +180,26 @@ class MPLP_Program:
             warning_list.append(
                 f"The A and F matrices disagree in vertical dimension A{self.A.shape}, F {self.F.shape}")
 
+        # check the dimensions of the F and A_t matrix
+        if self.F.shape[1] != self.A_t.shape[1]:
+            warning_list.append(
+                f"The F and A_t matrices disagree in dimension A_t {self.A_t.shape}, F {self.F.shape}, inconsistent "
+                f"number of parameters")
+
+        # only check if the matrix dimensions are consistent, e.g. makes a plausible LP
+        if len(warning_list) == 0:
+            # check the radius of the (x, theta) space
+            if self.feasible_space_chebychev_ball() is None:
+                warning_list.append(
+                    "The chebychev ball has either a radius of zero, or the problem is not feasible!",
+                )
+
+            # check the feasibility of the multiparametric program
+            if not self.check_feasibility(self.equality_indices):
+                warning_list.append(
+                    "The multiparametric program, as stated, is not feasible!",
+                )
+
         # return warnings
         return warning_list
 
@@ -188,7 +220,7 @@ class MPLP_Program:
 
         :return: returns latex of the
         """
-        output = list()
+        output = []
 
         # create string variables for x and theta
         x = ['x_{' + f'{i}' + '}' for i in range(self.num_x())]
@@ -237,92 +269,49 @@ class MPLP_Program:
         self.F = self.F / norm
 
         # scale the A_t constraint by the norm of it's rows
-        norm = constraint_norm(self.A_t)
-        self.A_t = self.A_t / norm
-        self.b_t = self.b_t / norm
+        # norm = constraint_norm(self.A_t)
+        # self.A_t = self.A_t
+        # self.b_t = self.b_t
 
-    def process_constraints(self, find_implicit_equalities=True) -> None:
+    def process_constraints(self) -> None:
         """Removes redundant constraints from the multiparametric programming problem."""
         self.constraint_datatype_conversion()
+
+        # TODO: add check for a purly parametric euqaility e.g. c^T theta = b in the main constraint body
+        self.A, self.b, self.F, self.A_t, self.b_t = process_program_constraints(self.A, self.b, self.F, self.A_t,
+                                                                                 self.b_t)
+
+        # we can scale constraints after moving nonzero rows
         self.scale_constraints()
 
-        if find_implicit_equalities:
-            problem_A = ppopt_block([[self.A, -self.F]])
-            problem_b = ppopt_block([[self.b]])
+        # find implicit inequalities in the main constraint body, add them to the equality constraint set
+        self.A, self.b, self.F, self.equality_indices = find_implicit_equalities(self.A, self.b, self.F,
+                                                                                 self.equality_indices)
 
-            constraint_pairs = detect_implicit_equalities(problem_A, problem_b)
-
-            keep = [i[0] for i in constraint_pairs]
-            remove = [i[1] for i in constraint_pairs]
-
-            keep = list(set(keep))
-            keep.sort()
-
-            remove = list(set(remove))
-            remove.sort()
-
-            # make sure to only remove the unneeded inequalities -> only for duplicate constraints
-            remove = [i for i in remove if i not in keep]
-
-            # our temporary new active set for the problem
-            temp_active_set = [*self.equality_indices, *keep]
-
-            # what we are keeping
-            survive = lambda x: x not in temp_active_set and x not in remove
-            kept_ineqs = [i for i in range(self.num_constraints()) if survive(i)]
-
-            # data marshaling
-            A_eq = self.A[temp_active_set]
-            b_eq = self.b[temp_active_set]
-            F_eq = self.F[temp_active_set]
-
-            A_ineq = self.A[kept_ineqs]
-            b_ineq = self.b[kept_ineqs]
-            F_ineq = self.F[kept_ineqs]
-
-            self.A = ppopt_block([[A_eq], [A_ineq]])
-            self.b = ppopt_block([[b_eq], [b_ineq]])
-            self.F = ppopt_block([[F_eq], [F_ineq]])
-
-            # update problem active set
-            self.equality_indices = [i for i in range(len(temp_active_set))]
-
-        # recalculate bc we have moved everything around
+        # form a polytope P := {(x, theta) in R^K : Ax <= b + F theta and A_t theta <= b_t}
         problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
         problem_b = ppopt_block([[self.b], [self.b_t]])
 
+        # find the indices of the constraints that generate facets to the polytope P
         saved_indices = find_redundant_constraints(problem_A, problem_b, self.equality_indices,
                                                    solver=self.solver.solvers['lp'])
-        # saved_indices = calculate_redundant_constraints(problem_A, problem_b)
+        # calculate the indices in the main body and parametric constraints
+        saved_upper = [x for x in saved_indices if x < self.num_constraints()]
+        saved_lower = [x - self.num_constraints() for x in saved_indices if x >= self.num_constraints()]
 
-        saved_upper = [i for i in saved_indices if i < self.A.shape[0]]
-        # saved_lower = [i - self.A.shape[0] for i in saved_indices if i >= self.A.shape[0]]
-
+        # remove redundant constraints
         self.A = self.A[saved_upper]
         self.F = self.F[saved_upper]
         self.b = self.b[saved_upper]
 
-        # recalculate bc we have moved everything around
-        problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
-        problem_b = ppopt_block([[self.b], [self.b_t]])
-
-        # saved_indices = calc_weakly_redundant(problem_A, problem_b, self.equality_indices)
-        # saved_indices = calculate_redundant_constraints(problem_A, problem_b)
-
-        saved_upper = [i for i in saved_indices if i < self.A.shape[0]]
-        # saved_lower = [i - self.A.shape[0] for i in saved_indices if i >= self.A.shape[0]]
-
-        self.A = self.A[saved_upper]
-        self.F = self.F[saved_upper]
-        self.b = self.b[saved_upper]
-
-        # print(f'Removed {self.A.shape[0] - len(saved_upper)} Weakly Redundant Constraints')
-
-        self.scale_constraints()
+        # remove redundant constraints from the parametric constraints
+        self.A_t = self.A_t[saved_lower]
+        self.b_t = self.b_t[saved_lower]
 
     def constraint_datatype_conversion(self) -> None:
         """
-        Makes sure that all the data types of the problem are in fp64, this is important as some solvers do not accept integral data types
+        Makes sure that all the data types of the problem are in fp64, this is important as some solvers do not
+        accept integral data types.
         """
         self.A = self.A.astype('float64')
         self.c = self.c.astype('float64')
@@ -335,7 +324,7 @@ class MPLP_Program:
         self.c_t = self.c_t.astype('float64')
         self.Q_t = self.Q_t.astype('float64')
 
-    def solve_theta(self, theta_point: numpy.ndarray, deterministic_solver='gurobi') -> Optional[SolverOutput]:
+    def solve_theta(self, theta_point: numpy.ndarray) -> Optional[SolverOutput]:
         r"""
         Substitutes theta into the multiparametric problem and solves the following optimization problem
 
@@ -351,7 +340,6 @@ class MPLP_Program:
             \end{align}
 
         :param theta_point: An uncertainty realization
-        :param deterministic_solver: Deterministic solver to use to solve the above quadratic program
         :return: The Solver output of the substituted problem, returns None if not solvable
         """
 
@@ -418,7 +406,7 @@ class MPLP_Program:
 
             \textrm{Rank}(A_{\mathcal{A}}) = |\mathcal{A}|
 
-        :param active_set:
+        :param active_set: an active set combination
         :return: True if full rank otherwise false
         """
         return is_full_rank(self.A, active_set)
@@ -428,30 +416,34 @@ class MPLP_Program:
         Checks the feasibility of an active set combination w.r.t. a multiparametric program.
 
         .. math::
-
-            \min_{x,\theta} 0
-
-        .. math::
             \begin{align}
-            Ax &\leq b + F\theta\\
+            \min_{x,\theta} \quad \quad &0\\
+            \text{s.t.}\quad Ax &\leq b + F\theta\\
             A_{i}x &= b_{i} + F_{i}\theta, \quad \forall i \in \mathcal{A}\\
             A_\theta \theta &\leq b_\theta\\
             x &\in R^n\\
             \theta &\in R^m
             \end{align}
 
-        :param active_set: an active set
+        :param active_set: an active set combination
         :param check_rank: Checks the rank of the LHS matrix for a violation of LINQ if True (default)
-        :return: True if active set feasible else False
+        :return: True if active set is feasible else False
         """
+
+        # a simple condition here is that the constraints must be linearly independent, if this is not true then we
+        # can skip the LP calculation
 
         if check_rank:
             if not is_full_rank(self.A, active_set):
                 return False
 
+        # form the polytope P := {(x,Θ) in R^K: Ax <= b + FΘ and A_t Θ <= b_t and A[i]x == b[i] + F[i]Θ forall i in
+        # active_set}
         A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.num_x())), self.A_t]])
         b = ppopt_block([[self.b], [self.b_t]])
         c = numpy.zeros((self.num_x() + self.num_t(), 1))
+
+        # check if P contains any point or is an empty set
         return self.solver.solve_lp(c, A, b, active_set) is not None
 
     def check_optimality(self, active_set):
@@ -478,9 +470,12 @@ class MPLP_Program:
         :param active_set: active set being considered in the optimality test
         :return: dictionary of parameters, or None if active set is not optimal
         """
+
+        # The cardinality of an active set less then x is impossible to be vertex defining
         if len(active_set) != self.num_x():
             return False
 
+        # make a helper function for making zero matrices
         zeros = lambda x, y: numpy.zeros((x, y))
 
         num_x = self.num_x()
@@ -496,8 +491,8 @@ class MPLP_Program:
         num_theta = self.num_t()
 
         # this will be used to build the optimality expression
-        A_list = list()
-        b_list = list()
+        A_list = []
+        b_list = []
 
         # 1) Qu + H theta + (A_Ai)^T lambda_Ai + c = 0
         # if num_active > 0:
@@ -518,9 +513,7 @@ class MPLP_Program:
             A_list.append(
                 [zeros(num_activated, num_x + num_theta + num_active - num_activated), -numpy.eye(num_activated),
                  zeros(num_activated, num_inactive), numpy.ones((num_activated, 1))])
-            # A_list.append([zeros(num_active, num_x + num_theta), -numpy.eye(num_active), zeros(num_active, num_inactive),numpy.ones((num_active, 1))])
             b_list.append([zeros(num_activated, 1)])
-            # b_list.append([zeros(num_active, 1)])
 
         # 5) t*e_2 <= s_Ji
         A_list.append([zeros(num_inactive, num_x + num_theta + num_active), -numpy.eye(num_inactive),
@@ -560,7 +553,7 @@ class MPLP_Program:
         if num_active == 0:
             lp_active_limit = num_constraints
 
-        equality_indices = [i for i in range(0, lp_active_limit)]
+        equality_indices = list(range(0, lp_active_limit))
 
         sol = self.solver.solve_lp(c, A, b, equality_indices)
 
@@ -585,11 +578,14 @@ class MPLP_Program:
         :return:
         """
 
+        # calculates the chebyshev ball of the feasible space in (x, Θ)
         sol = self.feasible_space_chebychev_ball()
 
+        # if the problem is infeasible (e.g. the overall problem is also infeasible)
         if sol is None:
             return None
 
+        # else return the theta component of the center of the chebyshev ball
         return sol.sol[self.num_x(): self.num_x() + self.num_t()].reshape(-1, 1)
 
     def gen_optimal_active_set(self) -> Optional[List[int]]:
@@ -624,16 +620,15 @@ class MPLP_Program:
 
     def feasible_space_chebychev_ball(self):
         """
-        Formulates and solves the (x, \theta) chebychev ball of the multiparametric program.
+        Formulates and solves the (x, Θ) chebychev ball of the multiparametric program.
 
 
-        :return: makes a che
+        :return: the lp solution object of the chebychev ball
         """
         A = numpy.block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.num_x())), self.A_t]])
         b = numpy.block([[self.b], [self.b_t]])
-        sol = chebyshev_ball(A, b, equality_constraints=self.equality_indices,
-                             deterministic_solver=self.solver.solvers['lp'])
-        return sol
+        return chebyshev_ball(A, b, equality_constraints=self.equality_indices,
+                              deterministic_solver=self.solver.solvers['lp'])
 
     def sample_theta_space(self, num_samples: int = 100) -> Optional[list]:
         """
@@ -668,25 +663,27 @@ class MPLP_Program:
         return [list(active_set) for active_set in set(found_active_sets)]
 
     # noinspection SpellCheckingInspection
-    def gen_feasible_theta_space(self):
-        r"""
-        Generated the theta feasible space of a multiparametric program (with up to affine constraints)
-
-        this is done by solving the following linear program for each reduced constraint
-
-        min -A_i x
-
-        s.t. Ax \leq F \theta + b
-
-        then the solutions are transformed into the following results
-
-        A' = [-F \theta; A_theta]
-        b' = [b - {A_i x} min, b_theta]
-
-        :return: A', b' for A' \theta \leq b'
-        """
-
-        # find all of the A_i of the
-        # for _ in range(len(self.equality_indices), self.A.shape[0]):
-        #     pass
-        pass
+    # def gen_feasible_theta_space(self):
+    #     r"""
+    #     Generated the theta feasible space of a multiparametric program (with up to affine constraints)
+    #
+    #     this is done by solving the following linear program for each reduced constraint
+    #
+    #     .. math::
+    #         \begin{align}
+    #         \min_{x} -A_i x
+    #
+    #     s.t. Ax \leq b + F \theta
+    #
+    #     then the solutions are transformed into the following results
+    #
+    #     A' = [-F \theta; A_theta]
+    #     b' = [b - {A_i x} min, b_theta]
+    #
+    #     :return: A', b' for A' \theta \leq b'
+    #     """
+    #
+    #     # find all of the A_i of the
+    #     # for _ in range(len(self.equality_indices), self.A.shape[0]):
+    #     #     pass
+    #     pass

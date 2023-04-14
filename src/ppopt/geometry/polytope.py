@@ -17,7 +17,8 @@ class Polytope:
         if other is None:
             return Polytope(self.A.copy(), self.b.copy())
 
-        assert type(other) is type(self), f"Polytope Intersection not valid for type {type(other)} "
+        if isinstance(other, Polytope):
+            raise TypeError(f"Can not form union of Polytope and type {type(other)}")
 
         A_prime = numpy.block([[self.A], [other.A]])
         b_prime = numpy.block([[self.b], [other.b]])

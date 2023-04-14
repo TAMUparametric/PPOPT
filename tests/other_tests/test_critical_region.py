@@ -6,6 +6,7 @@ import pytest
 from src.ppopt.critical_region import CriticalRegion
 from src.ppopt.utils.general_utils import make_column
 
+
 @pytest.fixture()
 def region() -> CriticalRegion:
     """A square critical region with predictable properties."""

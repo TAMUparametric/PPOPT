@@ -25,9 +25,9 @@ def determine_hyperplane(regions: List[CriticalRegion], hyper_planes: numpy.ndar
     :return: []
     """
     best_index = 0
-    best_support = list()
-    best_not_support = list()
-    best_intersection = list()
+    best_support = []
+    best_not_support = []
+    best_intersection = []
 
     best_diff = 10 * len(regions)
     best_over = 10 * len(regions)
@@ -38,9 +38,9 @@ def determine_hyperplane(regions: List[CriticalRegion], hyper_planes: numpy.ndar
 
     for i in range(hyper_planes.shape[0]):
 
-        support = list()
-        not_support = list()
-        intersection = list()
+        support = []
+        not_support = []
+        intersection = []
 
         for j, region in enumerate(regions):
             type_ = classify_polytope(region, hyper_planes[i])

@@ -4,17 +4,19 @@ from enum import Enum
 
 import numpy
 
-from . import mpqp_geometric
-from ..mp_solvers import mpqp_combinatorial
-from ..mp_solvers import mpqp_graph
-from ..mp_solvers import mpqp_parallel_geometric
-from ..mp_solvers import mpqp_parallel_geometric_exp
-from ..mp_solvers import mpqp_parrallel_combinatorial
-from ..mp_solvers import mpqp_parrallel_combinatorial_exp
-from ..mp_solvers import mpqp_parrallel_graph
+from ..mp_solvers import (
+    mpqp_combinatorial,
+    mpqp_graph,
+    mpqp_parallel_geometric,
+    mpqp_parallel_geometric_exp,
+    mpqp_parrallel_combinatorial,
+    mpqp_parrallel_combinatorial_exp,
+    mpqp_parrallel_graph,
+)
 from ..mplp_program import MPLP_Program
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
+from . import mpqp_geometric
 
 
 class mpqp_algorithm(Enum):
@@ -59,13 +61,13 @@ def solve_mpqp(problem: MPQP_Program, algorithm: mpqp_algorithm = mpqp_algorithm
         solution = mpqp_graph.solve(problem)
 
     if algorithm is mpqp_algorithm.graph_exp:
-        solution = mpqp_graph.solve_no_murder(problem)
+        solution = mpqp_graph.solve(problem, use_pruning=False)
 
     if algorithm is mpqp_algorithm.graph_parallel:
         solution = mpqp_parrallel_graph.solve(problem)
 
     if algorithm is mpqp_algorithm.graph_parallel_exp:
-        solution = mpqp_parrallel_graph.solve_no_murder(problem)
+        solution = mpqp_parrallel_graph.solve(problem, use_pruning=False)
 
     if algorithm is mpqp_algorithm.geometric:
         solution = mpqp_geometric.solve(problem)

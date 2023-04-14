@@ -45,15 +45,15 @@ def find_unique_hyperplanes(overall: numpy.ndarray) -> Tuple[List[int], List[int
     hyper_n = [tuple(x) for x in overall_n]
 
     unique = set()
-    indices = list()
-    locator = dict()
+    indices = []
+    locator = {}
 
-    original_indices = list()
-    original_parity = list()
+    original_indices = []
+    original_parity = []
 
     for i in range(overall.shape[0]):
 
-        if not hyper_p[i] in unique and not hyper_n[i] in unique:
+        if hyper_p[i] not in unique and hyper_n[i] not in unique:
             unique.add(hyper_p[i])
             indices.append(i)
             locator[hyper_p[i]] = len(unique) - 1
@@ -131,7 +131,7 @@ def get_outer_boundaries(indices: List[int], parity: List[int]):
     :return:
     """
     visited = set()
-    type_visited = dict()
+    type_visited = {}
 
     for i, index in enumerate(indices):
         # we have not visited this index
@@ -140,7 +140,6 @@ def get_outer_boundaries(indices: List[int], parity: List[int]):
             type_visited[index] = parity[i]
         else:
             # we have visited this index before
-
             # check if we have scratched this index before
             if type_visited[index] == 5:
                 continue
@@ -187,7 +186,7 @@ def verify_outer_boundary(solution: Solution, hyper_indices: List[int], outer_in
     A = numpy.block([[region.E] for region in solution.critical_regions])[hyper_indices]
     b = numpy.block([[region.f] for region in solution.critical_regions])[hyper_indices]
 
-    output_indices = list()
+    output_indices = []
 
     # check every chebychev center
     for boundary in outer_indices:
@@ -210,7 +209,7 @@ def get_descriptions(solution: Solution) -> dict:
 
     overall_functions = numpy.block([[region.A, region.b] for region in solution.critical_regions])
 
-    desc = dict()
+    desc = {}
 
     desc['num_constraints'] = overall_constraints.shape[0]
     desc['theta_dim'] = solution.program.num_t()

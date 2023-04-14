@@ -1,9 +1,8 @@
 from typing import Optional
 
-import numpy
-
 # Make this optional at some point, so we can run on more general platforms
 import numba
+import numpy
 
 from ..solution import Solution
 
@@ -75,12 +74,12 @@ class PointLocation:
                 best_obj = float("inf")
                 best_region = -1
 
-                for i in range(self.num_regions):
-                    if region_indicators[i] == 1:
+                for j in range(self.num_regions):
+                    if region_indicators[j] == 1:
                         obj = self.solution.program.evaluate_objective(
-                            self.solution.critical_regions[i].evaluate(theta), theta)
+                            self.solution.critical_regions[j].evaluate(theta), theta)
                         if obj <= best_obj:
-                            best_region = i
+                            best_region = j
                             best_obj = obj
                 return best_region
             else:

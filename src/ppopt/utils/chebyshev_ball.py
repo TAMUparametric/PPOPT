@@ -2,7 +2,7 @@ from typing import Iterable
 
 import numpy
 
-from ..solver_interface.solver_interface import solve_milp, solve_lp
+from ..solver_interface.solver_interface import solve_lp, solve_milp
 from ..utils.constraint_utilities import constraint_norm
 from ..utils.general_utils import make_column
 
@@ -102,4 +102,4 @@ def chebyshev_ball_max(A: numpy.ndarray, b: numpy.ndarray, equality_constraints:
     :param deterministic_solver: The underlying Solver to use, e.g. gurobi, ect
     :return: the SolverOutput object, None if infeasible
     """
-    pass
+

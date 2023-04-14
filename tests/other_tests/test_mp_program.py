@@ -1,14 +1,16 @@
 import copy
+
 # imports for suppressing output of display_tests
 import os
 import sys
 
 import numpy
 import pytest
+
 from src.ppopt.mplp_program import MPLP_Program
 from src.ppopt.mpqp_program import MPQP_Program
-from src.ppopt.utils.general_utils import make_column
 from src.ppopt.utils.constraint_utilities import constraint_norm
+from src.ppopt.utils.general_utils import make_column
 
 
 @pytest.fixture()
@@ -21,7 +23,7 @@ def linear_program() -> MPLP_Program:
     b_t = numpy.ones((10, 1))
     c = numpy.ones((3, 1))
     H = numpy.zeros((A.shape[1], F.shape[1]))
-    return MPLP_Program(A, b, c, H, A_t, b_t, F, equality_indices = [0])
+    return MPLP_Program(A, b, c, H, A_t, b_t, F, equality_indices=[0])
 
 
 @pytest.fixture()
@@ -41,6 +43,7 @@ def quadratic_program() -> MPQP_Program:
 
     prog = MPQP_Program(A, b, c, H, Q, CRa, CRb, F)
     prog.scale_constraints()
+
     return prog
 
 
@@ -74,7 +77,7 @@ def test_num_constraints(linear_program):
 
 
 def test_warnings_1(linear_program):
-    assert linear_program.warnings() == []
+    assert len(linear_program.warnings()) > 0
 
 
 def test_warnings_2(linear_program):
@@ -160,7 +163,7 @@ def test_scale_constraints_1(linear_program):
 
 
 ################
-# QP programming
+# mpQP programming
 ################
 
 def test_warnings_qp_1(quadratic_program):
@@ -211,3 +214,7 @@ def test_solve_theta_mpqp_1(simple_qp_program):
     assert numpy.allclose(soln.dual, numpy.array([0, 0]))
     assert numpy.allclose(soln.slack, numpy.array([5.5, 0]))
     assert numpy.allclose(soln.active_set, numpy.array([1]))
+
+################
+# mpLP programming
+################

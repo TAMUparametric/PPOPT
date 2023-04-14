@@ -1,14 +1,14 @@
 from dataclasses import dataclass
-from typing import Union, List, Optional
+from typing import List, Optional, Union
 
 import numpy
 
 from .critical_region import CriticalRegion
 from .geometry.polytope_operations import get_chebyshev_information
 from .mplp_program import MPLP_Program
-from .mpqp_program import MPQP_Program
-from .mpmiqp_program import MPMIQP_Program
 from .mpmilp_program import MPMILP_Program
+from .mpmiqp_program import MPMIQP_Program
+from .mpqp_program import MPQP_Program
 from .utils.general_utils import make_column
 
 
@@ -37,7 +37,6 @@ class Solution:
         Adds a region to the solution
 
         :param region: region to add to the solution
-        :return: None
         """
         self.critical_regions.append(region)
 
@@ -77,8 +76,8 @@ class Solution:
         """
         Find the critical region in the solution that corresponds to the provided theta, assumes that no critical regions overlap
 
-        :param theta_point:
-        :return:
+        :param theta_point: a theta realization
+        :return: the critical region that contains theta_point or None
         """
         for region in self.critical_regions:
             if region.is_inside(theta_point):
@@ -166,14 +165,15 @@ class Solution:
         return False
 
     def theta_dim(self) -> int:
+        """Returns the number of theta/ parameter dimensions"""
         return self.program.num_t()
 
     def evaluate_objective(self, theta_point) -> Optional[numpy.ndarray]:
         """
         Given a realization of an uncertainty parameter, calculate the objective value
 
-        :param theta_point:
-        :return:
+        :param theta_point: a theta realization
+        :return: the value of the objective or None (if theta_point is not inside any critical region)
         """
         x_star = self.evaluate(theta_point)
         if x_star is not None:

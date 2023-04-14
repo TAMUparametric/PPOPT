@@ -8,7 +8,10 @@ try:
 except ImportError:
     pass
 
-from ..solver_interface.solver_interface_utils import SolverOutput, get_program_parameters
+from ..solver_interface.solver_interface_utils import (
+    SolverOutput,
+    get_program_parameters,
+)
 
 
 def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None, A: numpy.ndarray = None,
@@ -42,9 +45,7 @@ def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None, A: numpy
     :param verbose: Flag for output of underlying Solver, default False
     :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
 
-    :return: A dictionary of the Solver outputs, or none if infeasible or unbounded. \\n output['sol'] = primal
-    variables, output['dual'] = dual variables, output['obj'] = objective value, output['const'] = slacks,
-    output['active'] = active constraints.
+    :return: A solver object relating to the solution of the optimization problem
     """
     model = gp.Model()
 
@@ -202,8 +203,7 @@ def solve_lp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray, equali
 
 def solve_milp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
                       equality_constraints: Iterable[int] = None,
-                      bin_vars: Iterable[int] = None, verbose=False, get_duals=True) -> Optional[
-    SolverOutput]:
+                      bin_vars: Iterable[int] = None, verbose=False, get_duals=True) -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving mixed integer linear programs with gruobi, This is feed directly into the
     MIQP Solver that is defined in the same file.

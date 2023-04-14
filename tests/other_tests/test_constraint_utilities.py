@@ -1,7 +1,19 @@
 import numpy
-from src.ppopt.utils.constraint_utilities import scale_constraint,remove_zero_rows,row_equality,remove_duplicate_rows,is_full_rank,cheap_remove_redundant_constraints,process_region_constraints, remove_strongly_redundant_constraints
-from src.ppopt.utils.general_utils import make_row
 import pytest
+
+from src.ppopt.utils.constraint_utilities import (
+    cheap_remove_redundant_constraints,
+    find_implicit_equalities,
+    is_full_rank,
+    process_program_constraints,
+    process_region_constraints,
+    remove_duplicate_rows,
+    remove_strongly_redundant_constraints,
+    remove_zero_rows,
+    row_equality,
+    scale_constraint,
+)
+from src.ppopt.utils.general_utils import make_row
 
 
 def test_constraint_norm_1():
@@ -138,3 +150,47 @@ def test_facet_ball_elimination():
 
     [_, _] = process_region_constraints(A_r, b_r)
 
+def test_process_program_constraints():
+
+    A = numpy.array([[0,0,0,0],[1,2,3,5],[0,0,0,0]])
+    b = numpy.array([[0],[1],[1]]).reshape(-1,1)
+    F = numpy.array([[1,2],[3,4],[0,0]])
+
+    A_t = numpy.block([[numpy.eye(2)],[-numpy.eye(2)]])
+    b_t = numpy.array([[1],[1],[1],[1]]).reshape(-1,1)
+
+    A, b, F, A_t, b_t = process_program_constraints(A, b, F, A_t, b_t)
+
+    A_test = numpy.array([[1,2,3,5]])
+    b_test = numpy.array([[1]])
+    F_test = numpy.array([[3, 4]])
+    A_t_test = numpy.block([[numpy.eye(2)], [-numpy.eye(2)], [numpy.array([[0.0,0.0]])],[numpy.array([[-1.0,-2.0]])]])
+    b_t_test = numpy.array([[1], [1], [1], [1], [1], [0]])
+
+    assert numpy.allclose(A_test, A)
+    assert numpy.allclose(b_test, b)
+    assert numpy.allclose(F_test, F)
+    assert numpy.allclose(A_t_test, A_t)
+    assert numpy.allclose(b_t_test, b_t)
+
+def test_find_implicit_equalities():
+    A = numpy.array([[0, 0, 0, 0], [1, 2, 3, 5], [0, 0, 0, 0], [-1,-2,-3,-5]])
+    b = numpy.array([[0], [1], [1],[-1]]).reshape(-1, 1)
+    F = numpy.array([[1, 2], [3, 4], [0, 0],[-3,-4]])
+
+    A_t = numpy.block([[numpy.eye(2)],[-numpy.eye(2)]])
+    b_t = numpy.array([[1],[1],[1],[1]]).reshape(-1,1)
+
+    A, b, F, eq = find_implicit_equalities(A, b, F, [])
+
+    A_test = numpy.array([[1,2,3,5],[0,0,0,0],[0,0,0,0]])
+    b_test = numpy.array([[1],[0],[1]])
+    F_test = numpy.array([[3,4],[1,2],[0,0]])
+    eq_test = [0]
+
+    assert numpy.allclose(A_test, A)
+    assert numpy.allclose(b_test, b)
+    assert numpy.allclose(F_test, F)
+    assert numpy.allclose(eq_test, eq)
+
+    # print(process_program_constraints(A, b, F, A_t, b_t))

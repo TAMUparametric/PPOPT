@@ -1,14 +1,15 @@
 from typing import Optional
 
 import numpy
+
 # noinspection PyProtectedMember
 from pathos.multiprocessing import ProcessingPool as Pool
 
-from .solver_utils import get_facet_centers, fathem_facet
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.general_utils import num_cpu_cores
 from ..utils.mpqp_utils import gen_cr_from_active_set
+from .solver_utils import fathem_facet, get_facet_centers
 
 
 def full_process(center: numpy.ndarray, norm: numpy.ndarray, radius: float, program: MPQP_Program, current_active_set,
@@ -61,7 +62,7 @@ def solve(program: MPQP_Program, active_set=None, num_cores=-1) -> Optional[Solu
     solution = Solution(program, [initial_region])
 
     indexed_region_as = set()
-    indexed_region_as.add(tuple(list(active_set)))
+    indexed_region_as.add(tuple(active_set))
 
     # initiate by exploring first region
 

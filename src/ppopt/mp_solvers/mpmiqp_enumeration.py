@@ -1,13 +1,11 @@
-from typing import Union
-
-from .mitree import MITree
-from .solve_mpqp import mpqp_algorithm, solve_mpqp
-from ..mpmilp_program import MPMILP_Program
-from ..mpqp_program import MPQP_Program, MPLP_Program
-from ..solution import Solution
-from ..utils.general_utils import num_cpu_cores
 # noinspection PyProtectedMember
 from pathos.multiprocessing import ProcessingPool as Pool
+
+from ..mpmilp_program import MPMILP_Program
+from ..solution import Solution
+from ..utils.general_utils import num_cpu_cores
+from .mitree import MITree
+from .solve_mpqp import mpqp_algorithm, solve_mpqp
 
 
 def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
@@ -52,6 +50,4 @@ def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
         region_list.append(sol.critical_regions)
 
     # this has the possibility for overlapping critical regions, so we set the overlapping flag
-    enum_sol = Solution(program, [item for sublist in region_list for item in sublist], is_overlapping=True)
-
-    return enum_sol
+    return Solution(program, [item for sublist in region_list for item in sublist], is_overlapping=True)
