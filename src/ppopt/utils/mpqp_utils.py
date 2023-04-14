@@ -96,6 +96,7 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
 
     num_equality = program.num_equality_constraints()
 
+    active = active_set[num_equality:]
     inactive = [i for i in range(program.num_constraints()) if i not in active_set]
 
     parameter_A, parameter_b, lagrange_A, lagrange_b = program.optimal_control_law(active_set)
@@ -116,16 +117,19 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
 
     # Block of all critical region constraints
 
-    lambda_Anz = lambda_A[lamba_nonzeros]
-    lambda_bnz = lambda_b[lamba_nonzeros]
+    active = [active[indx] for indx in lamba_nonzeros]
+    lambda_A = lambda_A[lamba_nonzeros]
+    lambda_b = lambda_b[lamba_nonzeros]
 
-    inactive_Anz = inactive_A[ineq_nonzeros]
-    inactive_bnz = inactive_b[ineq_nonzeros]
+    inactive = [inactive[indx] for indx in ineq_nonzeros]
+    inactive_A = inactive_A[ineq_nonzeros]
+    inactive_b = inactive_b[ineq_nonzeros]
 
-    CR_A = ppopt_block([[lambda_Anz], [inactive_Anz], [omega_A]])
-    CR_b = ppopt_block([[lambda_bnz], [inactive_bnz], [omega_b]])
+    CR_As = ppopt_block([[lambda_A], [inactive_A], [omega_A]])
+    CR_bs = ppopt_block([[lambda_b], [inactive_b], [omega_b]])
 
-    CR_As, CR_bs = scale_constraint(CR_A, CR_b)
+    CR_As, CR_bs = scale_constraint(CR_As, CR_bs)
+
 
     # if check_full_dim is set check if region is lower dimensional if so return None
     if check_full_dim:
@@ -165,12 +169,13 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
 
     # create out reduced Critical region constraint block
     CR_As = ppopt_block(
-        [[lambda_Anz[kept_lambda_indices]], [inactive_Anz[kept_inequality_indices]], [omega_A[kept_omega_indices]]])
+        [[lambda_A[kept_lambda_indices]], [inactive_A[kept_inequality_indices]], [omega_A[kept_omega_indices]]])
     CR_bs = ppopt_block(
-        [[lambda_bnz[kept_lambda_indices]], [inactive_bnz[kept_inequality_indices]], [omega_b[kept_omega_indices]]])
+        [[lambda_b[kept_lambda_indices]], [inactive_b[kept_inequality_indices]], [omega_b[kept_omega_indices]]])
+
 
     # recover the lambda boundaries that remain
-    relevant_lambda = [active_set[num_equality + index] for index in kept_lambda_indices]
+    relevant_lambda = [active[index] for index in kept_lambda_indices]
 
     real_regular = [inactive[index] for index in kept_inequality_indices]
     regular = [kept_inequality_indices, real_regular]

@@ -1,3 +1,6 @@
 .idea/
 .pytest_cache/
 .github/
+
+# compiled Python code
+__pycache__

@@ -63,7 +63,7 @@ ppopt.mp\_solvers.mpqp\_parrallel\_combinatorial module
 ppopt.mp\_solvers.mpqp\_parrallel\_combinatorial\_exp module
 ------------------------------------------------------------
 
-.. automodule:: ppopt.mp_solvers.mpqp_parrallel_combinatorial_exp
+.. automodule:: ppopt.mp_solvers.mpqp_parallel_combinatorial_exp
    :members:
    :undoc-members:
    :show-inheritance:

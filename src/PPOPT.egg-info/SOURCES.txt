@@ -30,7 +30,7 @@ src/ppopt/mp_solvers/mpqp_graph.py
 src/ppopt/mp_solvers/mpqp_parallel_geometric.py
 src/ppopt/mp_solvers/mpqp_parallel_geometric_exp.py
 src/ppopt/mp_solvers/mpqp_parrallel_combinatorial.py
-src/ppopt/mp_solvers/mpqp_parrallel_combinatorial_exp.py
+src/ppopt/mp_solvers/mpqp_parallel_combinatorial_exp.py
 src/ppopt/mp_solvers/mpqp_parrallel_graph.py
 src/ppopt/mp_solvers/solve_mplp.py
 src/ppopt/mp_solvers/solve_mpmiqp.py
