@@ -122,7 +122,7 @@ class MPLP_Program:
 
         # ensures that
         self.warnings()
-        self.process_constraints()
+        # self.process_constraints()
 
     def num_x(self) -> int:
         """Returns number of parameters."""
