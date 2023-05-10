@@ -126,62 +126,61 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
     CR_b = ppopt_block([[lambda_bnz], [inactive_bnz], [omega_b]])
 
     CR_As, CR_bs = scale_constraint(CR_A, CR_b)
-
-    # if check_full_dim is set check if region is lower dimensional if so return None
+    #
+    # # if check_full_dim is set check if region is lower dimensional if so return None
     if check_full_dim:
         # if the resulting system is not fully dimensional return None
         if not is_full_dimensional(CR_As, CR_bs, program.solver):
             return None
-
-    # if it is fully dimensional we get to classify the constraints and then reduce them (important)!
-
-    kept_lambda_indices = []
-    kept_inequality_indices = []
-    kept_omega_indices = []
-
-    # iterate over the non-zero lagrange constraints
-    for index in range(len(lamba_nonzeros)):
-
-        sol = program.solver.solve_lp(None, CR_As, CR_bs, [index])
-
-        if sol is not None:
-            kept_lambda_indices.append(index)
-
-    # iterate over the non-zero inequaltity constraints
-    for index in range(len(ineq_nonzeros)):
-
-        sol = program.solver.solve_lp(None, CR_As, CR_bs, [index + len(lamba_nonzeros)])
-
-        if sol is not None:
-            kept_inequality_indices.append(index)
-
-    # iterate over the omega constraints
-    for index in range(omega_A.shape[0]):
-
-        sol = program.solver.solve_lp(None, CR_As, CR_bs, [index + len(lamba_nonzeros) + len(ineq_nonzeros)])
-
-        if sol is not None:
-            kept_omega_indices.append(index)
-
-    # create out reduced Critical region constraint block
-    CR_As = ppopt_block(
-        [[lambda_Anz[kept_lambda_indices]], [inactive_Anz[kept_inequality_indices]], [omega_A[kept_omega_indices]]])
-    CR_bs = ppopt_block(
-        [[lambda_bnz[kept_lambda_indices]], [inactive_bnz[kept_inequality_indices]], [omega_b[kept_omega_indices]]])
-
-    # recover the lambda boundaries that remain
-    relevant_lambda = [active_set[num_equality + index] for index in kept_lambda_indices]
-
-    real_regular = [inactive[index] for index in kept_inequality_indices]
-    regular = [kept_inequality_indices, real_regular]
+    #
+    # # if it is fully dimensional we get to classify the constraints and then reduce them (important)!
+    #
+    # kept_lambda_indices = []
+    # kept_inequality_indices = []
+    # kept_omega_indices = []
+    #
+    # # iterate over the non-zero lagrange constraints
+    # for index in range(len(lamba_nonzeros)):
+    #
+    #     sol = program.solver.solve_lp(None, CR_As, CR_bs, [index])
+    #
+    #     if sol is not None:
+    #         kept_lambda_indices.append(index)
+    #
+    # # iterate over the non-zero inequaltity constraints
+    # for index in range(len(ineq_nonzeros)):
+    #
+    #     sol = program.solver.solve_lp(None, CR_As, CR_bs, [index + len(lamba_nonzeros)])
+    #
+    #     if sol is not None:
+    #         kept_inequality_indices.append(index)
+    #
+    # # iterate over the omega constraints
+    # for index in range(omega_A.shape[0]):
+    #
+    #     sol = program.solver.solve_lp(None, CR_As, CR_bs, [index + len(lamba_nonzeros) + len(ineq_nonzeros)])
+    #
+    #     if sol is not None:
+    #         kept_omega_indices.append(index)
+    #
+    # # create out reduced Critical region constraint block
+    # CR_As = ppopt_block(
+    #     [[lambda_Anz[kept_lambda_indices]], [inactive_Anz[kept_inequality_indices]], [omega_A[kept_omega_indices]]])
+    # CR_bs = ppopt_block(
+    #     [[lambda_bnz[kept_lambda_indices]], [inactive_bnz[kept_inequality_indices]], [omega_b[kept_omega_indices]]])
+    #
+    # # recover the lambda boundaries that remain
+    # relevant_lambda = [active_set[num_equality + index] for index in kept_lambda_indices]
+    #
+    # real_regular = [inactive[index] for index in kept_inequality_indices]
+    # regular = [kept_inequality_indices, real_regular]
 
     # remove any possible duplicate constraints
     # and rescale since we did not rescale this particular set of constraints!!!
     CR_As, CR_bs = remove_duplicate_rows(CR_As, CR_bs)
-    CR_As, CR_bs = scale_constraint(CR_As, CR_bs)
+    # CR_As, CR_bs = scale_constraint(CR_As, CR_bs)
 
-    return CriticalRegion(parameter_A, parameter_b, lagrange_A, lagrange_b, CR_As, CR_bs, active_set,
-                          kept_omega_indices, relevant_lambda, regular)
+    return CriticalRegion(parameter_A, parameter_b, lagrange_A, lagrange_b, CR_As, CR_bs, active_set, None, None, None)
 
 
 def is_full_dimensional(A, b, solver: Solver = None):
