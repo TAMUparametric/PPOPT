@@ -1,12 +1,16 @@
 import sys
 from dataclasses import dataclass, field
-from typing import Dict, Optional, Iterable
+from typing import Dict, Iterable, Optional
 
 import numpy
 
 from .solver_interface.cvxopt_interface import solve_lp_cvxopt
-from .solver_interface.gurobi_solver_interface import solve_lp_gurobi, solve_qp_gurobi, solve_milp_gurobi, \
-    solve_miqp_gurobi
+from .solver_interface.gurobi_solver_interface import (
+    solve_lp_gurobi,
+    solve_milp_gurobi,
+    solve_miqp_gurobi,
+    solve_qp_gurobi,
+)
 from .solver_interface.quad_prog_interface import solve_qp_quadprog
 from .solver_interface.solver_interface_utils import SolverOutput
 
@@ -54,6 +58,9 @@ def default_solver_options():
 
     :return: A dictionary of determanistic solvers to use
     """
+
+    # default to gurobi as a base solver
+
     default_solver = {'lp': 'gurobi', 'qp': 'gurobi', 'milp': 'gurobi', 'miqp': 'gurobi'}
 
     if 'glpk' in available_LP_solvers():
@@ -155,8 +162,7 @@ class Solver:
         if self.solvers['miqp'] == "gurobi":
             return solve_miqp_gurobi(Q, c, A, b, equality_constraints, bin_vars, verbose, get_duals)
 
-        else:
-            self.solver_not_supported(self.solvers['miqp'])
+        return self.solver_not_supported(self.solvers['miqp'])
 
     def solve_qp(self, Q: Optional[numpy.ndarray], c: Optional[numpy.ndarray], A: Optional[numpy.ndarray],
                  b: Optional[numpy.ndarray], equality_constraints: Iterable[int] = None,
@@ -191,11 +197,11 @@ class Solver:
 
         if self.solvers['qp'] == "gurobi":
             return solve_qp_gurobi(Q, c, A, b, equality_constraints, verbose, get_duals)
-        elif self.solvers['qp'] == "quadprog":
+
+        if self.solvers['qp'] == "quadprog":
             return solve_qp_quadprog(Q, c, A, b, equality_constraints, verbose, get_duals)
-        else:
-            self.solver_not_supported(self.solvers['qp'])
-            return None
+
+        return self.solver_not_supported(self.solvers['qp'])
 
     # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
     def solve_lp(self, c: Optional[numpy.ndarray], A: Optional[numpy.ndarray], b: Optional[numpy.ndarray],
@@ -229,10 +235,11 @@ class Solver:
 
         if self.solvers['lp'] == "gurobi":
             return solve_lp_gurobi(c, A, b, equality_constraints, verbose, get_duals)
+
         if self.solvers['lp'] == 'glpk':
             return solve_lp_cvxopt(c, A, b, equality_constraints, verbose, get_duals)
-        else:
-            self.solver_not_supported(self.solvers['lp'])
+
+        return self.solver_not_supported(self.solvers['lp'])
 
     def solve_milp(self, c: Optional[numpy.ndarray], A: Optional[numpy.ndarray], b: Optional[numpy.ndarray],
                    equality_constraints: Iterable[int] = None,
@@ -244,12 +251,12 @@ class Solver:
 
         .. math::
 
-            \min_{xy} c^T[xy]
+            \min_{x,y} c^T[x,y]
 
         .. math::
             \begin{align}
-            A[xy] &\leq b\\
-            A_{eq}[xy] &= beq\\
+            A[x,y] &\leq b\\
+            A_{eq}[x,y] &= beq\\
             x &\in R^n\\
             y &\in \{0, 1\}^m
             \end{align}
@@ -267,5 +274,5 @@ class Solver:
 
         if self.solvers['milp'] == "gurobi":
             return solve_milp_gurobi(c, A, b, equality_constraints, bin_vars, verbose, get_duals)
-        else:
-            self.solver_not_supported(self.solvers['milp'])
+
+        return self.solver_not_supported(self.solvers['milp'])

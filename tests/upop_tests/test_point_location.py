@@ -1,7 +1,8 @@
-import numpy
 import copy
-from src.ppopt.upop.point_location import PointLocation
 
+import numpy
+
+from src.ppopt.upop.point_location import PointLocation
 from tests.test_fixtures import factory_solution
 
 

@@ -2,13 +2,16 @@ from typing import List, Optional
 
 import numpy
 
-from .chebyshev_ball import chebyshev_ball
 from ..critical_region import CriticalRegion
 from ..mpqp_program import MPQP_Program
 from ..solver import Solver
-from ..utils.constraint_utilities import cheap_remove_redundant_constraints, remove_duplicate_rows, \
-    scale_constraint
+from ..utils.constraint_utilities import (
+    cheap_remove_redundant_constraints,
+    remove_duplicate_rows,
+    scale_constraint,
+)
 from ..utils.general_utils import ppopt_block
+from .chebyshev_ball import chebyshev_ball
 
 
 def get_boundary_types(region: numpy.ndarray, omega: numpy.ndarray, lagrange: numpy.ndarray, regular: numpy.ndarray) -> \
@@ -28,8 +31,8 @@ def get_boundary_types(region: numpy.ndarray, omega: numpy.ndarray, lagrange: nu
     is_labeled = numpy.zeros(num_constraints)
 
     def label(compare):
-        output = list()
-        output_2 = list()
+        output = []
+        output_2 = []
         for i in range(num_constraints):
             for j in range(compare.shape[0]):
                 if is_labeled[i] == 0:
@@ -181,7 +184,7 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
                           kept_omega_indices, relevant_lambda, regular)
 
 
-def is_full_dimensional(A, b, solver: Solver = Solver()):
+def is_full_dimensional(A, b, solver: Solver = None):
     """
     This checks the dimensionality of a polytope defined by P = {x: Ax≤b}. Current method is based on checking if the
     radii of the chebychev ball is nonzero. However, this is numerically not so stable, and will eventually be replaced
@@ -192,6 +195,9 @@ def is_full_dimensional(A, b, solver: Solver = Solver()):
     :param solver: the solver interface to direct the deterministic solver
     :return: True if polytope is fully dimensional else False
     """
+
+    if solver is None:
+        solver = Solver()
 
     # TODO: Add second chebychev ball to get a more accurate estimate of lower dimensionality
 

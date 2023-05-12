@@ -51,7 +51,7 @@ def gen_js_array(data: list, name: str, vartype: str, options: list = ("const",)
     if "const" in options:
         name = "const " + name
 
-    data_payload = list()
+    data_payload = []
 
     if "string" in vartype:
         data_payload = ["\"" + str(i) + "\"" for i in data]
@@ -85,6 +85,8 @@ def gen_array(data: list, name: str, vartype: str, options=("const",), lang='cpp
     if lang == 'js':
         return gen_js_array(data, name, vartype, options=options)
 
+    raise RuntimeError(f"Language {lang} is not a supported lang for array generation")
+
 
 def gen_variable(data, name: str, vartype: str = None, options=("const",), lang='cpp') -> str:
     if lang == 'cpp':
@@ -95,3 +97,5 @@ def gen_variable(data, name: str, vartype: str = None, options=("const",), lang=
 
     if lang == 'js':
         return gen_js_variable(data, name, vartype, options=options)
+
+    raise RuntimeError(f"Language {lang} is not a supported lang for variable generation")

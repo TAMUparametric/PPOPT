@@ -1,10 +1,10 @@
 from typing import Optional
 
-from .solver_utils import get_facet_centers, fathem_facet
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.general_utils import make_column
 from ..utils.mpqp_utils import gen_cr_from_active_set
+from .solver_utils import fathem_facet, get_facet_centers
 
 
 def solve(program: MPQP_Program, active_set=None) -> Optional[Solution]:
@@ -28,7 +28,7 @@ def solve(program: MPQP_Program, active_set=None) -> Optional[Solution]:
     unchecked_regions = [initial_region]
 
     indexed_region_as = set()
-    indexed_region_as.add(tuple(list(active_set)))
+    indexed_region_as.add(tuple(active_set))
 
     while len(unchecked_regions) > 0:
 
@@ -43,10 +43,10 @@ def solve(program: MPQP_Program, active_set=None) -> Optional[Solution]:
         for center, normal, radius in facet_information:
 
             # make sure we are pointing in the correct direction
-            center = make_column(center)
-            normal = make_column(normal)
+            center_c = make_column(center)
+            normal_c = make_column(normal)
 
-            possible_cr = fathem_facet(center, normal, radius, program, indexed_region_as, cur_region.active_set)
+            possible_cr = fathem_facet(center_c, normal_c, radius, program, indexed_region_as, cur_region.active_set)
 
             if possible_cr is not None:
                 indexed_region_as.add(tuple(possible_cr.active_set))

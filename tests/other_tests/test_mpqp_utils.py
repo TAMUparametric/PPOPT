@@ -1,6 +1,6 @@
 from src.ppopt.utils.mpqp_utils import gen_cr_from_active_set
+from tests.test_fixtures import qp_problem, quadratic_program, simple_mpqp_problem
 
-from tests.test_fixtures import quadratic_program, qp_problem, simple_mpqp_problem
 
 def test_check_feasibility_1(quadratic_program):
     assert quadratic_program.check_feasibility([])
@@ -28,3 +28,8 @@ def test_build_cr_from_active_set(qp_problem):
     assert gen_cr_from_active_set(qp_problem, [0, 2, 3]) is not None
     assert gen_cr_from_active_set(qp_problem, [0, 2, 3, 4]) is not None
     assert gen_cr_from_active_set(qp_problem, [0, 2, 3, 4]) is not None
+
+
+def test_process_constraints_1(qp_problem):
+    qp_problem.scale_constraints()
+

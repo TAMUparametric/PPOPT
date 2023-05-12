@@ -1,9 +1,9 @@
 from typing import List
 
-from .solver_utils import generate_children_sets, CombinationTester
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.mpqp_utils import gen_cr_from_active_set
+from .solver_utils import CombinationTester, generate_children_sets
 
 
 def solve(program: MPQP_Program) -> Solution:
@@ -16,7 +16,7 @@ def solve(program: MPQP_Program) -> Solution:
     """
     murder_list = CombinationTester()
 
-    to_check = list()
+    to_check = []
 
     solution = Solution(program, [])
 
@@ -31,7 +31,7 @@ def solve(program: MPQP_Program) -> Solution:
         # if there are no other active sets to check break out of loop
         # print(len(to_check))
 
-        future_sets = list()
+        future_sets = []
         # creates the list of feasible active sets
         feasible_sets = check_child_feasibility(program, to_check, murder_list)
 
@@ -74,7 +74,7 @@ def check_child_feasibility(program: MPQP_Program, set_list: List[List[int]], co
     :param combination_checker: The combination checker that prunes
     :return: The list of all feasible active sets
     """
-    output = list()
+    output = []
     for child in set_list:
         if program.check_feasibility(child):
             output.append(child)

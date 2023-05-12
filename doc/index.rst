@@ -1,8 +1,5 @@
 .. PPOPT documentation master file, created by Dustin Kenefake
 
-Readme File
-===========
-
 .. mdinclude:: ../README.md
 
 
@@ -15,6 +12,9 @@ Tutorial
 
     tutorial
     algorithm_overview
+    control_allocation_example
+    portfolio
+    mpc
 
 API
 ---
@@ -23,7 +23,7 @@ API
     :maxdepth: 2
     :caption: API
 
-    modules
+    ppopt
 
 
 Indices and tables

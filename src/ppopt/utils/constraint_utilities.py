@@ -7,7 +7,7 @@ from typing import List
 import numpy
 
 from ..solver_interface import solver_interface
-from ..utils.general_utils import make_column, ppopt_block
+from ..utils.general_utils import ppopt_block
 
 
 # returns the norm of the constraint
@@ -161,7 +161,7 @@ def calculate_redundant_constraints(A, b):
     """
     [A_ps, b_ps] = scale_constraint(A, b)
 
-    output = list()
+    output = []
 
     for i in range(A.shape[0]):
 
@@ -184,11 +184,15 @@ def calculate_redundant_constraints(A, b):
 
 
 def find_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, equality_set: List[int] = None, solver='gurobi'):
+    """"""
     if equality_set is None:
         equality_set = []
 
     redundant = []
-    for i in range(len(equality_set), A.shape[0]):
+
+    to_check = [x for x in range(A.shape[0]) if x not in equality_set]
+
+    for i in to_check:
         if solver_interface.solve_lp(None, A, b, [*equality_set, i], deterministic_solver=solver) is None:
             redundant.append(i)
 
@@ -198,8 +202,8 @@ def find_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, equality_set:
 def remove_strongly_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, include_kept_indices=False,
                                           deterministic_solver: str = 'gurobi'):
     """Removes strongly redundant constraints by testing the feasibility of each constraint if activated."""
-    keep_list = list()
-    new_index = list()
+    keep_list = []
+    new_index = []
     for i in range(A.shape[0]):
         sol = solver_interface.solve_lp(None, A, b, [i], deterministic_solver=deterministic_solver)
         if sol is not None:
@@ -269,3 +273,144 @@ def process_region_constraints(A: numpy.ndarray, b: numpy.ndarray, deterministic
     A, b = facet_ball_elimination(A, b)
 
     return [A, b]
+
+
+def get_indices_of_zero_rows(A: numpy.array, epsilon: float = 10 ** (-6)) -> [list, list]:
+    is_zero = lambda x: numpy.linalg.norm(x) >= epsilon
+
+    # sorts rows based on if they are zeros (numerically) or non-zero
+    kept_constrs = [i for i, x in enumerate(A) if is_zero(x)]
+    removed_constrs = [i for i, x in enumerate(A) if not is_zero(x)]
+
+    return kept_constrs, removed_constrs
+
+
+def shuffle_processed_constraints(A: numpy.ndarray, b: numpy.ndarray, F: numpy.ndarray, A_t: numpy.ndarray,
+                                  b_t: numpy.ndarray, kept: list, remove: list):
+    """
+
+
+    :param A: The LHS constraint matrix for main body constraints
+    :param b: the RHS constraint matrix for main body constraints
+    :param F: the RHS parametric uncertainty matrix in the main body constraints
+    :param A_t: the LHS constraint matrix for parametric constraints
+    :param b_t: the RHS constraint vector for parametric constraints
+    :param kept:
+    :param remove:
+    :return:The filtered constraint matrix set A, b, F, A_t, b_t
+    """
+    # add the purely parametric constraints to the parametric constraint set A_t, b_t
+    if len(remove) > 0:
+        A_t = ppopt_block([[A_t], [-F[remove]]])
+        b_t = ppopt_block([[b_t], [b[remove]]])
+
+    # remove the purly parametric constraints in the main body objective
+    A = A[kept]
+    b = b[kept]
+    F = F[kept]
+
+    return A, b, F, A_t, b_t
+
+
+def process_program_constraints(A: numpy.ndarray, b: numpy.ndarray, F: numpy.ndarray, A_t: numpy.ndarray,
+                                b_t: numpy.ndarray, epsilon: float = 10 ** (-6)):
+    r"""
+    This is the main routine for removing redundant constraints and filtering constraints to the correct constraint set
+
+    .. math::
+        \begin{align}
+        Ax &\leq b + F\theta\\
+        A_{eq}x &= b_{eq}\\
+        A_\theta \theta &\leq b_\theta\\
+        x &\in R^n, \theta \in R^m\\
+        \end{align}
+
+    :param A: The LHS constraint matrix for main body constraints
+    :param b: the RHS constraint matrix for main body constraints
+    :param F: the RHS parametric uncertainty matrix in the main body constraints
+    :param A_t: the LHS constraint matrix for parametric constraints
+    :param b_t: the RHS constraint vector for parametric constraints
+    :param epsilon: The numerical value to determine if something is a 'zero' row
+    :return: The filtered constraint matrix set A, b, F, A_t, b_t
+    """
+
+    # if there are any constraints in the main constraint body A@x <= b + F@theta with ||A_i, F_i|| = 0, then this is
+    # simply asking if b_i >= 0, we move this possible infeasibility to the parametric constraint set
+    keep, move = get_indices_of_zero_rows(ppopt_block([[A, -F]]), epsilon)
+
+    # move all purely 0 <= b_i constraints into the parametric constraint set
+    A, b, F, A_t, b_t = shuffle_processed_constraints(A, b, F, A_t, b_t, keep, move)
+
+    # if there are any constraints in the main constraint A@x <= b + F@theta with ||A_i|| = 0, then those can be
+    # moved to the parametric constraints as it is of the form 0 <= b_i + F_i@theta
+    keep, move = get_indices_of_zero_rows(A, epsilon)
+
+    # add the purely parametric constraints to the parametric constraint set A_t, b_t
+    A, b, F, A_t, b_t = shuffle_processed_constraints(A, b, F, A_t, b_t, keep, move)
+
+    return A, b, F, A_t, b_t
+
+
+def find_implicit_equalities(A: numpy.ndarray, b: numpy.ndarray, F: numpy.ndarray, equality_indices):
+    r"""
+    Find Implicit equalities in the main constraint block Ax <= b + F theta. E.g.  L <= A_ix - F theta <= L. Which is
+    equivalent to the direct constraint A_ix = b_i + F_i theta. Also detects when c^tx - d^t theta <= b and
+    c^tx - d^T theta = b.
+
+    .. math::
+        \begin{align}
+        Ax &\leq b + F\theta\\
+        A_{eq}x &= b_{eq}\\
+        A_\theta \theta &\leq b_\theta\\
+        x &\in R^n, \theta \in R^m\\
+        \end{align}
+
+    :param A: The LHS constraint matrix for main body constraints
+    :param b: the RHS constraint matrix for main body constraints
+    :param F: the RHS parametric uncertainty matrix in the main body constraints
+    :param equality_indices: Indices of equality constraints
+    :return: The filtered constraints matrix set A, b, F and the new equality set
+    """
+    problem_A = ppopt_block([[A, -F]])
+    problem_b = ppopt_block([[b]])
+
+    num_constraints = A.shape[0]
+
+    constraint_pairs = detect_implicit_equalities(problem_A, problem_b)
+
+    keep = [i[0] for i in constraint_pairs]
+    remove = [i[1] for i in constraint_pairs]
+
+    keep = list(set(keep))
+    keep.sort()
+
+    remove = list(set(remove))
+    remove.sort()
+
+    # make sure to only remove the unneeded inequalities -> only for duplicate constraints
+    remove = [i for i in remove if i not in keep]
+
+    # our temporary new active set for the problem
+    temp_active_set = [*equality_indices, *keep]
+
+    # what we are keeping
+    survive = lambda x: x not in temp_active_set and x not in remove
+    kept_ineqs = [i for i in range(num_constraints) if survive(i)]
+
+    # data marshaling
+    A_eq = A[temp_active_set]
+    b_eq = b[temp_active_set]
+    F_eq = F[temp_active_set]
+
+    A_ineq = A[kept_ineqs]
+    b_ineq = b[kept_ineqs]
+    F_ineq = F[kept_ineqs]
+
+    A = ppopt_block([[A_eq], [A_ineq]])
+    b = ppopt_block([[b_eq], [b_ineq]])
+    F = ppopt_block([[F_eq], [F_ineq]])
+
+    # update problem active set
+    equality_indices = list(range(len(temp_active_set)))
+
+    return A, b, F, equality_indices

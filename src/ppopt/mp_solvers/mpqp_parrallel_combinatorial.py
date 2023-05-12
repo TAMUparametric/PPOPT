@@ -5,11 +5,11 @@ from typing import List
 # noinspection PyProtectedMember
 from pathos.multiprocessing import ProcessingPool as Pool
 
-from .solver_utils import generate_children_sets, CombinationTester
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.general_utils import num_cpu_cores
 from ..utils.mpqp_utils import gen_cr_from_active_set
+from .solver_utils import CombinationTester, generate_children_sets
 
 
 def full_process(program: MPQP_Program, active_set: List[int], murder_list, gen_children):
@@ -27,7 +27,7 @@ def full_process(program: MPQP_Program, active_set: List[int], murder_list, gen_
     """
     t_set = (*active_set,)
 
-    return_list = [None, set(), list()]
+    return_list = [None, set(), []]
 
     is_feasible_ = program.check_feasibility(active_set)
 
@@ -78,7 +78,7 @@ def solve(program: MPQP_Program, num_cores=-1) -> Solution:
 
     murder_list = CombinationTester()
 
-    to_check = list()
+    to_check = []
 
     solution = Solution(program, [])
 
@@ -99,7 +99,7 @@ def solve(program: MPQP_Program, num_cores=-1) -> Solution:
 
         f = lambda x: full_process(program, x, murder_list, gen_children)
 
-        future_list = list()
+        future_list = []
 
         shuffle(to_check)
 

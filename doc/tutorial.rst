@@ -1,7 +1,7 @@
 Solving a MPQP Program
 ======================
 
-Here we are going to solve a classic transportation problem with multiparametric uncertainty. We have a set of plants and a set of markets with corresponding supplies and demand, and we want to minimize the transport cost between the plants and ensuring we satisfy all market demand. The multiparametric formulation is fleshed out in more detail in Multiparametric Optimization and Control by Pistikopolous et al.
+Here we are going to solve a classic transportation problem with multiparametric uncertainty. We have a set of plants and a set of markets with corresponding supplies and demand, and we want to minimize the transport cost between the plants, ensuring we satisfy all market demand. The multiparametric formulation is fleshed out in more detail in Multiparametric Optimization and Control by Pistikopolous, Diangelakis, and Oberdieck.
 
 This optimization problem leads to the following multiparametric optimization problem, with θ representing the markets' uncertain demands.
 
@@ -68,4 +68,9 @@ Now we have the solution, we can either export the solution via the micropop mod
 .. code:: python
 
     from ppopt.plot import parametric_plot
-    parametric_plot(solution, 'transport.png' , show = True)
+    
+    # saves the plot as 'transport.svg' in the current working directory
+    parametric_plot(sol, save_path='transport', save_format='svg', show=True)
+
+.. image:: transport.svg
+

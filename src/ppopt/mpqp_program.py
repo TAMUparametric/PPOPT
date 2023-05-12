@@ -4,7 +4,12 @@ import numpy
 
 from .mplp_program import MPLP_Program
 from .solver_interface.solver_interface import SolverOutput
-from .utils.general_utils import latex_matrix, remove_size_zero_matrices, ppopt_block, make_column
+from .utils.general_utils import (
+    latex_matrix,
+    make_column,
+    ppopt_block,
+    remove_size_zero_matrices,
+)
 
 
 class MPQP_Program(MPLP_Program):
@@ -12,10 +17,9 @@ class MPQP_Program(MPLP_Program):
     The standard class for quadratic multiparametric programming.
 
     .. math::
-        \min \frac{1}{2}x^TQx + \theta^TH^Tx + c^Tx
-    .. math::
         \begin{align}
-        Ax &\leq b + F\theta\\
+        \min_x\quad  \frac{1}{2}x^TQx& + \theta^TH^Tx + c^Tx\\
+        \text{s.t.}\quad Ax &\leq b + F\theta\\
         A_{eq}x &= b_{eq}\\
         A_\theta \theta &\leq b_\theta\\
         x &\in R^n\\
@@ -29,18 +33,17 @@ class MPQP_Program(MPLP_Program):
                  equality_indices=None, solver=None):
         """Initialized the MPQP_Program."""
         # calls MPLP_Program's constructor to reduce out burden
+        self.Q = Q
         super(MPQP_Program, self).__init__(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices, solver)
 
         # assignees member variables
-        self.Q = Q
-
         self.constraint_datatype_conversion()
         # calls the MPLP __post_init__ to handle equality constraints
         # super(MPQP_Program, self).__post_init__()
 
     def evaluate_objective(self, x, theta_point):
         r"""
-        Evaluates the objective of the multiparametric program. for a given x and Θ.
+        Evaluates the objective of the multiparametric program. for a given x and θ.
 
         .. math::
             \frac{1}{2}x^TQx + \theta^TH^Tx+c^Tx
@@ -101,22 +104,27 @@ class MPQP_Program(MPLP_Program):
 
         return output
 
-    def solve_theta(self, theta_point: numpy.ndarray, deterministic_solver: str = 'gurobi') -> Optional[SolverOutput]:
+    def solve_theta(self, theta_point: numpy.ndarray) -> Optional[SolverOutput]:
         r"""
-        Substitutes theta into the multiparametric problem and solves the following optimization problem
-
-        .. math::
-            \min_{x} \frac{1}{2}x^TQx + \tilde{c}^Tx
+        Substitutes a particular realization of θ into the multiparametric problem and solves the resulting
+        optimization problem.
 
         .. math::
             \begin{align}
-            Ax &\leq \tilde{b}\\
+            \tilde{b} &= b + F\theta\\
+            \tilde{b}_eq &= b_{eq} + F_{eq}\theta\\
+            \tilde{c}^T &= c^T + \theta^T H^T
+            \end{align}
+
+        .. math::
+            \begin{align}
+            \min_{x}\quad  &\frac{1}{2}x^TQx + \tilde{c}^Tx\\
+            \text{s.t.} \quad Ax &\leq \tilde{b}\\
             A_{eq}x &= \tilde{b}_{eq}\\
-            x &\in R^n\\
+            x &\in \mathbb{R}^n
             \end{align}
 
         :param theta_point: An uncertainty realization
-        :param deterministic_solver: Deterministic solver to use to solve the above quadratic program
         :return: The Solver output of the substituted problem, returns None if not solvable
         """
 
@@ -135,10 +143,14 @@ class MPQP_Program(MPLP_Program):
 
     def optimal_control_law(self, active_set: List[int]) -> Tuple:
         r"""
-        This function calculates the optimal control law corresponding to an active set combination
+        This function calculates the optimal control law corresponding to an active set combination. This is effectivley
+        just manipulating the stationarity conditions and active constraints for x, and λ
 
-        :param active_set: an active set combination
-        :return: a tuple of the optimal x* and λ* functions in the following form(A_x, b_x, A_l, b_l)
+        .. math::
+
+            Qx + c + H\theta + \hat{A}^T\hat{\lambda} = 0
+
+            \hat{A}x = \hat{b} + \hat{F}\theta
 
         .. math::
 
@@ -146,6 +158,11 @@ class MPQP_Program(MPLP_Program):
             x^*(\theta) &= A_x\theta + b_x\\
             \lambda^*(\theta) &= A_l\theta + b_l\\
             \end{align*}
+
+        :param active_set: an active set combination
+        :return: a tuple of the optimal x* and λ* functions in the following form(A_x, b_x, A_l, b_l)
+
+
         """
 
         inverse_Q = numpy.linalg.pinv(self.Q)
@@ -205,8 +222,8 @@ class MPQP_Program(MPLP_Program):
         num_theta = self.num_t()
 
         # this will be used to build the optimality expression
-        A_list = list()
-        b_list = list()
+        A_list = []
+        b_list = []
 
         # 1) Qu + H theta + (A_Ai)^T lambda_Ai + c = 0
         # if num_active > 0:
@@ -268,7 +285,7 @@ class MPQP_Program(MPLP_Program):
         if num_active == 0:
             lp_active_limit = num_constraints
 
-        equality_indices = [i for i in range(0, lp_active_limit)]
+        equality_indices = list(range(0, lp_active_limit))
 
         sol = self.solver.solve_lp(c, A, b, equality_indices)
 

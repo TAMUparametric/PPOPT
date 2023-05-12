@@ -1,13 +1,12 @@
-from dataclasses import dataclass
-from typing import Union, List, Optional
+from typing import List, Optional, Union
 
 import numpy
 
 from .mplp_program import MPLP_Program
 from .solver import Solver
 from .solver_interface.solver_interface_utils import SolverOutput
-from .utils.constraint_utilities import detect_implicit_equalities, find_redundant_constraints
-from .utils.general_utils import ppopt_block
+from .utils.constraint_utilities import detect_implicit_equalities
+from .utils.general_utils import ppopt_block, select_not_in_list
 
 
 class MPMILP_Program(MPLP_Program):
@@ -53,8 +52,12 @@ class MPMILP_Program(MPLP_Program):
                  b_t: numpy.ndarray, F: numpy.ndarray, binary_indices=None, c_c: Optional[numpy.ndarray] = None,
                  c_t: Optional[numpy.ndarray] = None, Q_t: Optional[numpy.ndarray] = None,
                  equality_indices: List[int] = None,
-                 solver: Solver = Solver(), ):
+                 solver: Solver = None):
         """Initializes the MPMILP_Program"""
+
+        if solver is None:
+            solver = Solver()
+
         super().__init__(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices, solver)
         self.binary_indices = binary_indices
         self.cont_indices = [i for i in range(self.num_x()) if i not in self.binary_indices]
@@ -69,14 +72,11 @@ class MPMILP_Program(MPLP_Program):
 
         if len(self.equality_indices) != 0:
             # move all equality constraints to the top
-            self.A = numpy.block(
-                [[self.A[self.equality_indices]], [numpy.delete(self.A, self.equality_indices, axis=0)]])
-            self.b = numpy.block(
-                [[self.b[self.equality_indices]], [numpy.delete(self.b, self.equality_indices, axis=0)]])
-            self.F = numpy.block(
-                [[self.F[self.equality_indices]], [numpy.delete(self.F, self.equality_indices, axis=0)]])
-            # reassign the equality constraint indices to the top indices after move
-            self.equality_indices = [i for i in range(len(self.equality_indices))]
+            self.A = numpy.block([[self.A[self.equality_indices]], [select_not_in_list(self.A, self.equality_indices)]])
+            self.b = numpy.block([[self.b[self.equality_indices]], [select_not_in_list(self.b, self.equality_indices)]])
+            self.F = numpy.block([[self.F[self.equality_indices]], [select_not_in_list(self.F, self.equality_indices)]])
+
+            self.equality_indices = list(range(len(self.equality_indices)))
 
         # now we call the process constraints routine to polish the constraints before we move to solving
         self.process_constraints()
@@ -137,7 +137,7 @@ class MPMILP_Program(MPLP_Program):
             self.F = ppopt_block([[F_eq], [F_ineq]])
 
             # update problem active set
-            self.equality_indices = [i for i in range(len(temp_active_set))]
+            self.equality_indices = list(range(len(temp_active_set)))
 
         # recalculate bc we have moved everything around
         problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
@@ -196,10 +196,10 @@ class MPMILP_Program(MPLP_Program):
 
         sub_problem = MPLP_Program(A_cont, b, c, H_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, equality_set,
                                    self.solver)
-        sub_problem.process_constraints(True)
+        sub_problem.process_constraints()
         return sub_problem
 
-    def solve_theta(self, theta_point: numpy.ndarray, deterministic_solver='gurobi') -> Optional[SolverOutput]:
+    def solve_theta(self, theta_point: numpy.ndarray) -> Optional[SolverOutput]:
         """
         Solves the substituted problem,with the provided theta
 

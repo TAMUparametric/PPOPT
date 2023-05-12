@@ -61,11 +61,14 @@ def latex_matrix(A: Union[List[str], numpy.ndarray]) -> str:
     :return: A latex string for the matrix A
     """
 
+    # beginning and ending of a matrix in latex
     start = "\\left[\\begin{matrix}"
     end = "\\end{matrix}\\right]"
 
-    rows = list()
+    # generate an empty list of rows
+    rows = []
 
+    # if A is a matrix then make a matrix like object
     if isinstance(A, numpy.ndarray):
         for i in range(A.shape[0]):
             rows.append(" & ".join([render_number(j) for j in A[i]]))
@@ -74,6 +77,8 @@ def latex_matrix(A: Union[List[str], numpy.ndarray]) -> str:
     # default lists as column matrix
     if isinstance(A, list):
         return start + "\\\\".join([render_number(x) for x in A]) + end
+
+    raise TypeError(f"When attempting to generate the latex rep of an object A, unsupported type {type(A)} was passed")
 
 
 def remove_size_zero_matrices(list_matrices: List[numpy.ndarray]) -> List[numpy.ndarray]:
@@ -96,6 +101,7 @@ def num_cpu_cores():
 
     :return: number of cores
     """
+
     cores = os.cpu_count()
 
     # noinspection SpellCheckingInspection
@@ -106,27 +112,44 @@ def num_cpu_cores():
 
 
 def ppopt_block(mat_list):
+    """
+    This is an internal utility function that was created for internal use only for performance reasons. This is a
+    replacement of ``numpy.block`` for performance sensitive sections of the codebase. This is approximately 3x faster
+    for the matrices that are typically used here.
+
+    :param mat_list: a list of matrices to concatenate in the same format as  ``numpy.block``
+    :return: the concatenated matrix
+    """
+
+    # if the matrix list is of the form [A, F] transform it to [[A, F]] to simplify downstream logic
     if not isinstance(mat_list[0], list):
         mat_list = [mat_list]
 
+    # find the size of the output matrix on the assumption that everything is properly sized
     x_size = sum(el.shape[1] for el in mat_list[0])
     y_size = sum(el[0].shape[0] for el in mat_list)
 
+    # create the output buffer
     output_data = numpy.zeros((y_size, x_size))
 
+    # set initial coordinates to start placing matrices
     x_cursor = 0
     y_cursor = 0
 
+    # loop over all the matrix rows in the matrix list [[A, B, C], [D, E, F], ..., [Q, W, P]]
     for mat_row in mat_list:
         y_offset = 0
 
+        # write out the matrix row [..., [A, B, ...,  Z], ....] into the row of the output buffer
         for matrix_ in mat_row:
             shape_ = matrix_.shape
             output_data[y_cursor: y_cursor + shape_[0], x_cursor: x_cursor + shape_[1]] = matrix_
             x_cursor += shape_[1]
             y_offset = shape_[0]
 
+        # we are done with this row, move to the next row and reset the x coordinate
         y_cursor += y_offset
         x_cursor = 0
 
+    # return the output buffer
     return output_data

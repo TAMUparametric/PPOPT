@@ -1,12 +1,11 @@
 import copy
+from typing import List, Union
 
 import numpy
-from typing import List, Union
 
 from ..mpmilp_program import MPMILP_Program
 from ..mpmiqp_program import MPMIQP_Program
 from ..utils.constraint_utilities import remove_strongly_redundant_constraints
-from ..critical_region import CriticalRegion
 
 
 class MITree:
@@ -117,7 +116,7 @@ class MITree:
 
     # noinspection SpellCheckingInspection
     def generate_theta_feasible(self) -> None:
-        """
+        r"""
         Given a feasible space of the following type, find an approximation of the theta feasible space, that while
         overestimates generates a fairly tight overestimation.
 
@@ -216,18 +215,18 @@ class MITree:
         if self.is_leaf:
             return True
         # if we are not we need to look at the child nodes
-        else:
-            left_chain = False
-            right_chain = False
 
-            # check if the right node has a connection to a leaf node
-            if self.right is not None:
-                right_chain = self.right.leaf_path()
-            # check if the left node has a connection to a leaf node
-            if self.left is not None:
-                left_chain = self.left.leaf_path()
-            # if at least one direct child node is connected to a leaf node then so is this node
-            return right_chain or left_chain
+        left_chain = False
+        right_chain = False
+
+        # check if the right node has a connection to a leaf node
+        if self.right is not None:
+            right_chain = self.right.leaf_path()
+        # check if the left node has a connection to a leaf node
+        if self.left is not None:
+            left_chain = self.left.leaf_path()
+        # if at least one direct child node is connected to a leaf node then so is this node
+        return right_chain or left_chain
 
     def trim(self) -> None:
         """

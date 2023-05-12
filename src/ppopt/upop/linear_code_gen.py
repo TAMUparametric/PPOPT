@@ -1,18 +1,24 @@
 import copy
+from datetime import datetime
 from typing import List
 
 import numpy
 import scipy.io as sio
-from datetime import datetime
 
 from ..solution import Solution
 from ..upop.language_generation import gen_array, gen_variable
 from ..upop.lib_upop.upop_cpp_template import cpp_upop
 from ..upop.lib_upop.upop_js_template import js_upop
-from ..upop.upop_utils import find_unique_region_hyperplanes, find_unique_region_functions, get_descriptions, \
-    convert_mi_solution
+from ..upop.upop_utils import (
+    convert_mi_solution,
+    find_unique_region_functions,
+    find_unique_region_hyperplanes,
+    get_descriptions,
+)
 
 
+# suppress type checking warnings here, as the output in numpy.tolist() is not recognized as in iterable
+# noinspection PyTypeChecker
 def generate_code_cpp(solution: Solution, float_type: str = 'float') -> str:
     """
     Generates C++17 code for point location and function evaluation on microcontrollers \n
@@ -33,13 +39,13 @@ def generate_code_cpp(solution: Solution, float_type: str = 'float') -> str:
     fundamental_f, original_f, parity_f = find_unique_region_functions(sol)
 
     # get the list range
-    region_boundary_index = list()
+    region_boundary_index = []
     region_boundary_index.append(0)
 
     for region in sol.critical_regions:
         region_boundary_index.append(region.E.shape[0] + region_boundary_index[-1])
 
-    to_augment = list()
+    to_augment = []
 
     to_augment.append(f"typedef {float_type} float_;")
     to_augment.append(gen_array(region_boundary_index, 'region_indicies', 'uint16_t'))
@@ -47,13 +53,13 @@ def generate_code_cpp(solution: Solution, float_type: str = 'float') -> str:
     to_augment.append("")
 
     to_augment.append(gen_array(original_c, "constraint_indices", "uint16_t"))
-    bit_string_c = ''.join(["1" if i == 1 else "0" for i in parity_c])
+    bit_string_c = ''.join(["1" if i == 1 else "0" for i in parity_c[::-1]])
     to_augment.append(
         f"const std::bitset<{len(parity_c)}> constraint_parity(\"{bit_string_c}\");")
     to_augment.append("")
 
     to_augment.append(gen_array(original_f, "function_indices", "uint16_t"))
-    bit_string_f = ''.join(["1" if i == 1 else "0" for i in parity_f])
+    bit_string_f = ''.join(["1" if i == 1 else "0" for i in parity_f[::-1]])
     to_augment.append(
         f"const std::bitset<{len(parity_f)}> function_parity(\"{bit_string_f}\");")
 
@@ -143,13 +149,13 @@ def generate_code_js(solution: Solution) -> List[str]:
     fundamental_f, original_f, parity_f = find_unique_region_functions(sol)
 
     # get the list range
-    region_boundary_index = list()
+    region_boundary_index = []
     region_boundary_index.append(0)
 
     for region in sol.critical_regions:
         region_boundary_index.append(region.E.shape[0] + region_boundary_index[-1])
     has_Q = "Q" in sol.program.__dict__
-    to_augment = list()
+    to_augment = []
 
     to_augment.append(gen_array(region_boundary_index, 'region_indices', "int", lang='js'))
     to_augment.append("var NOT_IN_FEASIBLE_SPACE = -1;")
@@ -246,7 +252,7 @@ def generate_code_matlab(solution: Solution, path: str = '') -> None:
     func_block = numpy.block([[k.A] for k in sol.critical_regions])
     func_vec = numpy.block([[k.b] for k in sol.critical_regions])
 
-    region_list = list()
+    region_list = []
     region_list.append(0)
     cursor = 0
 
