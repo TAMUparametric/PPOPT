@@ -47,8 +47,8 @@ applications, [this paper](https://www.frontiersin.org/articles/10.3389/fceng.20
 
 ## Quick Overview
 
-To give a fast primer of what we are doing, we are solving multiparametric programming problems (fast) by writting
-parallel algorithms efficently. Here is a quick scaleing analysis on a large multiparametric program with the
+To give a fast primer of what we are doing, we are solving multiparametric programming problems (fast) by writing
+parallel algorithms efficiently. Here is a quick scaling analysis on a large multiparametric program with the
 combinatorial algorithm.
 
 ![image](https://github.com/TAMUparametric/PPOPT/blob/main/Figures/loglog_scaling.png?raw=true)
