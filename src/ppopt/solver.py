@@ -125,11 +125,11 @@ class Solver:
             raise RuntimeError(message)
 
     # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
-    def solve_miqp(self, Q: Optional[numpy.ndarray], c: Optional[numpy.ndarray], A: Optional[numpy.ndarray],
-                   b: Optional[numpy.ndarray],
-                   equality_constraints: Iterable[int] = None,
-                   bin_vars: Iterable[int] = None, verbose: bool = False,
-                   get_duals: bool = True) -> Optional[SolverOutput]:
+    def solve_miqp(self, Q: Optional[numpy.ndarray], c: Optional[numpy.ndarray],
+            A: Optional[numpy.ndarray], b: Optional[numpy.ndarray],
+            equality_constraints: Iterable[int] = None, bin_vars: Iterable[int] = None,
+            verbose: bool = False, get_duals: bool = True, get_status: bool = False)\
+                -> Optional[SolverOutput]:
         r"""
         This is the breakout for solving mixed integer quadratic programs
 
@@ -154,20 +154,25 @@ class Solver:
         :param equality_constraints: List of Equality constraints
         :param bin_vars: List of binary variable indices
         :param verbose: Flag for output of underlying Solver, default False
-        :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
+        :param get_duals: Flag for returning dual variable of problem, default True
+            (false for all mixed integer models)
+        :param get_status: Flag for returning gurobi solver status, default False, only
+            implemented for gurobi
 
-        :return: A SolverOutput object if optima found, otherwise None.
+        :return: A SolverOutput object, or None if get_status is false and problem is
+            infeasible or unbounded
         """
 
         if self.solvers['miqp'] == "gurobi":
-            return solve_miqp_gurobi(Q, c, A, b, equality_constraints, bin_vars, verbose, get_duals)
+            return solve_miqp_gurobi(Q, c, A, b, equality_constraints, bin_vars,
+                verbose, get_duals, get_status)
 
         return self.solver_not_supported(self.solvers['miqp'])
 
-    def solve_qp(self, Q: Optional[numpy.ndarray], c: Optional[numpy.ndarray], A: Optional[numpy.ndarray],
-                 b: Optional[numpy.ndarray], equality_constraints: Iterable[int] = None,
-                 verbose=False,
-                 get_duals=True) -> Optional[SolverOutput]:
+    def solve_qp(self, Q: Optional[numpy.ndarray], c: Optional[numpy.ndarray],
+            A: Optional[numpy.ndarray], b: Optional[numpy.ndarray],
+            equality_constraints: Iterable[int] = None, verbose=False,
+            get_duals=True, get_status: bool = False) -> Optional[SolverOutput]:
         r"""
         This is the breakout for solving quadratic programs
 
@@ -190,13 +195,18 @@ class Solver:
         :param b: Constraint RHS matrix, can be None
         :param equality_constraints: List of Equality constraints
         :param verbose: Flag for output of underlying Solver, default False
-        :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
+        :param get_duals: Flag for returning dual variable of problem, default True
+            (false for all mixed integer models)
+        :param get_status: Flag for returning gurobi solver status, default False, only
+            implemented for gurobi
 
-        :return: A SolverOutput object if optima found, otherwise None.
+        :return: A SolverOutput object, or None if get_status is false and problem is
+            infeasible or unbounded
         """
 
         if self.solvers['qp'] == "gurobi":
-            return solve_qp_gurobi(Q, c, A, b, equality_constraints, verbose, get_duals)
+            return solve_qp_gurobi(Q, c, A, b, equality_constraints,
+                verbose, get_duals, get_status)
 
         if self.solvers['qp'] == "quadprog":
             return solve_qp_quadprog(Q, c, A, b, equality_constraints, verbose, get_duals)
@@ -204,9 +214,9 @@ class Solver:
         return self.solver_not_supported(self.solvers['qp'])
 
     # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
-    def solve_lp(self, c: Optional[numpy.ndarray], A: Optional[numpy.ndarray], b: Optional[numpy.ndarray],
-                 equality_constraints=None, verbose=False,
-                 get_duals=True) -> Optional[SolverOutput]:
+    def solve_lp(self, c: Optional[numpy.ndarray], A: Optional[numpy.ndarray],
+            b: Optional[numpy.ndarray], equality_constraints=None, verbose=False,
+            get_duals=True, get_status: bool = False) -> Optional[SolverOutput]:
         r"""
         This is the breakout for solving linear programs
 
@@ -228,22 +238,28 @@ class Solver:
         :param b: Constraint RHS matrix, can be None
         :param equality_constraints: List of Equality constraints
         :param verbose: Flag for output of underlying Solver, default False
-        :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
+        :param get_duals: Flag for returning dual variable of problem, default True
+            (false for all mixed integer models)
+        :param get_status: Flag for returning gurobi solver status, default False, only
+            implemented for gurobi
 
-        :return: A SolverOutput object if optima found, otherwise None.
+        :return: A SolverOutput object, or None if get_status is false and problem is
+            infeasible or unbounded
         """
 
         if self.solvers['lp'] == "gurobi":
-            return solve_lp_gurobi(c, A, b, equality_constraints, verbose, get_duals)
+            return solve_lp_gurobi(c, A, b, equality_constraints,
+                verbose, get_duals, get_status)
 
         if self.solvers['lp'] == 'glpk':
             return solve_lp_cvxopt(c, A, b, equality_constraints, verbose, get_duals)
 
         return self.solver_not_supported(self.solvers['lp'])
 
-    def solve_milp(self, c: Optional[numpy.ndarray], A: Optional[numpy.ndarray], b: Optional[numpy.ndarray],
-                   equality_constraints: Iterable[int] = None,
-                   bin_vars: Iterable[int] = None, verbose=False, get_duals=True) -> Optional[SolverOutput]:
+    def solve_milp(self, c: Optional[numpy.ndarray], A: Optional[numpy.ndarray],
+            b: Optional[numpy.ndarray], equality_constraints: Iterable[int] = None,
+            bin_vars: Iterable[int] = None, verbose=False,
+            get_duals=True, get_status: bool = False) -> Optional[SolverOutput]:
         r"""
         This is the breakout for solving mixed integer linear programs
 
@@ -267,12 +283,17 @@ class Solver:
         :param equality_constraints: List of Equality constraints
         :param bin_vars: List of binary variable indices
         :param verbose: Flag for output of underlying Solver, default False
-        :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
+        :param get_duals: Flag for returning dual variable of problem, default True
+            (false for all mixed integer models)
+        :param get_status: Flag for returning gurobi solver status, default False, only
+            implemented for gurobi
 
-        :return: A dictionary of the Solver outputs, or none if infeasible or unbounded. output['sol'] = primal variables, output['dual'] = dual variables, output['obj'] = objective value, output['const'] = slacks, output['active'] = active constraints.
+        :return: A SolverOutput object, or None if get_status is false and problem is
+            infeasible or unbounded
         """
 
         if self.solvers['milp'] == "gurobi":
-            return solve_milp_gurobi(c, A, b, equality_constraints, bin_vars, verbose, get_duals)
+            return solve_milp_gurobi(c, A, b, equality_constraints, bin_vars,
+                verbose, get_duals, get_status)
 
         return self.solver_not_supported(self.solvers['milp'])
