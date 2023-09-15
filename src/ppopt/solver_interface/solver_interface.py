@@ -3,12 +3,8 @@ from typing import Iterable, Optional
 import numpy
 
 from ..solver_interface.cvxopt_interface import solve_lp_cvxopt
-from ..solver_interface.gurobi_solver_interface import (
-    solve_lp_gurobi,
-    solve_milp_gurobi,
-    solve_miqp_gurobi,
-    solve_qp_gurobi,
-)
+from ..solver_interface.gurobi_solver_interface import (solve_qp_gurobi,
+    solve_lp_gurobi, solve_milp_gurobi, solve_miqp_gurobi)
 from ..solver_interface.quad_prog_interface import solve_qp_quadprog
 from .solver_interface_utils import SolverOutput
 
@@ -26,9 +22,9 @@ def solver_not_supported(solver_name: str) -> None:
 
 # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
 def solve_miqp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
-               equality_constraints: Iterable[int] = None,
-               bin_vars: Iterable[int] = None, verbose: bool = False,
-               get_duals: bool = True, deterministic_solver='gurobi') -> Optional[SolverOutput]:
+        equality_constraints: Iterable[int] = None, bin_vars: Iterable[int] = None,
+        verbose: bool = False, get_duals: bool = True, get_status: bool=False,
+        deterministic_solver='gurobi') -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving mixed integer quadratic programs
 
@@ -51,10 +47,14 @@ def solve_miqp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
     :param equality_constraints: List of Equality constraints
     :param bin_vars: List of binary variable indices
     :param verbose: Flag for output of underlying Solver, default False
-    :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
+    :param get_duals: Flag for returning dual variable of problem, default True
+        (false for all mixed integer models)
+    :param get_status: Flag for returning gurobi solver status, default False, only
+        implemented for gurobi
     :param deterministic_solver: The underlying Solver to use, e.g. gurobi, ect
 
-    :return: A SolverOutput object if optima found, otherwise None.
+    :return: A SolverOutput object, or none if get_status is false and problem is
+        infeasible or unbounded
     """
     if deterministic_solver == "gurobi":
         return solve_miqp_gurobi(Q, c, A, b, equality_constraints, bin_vars, verbose, get_duals)
@@ -62,9 +62,10 @@ def solve_miqp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
         solver_not_supported(deterministic_solver)
 
 
-def solve_qp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix, equality_constraints: Iterable[int] = None,
-             verbose=False,
-             get_duals=True, deterministic_solver='gurobi') -> Optional[SolverOutput]:
+def solve_qp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
+        equality_constraints: Iterable[int] = None,
+        verbose=False, get_duals=True, get_status: bool = False,
+        deterministic_solver='gurobi') -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving quadratic programs
 
@@ -85,11 +86,16 @@ def solve_qp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix, equality_constraints: I
     :param b: Constraint RHS matrix, can be None
     :param equality_constraints: List of Equality constraints
     :param verbose: Flag for output of underlying Solver, default False
-    :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
+    :param get_duals: Flag for returning dual variable of problem, default True
+        (false for all mixed integer models)
+    :param get_status: Flag for returning gurobi solver status, default False, only
+        implemented for gurobi
     :param deterministic_solver: The underlying Solver to use, e.g. gurobi, ect
 
-    :return: A SolverOutput object if optima found, otherwise None.
+    :return: A SolverOutput object, or none if get_status is false and problem is
+        infeasible or unbounded
     """
+
     if deterministic_solver == "gurobi":
         return solve_qp_gurobi(Q, c, A, b, equality_constraints, verbose, get_duals)
     elif deterministic_solver == "quadprog":
@@ -99,8 +105,9 @@ def solve_qp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix, equality_constraints: I
 
 
 # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
-def solve_lp(c: Matrix, A: Matrix, b: Matrix, equality_constraints=None, verbose=False,
-             get_duals=True, deterministic_solver='gurobi') -> Optional[SolverOutput]:
+def solve_lp(c: Matrix, A: Matrix, b: Matrix, equality_constraints=None,
+        verbose=False, get_duals=True, get_status: bool = False,
+        deterministic_solver='gurobi') -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving linear programs
 
@@ -120,22 +127,31 @@ def solve_lp(c: Matrix, A: Matrix, b: Matrix, equality_constraints=None, verbose
     :param b: Constraint RHS matrix, can be None
     :param equality_constraints: List of Equality constraints
     :param verbose: Flag for output of underlying Solver, default False
-    :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
+    :param get_duals: Flag for returning dual variable of problem, default True
+        (false for all mixed integer models)
+    :param get_status: Flag for returning gurobi solver status, default False, only
+        implemented for gurobi
     :param deterministic_solver: The underlying Solver to use, e.g. gurobi, ect
 
-    :return: A SolverOutput object if optima found, otherwise None.
+    :return: A SolverOutput object, or none if get_status is false and problem is
+        infeasible or unbounded
     """
+
     if deterministic_solver == "gurobi":
-        return solve_lp_gurobi(c, A, b, equality_constraints, verbose, get_duals)
+        return solve_lp_gurobi(c, A, b, equality_constraints,
+            verbose, get_duals, get_status)
+
     if deterministic_solver == 'glpk':
         return solve_lp_cvxopt(c, A, b, equality_constraints, verbose, get_duals)
+
     else:
         solver_not_supported(deterministic_solver)
 
 
-def solve_milp(c: Matrix, A: Matrix, b: Matrix, equality_constraints: Iterable[int] = None,
-               bin_vars: Iterable[int] = None, verbose=False, get_duals=True,
-               deterministic_solver='gurobi') -> Optional[SolverOutput]:
+def solve_milp(c: Matrix, A: Matrix, b: Matrix,
+        equality_constraints: Iterable[int] = None, bin_vars: Iterable[int] = None,
+        verbose=False, get_duals=True, get_status: bool = False,
+        deterministic_solver='gurobi') -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving mixed integer linear programs
 
@@ -158,14 +174,19 @@ def solve_milp(c: Matrix, A: Matrix, b: Matrix, equality_constraints: Iterable[i
     :param equality_constraints: List of Equality constraints
     :param bin_vars: List of binary variable indices
     :param verbose: Flag for output of underlying Solver, default False
-    :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
+    :param get_duals: Flag for returning dual variable of problem, default True
+        (false for all mixed integer models)
+    :param get_status: Flag for returning gurobi solver status, default False, only
+        implemented for gurobi
     :param deterministic_solver: The underlying Solver to use, e.g. gurobi, ect
 
-    :return: A dictionary of the Solver outputs, or none if infeasible or unbounded. output['sol'] = primal
-    variables, output['dual'] = dual variables, output['obj'] = objective value, output['const'] = slacks,
-    output['active'] = active constraints.
+    :return: A SolverOutput object, or none if get_status is false and problem is
+        infeasible or unbounded
     """
+
     if deterministic_solver == "gurobi":
-        return solve_milp_gurobi(c, A, b, equality_constraints, bin_vars, verbose, get_duals)
+        return solve_milp_gurobi(c, A, b, equality_constraints, bin_vars,
+            verbose, get_duals, get_status)
+
     else:
         solver_not_supported(deterministic_solver)

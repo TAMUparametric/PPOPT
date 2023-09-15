@@ -14,11 +14,11 @@ from ..solver_interface.solver_interface_utils import (
 )
 
 
-def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None, A: numpy.ndarray = None,
-                      b: numpy.ndarray = None,
-                      equality_constraints: Iterable[int] = None,
-                      bin_vars: Iterable[int] = None, verbose: bool = False,
-                      get_duals: bool = True) -> Optional[SolverOutput]:
+def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None,
+        A: numpy.ndarray = None, b: numpy.ndarray = None,
+        equality_constraints: Iterable[int] = None, bin_vars: Iterable[int] = None,
+        verbose: bool = False, get_duals: bool = True, get_status: bool = False)\
+            -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving mixed integer quadratic programs with gruobi
 
@@ -43,9 +43,12 @@ def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None, A: numpy
     :param equality_constraints: List of Equality constraints
     :param bin_vars: List of binary variable indices
     :param verbose: Flag for output of underlying Solver, default False
-    :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
+    :param get_duals: Flag for returning dual variable of problem, default True
+        (false for all mixed integer models)
+    :param get_status: Flag for returning gurobi solver status, default False
 
-    :return: A solver object relating to the solution of the optimization problem
+    :return: A SolverOutput object, or none if get_status is false and problem is
+        infeasible or unbounded
     """
     model = gp.Model()
 
@@ -115,11 +118,22 @@ def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None, A: numpy
     status = model.status
     # if not solved return None
     if status != GRB.OPTIMAL and status != GRB.SUBOPTIMAL:
-        return None
+        if get_status:
+            if status == GRB.INF_OR_UNBD:
+                model.Params.dualReductions = 0
+                model.optimize()
+                model.update()
+
+            return SolverOutput(numpy.nan, numpy.full((num_vars,), numpy.nan, float),
+                numpy.full((num_constraints,), numpy.nan, float), numpy.empty((0,), int),
+                numpy.full((num_constraints,), numpy.nan, float), model.status)
+
+        else:
+            return None
 
     # create the Solver return object
-    sol = SolverOutput(obj=model.getAttr("ObjVal"), sol=numpy.array(x.X), slack=None,
-                       active_set=None, dual=None)
+    sol = SolverOutput(obj=model.getAttr("ObjVal"), sol=numpy.array(x.X),
+                       slack=None, active_set=None, dual=None, status=status)
 
     # if we have a constrained system we need to add in the slack variables and active set
     if num_constraints != 0:
@@ -135,10 +149,10 @@ def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None, A: numpy
     return sol
 
 
-def solve_qp_gurobi(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
-                    equality_constraints: Iterable[int] = None,
-                    verbose=False,
-                    get_duals=True) -> Optional[SolverOutput]:
+def solve_qp_gurobi(Q: numpy.ndarray, c: numpy.ndarray,
+        A: numpy.ndarray, b: numpy.ndarray, equality_constraints: Iterable[int] = None,
+        verbose=False, get_duals=True, get_status: bool = False)\
+            -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving quadratic programs with gruobi
 
@@ -159,18 +173,22 @@ def solve_qp_gurobi(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: num
     :param b: Constraint RHS matrix, can be None
     :param equality_constraints: List of Equality constraints
     :param verbose: Flag for output of underlying Solver, default False
-    :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
+    :param get_duals: Flag for returning dual variable of problem, default True
+        (false for all mixed integer models)
+    :param get_status: Flag for returning gurobi solver status, default False
 
-    :return:  A SolverOutput Object
+    :return: A SolverOutput object, or none if get_status is false and problem is
+        infeasible or unbounded
     """
-    return solve_miqp_gurobi(Q=Q, c=c, A=A, b=b, equality_constraints=equality_constraints, verbose=verbose,
-                             get_duals=get_duals)
+    return solve_miqp_gurobi(Q=Q, c=c, A=A, b=b,
+        equality_constraints=equality_constraints,
+        verbose=verbose, get_duals=get_duals, get_status=get_status)
 
 
 # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
-def solve_lp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray, equality_constraints: Iterable[int] = None,
-                    verbose: bool = False,
-                    get_duals: bool = True) -> Optional[SolverOutput]:
+def solve_lp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
+        equality_constraints: Iterable[int] = None, verbose: bool = False,
+        get_duals: bool = True, get_status: bool = False) -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving linear programs with gruobi.
 
@@ -191,19 +209,23 @@ def solve_lp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray, equali
     :param equality_constraints: List of Equality constraints
     :param verbose: Flag for output of underlying Solver, default False
     :param get_duals: Flag for returning dual variable of problem, default True
+    :param get_status: Flag for returning gurobi solver status, default False
 
-    :return: A SolverOutput Object
+    :return: A SolverOutput object, or none if get_status is false and problem is
+        infeasible or unbounded
     """
     if not gurobi_pretest(A, b):
         return None
 
-    return solve_miqp_gurobi(c=c, A=A, b=b, equality_constraints=equality_constraints, verbose=verbose,
-                             get_duals=get_duals)
+    return solve_miqp_gurobi(c=c, A=A, b=b,
+        equality_constraints=equality_constraints,
+        verbose=verbose, get_duals=get_duals, get_status=get_status)
 
 
 def solve_milp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
-                      equality_constraints: Iterable[int] = None,
-                      bin_vars: Iterable[int] = None, verbose=False, get_duals=True) -> Optional[SolverOutput]:
+        equality_constraints: Iterable[int] = None, bin_vars: Iterable[int] = None,
+        verbose=False, get_duals=True, get_status: bool = False)\
+            -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving mixed integer linear programs with gruobi, This is feed directly into the
     MIQP Solver that is defined in the same file.
@@ -227,15 +249,19 @@ def solve_milp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
     :param equality_constraints: List of Equality constraints
     :param bin_vars: List of binary variable indices
     :param verbose: Flag for output of underlying Solver, default False
-    :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
+    :param get_duals: Flag for returning dual variable of problem, default True
+        (false for all mixed integer models)
+    :param get_status: Flag for returning gurobi solver status, default False
 
-    :return:  A SolverOutput Object
+    :return: A SolverOutput object, or none if get_status is false and problem is
+        infeasible or unbounded
     """
     if not gurobi_pretest(A, b):
         return None
 
-    return solve_miqp_gurobi(c=c, A=A, b=b, equality_constraints=equality_constraints, bin_vars=bin_vars,
-                             verbose=verbose, get_duals=get_duals)
+    return solve_miqp_gurobi(c=c, A=A, b=b,
+        equality_constraints=equality_constraints, bin_vars=bin_vars,
+        verbose=verbose, get_duals=get_duals, get_status=get_status)
 
 
 def gurobi_pretest(A, b) -> bool:
