@@ -234,7 +234,7 @@ class MPLP_Program:
         # builds the objective latex
         added_term = ''
         if not numpy.allclose(self.H, numpy.zeros_like(self.H)):
-            added_term = " + " + theta_latex + '^{T}' + latex_matrix(self.H) + x_latex
+            added_term = " + " + theta_latex + '^{T}' + latex_matrix(self.H) + '^{T}' + x_latex
 
         obj = "$$" + "\\min_{x}" + latex_matrix(self.c) + "^T" + x_latex + added_term + "$$"
 
