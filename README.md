@@ -17,10 +17,16 @@ Currently, PPOPT requires Python 3.7 or higher and can be installed with the fol
 pip install ppopt
 ```
 
-To install PPOPT and install all optional solvers the following installation is recommended.
+To install PPOPT and install all optional solvers the following installation is recommended. 
 
 ```bash 
 pip install ppopt[optional]
+```
+
+In Python 3.11 and beyond there is currently an error with the quadprog package. An alternate version that fixed this error can be installed here.
+
+```bash
+pip install git+https://github.com/HKaras/quadprog/
 ```
 
 ## Completed Features
