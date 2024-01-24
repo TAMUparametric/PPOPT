@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Optional, Tuple, Union
 
 import numpy
@@ -69,7 +69,7 @@ class MPLP_Program:
 
     equality_indices: Union[List[int], numpy.ndarray]
 
-    solver: Solver = Solver()
+    solver: Solver = field(default_factory=Solver)
 
     def __init__(self, A, b, c, H, A_t, b_t, F, c_c=None, c_t=None, Q_t=None, equality_indices=None, solver=None):
 

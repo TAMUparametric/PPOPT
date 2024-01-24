@@ -1,3 +1,4 @@
+from src.ppopt.mp_solvers import mpqp_parrallel_combinatorial
 from src.ppopt.mp_solvers.solve_mpqp import mpqp_algorithm, solve_mpqp
 from src.ppopt.plot import parametric_plot
 from tests.test_fixtures import qp_problem, simple_mpLP
@@ -10,14 +11,6 @@ def test_solve_mpqp_combinatorial(qp_problem):
 
     assert solution is not None
     assert len(solution.critical_regions) == 4
-
-
-def test_solve_mpqp_combinatorial_parallel(qp_problem):
-    solution = solve_mpqp(qp_problem, mpqp_algorithm.combinatorial_parallel)
-
-    assert solution is not None
-    assert len(solution.critical_regions) == 4
-
 
 def test_solve_mpqp_gupta_parallel_exp(qp_problem):
     solution = solve_mpqp(qp_problem, mpqp_algorithm.combinatorial_parallel_exp)

@@ -93,7 +93,7 @@ def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None, A: numpy
         # inequality = [i for i in range(num_constraints) if i not in equality_constraints]
         # sense[inequality] = GRB.LESS_EQUAL
 
-        model.addMConstr(A, x, sense, b)
+        model.addMConstr(A, x, sense, b.flatten())
 
     objective = 0
 
