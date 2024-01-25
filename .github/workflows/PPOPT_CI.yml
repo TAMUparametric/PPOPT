@@ -35,11 +35,7 @@ jobs:
 
       - name: Install Packages
         shell: bash -l {0}
-        run: pip install flake8 pytest pathos plotly numba numpy matplotlib gurobipy pypoman scipy setuptools psutil
-
-      - name: Install Settry
-        shell: bash -l {0}
-        run: pip install -e git+https://github.com/mmihaltz/pysettrie.git#egg=pysettrie
+        run: pip install flake8 numpy matplotlib scipy numba gurobipy pytest setuptools psutil pathos plotly
 
       - name: Install glpk
         shell: bash -l {0}
