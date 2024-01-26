@@ -4,7 +4,7 @@ channels:
   - defaults
   - http://conda.anaconda.org/gurobi
 dependencies:
-  - python=3.7
+  - python=3.8
   - pip:
     - m2r2
 prefix: /home/docs/.conda/envs/PPOPT
