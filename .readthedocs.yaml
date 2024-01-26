@@ -7,16 +7,16 @@ conda:
   environment: environment.yml
 
 build:
-  os: ubuntu-22.04
+  os: "ubuntu-20.04"
   tools:
-    python: "3.8"
+    python: "mambaforge-4.10"
   apt_packages:
     - gcc
     - libgmp3-dev
 
 python:
   install:
+    - method: pip
     - requirements: doc/requirements.txt
     - requirements: requirements.txt
-    - method: pip
       path: .
