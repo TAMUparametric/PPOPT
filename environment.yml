@@ -19,4 +19,5 @@ dependencies:
     - plotly
     - cvxopt
     - quadprog
+    - sphinx_rtd_theme
 prefix: /home/docs/.conda/envs/PPOPT
