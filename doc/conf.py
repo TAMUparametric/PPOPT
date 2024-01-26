@@ -29,7 +29,7 @@ copyright = "2021, Dustin Kenefake, Efstratios Pistikopoulos"
 author = "Dustin Kenefake, Efstratios Pistikopoulos"
 
 # The full version, including alpha/beta/rc tags
-release = "1.0.2"
+release = "1.4.0"
 
 # -- General configuration ---------------------------------------------------
 
