@@ -8,6 +8,8 @@ conda:
 
 build:
   os: ubuntu-22.04
+  tools:
+    python: "3.7"
   apt_packages:
     - gcc
     - libgmp3-dev
