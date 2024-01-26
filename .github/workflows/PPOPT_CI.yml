@@ -13,8 +13,8 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ["3.7", "3.10"]
+        os: [ubuntu-latest]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
     
     runs-on: ${{ matrix.os }}
     
@@ -35,7 +35,7 @@ jobs:
 
       - name: Install Packages
         shell: bash -l {0}
-        run: pip install flake8 numpy matplotlib scipy numba gurobipy pytest setuptools psutil pathos==0.2.9 plotly
+        run: pip install flake8 numpy matplotlib scipy numba gurobipy pytest setuptools psutil pathos plotly
 
       - name: Install glpk
         shell: bash -l {0}
@@ -43,7 +43,7 @@ jobs:
   
       - name: Install Quadprog
         shell: bash -l {0}
-        run: conda install -c conda-forge quadprog
+        run: pip install git+https://github.com/HKaras/quadprog/
         
       - name: Run tests
         shell: bash -l {0}
