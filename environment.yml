@@ -7,4 +7,16 @@ dependencies:
   - python=3.8
   - pip:
     - m2r2
+    - numpy
+    - matplotlib
+    - scipy
+    - numba
+    - gurobipy
+    - pytest
+    - setuptools
+    - psutil
+    - pathos
+    - plotly
+    - cvxopt
+    - quadprog
 prefix: /home/docs/.conda/envs/PPOPT
