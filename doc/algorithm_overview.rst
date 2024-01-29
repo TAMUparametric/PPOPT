@@ -5,14 +5,14 @@ This section will give a basic overview of the algorithms used in this package f
 
 Geometric Algorithm
 -------------------
-The Geometric algorithm is based on exporing the feasible space. The name of the algorithm comes from the fact that it is geometrically exploring the space by flipping critical region facets.
+The Geometric algorithm is based on exploring the feasible space. The name of the algorithm comes from the fact that it is geometrically exploring the space by flipping critical region facets.
 
 This is best used in situations where the number of theta dimensions is small and scales well with number of variables and constraints.
 
 Combinatorial Algorithm
 -----------------------
 
-The combinatorial algorithm is based on exploring feasible active set combinations. It is called the combinatorial algorithm due the fact that th.... This is the most robust multiparametric algorithm as it handles both primal and dual degeneracy and will always fully solve the multiparametric programming problem.
+The combinatorial algorithm is based on exploring feasible active set combinations. It is called the combinatorial algorithm due the fact that it explores the combinatorial tree of active set combinations. This is the most robust multiparametric algorithm as it handles both primal and dual degeneracy and should always fully solve the multiparametric programming problem.
 
 This is best used in situations where the number of constraints and variables is small and scales well with number of theta dimensions.
 

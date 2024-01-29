@@ -27,9 +27,9 @@ For ease of demonstration we will not eliminate the :math:`x` variables (which i
 .. math::
 
     \begin{bmatrix}
-    \mathbf{I} &0&0&B&0&0\\
-    -A&\mathbf{I}&0&0&B&0\\
-    0&-A&\mathbf{I}&0&0&B
+    \mathbf{I} &0&0&-B&0&0\\
+    -A&\mathbf{I}&0&0&-B&0\\
+    0&-A&\mathbf{I}&0&0&-B
     \end{bmatrix}\begin{bmatrix}x_1\\x_2\\x_3\\u_0\\u_1\\u_2\end{bmatrix} = \begin{bmatrix}A\\0\\0\end{bmatrix}x_0
 
 We can rewrite the inequalities for the decision variables and uncertain parameters as follows.
@@ -82,9 +82,9 @@ With all of this done, we are able to write down the mpMPC problem. People famil
     Z_u = 0 * B_ss
 
     # write the equality constraints
-    A_eq = numpy.block([[I_2, Z_2, Z_2, B_ss, Z_u, Z_u],
-                        [-A_ss, I_2, Z_2, Z_u, B_ss, Z_u],
-                        [Z_2, -A_ss, I_2, Z_u, Z_u, B_ss]])
+    A_eq = numpy.block([[I_2, Z_2, Z_2, -B_ss, Z_u, Z_u],
+                        [-A_ss, I_2, Z_2, Z_u, -B_ss, Z_u],
+                        [Z_2, -A_ss, I_2, Z_u, Z_u, -B_ss]])
 
     b_eq = numpy.zeros((6, 1)).reshape(-1, 1)
     F_eq = numpy.block([[A_ss], [Z_2], [Z_2]])

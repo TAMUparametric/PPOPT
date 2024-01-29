@@ -70,7 +70,7 @@ Now we have the solution, we can either export the solution via the micropop mod
     from ppopt.plot import parametric_plot
     
     # saves the plot as 'transport.svg' in the current working directory
-    parametric_plot(sol, save_path='transport', save_format='svg', show=True)
+    parametric_plot(solution, save_path='transport', save_format='svg', show=True)
 
 .. image:: transport.svg
 
