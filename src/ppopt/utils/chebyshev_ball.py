@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Optional
 
 import numpy
 
@@ -7,8 +7,8 @@ from ..utils.constraint_utilities import constraint_norm
 from ..utils.general_utils import make_column
 
 
-def chebyshev_ball(A: numpy.ndarray, b: numpy.ndarray, equality_constraints: Iterable[int] = None,
-                   bin_vars: Iterable[int] = None, deterministic_solver='gurobi'):
+def chebyshev_ball(A: numpy.ndarray, b: numpy.ndarray, equality_constraints: Optional[Iterable[int]] = None,
+                   bin_vars: Optional[Iterable[int]] = None, deterministic_solver='gurobi'):
     r"""
     Chebyshev ball finds the largest ball inside a polytope defined by Ax <= b. This is solved by the following LP.
 
@@ -64,7 +64,7 @@ def chebyshev_ball(A: numpy.ndarray, b: numpy.ndarray, equality_constraints: Ite
 
 
 # noinspection PyUnusedLocal
-def chebyshev_ball_max(A: numpy.ndarray, b: numpy.ndarray, equality_constraints: Iterable[int] = None,
+def chebyshev_ball_max(A: numpy.ndarray, b: numpy.ndarray, equality_constraints: Optional[Iterable[int]] = None,
                        bin_vars: Iterable[int] = (), deterministic_solver='glpk'):
     r"""
 

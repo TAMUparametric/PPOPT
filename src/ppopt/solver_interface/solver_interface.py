@@ -20,14 +20,14 @@ def solver_not_supported(solver_name: str) -> None:
     supported_solvers = ['gurobi', 'cplex', 'glpk']
 
     message = f"Solver {solver_name} is not supported! \n" \
-              + f'PPOPT Supports the following solvers {str(supported_solvers)} \n'
+              + f'PPOPT Supports the following solvers {supported_solvers!s} \n'
     raise RuntimeError(message)
 
 
 # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
 def solve_miqp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
-               equality_constraints: Iterable[int] = None,
-               bin_vars: Iterable[int] = None, verbose: bool = False,
+               equality_constraints: Optional[Iterable[int]] = None,
+               bin_vars: Optional[Iterable[int]] = None, verbose: bool = False,
                get_duals: bool = True, deterministic_solver='gurobi') -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving mixed integer quadratic programs
@@ -60,9 +60,10 @@ def solve_miqp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
         return solve_miqp_gurobi(Q, c, A, b, equality_constraints, bin_vars, verbose, get_duals)
     else:
         solver_not_supported(deterministic_solver)
+        return None
 
 
-def solve_qp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix, equality_constraints: Iterable[int] = None,
+def solve_qp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix, equality_constraints: Optional[Iterable[int]] = None,
              verbose=False,
              get_duals=True, deterministic_solver='gurobi') -> Optional[SolverOutput]:
     r"""
@@ -96,6 +97,7 @@ def solve_qp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix, equality_constraints: I
         return solve_qp_quadprog(Q, c, A, b, equality_constraints, verbose, get_duals)
     else:
         solver_not_supported(deterministic_solver)
+        return None
 
 
 # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
@@ -131,10 +133,11 @@ def solve_lp(c: Matrix, A: Matrix, b: Matrix, equality_constraints=None, verbose
         return solve_lp_cvxopt(c, A, b, equality_constraints, verbose, get_duals)
     else:
         solver_not_supported(deterministic_solver)
+        return None
 
 
-def solve_milp(c: Matrix, A: Matrix, b: Matrix, equality_constraints: Iterable[int] = None,
-               bin_vars: Iterable[int] = None, verbose=False, get_duals=True,
+def solve_milp(c: Matrix, A: Matrix, b: Matrix, equality_constraints: Optional[Iterable[int]] = None,
+               bin_vars: Optional[Iterable[int]] = None, verbose=False, get_duals=True,
                deterministic_solver='gurobi') -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving mixed integer linear programs
@@ -169,3 +172,4 @@ def solve_milp(c: Matrix, A: Matrix, b: Matrix, equality_constraints: Iterable[i
         return solve_milp_gurobi(c, A, b, equality_constraints, bin_vars, verbose, get_duals)
     else:
         solver_not_supported(deterministic_solver)
+        return None

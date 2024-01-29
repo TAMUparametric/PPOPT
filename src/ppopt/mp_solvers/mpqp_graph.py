@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
@@ -35,7 +35,7 @@ def graph_initialization(program, initial_active_sets):
     return attempted, solution, murder_list, to_attempt
 
 
-def solve(program: MPQP_Program, initial_active_sets: List[List[int]] = None, use_pruning: bool = True) -> Solution:
+def solve(program: MPQP_Program, initial_active_sets: Optional[List[List[int]]] = None, use_pruning: bool = True) -> Solution:
     """
     Solves the MPQP program with a modified algorithm described in Oberdieck et al. 2016
 

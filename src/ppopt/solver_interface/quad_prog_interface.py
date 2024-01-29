@@ -12,7 +12,7 @@ from ..utils.general_utils import make_column
 
 
 def solve_qp_quadprog(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
-                      equality_constraints: Iterable[int] = None, verbose=False,
+                      equality_constraints: Optional[Iterable[int]] = None, verbose=False,
                       get_duals: bool = True) -> Optional[SolverOutput]:
     r"""
     Calls Quadprog to solve the following optimization problem
@@ -79,7 +79,6 @@ def solve_qp_quadprog(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: n
 
         return SolverOutput(opt, x_star, slack.flatten(), numpy.array(active).astype('int64'), lagrange)
 
-    except ValueError as quad_prog_error:
+    except ValueError:
         # just swallow the error as something happened Infeasibility or non-symmetry
-        quad_prog_error = None
-        return quad_prog_error
+        return None

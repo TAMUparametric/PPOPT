@@ -21,7 +21,7 @@ setup(
     url='https://github.com/TAMUparametric/PPOPT',
     extras_require={
         'test': ['pytest'],
-        'optional': ['cvxopt', 'quadprog']
+        'optional': ['cvxopt', 'quadprog'],
     },
     install_requires=["numpy",
                       "matplotlib",
@@ -34,5 +34,5 @@ setup(
                       "pathos",
                       "plotly"],
     packages=find_packages(where='src'),
-    package_dir={'': 'src'}
+    package_dir={'': 'src'},
 )

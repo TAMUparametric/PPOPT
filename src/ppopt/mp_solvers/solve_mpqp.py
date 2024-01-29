@@ -7,10 +7,10 @@ import numpy
 from ..mp_solvers import (
     mpqp_combinatorial,
     mpqp_graph,
+    mpqp_parallel_combinatorial_exp,
     mpqp_parallel_geometric,
     mpqp_parallel_geometric_exp,
     mpqp_parrallel_combinatorial,
-    mpqp_parallel_combinatorial_exp,
     mpqp_parrallel_graph,
 )
 from ..mplp_program import MPLP_Program

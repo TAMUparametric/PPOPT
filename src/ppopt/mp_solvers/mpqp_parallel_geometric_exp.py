@@ -64,7 +64,7 @@ def full_process_2(program, current_active_set):
     return critical_region, get_facet_centers(critical_region.E, critical_region.f)
 
 
-def fathem_initial_active_sets(program: MPQP_Program, initial_active_sets: List[List[int]] = None):
+def fathem_initial_active_sets(program: MPQP_Program, initial_active_sets: Optional[List[List[int]]] = None):
     """
     Covers an initial active set
 
@@ -85,7 +85,7 @@ def fathem_initial_active_sets(program: MPQP_Program, initial_active_sets: List[
     return work_items, crs
 
 
-def solve(program: MPQP_Program, initial_active_sets: List[List[int]] = None, num_cores=-1) -> Optional[Solution]:
+def solve(program: MPQP_Program, initial_active_sets: Optional[List[List[int]]] = None, num_cores=-1) -> Optional[Solution]:
     """
     This solved the multiparametric program using the geometric algorithm described in Spjotvold et al.
 

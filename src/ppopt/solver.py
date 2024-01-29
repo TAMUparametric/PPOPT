@@ -104,7 +104,7 @@ class Solver:
         """This is an internal method that throws an error and prompts the user when they use an unsupported Solver"""
 
         message = f"Problem {problem_name} is not supported! \n" \
-                  + f'PPOPT Supports the following problems {str(Solver.supported_problems)} \n' \
+                  + f'PPOPT Supports the following problems {Solver.supported_problems!s} \n' \
                   + 'If you have a misspelled a supported problem, please make sure you spelled it correctly!! \n'
 
         raise RuntimeError(message)
@@ -114,21 +114,21 @@ class Solver:
         """This is an internal method that throws an error and prompts the user when they use an unsupported Solver"""
 
         message = f"Solver {solver_name} is not supported! \n" \
-                  + f'PPOPT Supports the following solvers {str(Solver.supported_solvers)} \n'
+                  + f'PPOPT Supports the following solvers {Solver.supported_solvers!s} \n'
         raise RuntimeError(message)
 
     def check_supported_problem(self, problem_name: str) -> None:
         if problem_name not in self.solvers:
             message = f"Problem {problem_name} is has not been defined for this solver! \n" \
-                      + f'This solver has the following problem types defined {str(self.solvers.items())} \n' \
-                      + f'If this is one of the supported problems {str(Solver.supported_problems)} then simply add it when defining the solver object\n'
+                      + f'This solver has the following problem types defined {self.solvers.items()!s} \n' \
+                      + f'If this is one of the supported problems {Solver.supported_problems!s} then simply add it when defining the solver object\n'
             raise RuntimeError(message)
 
     # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
     def solve_miqp(self, Q: Optional[numpy.ndarray], c: Optional[numpy.ndarray], A: Optional[numpy.ndarray],
                    b: Optional[numpy.ndarray],
-                   equality_constraints: Iterable[int] = None,
-                   bin_vars: Iterable[int] = None, verbose: bool = False,
+                   equality_constraints: Optional[Iterable[int]] = None,
+                   bin_vars: Optional[Iterable[int]] = None, verbose: bool = False,
                    get_duals: bool = True) -> Optional[SolverOutput]:
         r"""
         This is the breakout for solving mixed integer quadratic programs
@@ -165,7 +165,7 @@ class Solver:
         return self.solver_not_supported(self.solvers['miqp'])
 
     def solve_qp(self, Q: Optional[numpy.ndarray], c: Optional[numpy.ndarray], A: Optional[numpy.ndarray],
-                 b: Optional[numpy.ndarray], equality_constraints: Iterable[int] = None,
+                 b: Optional[numpy.ndarray], equality_constraints: Optional[Iterable[int]] = None,
                  verbose=False,
                  get_duals=True) -> Optional[SolverOutput]:
         r"""
@@ -242,8 +242,8 @@ class Solver:
         return self.solver_not_supported(self.solvers['lp'])
 
     def solve_milp(self, c: Optional[numpy.ndarray], A: Optional[numpy.ndarray], b: Optional[numpy.ndarray],
-                   equality_constraints: Iterable[int] = None,
-                   bin_vars: Iterable[int] = None, verbose=False, get_duals=True) -> Optional[SolverOutput]:
+                   equality_constraints: Optional[Iterable[int]] = None,
+                   bin_vars: Optional[Iterable[int]] = None, verbose=False, get_duals=True) -> Optional[SolverOutput]:
         r"""
         This is the breakout for solving mixed integer linear programs
 

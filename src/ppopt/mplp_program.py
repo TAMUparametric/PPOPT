@@ -1,4 +1,3 @@
-from dataclasses import dataclass, field
 from typing import List, Optional, Tuple, Union
 
 import numpy
@@ -22,7 +21,7 @@ from .utils.general_utils import (
 )
 
 
-def calc_weakly_redundant(A, b, equality_set: List[int] = None, deterministic_solver='gurobi'):
+def calc_weakly_redundant(A, b, equality_set: Optional[List[int]] = None, deterministic_solver='gurobi'):
     if equality_set is None:
         equality_set = []
 
@@ -37,7 +36,6 @@ def calc_weakly_redundant(A, b, equality_set: List[int] = None, deterministic_so
 
 
 # noinspection GrazieInspection
-@dataclass
 class MPLP_Program:
     r"""
     The standard class for multiparametric  linear programming
@@ -69,7 +67,7 @@ class MPLP_Program:
 
     equality_indices: Union[List[int], numpy.ndarray]
 
-    solver: Solver = field(default_factory=Solver)
+    solver: Solver
 
     def __init__(self, A, b, c, H, A_t, b_t, F, c_c=None, c_t=None, Q_t=None, equality_indices=None, solver=None):
 

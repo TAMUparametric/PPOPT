@@ -181,4 +181,4 @@ class Solution:
         return None
 
     def is_mixed_integer_sol(self):
-        return isinstance(self.program, MPMILP_Program) or isinstance(self.program, MPMIQP_Program)
+        return isinstance(self.program, (MPMILP_Program, MPMIQP_Program))

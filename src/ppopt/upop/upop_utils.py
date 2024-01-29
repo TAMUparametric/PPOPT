@@ -1,5 +1,5 @@
 import copy
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import numpy
 
@@ -169,7 +169,7 @@ def get_chebychev_centers(solution: Solution) -> List[numpy.ndarray]:
 
 
 def verify_outer_boundary(solution: Solution, hyper_indices: List[int], outer_indices: List[int],
-                          chebychev_centers: List[numpy.ndarray] = None) -> List[int]:
+                          chebychev_centers: Optional[List[numpy.ndarray]] = None) -> List[int]:
     """
     This checks all the possible outer boundary indices for errors, failures to solve for the minimal set of
     fundamental hyperplanes in the solution.

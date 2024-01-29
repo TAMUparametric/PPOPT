@@ -51,7 +51,7 @@ class MPMILP_Program(MPLP_Program):
     def __init__(self, A: numpy.ndarray, b: numpy.ndarray, c: numpy.ndarray, H: numpy.ndarray, A_t: numpy.ndarray,
                  b_t: numpy.ndarray, F: numpy.ndarray, binary_indices=None, c_c: Optional[numpy.ndarray] = None,
                  c_t: Optional[numpy.ndarray] = None, Q_t: Optional[numpy.ndarray] = None,
-                 equality_indices: List[int] = None,
+                 equality_indices: Optional[List[int]] = None,
                  solver: Solver = None):
         """Initializes the MPMILP_Program"""
 
@@ -210,7 +210,7 @@ class MPMILP_Program(MPLP_Program):
         return self.solver.solve_milp(self.c + self.H @ theta_point, self.A, self.b + self.F @ theta_point,
                                       self.equality_indices, self.binary_indices)
 
-    def check_bin_feasibility(self, partial_fixed_bins: List = None) -> bool:
+    def check_bin_feasibility(self, partial_fixed_bins: Optional[List] = None) -> bool:
         """
         Checks if a partial binary substitution is feasible in the MILP sense
 

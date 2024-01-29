@@ -13,7 +13,10 @@ def test_solve_mpqp_combinatorial(qp_problem):
     assert len(solution.critical_regions) == 4
 
 def test_solve_mpqp_gupta_parallel_exp(qp_problem):
-    solution = solve_mpqp(qp_problem, mpqp_algorithm.combinatorial_parallel_exp)
+    # solution = solve_mpqp(qp_problem, mpqp_algorithm.combinatorial_parallel_exp)
+
+    solution = mpqp_parrallel_combinatorial.solve(qp_problem, 4)
+
 
     assert solution is not None
     assert len(solution.critical_regions) == 4
@@ -62,6 +65,7 @@ def test_solve_mpqp_graph_parallel(qp_problem):
 
 
 def test_solve_mpqp_graph_parallel_exp(qp_problem):
+    qp_problem.solver.solvers['lp'] = 'glpk'
     solution = solve_mpqp(qp_problem, mpqp_algorithm.graph_parallel_exp)
     assert solution is not None
     assert len(solution.critical_regions) == 4

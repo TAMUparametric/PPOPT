@@ -1,5 +1,5 @@
 import copy
-from typing import List, Union
+from typing import List, Optional, Union
 
 import numpy
 
@@ -10,7 +10,7 @@ from ..utils.constraint_utilities import remove_strongly_redundant_constraints
 
 class MITree:
 
-    def __init__(self, problem: Union[MPMILP_Program, MPMIQP_Program], fixed_bins: list = None, depth: int = 0):
+    def __init__(self, problem: Union[MPMILP_Program, MPMIQP_Program], fixed_bins: Optional[list] = None, depth: int = 0):
         """
         This is the main data structure for the enumeration based algorithm were we are attempting to find feasible
         binary combinations in a more efficient manner

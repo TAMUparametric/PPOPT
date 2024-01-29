@@ -63,7 +63,7 @@ def manufacture_lambda(attempted, murder_list):
         return lambda x: x not in attempted and murder_list.check(x)
 
 
-def generate_reduce(candidate: tuple, murder_list=None, attempted=None, equality_set: Set[int] = None) -> list:
+def generate_reduce(candidate: tuple, murder_list=None, attempted=None, equality_set: Optional[Set[int]] = None) -> list:
     if equality_set is None:
         equality_set = set()
 

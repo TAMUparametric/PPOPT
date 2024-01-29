@@ -2,7 +2,7 @@
 # Constraint manipulation utilities
 #
 
-from typing import List
+from typing import List, Optional
 
 import numpy
 
@@ -183,7 +183,7 @@ def calculate_redundant_constraints(A, b):
     return output
 
 
-def find_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, equality_set: List[int] = None, solver='gurobi'):
+def find_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, equality_set: Optional[List[int]] = None, solver='gurobi'):
     """"""
     if equality_set is None:
         equality_set = []
@@ -218,7 +218,7 @@ def remove_strongly_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, in
         return A[keep_list], b[keep_list], keep_list, new_index
 
 
-def is_full_rank(A: numpy.ndarray, indices: List[int] = None) -> bool:
+def is_full_rank(A: numpy.ndarray, indices: Optional[List[int]] = None) -> bool:
     """
     Tests if the matrix A[indices] is full rank
     Empty matrices e.g. A[[]] will default to be full rank

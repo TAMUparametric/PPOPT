@@ -1,6 +1,6 @@
 import time
 from math import atan2
-from typing import List
+from typing import List, Optional
 
 import numpy
 import plotly.graph_objects as go
@@ -61,7 +61,7 @@ def gen_vertices(solution: Solution):
     return list(sorted_vertices)
 
 
-def plotly_plot(solution: Solution, save_path: str = None, show=True, save_format: str = 'png') -> None:
+def plotly_plot(solution: Solution, save_path: Optional[str] = None, show=True, save_format: str = 'png') -> None:
     """
     Makes a plot via the plotly library, this is good for interactive figures that you can embed into webpages and
     handle interactively.
@@ -101,8 +101,8 @@ def plotly_plot(solution: Solution, save_path: str = None, show=True, save_forma
         fig.show()
 
 
-def parametric_plot(solution: Solution, save_path: str = None, show=True, save_format: str = 'png',
-                    seed: int = None) -> None:
+def parametric_plot(solution: Solution, save_path: Optional[str] = None, show=True, save_format: str = 'png',
+                    seed: Optional[int] = None) -> None:
     """
     Makes a simple plot from a solution. This uses matplotlib to generate a plot, it is the general plotting backend.
 
@@ -147,7 +147,7 @@ def parametric_plot(solution: Solution, save_path: str = None, show=True, save_f
         pyplot.show()
 
 
-def parametric_plot_1D(solution: Solution, save_path: str = None, show=True, save_format: str = 'png') -> None:
+def parametric_plot_1D(solution: Solution, save_path: Optional[str] = None, show=True, save_format: str = 'png') -> None:
     """
     Makes a simple plot from a 1D parametric solution. This uses matplotlib to generate a plot, it is the general
     plotting backend.
