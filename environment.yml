@@ -20,4 +20,8 @@ dependencies:
     - cvxopt
     - quadprog
     - sphinx_rtd_theme
+    - sphinx_mdinclude
+    - nbsphinx
+    - ipykernel
+    - ipython
 prefix: /home/docs/.conda/envs/PPOPT

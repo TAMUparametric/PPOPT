@@ -1,1 +1,6 @@
 m2r2
+sphinx_mdinclude
+sphinx-rtd-theme
+nbsphinx
+ipykernel
+ipython
