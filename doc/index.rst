@@ -12,7 +12,7 @@ Tutorial
 
     algorithm_overview
     tutorial
-    mplp_example
+    mplp_tut
     control_allocation_example
     portfolio
     mpc
