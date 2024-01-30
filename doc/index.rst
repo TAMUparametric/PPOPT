@@ -10,12 +10,14 @@ Tutorial
     :maxdepth: 2
     :caption: Overview
 
-    tutorial
     algorithm_overview
+    tutorial
+    mplp_example
     control_allocation_example
     portfolio
     mpc
     mpoc_examples
+
 
 API
 ---
