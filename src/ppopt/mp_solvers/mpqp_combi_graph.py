@@ -28,6 +28,7 @@ def combinatorial_graph_initialization(program, initial_active_sets):
 
     return attempted, solution, to_attempt
 
+
 def sorted_tuple(x) -> tuple:
     """Helper function to make sure that inclusion tests are O(1)"""
     return tuple(sorted(x))
@@ -45,7 +46,7 @@ def add_i(x, i: int) -> tuple:
     return sorted_tuple(temp_x)
 
 
-def feasability_check(program:MPQP_Program, A) -> bool:
+def feasability_check(program: MPQP_Program, A) -> bool:
     A_x, b_x, A_l, b_l = program.optimal_control_law(list(A))
 
     N = program.num_constraints()
@@ -59,6 +60,8 @@ def feasability_check(program:MPQP_Program, A) -> bool:
 
     # build and solve the feasibility LP, if empty it will result in None
     return program.solver.solve_lp(None, A_prob, b_prob) is not None
+
+
 def solve(program: MPQP_Program) -> Solution:
     """
     Solves the MPQP program with the joint combinatorial based connected graph approach of Arnström et al.
@@ -100,7 +103,6 @@ def solve(program: MPQP_Program) -> Solution:
                 if A_trial not in E:
                     S.add(A_trial)
                     E.add(A_trial)
-
 
     # while we have things to explore, we explore
     while len(S) > 0:
