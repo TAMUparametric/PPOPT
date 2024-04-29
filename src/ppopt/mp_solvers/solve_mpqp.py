@@ -12,6 +12,7 @@ from ..mp_solvers import (
     mpqp_parallel_geometric_exp,
     mpqp_parrallel_combinatorial,
     mpqp_parrallel_graph,
+    mpqp_combi_graph,
 )
 from ..mplp_program import MPLP_Program
 from ..mpqp_program import MPQP_Program
@@ -32,9 +33,11 @@ class mpqp_algorithm(Enum):
     graph_exp = 'graph exp'
     graph_parallel = 'p graph'
     graph_parallel_exp = 'p graph exp'
+    combinatorial_graph = 'combinatorial graph'
     geometric = 'geometric'
     geometric_parallel = 'p geometric'
     geometric_parallel_exp = 'p geometric exp'
+
 
 
 def solve_mpqp(problem: MPQP_Program, algorithm: mpqp_algorithm = mpqp_algorithm.combinatorial) -> Solution:
@@ -77,6 +80,9 @@ def solve_mpqp(problem: MPQP_Program, algorithm: mpqp_algorithm = mpqp_algorithm
 
     if algorithm is mpqp_algorithm.geometric_parallel_exp:
         solution = mpqp_parallel_geometric_exp.solve(problem)
+
+    if algorithm is mpqp_algorithm.combinatorial_graph:
+        solution = mpqp_combi_graph.solve(problem)
 
     # check if there needs to be a flag thrown in the case of overlapping critical regions
     # happens if there are negative or zero eigen values for mpQP (kkt conditions can find a lot of saddle points)
