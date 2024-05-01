@@ -1,7 +1,5 @@
-from typing import List, Optional
 import numpy
 
-from .mpqp_graph import graph_initialization
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.constraint_utilities import is_full_rank
