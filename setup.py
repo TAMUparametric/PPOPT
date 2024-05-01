@@ -32,7 +32,8 @@ setup(
                       "setuptools",
                       "psutil",
                       "pathos",
-                      "plotly"],
+                      "plotly",
+                      "daqp"],
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
 )

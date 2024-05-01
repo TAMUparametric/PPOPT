@@ -8,3 +8,4 @@ setuptools
 psutil
 pathos
 plotly
+daqp
