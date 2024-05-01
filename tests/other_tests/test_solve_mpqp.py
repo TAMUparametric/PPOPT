@@ -70,8 +70,17 @@ def test_solve_mpqp_graph_parallel_exp(qp_problem):
     assert solution is not None
     assert len(solution.critical_regions) == 4
 
+def test_solve_mpqp_combinatorial_graph(qp_problem):
+    qp_problem.solver.solvers['lp'] = 'glpk'
+    solution = solve_mpqp(qp_problem, mpqp_algorithm.combinatorial_graph)\
+
+    assert solution is not None
+    assert len(solution.critical_regions) == 4
+
 
 def test_solve_mplp_combinatorial(simple_mpLP):
     solution = solve_mpqp(simple_mpLP, mpqp_algorithm.combinatorial)
     assert solution is not None
     assert len(solution.critical_regions) == 4
+
+
