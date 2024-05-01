@@ -2,6 +2,7 @@ import random
 
 import numpy
 
+from src.ppopt.solver_interface.daqp_solver_interface import solve_qp_daqp
 from src.ppopt.solver_interface.cvxopt_interface import solve_lp_cvxopt
 from src.ppopt.solver_interface.gurobi_solver_interface import (
     solve_lp_gurobi,
@@ -34,7 +35,7 @@ def test_lp_consistency():
             assert False
 
 
-def test_qp_consistancy():
+def test_qp_interface_consistency():
 
     num_qp = 100
 
@@ -49,6 +50,7 @@ def test_qp_consistancy():
         equality_constraints = []
         quadprog_sol = solve_qp_quadprog(Q, c, A, b, equality_constraints)
         gurobi_sol = solve_qp_gurobi(Q, c, A, b, equality_constraints)
+        daqp_sol = solve_qp_daqp(Q, c, A, b, equality_constraints)
 
         if quadprog_sol != gurobi_sol:
             print(f'On problem {i} there was a disagreement between Gurobi and Quadprog')

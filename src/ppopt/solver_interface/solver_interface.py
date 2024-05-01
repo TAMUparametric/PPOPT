@@ -10,6 +10,7 @@ from ..solver_interface.gurobi_solver_interface import (
     solve_qp_gurobi,
 )
 from ..solver_interface.quad_prog_interface import solve_qp_quadprog
+from ..solver_interface.daqp_solver_interface import solve_qp_daqp
 from .solver_interface_utils import SolverOutput
 
 Matrix = Optional[numpy.ndarray]
@@ -17,7 +18,7 @@ Matrix = Optional[numpy.ndarray]
 
 def solver_not_supported(solver_name: str) -> None:
     """This is an internal method that throws an error and prompts the user when they use an unsupported Solver"""
-    supported_solvers = ['gurobi', 'cplex', 'glpk']
+    supported_solvers = ['gurobi', 'cplex', 'glpk', 'daqp']
 
     message = f"Solver {solver_name} is not supported! \n" \
               + f'PPOPT Supports the following solvers {supported_solvers!s} \n'
@@ -95,6 +96,8 @@ def solve_qp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix, equality_constraints: O
         return solve_qp_gurobi(Q, c, A, b, equality_constraints, verbose, get_duals)
     elif deterministic_solver == "quadprog":
         return solve_qp_quadprog(Q, c, A, b, equality_constraints, verbose, get_duals)
+    elif deterministic_solver == "daqp":
+        return solve_qp_daqp(Q, c, A, b, equality_constraints, verbose, get_duals)
     else:
         solver_not_supported(deterministic_solver)
         return None
