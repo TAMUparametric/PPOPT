@@ -64,6 +64,7 @@ def solve_qp_daqp(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: numpy
     if num_equality_constraints != 0:
         new_A = A[[*equality_constraints, *ineq]].astype(c_double)
         new_b = b[[*equality_constraints, *ineq]].flatten().astype(c_double)
+        # equality constraints are labeled as 5, regular inequalities are 0
         constraint_sense = numpy.array([*[5 for _ in range(num_equality_constraints)],
                                         *[0 for _ in range(num_inequality_constraints)]]).astype(c_int)
     else:
@@ -75,6 +76,10 @@ def solve_qp_daqp(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: numpy
     c_ = c.flatten().astype(c_double)
 
     x_star, opt, status, info = daqp.solve(H=Q_, f=c_, A=new_A, bupper=new_b, sense=constraint_sense)
+
+    # if there is anything other than an optimal solution found return nothing
+    if status != 1:
+        return None
 
     duals = info['lam']
     lagrange = numpy.zeros(num_constraints)
