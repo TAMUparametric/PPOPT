@@ -7,8 +7,6 @@ from tests.test_fixtures import qp_problem, simple_mpLP
 def test_solve_mpqp_combinatorial(qp_problem):
     solution = solve_mpqp(qp_problem, mpqp_algorithm.combinatorial)
 
-    parametric_plot(solution)
-
     assert solution is not None
     assert len(solution.critical_regions) == 4
 
