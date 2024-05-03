@@ -5,6 +5,7 @@ from typing import Dict, Iterable, Optional
 import numpy
 
 from .solver_interface.cvxopt_interface import solve_lp_cvxopt
+from .solver_interface.daqp_solver_interface import solve_qp_daqp
 from .solver_interface.gurobi_solver_interface import (
     solve_lp_gurobi,
     solve_milp_gurobi,
@@ -47,8 +48,8 @@ def available_QP_solvers():
 
     :return: Installed and supported solvers for quadratic programs
     """
-    solver_map = {'quadprog': 'quadprog', 'gurobipy': 'gurobi'}
-    check_packages = ['quadprog', 'gurobipy']
+    solver_map = {'quadprog': 'quadprog', 'gurobipy': 'gurobi', 'daqp': 'daqp'}
+    check_packages = ['quadprog', 'gurobipy', 'daqp']
     return check_solver_modules(solver_map, check_packages)
 
 
@@ -82,7 +83,7 @@ class Solver:
     solvers: Dict[str, str] = field(default_factory=default_solver_options)
 
     supported_problems = ['lp', 'qp', 'milp', 'miqp']
-    supported_solvers = ['gurobi', 'glpk', 'quadprog']
+    supported_solvers = ['gurobi', 'glpk', 'quadprog', 'daqp']
 
     def __post_init__(self):
         """
@@ -200,6 +201,9 @@ class Solver:
 
         if self.solvers['qp'] == "quadprog":
             return solve_qp_quadprog(Q, c, A, b, equality_constraints, verbose, get_duals)
+
+        if self.solvers['qp'] == "daqp":
+            return solve_qp_daqp(Q, c, A, b, equality_constraints, verbose, get_duals)
 
         return self.solver_not_supported(self.solvers['qp'])
 
