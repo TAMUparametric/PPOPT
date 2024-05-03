@@ -58,3 +58,17 @@ def test_qp_interface_consistency():
             print(gurobi_sol)
             if numpy.linalg.norm(quadprog_sol.sol - gurobi_sol.sol, 2) > 10**(-4):
                 assert False
+
+        if quadprog_sol != daqp_sol:
+            print(f'On problem {i} there was a disagreement between Daqp and Quadprog')
+            print(quadprog_sol)
+            print(daqp_sol)
+            if numpy.linalg.norm(quadprog_sol.sol - daqp_sol.sol, 2) > 10 ** (-4):
+                assert False
+
+        if gurobi_sol != daqp_sol:
+            print(f'On problem {i} there was a disagreement between Daqp and Gurobi')
+            print(gurobi_sol)
+            print(daqp_sol)
+            if numpy.linalg.norm(gurobi_sol.sol - daqp_sol.sol, 2) > 10 ** (-4):
+                assert False
