@@ -24,4 +24,5 @@ dependencies:
     - nbsphinx
     - ipykernel
     - ipython
+    - daqp
 prefix: /home/docs/.conda/envs/PPOPT

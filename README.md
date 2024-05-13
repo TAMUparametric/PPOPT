@@ -32,9 +32,9 @@ pip install git+https://github.com/HKaras/quadprog/
 ## Completed Features
 
 - Solver interface for mpLPs and mpQPs with the following algorithms
-    1. Serial and Parallel Combinatorial Algorithm
-    2. Serial and Parallel Geometrical Algorithm
-    3. Serial and Parallel Graph based Algorithm
+    1. Serial and Parallel Combinatorial Algorithms
+    2. Serial and Parallel Geometrical Algorithms
+    3. Serial and Parallel Graph based Algorithms
 - Solver interface for mpMILPs and mpMIQPs with the following algorithms
     1. Enumeration based algorithm
 - Multiparametric solution export to C++, JavaScript, and Python
