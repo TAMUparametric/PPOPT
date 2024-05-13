@@ -67,7 +67,7 @@ def default_solver_options():
     if 'glpk' in available_LP_solvers():
         default_solver['lp'] = 'glpk'
 
-    if 'quadprog' in available_LP_solvers():
+    if 'quadprog' in available_QP_solvers():
         default_solver['qp'] = 'quadprog'
 
     return default_solver
