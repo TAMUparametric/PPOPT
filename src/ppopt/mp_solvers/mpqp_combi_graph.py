@@ -110,11 +110,8 @@ def solve(program: MPQP_Program) -> Solution:
     # while we have things to explore, we explore
     while len(S) > 0:
 
-
         # get an active set combination
         A = S.pop()
-
-        print(A)
 
         # if we fail LINQ then we need to remove a constraint to hope to be full rank
         if not is_full_rank(program.A, list(A)):
