@@ -47,6 +47,11 @@ def add_i(x, i: int) -> tuple:
 def feasability_check(program: MPQP_Program, A) -> bool:
     A_x, b_x, A_l, b_l = program.optimal_control_law(list(A))
 
+    # makes the assumption that the equality indices are at the top of the active set
+    # as these can be any sign, we only care to enforce l(theta) >= 0
+    A_l = A_l[len(program.equality_indices):]
+    b_l = b_l[len(program.equality_indices):]
+
     N = program.num_constraints()
     A_ = program.A[[i for i in range(N) if i not in A]]
     b_ = program.b[[i for i in range(N) if i not in A]]
@@ -105,8 +110,11 @@ def solve(program: MPQP_Program) -> Solution:
     # while we have things to explore, we explore
     while len(S) > 0:
 
+
         # get an active set combination
         A = S.pop()
+
+        print(A)
 
         # if we fail LINQ then we need to remove a constraint to hope to be full rank
         if not is_full_rank(program.A, list(A)):
