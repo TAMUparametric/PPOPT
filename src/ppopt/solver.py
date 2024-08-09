@@ -82,8 +82,8 @@ class Solver:
     """
     solvers: Dict[str, str] = field(default_factory=default_solver_options)
 
-    supported_problems = ['lp', 'qp', 'milp', 'miqp']
-    supported_solvers = ['gurobi', 'glpk', 'quadprog', 'daqp']
+    supported_problems = ('lp', 'qp', 'milp', 'miqp')
+    supported_solvers = ('gurobi', 'glpk', 'quadprog', 'daqp')
 
     def __post_init__(self):
         """

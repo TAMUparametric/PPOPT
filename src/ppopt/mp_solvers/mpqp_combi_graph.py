@@ -22,7 +22,7 @@ def combinatorial_graph_initialization(program, initial_active_sets):
 
     solution = Solution(program, [])
 
-    to_attempt = set(sorted_tuple(a_set) for a_set in initial_active_sets)
+    to_attempt = {sorted_tuple(a_set) for a_set in initial_active_sets}
 
     return attempted, solution, to_attempt
 

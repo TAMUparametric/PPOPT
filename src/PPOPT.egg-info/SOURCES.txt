@@ -23,14 +23,15 @@ src/ppopt/mp_solvers/__init__.py
 src/ppopt/mp_solvers/mitree.py
 src/ppopt/mp_solvers/mpmiqp_enumeration.py
 src/ppopt/mp_solvers/mpqp_ahmadi.py
+src/ppopt/mp_solvers/mpqp_combi_graph.py
 src/ppopt/mp_solvers/mpqp_combinatorial.py
 src/ppopt/mp_solvers/mpqp_dist_combinatorial.py
 src/ppopt/mp_solvers/mpqp_geometric.py
 src/ppopt/mp_solvers/mpqp_graph.py
+src/ppopt/mp_solvers/mpqp_parallel_combinatorial_exp.py
 src/ppopt/mp_solvers/mpqp_parallel_geometric.py
 src/ppopt/mp_solvers/mpqp_parallel_geometric_exp.py
 src/ppopt/mp_solvers/mpqp_parrallel_combinatorial.py
-src/ppopt/mp_solvers/mpqp_parallel_combinatorial_exp.py
 src/ppopt/mp_solvers/mpqp_parrallel_graph.py
 src/ppopt/mp_solvers/solve_mplp.py
 src/ppopt/mp_solvers/solve_mpmiqp.py
@@ -38,6 +39,7 @@ src/ppopt/mp_solvers/solve_mpqp.py
 src/ppopt/mp_solvers/solver_utils.py
 src/ppopt/solver_interface/__init__.py
 src/ppopt/solver_interface/cvxopt_interface.py
+src/ppopt/solver_interface/daqp_solver_interface.py
 src/ppopt/solver_interface/gurobi_solver_interface.py
 src/ppopt/solver_interface/quad_prog_interface.py
 src/ppopt/solver_interface/solver_interface.py
@@ -54,3 +56,4 @@ src/ppopt/utils/constraint_utilities.py
 src/ppopt/utils/general_utils.py
 src/ppopt/utils/geometric.py
 src/ppopt/utils/mpqp_utils.py
+tests/test_fixtures.py

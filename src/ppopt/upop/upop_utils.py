@@ -138,15 +138,14 @@ def get_outer_boundaries(indices: List[int], parity: List[int]):
         if index not in visited:
             visited.add(index)
             type_visited[index] = parity[i]
-        else:
-            # we have visited this index before
-            # check if we have scratched this index before
-            if type_visited[index] == 5:
-                continue
 
-            # scratch this index
-            elif type_visited[index] != parity[i]:
-                type_visited[index] = 5
+        # we have visited this index before
+        # check if we have scratched this index before
+        elif type_visited[index] == 5:
+            continue
+        # scratch this index
+        elif type_visited[index] != parity[i]:
+            type_visited[index] = 5
 
     outers = set()
 

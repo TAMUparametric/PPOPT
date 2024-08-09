@@ -3,8 +3,9 @@ from typing import Iterable, Optional
 import numpy
 
 try:
-    import daqp
     from ctypes import c_double, c_int
+
+    import daqp
 except ImportError:
     pass
 

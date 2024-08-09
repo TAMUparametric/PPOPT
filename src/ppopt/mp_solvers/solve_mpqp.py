@@ -5,6 +5,7 @@ from enum import Enum
 import numpy
 
 from ..mp_solvers import (
+    mpqp_combi_graph,
     mpqp_combinatorial,
     mpqp_graph,
     mpqp_parallel_combinatorial_exp,
@@ -12,7 +13,6 @@ from ..mp_solvers import (
     mpqp_parallel_geometric_exp,
     mpqp_parrallel_combinatorial,
     mpqp_parrallel_graph,
-    mpqp_combi_graph,
 )
 from ..mplp_program import MPLP_Program
 from ..mpqp_program import MPQP_Program

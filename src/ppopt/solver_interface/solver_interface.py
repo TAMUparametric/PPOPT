@@ -3,6 +3,7 @@ from typing import Iterable, Optional
 import numpy
 
 from ..solver_interface.cvxopt_interface import solve_lp_cvxopt
+from ..solver_interface.daqp_solver_interface import solve_qp_daqp
 from ..solver_interface.gurobi_solver_interface import (
     solve_lp_gurobi,
     solve_milp_gurobi,
@@ -10,7 +11,6 @@ from ..solver_interface.gurobi_solver_interface import (
     solve_qp_gurobi,
 )
 from ..solver_interface.quad_prog_interface import solve_qp_quadprog
-from ..solver_interface.daqp_solver_interface import solve_qp_daqp
 from .solver_interface_utils import SolverOutput
 
 Matrix = Optional[numpy.ndarray]
