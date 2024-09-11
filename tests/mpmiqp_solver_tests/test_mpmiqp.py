@@ -4,7 +4,7 @@ import numpy
 
 from src.ppopt.mp_solvers.solve_mpmiqp import solve_mpmiqp
 from src.ppopt.mpmilp_program import MPMILP_Program
-from tests.test_fixtures import simple_mpMILP, simple_mpMIQP
+from tests.test_fixtures import simple_mpMILP, simple_mpMIQP, mpMILP_market_problem
 
 
 def test_mpmilp_process_constraints(simple_mpMILP):
@@ -48,14 +48,29 @@ def test_mpmilqp_enumeration_solve(simple_mpMIQP):
 
     sol = solve_mpmiqp(simple_mpMIQP)
 
-def test_mpmilp_evaluate(simple_mpMILP):
+def test_mpmilp_evaluate(mpMILP_market_problem):
 
-    sol = solve_mpmiqp(simple_mpMILP)
+    # find the explicit solution to the mpMILP market problem
+    sol = solve_mpmiqp(mpMILP_market_problem)
 
-    sol.evaluate(numpy.array([[1.2]]))
+    # simple test that we are not finding a hole in the middle of two regions
+    theta_point = numpy.array([[0.0], [500.0]])
+
+    # get the solution
+    ppopt_solution = sol.evaluate(theta_point).flatten()
+    ppopt_value = sol.evaluate_objective(theta_point)
+
+    # get the deterministic solution
+    det_solution = mpMILP_market_problem.solve_theta(theta_point)
+    det_primal_sol = numpy.array(det_solution.sol)
+
+    assert(numpy.isclose(det_solution.obj, ppopt_value))
+    assert(all(numpy.isclose(det_primal_sol, ppopt_solution.flatten())))
+
 
 def test_mpmiqp_evaluate(simple_mpMIQP):
 
     sol = solve_mpmiqp(simple_mpMIQP)
 
     sol.evaluate(numpy.array([[1.2]]))
+
