@@ -20,17 +20,19 @@ class Solution:
     critical_regions: List[CriticalRegion]
 
     def __init__(self, program: Union[MPLP_Program, MPQP_Program], critical_regions: List[CriticalRegion],
-                 is_overlapping=False):
+                 is_overlapping=False, point_location_tolerance=1e-5):
         """
         The explicit solution associated with
 
         :param program: The multiparametric program that is considered here
         :param critical_regions: The list of critical regions in the solution
         :param is_overlapping: A Flag that tells the point location routine that there are overlapping critical regions
+        :param point_location_tolerance: The point location tolerance used to determine the critical regions
         """
         self.program = program
         self.critical_regions = critical_regions
         self.is_overlapping = is_overlapping
+        self.point_location_tolerance = point_location_tolerance
 
     def add_region(self, region: CriticalRegion) -> None:
         """
@@ -80,7 +82,7 @@ class Solution:
         :return: the critical region that contains theta_point or None
         """
         for region in self.critical_regions:
-            if region.is_inside(theta_point):
+            if region.is_inside(theta_point, self.point_location_tolerance):
                 return region
         return None
 
@@ -98,7 +100,7 @@ class Solution:
 
         for region in self.critical_regions:
             # check if theta is inside the critical region
-            if region.is_inside(theta_point):
+            if region.is_inside(theta_point, self.point_location_tolerance):
                 # we are inside the critical region now evaluate x* and f*
                 x_star = region.evaluate(theta_point)
                 obj = self.program.evaluate_objective(x_star, theta_point)

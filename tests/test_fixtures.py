@@ -215,3 +215,22 @@ def simple_mpMIQP():
 
     mpmiqp = MPMIQP_Program(A, b, c, H, Q, A_t, b_t, F, binary_indices=[1, 2])
     return mpmiqp
+
+
+@pytest.fixture()
+def mpMILP_market_problem():
+    """Simple mpMILP for Seatle-to-Topeka"""
+
+    A = numpy.array(
+        [[1, 1, 0, 0, 0], [0, 0, 1, 1, 0], [-1, 0, -1, 0, 0], [0, -1, 0, -1, -500], [-1, 0, 0, 0, 0], [0, -1, 0, 0, 0],
+         [0, 0, -1, 0, 0], [0, 0, 0, -1, 0], [0, 0, 0, 0, -1], [0, 0, 0, 0, 1]], float)
+    b = numpy.array([350, 600, 0, 0, 0, 0, 0, 0, 0, 1], float).reshape(-1, 1)
+    F = numpy.array([[0, 0], [0, 0], [-1, 0], [0, -1], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]], float)
+    A_t = numpy.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]], float)
+    b_t = numpy.array([[1000.0], [1000.0], [0.0], [0.0]], float)
+    H = numpy.zeros([5, 2])
+    c = numpy.array([178, 187, 187, 151, 50000]).reshape(-1, 1)
+    binary_indices = [4]
+
+    milp_prog = MPMILP_Program(A, b, c, H, A_t, b_t, F, binary_indices)
+    return milp_prog

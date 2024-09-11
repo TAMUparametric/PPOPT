@@ -1,5 +1,3 @@
-"""PPOPT INIT FILE"""
-"""Main __init__.py for the ppopt package"""
 import os
 
 os.environ["OMP_NUM_THREADS"] = "1"  # export OMP_NUM_THREADS=1
