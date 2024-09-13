@@ -1,7 +1,8 @@
 from itertools import product
 
-from src.ppopt.mpmodel import MPModeler
+from src.ppopt.mpmodel import MPModeler, VariableType
 from src.ppopt.mp_solvers.solve_mpqp import solve_mpqp
+from src.ppopt.mp_solvers.solve_mpmiqp import solve_mpmiqp
 
 import numpy
 
@@ -120,3 +121,88 @@ def test_portfolio_modeler():
     portfolio = model.formulate_problem()
 
     sol = solve_mpqp(portfolio)
+
+
+def test_simple_mpMILP_modeler():
+    model = MPModeler()
+
+    x_0 = model.add_var(vtype=VariableType.continuous)
+    y_1 = model.add_var(vtype=VariableType.binary)
+    y_2 = model.add_var(vtype=VariableType.binary)
+
+    theta = model.add_param()
+
+    model.add_constr(y_1 + y_2 <= 1)
+    model.add_constr(x_0 <= theta)
+
+    model.add_constr(-x_0 <= 0)
+    model.add_constr(x_0 - y_1 <= 0)
+    model.add_constr(x_0 - y_2 <= 0)
+
+    model.add_constr(theta <= 2)
+    model.add_constr(theta >= -2)
+
+    model.set_objective(-3 * x_0)
+
+    mpmilp = model.formulate_problem()
+
+    mpmilp.solver.solvers['lp'] = 'glpk'
+
+    sol = solve_mpmiqp(mpmilp)
+
+
+def test_simple_mpMIQP_modeler():
+    model = MPModeler()
+
+    x_0 = model.add_var(vtype=VariableType.continuous)
+    y_1 = model.add_var(vtype=VariableType.binary)
+    y_2 = model.add_var(vtype=VariableType.binary)
+
+    theta = model.add_param()
+
+    model.add_constr(y_1 + y_2 <= 1)
+    model.add_constr(x_0 <= theta)
+
+    model.add_constr(-x_0 <= 0)
+    model.add_constr(x_0 - y_1 <= 0)
+    model.add_constr(x_0 - y_2 <= 0)
+
+    model.add_constr(theta <= 2)
+    model.add_constr(theta >= -2)
+
+    model.set_objective(-3 * x_0 + x_0 ** 2 + y_1 ** 2 + y_2 ** 2)
+
+    mpmilp = model.formulate_problem()
+
+    mpmilp.solver.solvers['lp'] = 'glpk'
+
+    sol = solve_mpmiqp(mpmilp)
+
+
+def test_simple_mpMIQP_H_modeler():
+    model = MPModeler()
+
+    x_0 = model.add_var(vtype=VariableType.continuous)
+    y_1 = model.add_var(vtype=VariableType.binary)
+    y_2 = model.add_var(vtype=VariableType.binary)
+
+    theta = model.add_param()
+
+    model.add_constr(y_1 + y_2 == 1)
+    model.add_constr(x_0 <= theta)
+
+    model.add_constr(-x_0 <= 0)
+    model.add_constr(x_0 - y_1 <= 0)
+    model.add_constr(x_0 - y_2 <= 0)
+
+    model.add_constr(theta <= 2)
+    model.add_constr(theta >= -2)
+
+    model.set_objective(-3 * x_0 + theta**2 + theta + x_0 ** 2 + y_1 ** 2 + y_2 ** 2 + theta * x_0 + theta * y_1 + theta * y_2 + x_0*theta)
+
+    mpmilp = model.formulate_problem()
+
+    mpmilp.solver.solvers['lp'] = 'glpk'
+    mpmilp.solver.solvers['qp'] = 'daqp'
+
+    sol = solve_mpmiqp(mpmilp)
