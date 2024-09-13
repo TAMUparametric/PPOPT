@@ -1,9 +1,20 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Union
 
+from .mpmilp_program import MPMILP_Program
+from .mpmiqp_program import MPMIQP_Program
+from .mpqp_program import MPQP_Program
+from .mplp_program import MPLP_Program
 
 class VariableType(Enum):
+    """
+    Defines the type of variable in the model
+
+    continuous: a continuous variable
+    binary: a binary variable
+    parameter: a parameter variable
+    """
     continuous = 1
     parameter = 2
     binary = 3
@@ -11,11 +22,24 @@ class VariableType(Enum):
 
 @dataclass
 class ModelVariable:
+    """
+    Defines the Model Variable
+
+    name: variable name
+    var_type: the type of variable
+    var_id: the index of the variable in the originating model
+    """
+
     name: str
     var_type: VariableType
     var_id: int
 
-    def make_expr(self):
+    def make_expr(self) -> 'Expression':
+        """
+        Makes an expression from the variable
+
+        :return: an expression the represents the variable
+        """
         return Expression(0.0, {self: 1.0}, {})
 
     def __hash__(self):
@@ -28,14 +52,14 @@ class ModelVariable:
         return self.name
 
 
-class ExpressionType:
-    constant = 1
-    linear = 2
-    quadratic = 3
-
-
 @dataclass
 class Expression:
+    """
+    Expression is the base definition of a mathematical expression in the model that allows for programmatic
+    construction of constraints and objectives that are used in the model.
+
+    Some limitations, only expressions up to quadratic are supported. Orders higher than quadratic are not supported.
+    """
     const: float
     linear_coeffs: Dict[ModelVariable, float]
     quad_coeffs: Dict[Tuple[ModelVariable, ModelVariable], float]
@@ -176,29 +200,37 @@ class Expression:
             if coeff == 0.0:
                 continue
 
-            if coeff <= 0:
-                prefix = ' - '
-            else:
-                prefix = ' + '
+            prefix = ' + ' if coeff > 0 else ' - '
 
-            output += f'{prefix}{var}'
+            output += f'{prefix}{abs(coeff)}{var}'
 
         for (v1, v2), coeff in self.quad_coeffs.items():
 
             if coeff == 0.0:
                 continue
 
-            if coeff <= 0:
-                prefix = ' - '
-            else:
-                prefix = ' + '
+            prefix = ' + ' if coeff > 0 else ' - '
 
-            output += f'{prefix}{coeff}{v1}{v2}'
+            output += f'{prefix}{abs(coeff)}{v1}{v2}'
 
         return output
 
+    def is_quadratic(self):
+        return len(self.quad_coeffs) > 0
+
+    def is_linear(self):
+        return len(self.quad_coeffs) == 0 and len(self.linear_coeffs) > 0
+
+    def is_constant(self):
+        return len(self.quad_coeffs) == 0 and len(self.linear_coeffs) == 0
 
 class ConstraintType(Enum):
+    """
+    Defines the type of constraint
+
+    equality: an equality constraint
+    inequality: an inequality constraint
+    """
     equality = 1
     inequality = 2
 
@@ -257,6 +289,10 @@ class MPModel:
     def add_constr(self, constr: Constraint):
 
         if isinstance(constr, Constraint):
+
+            if constr.expr.is_quadratic():
+                raise ValueError("Quadratic constraints are not supported")
+
             self.constraints.append(constr)
         else:
             raise TypeError(f"Constraints must be of type Constraint not {type(constr)}")
@@ -283,4 +319,23 @@ class MPModel:
         for con in self.constraints:
             output += str(con) + '\n'
 
+        cont_vars = [var for var in self.variables if var.var_type == VariableType.continuous]
+        bin_vars = [var for var in self.variables if var.var_type == VariableType.binary]
+        params = [param for param in self.parameters]
+
+        output += '\n\n'
+
+        if len(cont_vars) > 0:
+            output += 'Continuous Variables\n'
+            output += '(' + ','.join([str(var) for var in cont_vars]) + f') in R^{len(cont_vars)}\n'
+        if len(bin_vars) > 0:
+            output += '(' + ','.join([str(var) for var in bin_vars]) + f') in B^{len(bin_vars)}\n'
+        if len(params) > 0:
+            output += 'Parameters\n'
+            output += '(' + ','.join([str(var) for var in params]) + f') in R^{len(params)}\n'
+
         return output
+
+    def formulate_problem(self) -> Union[MPLP_Program,  MPQP_Program, MPMILP_Program, MPMIQP_Program]:
+        #TODO: Implement conversion of expressions into the appropriate program
+        pass

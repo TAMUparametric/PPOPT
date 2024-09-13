@@ -3,27 +3,35 @@ from itertools import product
 
 
 def test_define_market_problem():
+    # make a mpLP for the market problem
     model = MPModel()
 
+    # define problem data
     factories = ['se', 'sd']
     markets = ['ch', 'to']
+    capacities = {'se': 350, 'sd': 600}
+    cost = {('se', 'ch'): 178, ('se', 'to'): 187, ('sd', 'ch'): 187, ('sd', 'to'): 151}
 
-    x = {(f, m): model.add_var(name=f'x_{f}_{m}') for f, m in product(factories, markets)}
+    # make a variable for each factory-market production pair
+    x = {(f, m): model.add_var(name=f'x[{f},{m}]') for f, m in product(factories, markets)}
 
-    theta_1 = model.add_param()
-    theta_2 = model.add_param()
+    # make a parameter for each market demand
+    d = {m: model.add_param(name=f'd_[{m}]') for m in markets}
 
-    model.add_constr(x['se', 'ch'] + x['se', 'ch'] <= 350)
-    model.add_constr(x['sd', 'ch'] + x['sd', 'to'] <= 600)
+    # bounds on the production capacity of each factory
+    model.add_constrs(sum(x[f, m] for m in markets) <= capacities[f] for f in factories)
 
-    model.add_constr(x['se', 'ch'] + x['sd', 'ch'] >= theta_1)
-    model.add_constr(x['se', 'ch'] + x['sd', 'ch'] >= theta_2)
+    # demand satisfaction for each market
+    model.add_constrs(sum(x[f, m] for f in factories) >= d[m] for m in markets)
 
-    model.add_constr(theta_1 <= 1000)
-    model.add_constr(theta_2 <= 1000)
-    model.add_constr(theta_1 >= 0)
-    model.add_constr(theta_2 >= 0)
+    # bounds on the parametric demand
+    model.add_constrs(d[m] <= 1000 for m in markets)
+    model.add_constrs(d[m] >= 0 for m in markets)
 
+    # non-negativity of the production variables
     model.add_constrs(x[f, m] >= 0 for f, m in product(factories, markets))
 
-    model.set_objective(178 * x['se', 'ch'] + 187 * x['se', 'to'] + 187 * x['sd', 'ch'] + 151 * x['sd', 'to'])
+    # set the objective to minimize the total cost
+    model.set_objective(sum(cost[f, m] * x[f, m] for f, m in product(factories, markets)))
+
+    print(str(model))
