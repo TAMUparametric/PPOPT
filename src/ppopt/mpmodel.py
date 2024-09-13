@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Tuple, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import numpy
 
@@ -58,7 +58,8 @@ class ModelVariable:
         return self.var_type == VariableType.parameter
 
     def is_var(self):
-        return self.var_type == VariableType.continuous or self.var_type == VariableType.binary
+        return self.var_type in {VariableType.continuous, VariableType.binary}
+
 
 @dataclass
 class Expression:
@@ -300,8 +301,10 @@ class Constraint:
         """
 
         return not self.expr.is_pure_parametric()
+
+
 @dataclass
-class MPModel:
+class MPModeler:
     """
     The MPModel class is the base class for defining a multiparametric model using the new interface.
     """
@@ -431,7 +434,8 @@ class MPModel:
         """
 
         # count number of variables of each type
-        num_vars = len([var for var in self.variables if var.var_type in [VariableType.continuous, VariableType.binary]])
+        num_vars = len(
+            [var for var in self.variables if var.var_type in [VariableType.continuous, VariableType.binary]])
         num_params = len(self.parameters)
 
         # partition the constraints into parametric (A@ theta -b <= 0) and mixed constraints(A@x + F@theta -b <= 0)
@@ -439,7 +443,8 @@ class MPModel:
         parametric_constraints = [constr for constr in self.constraints if constr.is_parametric_constraint()]
 
         # get the indices of the equality constraints
-        equality_indices = [i for i, constr in enumerate(mixed_constraints) if constr.const_type == ConstraintType.equality]
+        equality_indices = [i for i, constr in enumerate(mixed_constraints) if
+                            constr.const_type == ConstraintType.equality]
 
         # get the indices of the binary variables
         binary_indices = [var.var_id for var in self.variables if var.var_type == VariableType.binary]
@@ -515,15 +520,16 @@ class MPModel:
         # if we don't have any quadratic terms then we either have a mpLP or a mpMILP
         if numpy.sum(numpy.abs(Q)) == 0:
 
-
             # if we don't have any binary variables then we have an mpLP
             if len(binary_indices) == 0:
                 return MPLP_Program(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices=equality_indices)
             else:
-                return MPMILP_Program(A, b, c, H, A_t, b_t, F, binary_indices, c_c, c_t, Q_t, equality_indices=equality_indices)
+                return MPMILP_Program(A, b, c, H, A_t, b_t, F, binary_indices, c_c, c_t, Q_t,
+                                      equality_indices=equality_indices)
 
         # otherwise we have a mpQP or a mpMIQP
         if len(binary_indices) == 0:
-            return MPQP_Program(A, b, c, H, 2*Q, A_t, b_t, F, c_c, c_t, Q_t, equality_indices=equality_indices)
+            return MPQP_Program(A, b, c, H, 2 * Q, A_t, b_t, F, c_c, c_t, Q_t, equality_indices=equality_indices)
         else:
-            return MPMIQP_Program(A, b, c, H, 2*Q, A_t, b_t, F, binary_indices, c_c, c_t, Q_t, equality_indices=equality_indices)
+            return MPMIQP_Program(A, b, c, H, 2 * Q, A_t, b_t, F, binary_indices, c_c, c_t, Q_t,
+                                  equality_indices=equality_indices)

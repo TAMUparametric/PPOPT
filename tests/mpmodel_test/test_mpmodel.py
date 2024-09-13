@@ -1,11 +1,14 @@
 from itertools import product
 
-from src.ppopt.mpmodel import MPModel
+from src.ppopt.mpmodel import MPModeler
 from src.ppopt.mp_solvers.solve_mpqp import solve_mpqp
+
+import numpy
+
 
 def test_market_problem_modeler_mplp():
     # make a mpLP for the market problem
-    model = MPModel()
+    model = MPModeler()
 
     # define problem data
     factories = ['se', 'sd']
@@ -39,13 +42,12 @@ def test_market_problem_modeler_mplp():
 
     sol = solve_mpqp(market_problem)
 
-    assert(len(sol.critical_regions) == 3)
+    assert (len(sol.critical_regions) == 3)
 
-    print(sol)
 
 def test_market_problem_modeler_mpqp():
     # make a mpLP for the market problem
-    model = MPModel()
+    model = MPModeler()
 
     # define problem data
     factories = ['se', 'sd']
@@ -73,10 +75,48 @@ def test_market_problem_modeler_mpqp():
     model.add_constrs(x[f, m] >= 0 for f, m in product(factories, markets))
 
     # set the objective to minimize the total cost
-    model.set_objective(sum(cost[f, m] * x[f, m]**2 + 25 * x[f, m] for f, m in product(factories, markets)))
+    model.set_objective(sum(cost[f, m] * x[f, m] ** 2 + 25 * x[f, m] for f, m in product(factories, markets)))
 
     market_problem = model.formulate_problem()
 
     sol = solve_mpqp(market_problem)
 
-    assert(len(sol.critical_regions) == 4)
+    assert (len(sol.critical_regions) == 4)
+
+
+def test_portfolio_modeler():
+    # define problem data
+    numpy.random.seed(123456789)
+    num_assets = 10
+    S = numpy.random.randn(num_assets, num_assets)
+    S = S @ S.T / 10
+    mu = numpy.random.rand(num_assets) / 100
+
+    model = MPModeler()
+
+    # make a variable for each asset
+    assets = [model.add_var(name=f'w[{i}]') for i in range(num_assets)]
+
+    # define the parametric return
+    r = model.add_param(name='R')
+
+    # investment must add to one
+    model.add_constr(sum(assets) == 1)
+
+    # the expeted return must be r
+    model.add_constr(sum(mu[i] * assets[i] for i in range(num_assets)) == r)
+
+    # all assets must be non-negative (no shorting)
+    model.add_constrs(asset >= 0 for asset in assets)
+
+    # parametric return must be constrained to be [min(mu), max(mu)]
+
+    model.add_constr(r >= min(mu))
+    model.add_constr(r <= max(mu))
+
+    # set the objective to minimize the risk
+    model.set_objective(sum(S[i, j] * assets[i] * assets[j] for i in range(num_assets) for j in range(num_assets)))
+
+    portfolio = model.formulate_problem()
+
+    sol = solve_mpqp(portfolio)
