@@ -57,9 +57,6 @@ def chebyshev_ball(A: numpy.ndarray, b: numpy.ndarray, equality_constraints: Opt
 
     b_ball = numpy.concatenate((b, numpy.zeros((1, 1))))
 
-    print(A_ball)
-    print(b_ball)
-
     if len(bin_vars) == 0:
         return solve_lp(c, A_ball, b_ball, equality_constraints, deterministic_solver=deterministic_solver)
     else:
