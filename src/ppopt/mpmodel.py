@@ -2,10 +2,13 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List, Tuple, Optional, Union
 
+import numpy
+
+from .mplp_program import MPLP_Program
 from .mpmilp_program import MPMILP_Program
 from .mpmiqp_program import MPMIQP_Program
 from .mpqp_program import MPQP_Program
-from .mplp_program import MPLP_Program
+
 
 class VariableType(Enum):
     """
@@ -51,6 +54,11 @@ class ModelVariable:
     def __str__(self):
         return self.name
 
+    def is_param(self):
+        return self.var_type == VariableType.parameter
+
+    def is_var(self):
+        return self.var_type == VariableType.continuous or self.var_type == VariableType.binary
 
 @dataclass
 class Expression:
@@ -89,7 +97,7 @@ class Expression:
 
             new_const += other.const
 
-            return Expression(new_const, new_lc, new_qc)
+            return Expression(new_const, new_lc, new_qc).reduced_form()
 
         raise TypeError(
             f"Addition on expressions is only defined on numeric data or other Expressions not {type(other)}")
@@ -112,7 +120,7 @@ class Expression:
         if isinstance(other, (int, float)):
             # break into multiple lines
             return Expression(other * self.const, {v: other * c for v, c in self.linear_coeffs.items()},
-                              {(v1, v2): other * c for (v1, v2), c in self.quad_coeffs.items()})
+                              {(v1, v2): other * c for (v1, v2), c in self.quad_coeffs.items()}).reduced_form()
 
         if isinstance(other, Expression):
             if len(other.quad_coeffs) > 0 or len(self.quad_coeffs) > 0:
@@ -131,7 +139,7 @@ class Expression:
             return (Expression(other.const * self.const, {}, quad_terms)
                     + self.const * Expression(0.0, other.linear_coeffs, {})
                     + other.const * Expression(0.0, self.linear_coeffs, {})
-                    + other.const * self.const)
+                    + other.const * self.const).reduced_form()
 
         raise TypeError(
             f"Multiplication on expressions is only defined on numeric types and (linear Expressions) not {type(other)}")
@@ -142,7 +150,7 @@ class Expression:
             return Expression(1, {}, {})
 
         if power == 1:
-            return Expression(self.const, self.linear_coeffs, self.quad_coeffs)
+            return Expression(self.const, self.linear_coeffs, self.quad_coeffs).reduced_form()
 
         if power == 2:
             return self * self
@@ -224,6 +232,32 @@ class Expression:
     def is_constant(self):
         return len(self.quad_coeffs) == 0 and len(self.linear_coeffs) == 0
 
+    def reduced_form(self):
+        """
+        Returns the reduced form of the expression by removing any zero coefficients
+        """
+        return Expression(self.const, {v: c for v, c in self.linear_coeffs.items() if c != 0.0},
+                          {(v1, v2): c for (v1, v2), c in self.quad_coeffs.items() if c != 0.0})
+
+    def is_pure_parametric(self):
+        """
+        Returns True if the expression is a pure parametric expression
+        """
+
+        # get the most reduced form of the expression
+        reduced_expr = self.reduced_form()
+
+        for var in reduced_expr.linear_coeffs.keys():
+            if var.var_type != VariableType.parameter:
+                return False
+
+        for (var1, var2) in reduced_expr.quad_coeffs.keys():
+            if var1.var_type != VariableType.parameter or var2.var_type != VariableType.parameter:
+                return False
+
+        return True
+
+
 class ConstraintType(Enum):
     """
     Defines the type of constraint
@@ -237,6 +271,12 @@ class ConstraintType(Enum):
 
 @dataclass
 class Constraint:
+    """
+    The constraint class defines the constraints in the model, where the constraints are defined as expressions
+    paired with a constraint type.
+
+    All constraints are of the form expr <= 0 or expr == 0.
+    """
     expr: Expression
     const_type: ConstraintType
 
@@ -247,9 +287,24 @@ class Constraint:
         else:
             return str(self.expr) + ' <= 0'
 
+    def is_parametric_constraint(self):
+        """
+        Returns True if the constraint is a parametric constraint
+        """
 
+        return self.expr.is_pure_parametric()
+
+    def is_mixed_constraint(self):
+        """
+        Returns True if the constraint is a mixed constraint
+        """
+
+        return not self.expr.is_pure_parametric()
 @dataclass
 class MPModel:
+    """
+    The MPModel class is the base class for defining a multiparametric model using the new interface.
+    """
     variables: List[ModelVariable]
     parameters: List[ModelVariable]
 
@@ -263,7 +318,13 @@ class MPModel:
         self.objective = Expression(0, {}, {})
 
     def add_var(self, name: Optional[str] = None, vtype: VariableType = VariableType.continuous) -> Expression:
+        """
+        Adds a variable to the model, if no name is specified a default name is generated based on the vtype.
 
+        :param name: the name of the variable
+        :param vtype: the type of the variable
+        :return: the expression that represents the variable
+        """
         num_vars = len(self.variables)
 
         if name is None and vtype == VariableType.continuous:
@@ -277,6 +338,12 @@ class MPModel:
         return self.variables[-1].make_expr()
 
     def add_param(self, name: Optional[str] = None) -> Expression:
+        """
+        Adds a parameter to the model, if no name is specified a default name is generated.
+
+        :param name: the name of the variable
+        :return: the expression that represents the variable
+        """
         num_vars = len(self.parameters)
 
         if name is None:
@@ -287,6 +354,13 @@ class MPModel:
         return self.parameters[-1].make_expr()
 
     def add_constr(self, constr: Constraint):
+        """
+        Adds a constraint to the model
+
+        Throws an error if the constraint is quadratic or if the constraint is not of type Constraint
+
+        :param constr: the constraint to add
+        """
 
         if isinstance(constr, Constraint):
 
@@ -297,12 +371,25 @@ class MPModel:
         else:
             raise TypeError(f"Constraints must be of type Constraint not {type(constr)}")
 
-    def add_constrs(self, others):
+    def add_constrs(self, constrs):
+        """
+        Adds multiple constraints to the model
 
-        for constr in others:
+        Throws an error if any constraint is quadratic or if any constraint is not of type Constraint
+
+        :param constrs: the constraints to add
+        """
+        for constr in constrs:
             self.add_constr(constr)
 
     def set_objective(self, obj):
+        """
+        Sets the objective of the model
+
+        Throws an error if it is not of type Expression
+
+        :param obj: the objective to set
+        """
         if isinstance(obj, Expression):
             self.objective = obj
         else:
@@ -321,7 +408,7 @@ class MPModel:
 
         cont_vars = [var for var in self.variables if var.var_type == VariableType.continuous]
         bin_vars = [var for var in self.variables if var.var_type == VariableType.binary]
-        params = [param for param in self.parameters]
+        params = self.parameters
 
         output += '\n\n'
 
@@ -336,6 +423,107 @@ class MPModel:
 
         return output
 
-    def formulate_problem(self) -> Union[MPLP_Program,  MPQP_Program, MPMILP_Program, MPMIQP_Program]:
-        #TODO: Implement conversion of expressions into the appropriate program
-        pass
+    def formulate_problem(self) -> Union[MPLP_Program, MPQP_Program, MPMILP_Program, MPMIQP_Program]:
+        """
+        Formulates the problem into the appropriate program type
+
+        :return: the formulated program of the appropriate type (mpLP, mpQP, mpMILP, mpMIQP)
+        """
+
+        # count number of variables of each type
+        num_vars = len([var for var in self.variables if var.var_type in [VariableType.continuous, VariableType.binary]])
+        num_params = len(self.parameters)
+
+        # partition the constraints into parametric (A@ theta -b <= 0) and mixed constraints(A@x + F@theta -b <= 0)
+        mixed_constraints = [constr for constr in self.constraints if constr.is_mixed_constraint()]
+        parametric_constraints = [constr for constr in self.constraints if constr.is_parametric_constraint()]
+
+        # get the indices of the equality constraints
+        equality_indices = [i for i, constr in enumerate(mixed_constraints) if constr.const_type == ConstraintType.equality]
+
+        # get the indices of the binary variables
+        binary_indices = [var.var_id for var in self.variables if var.var_type == VariableType.binary]
+
+        # Instantiate the mixed constraint matrices
+        A = numpy.zeros((len(mixed_constraints), num_vars))
+        F = numpy.zeros((len(mixed_constraints), num_params))
+        b = numpy.zeros((len(mixed_constraints), 1))
+
+        # instantiate the parametric constraint matrices
+        A_t = numpy.zeros((len(parametric_constraints), num_params))
+        b_t = numpy.zeros((len(parametric_constraints), 1))
+
+        # fill in the mixed constraint matrices
+        for constr_idx, constr in enumerate(mixed_constraints):
+
+            # for each term in the
+            for var, coeff in constr.expr.linear_coeffs.items():
+
+                if var.is_var():
+                    A[constr_idx, var.var_id] = coeff
+
+                if var.is_param():
+                    F[constr_idx, var.var_id] = -coeff
+
+            # set the constant term
+            b[constr_idx] = -constr.expr.const
+
+        # fill in the parametric constraint matrices
+        for constr_idx, constr in enumerate(parametric_constraints):
+
+            # for each term in the
+            for var, coeff in constr.expr.linear_coeffs.items():
+                if var.is_param():
+                    A_t[constr_idx, var.var_id] = coeff
+
+            # set the constant term
+            b_t[constr_idx] = -constr.expr.const
+
+        # instantiate the objective matrices
+        c = numpy.zeros((num_vars, 1))
+        H = numpy.zeros((num_vars, num_params))
+        c_c = numpy.array(self.objective.const)
+        c_t = numpy.zeros((num_params, 1))
+        Q = numpy.zeros((num_vars, num_vars))
+        Q_t = numpy.zeros((num_params, num_params))
+
+        # fill in the objective matrices
+        for var, coeff in self.objective.linear_coeffs.items():
+            if var.is_var():
+                c[var.var_id] = coeff
+
+            if var.is_param():
+                c_t[var.var_id] = coeff
+
+        for (v1, v2), coeff in self.objective.quad_coeffs.items():
+
+            # if the quadratic term is between two variables add it to the Q matrix
+            if v1.is_var() and v2.is_var():
+                Q[v1.var_id, v2.var_id] = coeff
+
+            # if the quadratic term is between two parameters add it to the Q_t matrix
+            if v1.is_param() and v2.is_param():
+                Q_t[v1.var_id, v2.var_id] = coeff
+
+            # if the quadratic term is between a variable and a parameter add it to the H matrix
+            if v1.is_var() and v2.is_param():
+                H[v1.var_id, v2.var_id] += coeff
+
+            if v1.is_param() and v2.is_var():
+                H[v2.var_id, v1.var_id] += coeff
+
+        # if we don't have any quadratic terms then we either have a mpLP or a mpMILP
+        if numpy.sum(numpy.abs(Q)) == 0:
+
+
+            # if we don't have any binary variables then we have an mpLP
+            if len(binary_indices) == 0:
+                return MPLP_Program(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices=equality_indices)
+            else:
+                return MPMILP_Program(A, b, c, H, A_t, b_t, F, binary_indices, c_c, c_t, Q_t, equality_indices=equality_indices)
+
+        # otherwise we have a mpQP or a mpMIQP
+        if len(binary_indices) == 0:
+            return MPQP_Program(A, b, c, H, 2*Q, A_t, b_t, F, c_c, c_t, Q_t, equality_indices=equality_indices)
+        else:
+            return MPMIQP_Program(A, b, c, H, 2*Q, A_t, b_t, F, binary_indices, c_c, c_t, Q_t, equality_indices=equality_indices)
