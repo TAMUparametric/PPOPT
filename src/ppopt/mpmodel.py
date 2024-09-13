@@ -1,19 +1,25 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
+
+
+class VariableType(Enum):
+    continuous = 1
+    parameter = 2
+    binary = 3
 
 
 @dataclass
 class ModelVariable:
     name: str
-    is_parameter: bool
+    var_type: VariableType
     var_id: int
 
     def make_expr(self):
-        return Expression(0.0, {self: 1.0}, dict())
+        return Expression(0.0, {self: 1.0}, {})
 
     def __hash__(self):
-        if self.is_parameter:
+        if self.var_type:
             return self.var_id
         else:
             return -self.var_id
@@ -37,7 +43,7 @@ class Expression:
     def __add__(self, other) -> 'Expression':
 
         if isinstance(other, (int, float)):
-            return self + Expression(other, dict(), dict())
+            return self + Expression(other, {}, {})
 
         if isinstance(other, Expression):
 
@@ -86,10 +92,10 @@ class Expression:
 
         if isinstance(other, Expression):
             if len(other.quad_coeffs) > 0 or len(self.quad_coeffs) > 0:
-                raise ValueError(f"Cannot multiply quaddratic expressions, only linear expressions")
+                raise ValueError("Cannot multiply quadratic expressions, only linear expressions")
 
             # (a_i * x_i + b) * (c_j * x_j + d) -> (a_i*x_i)*(c_j * x_j) + b*(c_j * x_j) + d*(a_i*x_i) + b*d
-            quad_terms = dict()
+            quad_terms = {}
 
             for v1, c1 in self.linear_coeffs.items():
                 for v2, c2 in other.linear_coeffs.items():
@@ -98,10 +104,10 @@ class Expression:
                         quad_terms[(v1, v2)] = c1 * c2
 
             # break into multiple lines
-            return Expression(other.const * self.const, dict(), quad_terms) + self.const * Expression(0.0,
-                                                                                                      other.linear_coeffs,
-                                                                                                      dict()) + other.const * Expression(
-                0.0, self.linear_coeffs, dict()) + other.const * self.const
+            return (Expression(other.const * self.const, {}, quad_terms)
+                    + self.const * Expression(0.0, other.linear_coeffs, {})
+                    + other.const * Expression(0.0, self.linear_coeffs, {})
+                    + other.const * self.const)
 
         raise TypeError(
             f"Multiplication on expressions is only defined on numeric types and (linear Expressions) not {type(other)}")
@@ -109,7 +115,7 @@ class Expression:
     def __pow__(self, power) -> 'Expression':
 
         if power == 0:
-            return Expression(1, dict(), dict())
+            return Expression(1, {}, {})
 
         if power == 1:
             return Expression(self.const, self.linear_coeffs, self.quad_coeffs)
@@ -117,7 +123,7 @@ class Expression:
         if power == 2:
             return self * self
 
-        raise ValueError(f"Raising to a power on expressions is only defined on the integers 0, 1, 2")
+        raise ValueError("Raising to a power on expressions is only defined on the integers 0, 1, 2")
 
     def __rmul__(self, other) -> 'Expression':
         return self * other
@@ -130,7 +136,7 @@ class Expression:
 
     def __eq__(self, other) -> 'Constraint':
         if isinstance(other, (int, float)):
-            return self == Expression(other, dict(), dict())
+            return self == Expression(other, {}, {})
 
         if isinstance(other, Expression):
             return Constraint(self - other, ConstraintType.equality)
@@ -140,7 +146,7 @@ class Expression:
 
     def __le__(self, other) -> 'Constraint':
         if isinstance(other, (int, float)):
-            return self <= Expression(other, dict(), dict())
+            return self <= Expression(other, {}, {})
 
         if isinstance(other, Expression):
             return Constraint(self - other, ConstraintType.inequality)
@@ -150,7 +156,7 @@ class Expression:
 
     def __ge__(self, other) -> 'Constraint':
         if isinstance(other, (int, float)):
-            return self >= Expression(other, dict(), dict())
+            return self >= Expression(other, {}, {})
 
         if isinstance(other, Expression):
             return Constraint(other - self, ConstraintType.inequality)
@@ -175,7 +181,7 @@ class Expression:
             else:
                 prefix = ' + '
 
-            output += f'{prefix}{str(var)}'
+            output += f'{prefix}{var}'
 
         for (v1, v2), coeff in self.quad_coeffs.items():
 
@@ -187,7 +193,7 @@ class Expression:
             else:
                 prefix = ' + '
 
-            output += f'{prefix}{coeff}{str(v1)}{str(v2)}'
+            output += f'{prefix}{coeff}{v1}{v2}'
 
         return output
 
@@ -222,26 +228,29 @@ class MPModel:
         self.variables = []
         self.parameters = []
         self.constraints = []
-        self.objective = Expression(0, dict(), dict())
+        self.objective = Expression(0, {}, {})
 
-    def add_var(self, name: str = None) -> Expression:
+    def add_var(self, name: Optional[str] = None, vtype: VariableType = VariableType.continuous) -> Expression:
 
         num_vars = len(self.variables)
 
-        if name is None:
+        if name is None and vtype == VariableType.continuous:
             name = f"x_{num_vars}"
 
-        self.variables.append(ModelVariable(name, False, num_vars))
+        if name is None and vtype == VariableType.binary:
+            name = f"y_{num_vars}"
+
+        self.variables.append(ModelVariable(name, vtype, num_vars))
 
         return self.variables[-1].make_expr()
 
-    def add_param(self, name: str = None) -> Expression:
+    def add_param(self, name: Optional[str] = None) -> Expression:
         num_vars = len(self.parameters)
 
         if name is None:
             name = f"theta_{num_vars}"
 
-        self.parameters.append(ModelVariable(name, True, num_vars))
+        self.parameters.append(ModelVariable(name, VariableType.parameter, num_vars))
 
         return self.parameters[-1].make_expr()
 
