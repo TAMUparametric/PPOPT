@@ -25,4 +25,6 @@ dependencies:
     - ipykernel
     - ipython
     - daqp
+    - lxml[html_clean]
+    - pandoc
 prefix: /home/docs/.conda/envs/PPOPT
