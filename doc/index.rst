@@ -16,7 +16,6 @@ Tutorial
     control_allocation_example
     portfolio
     mpc
-    mpoc_examples
 
 
 API

@@ -29,7 +29,7 @@ copyright = "2021, Dustin Kenefake, Efstratios Pistikopoulos"
 author = "Dustin Kenefake, Efstratios Pistikopoulos"
 
 # The full version, including alpha/beta/rc tags
-release = "1.4.0"
+release = "1.6.0"
 
 # -- General configuration ---------------------------------------------------
 
@@ -57,5 +57,5 @@ html_theme = "sphinx_rtd_theme"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
-source_suffix = [".rst", ".md"]
+source_suffix = {".rst": 'restructuredtext', ".md": 'markdown'}
 nbsphinx_execute = "never"

@@ -28,15 +28,15 @@ def make_row(x: Union[List, numpy.ndarray]) -> numpy.ndarray:
     return (numpy.array(x)).reshape(1, len(x))
 
 
-def select_not_in_list(A: numpy.ndarray, list_: Iterable[int]) -> numpy.ndarray:
+def select_not_in_list(A: numpy.ndarray, coll: Iterable[int]) -> numpy.ndarray:
     """
     Filters a numpy array to select all rows that are not in a list
 
     :param A: a numpy array
-    :param list_: a list of indices that you want to remove
-    :return: return a numpy array of A[not in list_]
+    :param coll: a list of indices that you want to remove
+    :return: return a numpy array of A[not in coll]
     """
-    return A[[i for i in range(A.shape[0]) if i not in list_]]
+    return A[[i for i in range(A.shape[0]) if i not in coll]]
 
 
 def render_number(x, trade_off=1e-4) -> str:
