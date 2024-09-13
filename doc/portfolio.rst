@@ -25,7 +25,7 @@ Here the covariance matrix and the return coefficients were generated from rando
     S = S@S.T / 10
     mu = numpy.random.rand(num_assets)/100
 
-Here is the problem that we are going to be tackling in this post. Some of the constraints have been noticeably modified. This is due to a standard preprocessing pass that ``ppopt`` runs. This modification increases numerical stability for ill-conditioned optimization problems but has nearly for the problem we are looking at in this example, as it is numerically well conditioned. 
+Here is the problem that we are going to be tackling in this tutorial. Some of the constraints have been noticeably modified. This is due to a standard preprocessing pass that ``ppopt`` runs. This modification increases numerical stability for ill-conditioned optimization problems but has nearly for the problem we are looking at in this example, as it is numerically well conditioned.
 
 .. code-block:: python
 
@@ -41,6 +41,39 @@ Here is the problem that we are going to be tackling in this post. Some of the c
     c = numpy.zeros((num_assets,1))
     H = numpy.zeros((A.shape[1],F.shape[1]))
     portfolio = MPQP_Program(A, b, c, H, Q, A_t, b_t, F,equality_indices= [0,1])
+
+Alternatively, we can use ``MPModeler`` to build the program. This can be a more user-friendly way to build the program, and it is easier to read and understand. It does not require the user to specify the problem data as matrices, but uses an interface that is more similar to a mathematical formulation.
+
+.. code-block:: python
+
+    import numpy
+    from ppopt.mpmodel import MPModeler
+
+    model = MPModeler()
+
+    # make a variable for each asset
+    assets = [model.add_var(name=f'w[{i}]') for i in range(num_assets)]
+
+    # define the parametric return
+    r = model.add_param(name='R')
+
+    # investment must add to one
+    model.add_constr(sum(assets) == 1)
+
+    # the expected return must be r
+    model.add_constr(sum(mu[i] * assets[i] for i in range(num_assets)) == r)
+
+    # all assets must be non-negative (no shorting)
+    model.add_constrs(asset >= 0 for asset in assets)
+
+    # parametric return must be constrained to be [min(mu), max(mu)]
+    model.add_constr(r >= min(mu))
+    model.add_constr(r <= max(mu))
+
+    # set the objective to minimize the risk
+    model.set_objective(sum(S[i, j] * assets[i] * assets[j] for i in range(num_assets) for j in range(num_assets)))
+
+    portfolio = model.formulate_problem()
 
 This formulates the parametric problem as follows, we want to parameterize the return :math:`R^*` as :math:`\theta`, so that we can solve over all feasible bounds of return.
 

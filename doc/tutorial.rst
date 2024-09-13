@@ -19,7 +19,7 @@ This optimization problem leads to the following multiparametric optimization pr
 
 Using PPOPT, this is translated as the following python code. (The latex above was generated for me with ``prog.latex()`` if you were wondering if I typed that all out by hand.)
 
-.. code:: python
+.. code-block:: python
 
     import numpy
     from ppopt.mpqp_program import MPQP_Program
@@ -36,9 +36,51 @@ Using PPOPT, this is translated as the following python code. (The latex above w
     prog = MPQP_Program(A, b, c, H, Q, CRa, CRb, F)
 
 
+Alternatively, we can use ``MPModeler`` to build the program. This can be a more user-friendly way to build the program, and it is easier to read and understand. It does not require the user to specify the problem data as matrices, but uses an interface that is more similar to a mathematical formulation.
+
+.. code-block:: python
+
+    from itertools import product
+    from ppopt.mpmodel import MPModeler
+
+    model = MPModeler()
+
+    # define problem data
+    factories = ['se', 'sd']
+    markets = ['ch', 'to']
+    capacities = {'se': 350, 'sd': 600}
+    cost = {('se', 'ch'): 178, ('se', 'to'): 187, ('sd', 'ch'): 187, ('sd', 'to'): 151}
+
+    # make a variable for each factory-market production pair
+    x = {(f, m): model.add_var(name=f'x[{f},{m}]') for f, m in product(factories, markets)}
+
+    # make a parameter for each market demand
+    d = {m: model.add_param(name=f'd_[{m}]') for m in markets}
+
+    # bounds on the production capacity of each factory
+    model.add_constrs(sum(x[f, m] for m in markets) <= capacities[f] for f in factories)
+
+    # demand satisfaction for each market
+    model.add_constrs(sum(x[f, m] for f in factories) >= d[m] for m in markets)
+
+    # bounds on the parametric demand
+    model.add_constrs(d[m] <= 1000 for m in markets)
+    model.add_constrs(d[m] >= 0 for m in markets)
+
+    # non-negativity of the production variables
+    model.add_constrs(x[f, m] >= 0 for f, m in product(factories, markets))
+
+    # set the objective to minimize the total cost
+    model.set_objective(sum(cost[f, m] * x[f, m] ** 2 + 25 * x[f, m] for f, m in product(factories, markets)))
+
+    prog = model.formulate_problem()
+
+
 But before you go forward and solve this, I would always recommend processing the constraints. Removing all strongly and weakly redundant constraints and rescaling them leads to significant performance increases and robustifying the numerical stability. In PPOPT, processing the constraints is a simple task.
 
-.. code:: python
+
+
+.. code-block:: python
 
     prog.process_constraints()
 
@@ -57,7 +99,7 @@ This results in the following (identical) multiparametric optimization problem. 
 
 That wasn't that bad, and we were able to cut away some constraints that didn't matter in the process! Now we are ready to solve it. We import the solver functionalities and then specify an algorithm to use. Here we are specifying the combinatorial algorithm.
 
-.. code:: python
+.. code-block:: python
 
     from ppopt.mp_solvers.solve_mpqp import solve_mpqp, mpqp_algorithm
     solution = solve_mpqp(prog, mpqp_algorithm.combinatorial)
@@ -65,7 +107,7 @@ That wasn't that bad, and we were able to cut away some constraints that didn't 
 
 Now we have the solution, we can either export the solution via the micropop module, or we can plot it. Let's plot it here. The extra arguments mean we are saving a picture of the plot and displaying it to the user (you can give a file path, so it saves somewhere that is not the current working directory).
 
-.. code:: python
+.. code-block:: python
 
     from ppopt.plot import parametric_plot
     
