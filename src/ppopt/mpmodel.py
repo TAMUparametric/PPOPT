@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List
+from typing import Dict, List, Tuple
+
 
 @dataclass
 class ModelVariable:
-
     name: str
     is_parameter: bool
     var_id: int
@@ -32,7 +32,7 @@ class ExpressionType:
 class Expression:
     const: float
     linear_coeffs: Dict[ModelVariable, float]
-    quad_coeffs: Dict[[ModelVariable, ModelVariable], float]
+    quad_coeffs: Dict[Tuple[ModelVariable, ModelVariable], float]
 
     def __add__(self, other) -> 'Expression':
 
