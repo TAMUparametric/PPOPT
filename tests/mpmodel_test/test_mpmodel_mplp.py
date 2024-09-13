@@ -19,6 +19,11 @@ def test_define_market_problem():
     model.add_constr(x['se', 'ch'] + x['sd', 'ch'] >= theta_1)
     model.add_constr(x['se', 'ch'] + x['sd', 'ch'] >= theta_2)
 
+    model.add_constr(theta_1 <= 1000)
+    model.add_constr(theta_2 <= 1000)
+    model.add_constr(theta_1 >= 0)
+    model.add_constr(theta_2 >= 0)
+
     model.add_constrs(x[f, m] >= 0 for f, m in product(factories, markets))
 
-    model.set_objective(178*x['se', 'ch'] + 187*x['se', 'to'] + 187*x['sd', 'ch'] + 151*x['sd', 'to'])
+    model.set_objective(178 * x['se', 'ch'] + 187 * x['se', 'to'] + 187 * x['sd', 'ch'] + 151 * x['sd', 'to'])
