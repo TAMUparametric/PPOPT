@@ -288,16 +288,16 @@ def get_indices_of_zero_rows(A: numpy.array, epsilon: float = 10 ** (-6)) -> [li
 def shuffle_processed_constraints(A: numpy.ndarray, b: numpy.ndarray, F: numpy.ndarray, A_t: numpy.ndarray,
                                   b_t: numpy.ndarray, kept: list, remove: list):
     """
-
+    An auxiliary function to shuffle constraints between the main body and parametric constraints
 
     :param A: The LHS constraint matrix for main body constraints
     :param b: the RHS constraint matrix for main body constraints
     :param F: the RHS parametric uncertainty matrix in the main body constraints
     :param A_t: the LHS constraint matrix for parametric constraints
     :param b_t: the RHS constraint vector for parametric constraints
-    :param kept:
-    :param remove:
-    :return:The filtered constraint matrix set A, b, F, A_t, b_t
+    :param kept: The indices of the constraints to keep
+    :param remove: The indices of the constraints to remove
+    :return: The filtered constraint matrix set A, b, F, A_t, b_t
     """
     # add the purely parametric constraints to the parametric constraint set A_t, b_t
     if len(remove) > 0:

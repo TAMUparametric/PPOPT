@@ -28,12 +28,13 @@ def generate_mpqp(x: int = 2, t: int = 2, m: int = 10) -> MPQP_Program:
     :param m: number of constraints
     :return: A random mpQP problem of the specified type
     """
+
     Q = numpy.random.random((x, x))
     Q = Q.T @ Q + numpy.eye(x)
 
     rand = lambda: numpy.random.random(1)
 
-    RangeValue = numpy.round(20 * numpy.random.random(1) + 5)
+    RangeValue = numpy.round(20 * rand() + 5)
     XBorder = numpy.round(8 * rand() + 1) / 10
     XShift = numpy.round(8 * rand() + 1) / 10
     TBorder = numpy.round(8 * rand() + 1) / 10
