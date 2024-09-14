@@ -71,7 +71,7 @@ class MPLP_Program:
 
     solver: Solver
 
-    def __init__(self, A, b, c, H, A_t, b_t, F, c_c=None, c_t=None, Q_t=None, equality_indices=None, solver=None):
+    def __init__(self, A, b, c, H, A_t, b_t, F, c_c=None, c_t=None, Q_t=None, equality_indices=None, solver=None, post_process = True):
 
         self.A = A
         self.b = b
@@ -107,7 +107,10 @@ class MPLP_Program:
 
         self.solver = solver
 
-    def __post_init__(self):
+        if post_process:
+            self.post_process()
+
+    def post_process(self):
         """Called after __init__ this is used as a post-processing step after the dataclass generated __init__."""
         if self.equality_indices is None:
             self.equality_indices = []
@@ -123,7 +126,6 @@ class MPLP_Program:
         # ensures that
         self.warnings()
         self.process_constraints()
-        print('POST PROCESS')
 
     def num_x(self) -> int:
         """Returns number of parameters."""

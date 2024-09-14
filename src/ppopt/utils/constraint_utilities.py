@@ -183,7 +183,8 @@ def calculate_redundant_constraints(A, b):
     return output
 
 
-def find_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, equality_set: Optional[List[int]] = None, solver='gurobi'):
+def find_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, equality_set: Optional[List[int]] = None,
+                               solver='gurobi'):
     """"""
     if equality_set is None:
         equality_set = []
@@ -310,7 +311,6 @@ def shuffle_processed_constraints(A: numpy.ndarray, b: numpy.ndarray, F: numpy.n
     F = F[kept]
 
     return A, b, F, A_t, b_t
-
 
 
 def get_independent_rows(A):
