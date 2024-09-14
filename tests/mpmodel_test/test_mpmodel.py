@@ -1,7 +1,7 @@
 from itertools import product
 
 from src.ppopt.mpmodel import MPModeler, VariableType
-from src.ppopt.mp_solvers.solve_mpqp import solve_mpqp
+from src.ppopt.mp_solvers.solve_mpqp import solve_mpqp, mpqp_algorithm
 from src.ppopt.mp_solvers.solve_mpmiqp import solve_mpmiqp
 
 import numpy
@@ -206,3 +206,35 @@ def test_simple_mpMIQP_H_modeler():
     mpmilp.solver.solvers['qp'] = 'daqp'
 
     sol = solve_mpmiqp(mpmilp)
+
+def test_assigment_problem():
+    model = MPModeler()
+
+    # make problem data
+    N = 2
+    cost = numpy.random.rand(N, N)
+
+    # make a variable for each possible worker task assignment
+    x = {(i, j): model.add_var(name=f'x_[{i}][{j}]') for i in range(N) for j in range(N)}
+
+    # add a parametric cost
+    t = model.add_param()
+
+    # set the objective
+    model.set_objective(sum(cost[i, j] * x[i, j] for i in range(N) for j in range(N)) + t * x[0, 0])
+
+    # assignment problem constraints
+    model.add_constrs(sum(x[i, j] for i in range(N)) == 1 for j in range(N))
+    model.add_constrs(sum(x[i, j] for j in range(N)) == 1 for i in range(N))
+
+    model.add_constrs(x[i, j] >= 0 for i in range(N) for j in range(N))
+    model.add_constrs(x[i, j] <= 1 for i in range(N) for j in range(N))
+
+    # parametric constraints
+    model.add_constr(t <= 5)
+    model.add_constr(t >= -5)
+
+    # formulate and solve
+    assignment_problem = model.formulate_problem()
+
+    sol = solve_mpqp(assignment_problem, mpqp_algorithm.combinatorial_graph)
