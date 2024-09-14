@@ -10,7 +10,7 @@ from .utils.constraint_utilities import (
     find_implicit_equalities,
     find_redundant_constraints,
     is_full_rank,
-    process_program_constraints,
+    process_program_constraints, generate_reduced_equality_constraints,
 )
 from .utils.general_utils import (
     latex_matrix,
@@ -36,6 +36,8 @@ def calc_weakly_redundant(A, b, equality_set: Optional[List[int]] = None, determ
 
 
 # noinspection GrazieInspection
+
+
 class MPLP_Program:
     r"""
     The standard class for multiparametric  linear programming
@@ -121,6 +123,7 @@ class MPLP_Program:
         # ensures that
         self.warnings()
         self.process_constraints()
+        print('POST PROCESS')
 
     def num_x(self) -> int:
         """Returns number of parameters."""
@@ -275,7 +278,7 @@ class MPLP_Program:
         """Removes redundant constraints from the multiparametric programming problem."""
         self.constraint_datatype_conversion()
 
-        # TODO: add check for a purly parametric euqaility e.g. c^T theta = b in the main constraint body
+        # TODO: add check for a purly parametric equality e.g. c^T theta = b in the main constraint body
         self.A, self.b, self.F, self.A_t, self.b_t = process_program_constraints(self.A, self.b, self.F, self.A_t,
                                                                                  self.b_t)
 
@@ -285,6 +288,11 @@ class MPLP_Program:
         # find implicit inequalities in the main constraint body, add them to the equality constraint set
         self.A, self.b, self.F, self.equality_indices = find_implicit_equalities(self.A, self.b, self.F,
                                                                                  self.equality_indices)
+
+        # in the case of equality constraints, there can be cases where the constraints are redundant w.r.t. each other
+        self.A, self.b, self.F, self.equality_indices = generate_reduced_equality_constraints(self.A, self.b, self.F,
+                                                                                               self.equality_indices)
+
 
         # form a polytope P := {(x, theta) in R^K : Ax <= b + F theta and A_t theta <= b_t}
         problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
