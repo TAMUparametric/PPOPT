@@ -78,9 +78,9 @@ def solve(program: MPQP_Program) -> Solution:
     """
     # initialize with and Exclusion set, a base solution, and a set of things to visit
 
-    initial_active_set = None if program.equality_indices is [] else [program.equality_indices]
+    # initial_active_set = None if program.equality_indices is [] else [program.equality_indices]
 
-    E, solution, S = combinatorial_graph_initialization(program, initial_active_set)
+    E, solution, S = combinatorial_graph_initialization(program, None)
 
     # make sure that everything we have added to S is in E
     for s in S:
