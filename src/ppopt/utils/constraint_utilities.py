@@ -7,7 +7,7 @@ from typing import List, Optional
 import numpy
 
 from ..solver_interface import solver_interface
-from ..utils.general_utils import ppopt_block
+from ..utils.general_utils import ppopt_block, select_not_in_list
 
 
 # returns the norm of the constraint
@@ -183,7 +183,8 @@ def calculate_redundant_constraints(A, b):
     return output
 
 
-def find_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, equality_set: Optional[List[int]] = None, solver='gurobi'):
+def find_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, equality_set: Optional[List[int]] = None,
+                               solver='gurobi'):
     """"""
     if equality_set is None:
         equality_set = []
@@ -310,6 +311,55 @@ def shuffle_processed_constraints(A: numpy.ndarray, b: numpy.ndarray, F: numpy.n
     F = F[kept]
 
     return A, b, F, A_t, b_t
+
+
+def get_independent_rows(A):
+    """
+    Finds the linearly independent rows of a matrix, A and returns the indices of these rows
+
+    :param A: The matrix to find the linearly independent rows of
+    :return: The indices of the linearly independent rows
+    """
+    num_rows = A.shape[0]
+    row_ranks = numpy.zeros(num_rows)
+    for i in range(num_rows - 1):
+        row_ranks[i] = numpy.linalg.matrix_rank(A[:i + 1])
+    rank_change = numpy.diff(row_ranks, prepend=0) > 0
+    return [index for index, val in enumerate(rank_change) if val]  # select these rows as they are linear independent
+
+
+def generate_reduced_equality_constraints(A, b, F, equality_indices):
+    """
+    Generates a reduced set of equality constraints that are linearly independent and full rank from the original set of
+    equality constraints
+
+    :param A: The LHS constraint matrix for main body constraints
+    :param b: the RHS constraint vector for main body constraints
+    :param F: the RHS parametric uncertainty matrix in the main body constraints
+    :param equality_indices: The indices of the equality constraints
+    :return: The filtered constraint matrix set A, b, F and the new equality set
+    """
+    # if there are no equality constraints, then we can just return the original constraints
+    if len(equality_indices) == 0:
+        return A, b, F, []
+
+    # if there are equality constraints, but they are full rank, then we can just return the original constraints
+    if is_full_rank(A, equality_indices):
+        return A, b, F, equality_indices
+
+    # we are in the situation where we have equality constraints that are not full rank
+    new_equality_indices = get_independent_rows(A[equality_indices])
+
+    A_eq = A[new_equality_indices]
+    b_eq = b[new_equality_indices]
+    F_eq = F[new_equality_indices]
+
+    A_ineq = select_not_in_list(A, equality_indices)
+    b_ineq = select_not_in_list(b, equality_indices)
+    F_ineq = select_not_in_list(F, equality_indices)
+
+    return numpy.block([[A_eq], [A_ineq]]), numpy.block([[b_eq], [b_ineq]]), numpy.block(
+        [[F_eq], [F_ineq]]), new_equality_indices
 
 
 def process_program_constraints(A: numpy.ndarray, b: numpy.ndarray, F: numpy.ndarray, A_t: numpy.ndarray,

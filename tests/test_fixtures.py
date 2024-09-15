@@ -101,7 +101,7 @@ def quadratic_program() -> MPQP_Program:
     CRb = numpy.array([1000, 1000, 0, 0]).reshape(4, 1)
     H = numpy.zeros((F.shape[1], Q.shape[0]))
 
-    prog = MPQP_Program(A, b, c, H, Q, CRa, CRb, F)
+    prog = MPQP_Program(A, b, c, H, Q, CRa, CRb, F, post_process=False)
     prog.scale_constraints()
     return prog
 

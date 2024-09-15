@@ -52,20 +52,24 @@ class MPMILP_Program(MPLP_Program):
                  b_t: numpy.ndarray, F: numpy.ndarray, binary_indices=None, c_c: Optional[numpy.ndarray] = None,
                  c_t: Optional[numpy.ndarray] = None, Q_t: Optional[numpy.ndarray] = None,
                  equality_indices: Optional[List[int]] = None,
-                 solver: Solver = None):
+                 solver: Solver = None, post_process=True):
         """Initializes the MPMILP_Program"""
 
         if solver is None:
             solver = Solver()
 
-        super().__init__(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices, solver)
         self.binary_indices = binary_indices
+
+        super().__init__(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices, solver, post_process=False)
         self.cont_indices = [i for i in range(self.num_x()) if i not in self.binary_indices]
 
         if len(self.cont_indices) == 0:
             print("Pure Integer case is not considered here only the Mixed case!!!")
 
-    def __post_init__(self):
+        if post_process:
+            self.post_process()
+
+    def post_process(self):
         """Called after __init__ this is used as a post-processing step after the dataclass generated __init__."""
         if self.equality_indices is None:
             self.equality_indices = []

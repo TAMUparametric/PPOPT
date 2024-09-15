@@ -5,7 +5,6 @@ from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.general_utils import num_cpu_cores
 from ..utils.mpqp_utils import gen_cr_from_active_set
-
 from .solver_utils import (
     CombinationTester,
     generate_extra,

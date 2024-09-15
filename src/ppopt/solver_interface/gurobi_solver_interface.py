@@ -130,7 +130,13 @@ def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None, A: numpy
                 sol.dual = numpy.array(model.getAttr("Pi"))
 
         sol.slack = numpy.array(model.getAttr("Slack"))
-        sol.active_set = numpy.where((A @ sol.sol.flatten() - b.flatten()) ** 2 < 10 ** -12)[0]
+
+        if sol.dual is not None:
+            # we have a continuous problem, and we can get the duals directly
+            non_zero_duals = numpy.where(sol.dual != 0)[0]
+            sol.active_set = numpy.array([i for i in range(num_constraints) if i in non_zero_duals or i in equality_constraints])
+        else:
+            sol.active_set = numpy.where((A @ sol.sol.flatten() - b.flatten()) ** 2 < 10 ** -12)[0]
 
     return sol
 
@@ -168,7 +174,8 @@ def solve_qp_gurobi(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: num
 
 
 # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
-def solve_lp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray, equality_constraints: Optional[Iterable[int]] = None,
+def solve_lp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
+                    equality_constraints: Optional[Iterable[int]] = None,
                     verbose: bool = False,
                     get_duals: bool = True) -> Optional[SolverOutput]:
     r"""
@@ -203,7 +210,8 @@ def solve_lp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray, equali
 
 def solve_milp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
                       equality_constraints: Optional[Iterable[int]] = None,
-                      bin_vars: Optional[Iterable[int]] = None, verbose=False, get_duals=True) -> Optional[SolverOutput]:
+                      bin_vars: Optional[Iterable[int]] = None, verbose=False, get_duals=True) -> Optional[
+    SolverOutput]:
     r"""
     This is the breakout for solving mixed integer linear programs with gruobi, This is feed directly into the
     MIQP Solver that is defined in the same file.

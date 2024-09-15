@@ -30,16 +30,17 @@ class MPQP_Program(MPLP_Program):
                  A_t: numpy.ndarray,
                  b_t: numpy.ndarray, F: numpy.ndarray, c_c: Optional[numpy.ndarray] = None,
                  c_t: Optional[numpy.ndarray] = None, Q_t: Optional[numpy.ndarray] = None,
-                 equality_indices=None, solver=None):
+                 equality_indices=None, solver=None, post_process=True):
         """Initialized the MPQP_Program."""
         # calls MPLP_Program's constructor to reduce out burden
         self.Q = Q
-        super(MPQP_Program, self).__init__(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices, solver)
+        super(MPQP_Program, self).__init__(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices, solver, post_process = False)
 
         # assignees member variables
         self.constraint_datatype_conversion()
         # calls the MPLP __post_init__ to handle equality constraints
-        # super(MPQP_Program, self).__post_init__()
+        if post_process:
+            self.post_process()
 
     def evaluate_objective(self, x, theta_point):
         r"""
