@@ -184,3 +184,9 @@ class Solution:
 
     def is_mixed_integer_sol(self):
         return isinstance(self.program, (MPMILP_Program, MPMIQP_Program))
+
+    def __len__(self):
+        """
+        Overloads the len operator and returns the number of critical regions in the solution
+        """
+        return len(self.critical_regions)

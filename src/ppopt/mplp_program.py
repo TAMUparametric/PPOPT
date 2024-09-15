@@ -9,8 +9,9 @@ from .utils.constraint_utilities import (
     constraint_norm,
     find_implicit_equalities,
     find_redundant_constraints,
+    generate_reduced_equality_constraints,
     is_full_rank,
-    process_program_constraints, generate_reduced_equality_constraints,
+    process_program_constraints,
 )
 from .utils.general_utils import (
     latex_matrix,
