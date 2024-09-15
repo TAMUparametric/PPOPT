@@ -1,5 +1,6 @@
 import numpy
 
+from ..mplp_program import MPLP_Program
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.constraint_utilities import is_full_rank
@@ -119,8 +120,16 @@ def solve(program: MPQP_Program) -> Solution:
         # if we fail LINQ then we need to remove a constraint to hope to be full rank
         if not is_full_rank(program.A, list(A)):
             explore_subset(A)
+
         # if we are full rank, check if the resulting critical region is not empty
         elif feasability_check(program, A):
+
+            # in the case of mpLPs the active set must have the same size as the number of x variables
+            if type(program) is MPLP_Program and len(A) != program.num_x():
+                # adds the super, and subsets
+                explore_subset(A)
+                explore_superset(A)
+                continue
 
             # Attempts to construct the region
             cand_region = gen_cr_from_active_set(program, list(A))
