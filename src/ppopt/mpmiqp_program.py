@@ -85,7 +85,7 @@ class MPMIQP_Program(MPMILP_Program):
         Q_d = self.Q[:, self.binary_indices][self.binary_indices]
 
         H_alpha = self.Q[:, self.cont_indices][self.binary_indices]
-        c = self.c[self.cont_indices] + fixed_combination.T @ H_alpha
+        c = self.c[self.cont_indices] + (H_alpha.T@fixed_combination)
         c_c = self.c_c + self.c[
             self.binary_indices].T @ fixed_combination + 0.5 * fixed_combination.T @ Q_d @ fixed_combination
         H_c = self.H[self.cont_indices]

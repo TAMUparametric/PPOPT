@@ -3,8 +3,9 @@
 import numpy
 
 from src.ppopt.mp_solvers.solve_mpmiqp import solve_mpmiqp
+from src.ppopt.mp_solvers.solve_mpqp import mpqp_algorithm
 from src.ppopt.mpmilp_program import MPMILP_Program
-from tests.test_fixtures import simple_mpMILP, simple_mpMIQP, mpMILP_market_problem
+from tests.test_fixtures import simple_mpMILP, simple_mpMIQP, mpMILP_market_problem, mpMIQP_market_problem
 
 
 def test_mpmilp_process_constraints(simple_mpMILP):
@@ -47,6 +48,10 @@ def test_mpmilp_enumeration_solve(simple_mpMILP):
 def test_mpmilqp_enumeration_solve(simple_mpMIQP):
 
     sol = solve_mpmiqp(simple_mpMIQP)
+
+def test_mpmilqp_enumeration_solve_2(mpMIQP_market_problem):
+
+    sol = solve_mpmiqp(mpMIQP_market_problem, cont_algo=mpqp_algorithm.combinatorial)
 
 def test_mpmilp_evaluate(mpMILP_market_problem):
 
