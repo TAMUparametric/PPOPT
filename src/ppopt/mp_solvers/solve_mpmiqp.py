@@ -16,14 +16,30 @@ class mpmiqp_algorithm(Enum):
     """
     enumerate = 'enumerate'
 
+    def __str__(self):
+        return self.name
+
+    @staticmethod
+    def all_algos():
+        output = ''
+        for algo in mpmiqp_algorithm:
+            output += f'mpmiqp_algorithm.{algo}\n'
+        return output
 
 def solve_mpmiqp(problem: MPMILP_Program, mpmiqp_algo: mpmiqp_algorithm = mpmiqp_algorithm.enumerate,
                  cont_algo: mpqp_algorithm = mpqp_algorithm.combinatorial, num_cores=-1) -> Solution:
+
     # the case of a continuous problem just solve it and return
     if len(problem.binary_indices) == 0:
-        print("The PROBLEM DOES NOT HAVE ANY BINARY VARIABLES!!!")
+        print("The problem does not have any binary variables, solving as a continuous problem instead.")
         # noinspection PyTypeChecker
         return solve_mpqp(problem, cont_algo)
+
+    if not isinstance(mpmiqp_algo, mpmiqp_algorithm):
+        raise TypeError(
+            f"You must pass an algorithm from mpmiqp_algorithm as the continuous algorithm. These can be found by "
+            f"importing the following \n\nfrom ppopt.mp_solvers.solve_mpmiqp import mpmiqp_algorithm\n\nWith the "
+            f"following choices\n{mpmiqp_algorithm.all_algos()}")
 
     # listing of all available algorithms
     if mpmiqp_algo == mpmiqp_algorithm.enumerate:

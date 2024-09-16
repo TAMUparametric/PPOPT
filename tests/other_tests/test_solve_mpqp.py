@@ -82,3 +82,11 @@ def test_solve_mplp_combinatorial(simple_mpLP):
     assert len(solution.critical_regions) == 4
 
 
+def test_solve_missing_algorithm(qp_problem):
+    try:
+        solution = solve_mpqp(qp_problem, algorithm = "cambinatorial")
+        assert False
+    except TypeError as e:
+        print(e)
+        assert True
+

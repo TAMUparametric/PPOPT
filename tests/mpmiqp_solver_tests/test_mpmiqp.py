@@ -79,3 +79,12 @@ def test_mpmiqp_evaluate(simple_mpMIQP):
 
     sol.evaluate(numpy.array([[1.2]]))
 
+
+def test_mpmilp_incorrect_algo(simple_mpMILP):
+
+    try:
+        sol = solve_mpmiqp(simple_mpMILP, "enum")
+        assert(False)
+    except TypeError as e:
+        print(e)
+        assert(True)

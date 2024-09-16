@@ -38,6 +38,15 @@ class mpqp_algorithm(Enum):
     geometric_parallel = 'p geometric'
     geometric_parallel_exp = 'p geometric exp'
 
+    def __str__(self):
+        return self.name
+
+    @staticmethod
+    def all_algos():
+        output = ''
+        for algo in mpqp_algorithm:
+            output += f'mpqp_algorithm.{algo}\n'
+        return output
 
 
 def solve_mpqp(problem: MPQP_Program, algorithm: mpqp_algorithm = mpqp_algorithm.combinatorial) -> Solution:
@@ -49,6 +58,13 @@ def solve_mpqp(problem: MPQP_Program, algorithm: mpqp_algorithm = mpqp_algorithm
     :param algorithm: Selects the algorithm to be used
     :return: the solution of the MPQP, returns an empty solution if there is not an implemented algorithm
     """
+
+    if not isinstance(algorithm, mpqp_algorithm):
+        raise TypeError(
+            f"You must pass an algorithm from mpqp_algorithm as the continuous algorithm. These can be found by "
+            f"importing the following \n\nfrom ppopt.mp_solvers.solve_mpqp import mpqp_algorithm\n\nWith the "
+            f"following choices\n{mpqp_algorithm.all_algos()}")
+
     solution = Solution(problem, [])
 
     if algorithm is mpqp_algorithm.combinatorial:
