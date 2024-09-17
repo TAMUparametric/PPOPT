@@ -6,6 +6,8 @@ name: PPOPT CI
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'doc/**'
   pull_request:
     branches: [ main ]
 

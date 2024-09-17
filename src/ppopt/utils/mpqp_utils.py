@@ -9,6 +9,7 @@ from ..utils.constraint_utilities import (
     cheap_remove_redundant_constraints,
     remove_duplicate_rows,
     scale_constraint,
+    remove_numerically_zero_rows, numerically_nonzero_rows
 )
 from ..utils.general_utils import ppopt_block
 from .chebyshev_ball import chebyshev_ball
@@ -83,8 +84,7 @@ def build_suboptimal_critical_region(program: MPQP_Program, active_set: List[int
 
 
 # noinspection PyUnusedLocal
-def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_full_dim=True) -> Optional[
-    CriticalRegion]:
+def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_full_dim=True,) -> Optional[CriticalRegion]:
     """
     Builds the critical region of the given mpqp from the active set.
 
@@ -111,25 +111,13 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
     inactive_A = program.A[inactive] @ parameter_A - program.F[inactive]
     inactive_b = program.b[inactive] - program.A[inactive] @ parameter_b
 
-    # we need to check for zero rows
-    lamba_nonzeros = [i for i, t in enumerate(lambda_A) if numpy.nonzero(t)[0].shape[0] > 0]
-    ineq_nonzeros = [i for i, t in enumerate(inactive_A) if numpy.nonzero(t)[0].shape[0] > 0]
-
-    # Block of all critical region constraints
-
-    active = [active[indx] for indx in lamba_nonzeros]
-    lambda_A = lambda_A[lamba_nonzeros]
-    lambda_b = lambda_b[lamba_nonzeros]
-
-    inactive = [inactive[indx] for indx in ineq_nonzeros]
-    inactive_A = inactive_A[ineq_nonzeros]
-    inactive_b = inactive_b[ineq_nonzeros]
-
     CR_As = ppopt_block([[lambda_A], [inactive_A], [omega_A]])
     CR_bs = ppopt_block([[lambda_b], [inactive_b], [omega_b]])
+    # print(CR_As.shape)
+    kept_rows = numerically_nonzero_rows(CR_As)
 
+    CR_As, CR_bs = remove_numerically_zero_rows(CR_As, CR_bs)
     CR_As, CR_bs = scale_constraint(CR_As, CR_bs)
-
 
     # if check_full_dim is set check if region is lower dimensional if so return None
     if check_full_dim:
@@ -138,41 +126,50 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
             return None
 
     # if it is fully dimensional we get to classify the constraints and then reduce them (important)!
-
     kept_lambda_indices = []
     kept_inequality_indices = []
     kept_omega_indices = []
 
-    # iterate over the non-zero lagrange constraints
-    for index in range(len(lamba_nonzeros)):
+    # print(CR_As.shape)
+    non_redundant_rows = []
 
-        sol = program.solver.solve_lp(None, CR_As, CR_bs, [index])
+    # iterate over the non-zero lagrange constraints
+    for index in range(lambda_A.shape[0]):
+
+        if index not in kept_rows:
+            continue
+
+        sol = program.solver.solve_lp(None, CR_As, CR_bs, [kept_rows.index(index)])
 
         if sol is not None:
             kept_lambda_indices.append(index)
+            non_redundant_rows.append(kept_rows.index(index))
+    # iterate over the non-zero inequality constraints
+    for index in range(inactive_A.shape[0]):
 
-    # iterate over the non-zero inequaltity constraints
-    for index in range(len(ineq_nonzeros)):
+        check_idx = index + lambda_A.shape[0]
 
-        sol = program.solver.solve_lp(None, CR_As, CR_bs, [index + len(lamba_nonzeros)])
+        if check_idx not in kept_rows:
+            continue
 
+        sol = program.solver.solve_lp(None, CR_As, CR_bs, [kept_rows.index(check_idx)])
         if sol is not None:
             kept_inequality_indices.append(index)
+            non_redundant_rows.append(kept_rows.index(check_idx))
 
     # iterate over the omega constraints
     for index in range(omega_A.shape[0]):
 
-        sol = program.solver.solve_lp(None, CR_As, CR_bs, [index + len(lamba_nonzeros) + len(ineq_nonzeros)])
+        check_idx = index + lambda_A.shape[0] + inactive_A.shape[0]
+
+        if check_idx not in kept_rows:
+            continue
+
+        sol = program.solver.solve_lp(None, CR_As, CR_bs, [kept_rows.index(check_idx)])
 
         if sol is not None:
             kept_omega_indices.append(index)
-
-    # create out reduced Critical region constraint block
-    CR_As = ppopt_block(
-        [[lambda_A[kept_lambda_indices]], [inactive_A[kept_inequality_indices]], [omega_A[kept_omega_indices]]])
-    CR_bs = ppopt_block(
-        [[lambda_b[kept_lambda_indices]], [inactive_b[kept_inequality_indices]], [omega_b[kept_omega_indices]]])
-
+            non_redundant_rows.append(kept_rows.index(check_idx))
 
     # recover the lambda boundaries that remain
     relevant_lambda = [active[index] for index in kept_lambda_indices]
@@ -180,10 +177,14 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
     real_regular = [inactive[index] for index in kept_inequality_indices]
     regular = [kept_inequality_indices, real_regular]
 
-    # remove any possible duplicate constraints
     # and rescale since we did not rescale this particular set of constraints!!!
+    CR_As = CR_As[non_redundant_rows]
+    CR_bs = CR_bs[non_redundant_rows]
+
+    # CR_As, CR_bs = scale_constraint(CR_As, CR_bs)
     CR_As, CR_bs = remove_duplicate_rows(CR_As, CR_bs)
-    CR_As, CR_bs = scale_constraint(CR_As, CR_bs)
+    # CR_As, CR_bs = remove_numerically_zero_rows(CR_As, CR_bs)
+
 
     return CriticalRegion(parameter_A, parameter_b, lagrange_A, lagrange_b, CR_As, CR_bs, active_set,
                           kept_omega_indices, relevant_lambda, regular)
