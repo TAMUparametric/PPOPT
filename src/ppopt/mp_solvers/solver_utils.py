@@ -179,9 +179,10 @@ def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> list:
         # theta point to look out of
         theta = None
         radius = 0
-        if A.shape[1] == 0:
+        if A.shape[1] == 1:
             # if A is 1 dim then we can safely skip the chebychev ball
             theta = numpy.array([[b[facet_index]]])
+            radius = 1.0
         else:
             # We take the chebychev ball of the facet
             chev_ball = chebyshev_ball(A, b, [facet_index])
