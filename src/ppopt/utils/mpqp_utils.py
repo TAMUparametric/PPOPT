@@ -275,6 +275,8 @@ def gen_cr_from_active_set_1d(program: MPQP_Program, active_set: List[int], chec
     # iterate over the omega constraints
     for index in range(omega_A.shape[0]):
 
+        check_idx = index + lambda_A.shape[0] + inactive_A.shape[0]
+
         if check_idx not in kept_rows:
             continue
 
