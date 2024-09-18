@@ -72,7 +72,8 @@ class MPLP_Program:
 
     solver: Solver
 
-    def __init__(self, A, b, c, H, A_t, b_t, F, c_c=None, c_t=None, Q_t=None, equality_indices=None, solver=None, post_process = True):
+    def __init__(self, A, b, c, H, A_t, b_t, F, c_c=None, c_t=None, Q_t=None, equality_indices=None, solver=None,
+                 post_process=True):
 
         self.A = A
         self.b = b
@@ -294,8 +295,7 @@ class MPLP_Program:
 
         # in the case of equality constraints, there can be cases where the constraints are redundant w.r.t. each other
         self.A, self.b, self.F, self.equality_indices = generate_reduced_equality_constraints(self.A, self.b, self.F,
-                                                                                               self.equality_indices)
-
+                                                                                              self.equality_indices)
 
         # form a polytope P := {(x, theta) in R^K : Ax <= b + F theta and A_t theta <= b_t}
         problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
@@ -352,7 +352,7 @@ class MPLP_Program:
         :return: The Solver output of the substituted problem, returns None if not solvable
         """
 
-        if not numpy.all(self.A_t @ theta_point <= self.b_t):
+        if not self.valid_parameter_realization(theta_point):
             return None
 
         sol_obj = self.solver.solve_lp(c=self.H @ theta_point + self.c, A=self.A, b=self.b + self.F @ theta_point,
@@ -671,28 +671,16 @@ class MPLP_Program:
 
         return [list(active_set) for active_set in set(found_active_sets)]
 
-    # noinspection SpellCheckingInspection
-    # def gen_feasible_theta_space(self):
-    #     r"""
-    #     Generated the theta feasible space of a multiparametric program (with up to affine constraints)
-    #
-    #     this is done by solving the following linear program for each reduced constraint
-    #
-    #     .. math::
-    #         \begin{align}
-    #         \min_{x} -A_i x
-    #
-    #     s.t. Ax \leq b + F \theta
-    #
-    #     then the solutions are transformed into the following results
-    #
-    #     A' = [-F \theta; A_theta]
-    #     b' = [b - {A_i x} min, b_theta]
-    #
-    #     :return: A', b' for A' \theta \leq b'
-    #     """
-    #
-    #     # find all of the A_i of the
-    #     # for _ in range(len(self.equality_indices), self.A.shape[0]):
-    #     #     pass
-    #     pass
+    def valid_parameter_realization(self, theta_point) -> bool:
+        r"""
+        Checks the arguments against the parametric constraints
+
+        .. math::
+            \begin{align}
+            A_\theta \theta \leq b_\theta
+            \end{align}
+
+        :param theta_point: the theta realization we are considering
+        :return: True if the parametric constraints are satisfied, False otherwise
+        """
+        return numpy.all(self.A_t @ theta_point <= self.b_t)

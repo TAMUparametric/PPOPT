@@ -464,3 +464,13 @@ def find_implicit_equalities(A: numpy.ndarray, b: numpy.ndarray, F: numpy.ndarra
     equality_indices = list(range(len(temp_active_set)))
 
     return A, b, F, equality_indices
+
+
+def numerically_nonzero_rows(A) -> List[int]:
+    return [index for index, row in enumerate(A) if not numpy.allclose(A[index], 0)]
+
+
+def remove_numerically_zero_rows(A, b) -> (numpy.ndarray, numpy.ndarray):
+    keep = [i for i in range(A.shape[0]) if i in numerically_nonzero_rows(A)]
+
+    return A[keep], b[keep]
