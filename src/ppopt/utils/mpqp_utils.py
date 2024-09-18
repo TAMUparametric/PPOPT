@@ -7,9 +7,10 @@ from ..mpqp_program import MPQP_Program
 from ..solver import Solver
 from ..utils.constraint_utilities import (
     cheap_remove_redundant_constraints,
+    numerically_nonzero_rows,
     remove_duplicate_rows,
+    remove_numerically_zero_rows,
     scale_constraint,
-    remove_numerically_zero_rows, numerically_nonzero_rows
 )
 from ..utils.general_utils import ppopt_block
 from .chebyshev_ball import chebyshev_ball
@@ -84,7 +85,7 @@ def build_suboptimal_critical_region(program: MPQP_Program, active_set: List[int
 
 
 # noinspection PyUnusedLocal
-def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_full_dim=True,) -> Optional[CriticalRegion]:
+def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_full_dim=True) -> Optional[CriticalRegion]:
     """
     Builds the critical region of the given mpqp from the active set.
 

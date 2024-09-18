@@ -180,7 +180,7 @@ def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> list:
         theta = None
         radius = 0
         if A.shape[1] == 1:
-            # if A is 1 dim then we can safely skip the chebychev ball
+            # if A is 1 dim then we can safely skip the chebyshev ball
             theta = numpy.array([[b[facet_index]]])
             radius = 1.0
         else:
@@ -191,10 +191,9 @@ def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> list:
                 radius = chev_ball.sol[-1]
 
         if theta is None:
-            # print('Theta is None!')
             continue
 
-        # facet is too small
+        # facet radius is numerically zero
         if abs(radius) <= 1e-12:
             continue
 
@@ -221,13 +220,12 @@ def fathem_facet(center: numpy.ndarray, normal: numpy.ndarray, radius: float, pr
     :param current_active_set: the cir
     :return: a critical region of the other side of the facet if one exists otherwise none
     """
-    # make sure we are pointing in the correct direction
+    # ensure that our initial point, our normal are the vertical vectors and set up dist
     center = make_column(center)
     normal = make_column(normal)
-
-    # make sure we are pointing in the correct dimension
     dist = radius * (10 ** (-6))
 
+    # will run for at most 20 iterations before exiting
     while dist < radius:
 
         dist *= 2
@@ -239,7 +237,6 @@ def fathem_facet(center: numpy.ndarray, normal: numpy.ndarray, radius: float, pr
         # test to see if the theta substituted optimization function is not feasible
         # this happens when we are looking outside the feasible space -> no longer need to look further
         if sol is None:
-            # print('Is not Feasible!')
             return None
 
         # grab the active set
@@ -250,8 +247,6 @@ def fathem_facet(center: numpy.ndarray, normal: numpy.ndarray, radius: float, pr
         if projected_set == current_active_set:
             continue
 
-        # print(projected_set)
-
         # test if we are stepping into a found region
         if tuple(projected_set) in indexed_region_as:
             return None
@@ -260,8 +255,6 @@ def fathem_facet(center: numpy.ndarray, normal: numpy.ndarray, radius: float, pr
         # we have found a new critical region!
         # we need to check optimality (do we actually need to do this?)
 
-        # indexed_region_as.add(tuple(projected_set))
-
         if not program.check_active_set_rank(projected_set):
             continue
 
@@ -269,8 +262,6 @@ def fathem_facet(center: numpy.ndarray, normal: numpy.ndarray, radius: float, pr
         cr = gen_cr_from_active_set(program, projected_set, check_full_dim=True)
 
         if cr is not None:
-            # if program.check_optimality(projected_set) and program.check_feasibility(projected_set):
-            #     return cr
             return cr
 
     # if no CR found return None
