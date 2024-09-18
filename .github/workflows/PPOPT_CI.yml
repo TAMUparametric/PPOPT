@@ -8,6 +8,9 @@ on:
     branches: [ main ]
     paths-ignore:
       - 'doc/**'
+      - 'README.md'
+      - 'LICENSE'
+      - '*.yml'
   pull_request:
     branches: [ main ]
 
