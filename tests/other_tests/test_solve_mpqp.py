@@ -1,6 +1,6 @@
 import numpy
 
-from ppopt.utils.chebyshev_ball import chebyshev_ball
+from src.ppopt.utils.chebyshev_ball import chebyshev_ball
 from src.ppopt.mp_solvers import mpqp_parrallel_combinatorial
 from src.ppopt.mp_solvers.solve_mpqp import mpqp_algorithm, solve_mpqp
 from src.ppopt.plot import parametric_plot
