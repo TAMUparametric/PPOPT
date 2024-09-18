@@ -37,7 +37,7 @@ jobs:
 
       - name: Install Packages
         shell: bash -l {0}
-        run: pip install flake8 numpy matplotlib scipy numba gurobipy pytest setuptools psutil pathos plotly daqp
+        run: pip install flake8 numpy matplotlib scipy numba gurobipy pytest pathos plotly daqp
 
       - name: Install glpk
         shell: bash -l {0}
