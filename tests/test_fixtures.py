@@ -1,7 +1,9 @@
 import numpy
 import pytest
+from scipy.stats import random_correlation
 
 from src.ppopt.critical_region import CriticalRegion
+from src.ppopt.mpmodel import MPModeler
 from src.ppopt.mp_solvers.mpqp_combinatorial import CombinationTester
 from src.ppopt.mp_solvers.solve_mpqp import solve_mpqp
 from src.ppopt.mplp_program import MPLP_Program
@@ -276,3 +278,30 @@ def portfolio_problem_analog():
     program.solver.solvers['qp'] = 'quadprog'
 
     return program
+
+@pytest.fixture()
+def non_negative_least_squares():
+
+    N = 10
+    numpy.random.seed(123)
+    rng = numpy.random.default_rng(seed=123)
+    rev = numpy.random.rand(N)
+    rev = (N / numpy.sum(rev)) * rev
+    A = random_correlation.rvs(eigs=rev, random_state=rng, tol=10 ** -10)
+    y = numpy.random.rand(N)
+
+    m = MPModeler()
+
+    t = m.add_param('lambda')
+    x = [m.add_var(name=f'x_[{i}]') for i in range(N)]
+
+    m.add_constrs(x[i] >= 0 for i in range(N))
+    m.add_constr(t >= 0)
+    m.add_constr(t <= 10)
+
+    z = [sum(A[i, j] * x[j] for j in range(N)) - y[i] for i in range(N)]
+
+    m.set_objective(sum(z[i] ** 2 for i in range(N)) + t * sum(x))
+
+    return m.formulate_problem()
+

@@ -3,8 +3,7 @@ import numpy
 from src.ppopt.utils.chebyshev_ball import chebyshev_ball
 from src.ppopt.mp_solvers import mpqp_parrallel_combinatorial
 from src.ppopt.mp_solvers.solve_mpqp import mpqp_algorithm, solve_mpqp
-from src.ppopt.plot import parametric_plot
-from tests.test_fixtures import qp_problem, simple_mpLP, portfolio_problem_analog
+from tests.test_fixtures import qp_problem, simple_mpLP, portfolio_problem_analog, non_negative_least_squares
 
 
 def test_solve_mpqp_combinatorial(qp_problem):
@@ -106,6 +105,25 @@ def test_solve_geometric_portfolio(portfolio_problem_analog):
     for cr in sol_geo.critical_regions:
 
         chev_sol = chebyshev_ball(cr.E, cr.f, deterministic_solver=portfolio_problem_analog.solver.solvers['lp'])
+        center = chev_sol.sol[0].reshape(-1,1)
+
+        geo_ans = sol_geo.evaluate(center)
+        combi_ans = sol_combi.evaluate(center)
+
+        if not numpy.allclose(geo_ans, combi_ans):
+            assert False
+
+def test_solve_geometric_nnls(non_negative_least_squares):
+    sol_geo = solve_mpqp(non_negative_least_squares, mpqp_algorithm.geometric)
+    sol_combi = solve_mpqp(non_negative_least_squares, mpqp_algorithm.combinatorial)
+
+    # they should have the same number of critical regions
+    assert(len(sol_geo) == len(sol_combi))
+
+    # test the center of each critical region
+    for cr in sol_geo.critical_regions:
+
+        chev_sol = chebyshev_ball(cr.E, cr.f, deterministic_solver=non_negative_least_squares.solver.solvers['lp'])
         center = chev_sol.sol[0].reshape(-1,1)
 
         geo_ans = sol_geo.evaluate(center)
