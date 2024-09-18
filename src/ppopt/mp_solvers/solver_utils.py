@@ -3,6 +3,7 @@ from typing import List, Optional, Set, Tuple
 import numpy
 
 from ..critical_region import CriticalRegion
+from ..solution import Solution
 from ..utils.chebyshev_ball import chebyshev_ball
 from ..utils.general_utils import make_column
 from ..utils.mpqp_utils import gen_cr_from_active_set
@@ -181,7 +182,7 @@ def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> list:
         radius = 0
         if A.shape[1] == 1:
             # if A is 1 dim then we can safely skip the chebyshev ball
-            theta = numpy.array([[b[facet_index]]])
+            theta = numpy.array([[b[facet_index] / A[facet_index][0]]])
             radius = 1.0
         else:
             # We take the chebychev ball of the facet
@@ -205,7 +206,7 @@ def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> list:
 
 
 def fathem_facet(center: numpy.ndarray, normal: numpy.ndarray, radius: float, program, indexed_region_as: Set,
-                 current_active_set: list) -> Optional[CriticalRegion]:
+                 current_active_set: list, cand_sol: Solution = None) -> Optional[CriticalRegion]:
     """
     This explores the feasible space looking out from a chebychev center of a critical region facet.
 
@@ -217,7 +218,8 @@ def fathem_facet(center: numpy.ndarray, normal: numpy.ndarray, radius: float, pr
     :param radius: chebychev radius of the polytope facet
     :param program: the multiparametric program being considered
     :param indexed_region_as: set of all indexed critical region active sets
-    :param current_active_set: the cir
+    :param current_active_set: active set of the region we are stepping out of
+    :param cand_sol: a candidate solution to check against
     :return: a critical region of the other side of the facet if one exists otherwise none
     """
     # ensure that our initial point, our normal are the vertical vectors and set up dist
@@ -231,6 +233,13 @@ def fathem_facet(center: numpy.ndarray, normal: numpy.ndarray, radius: float, pr
         dist *= 2
 
         test_point = normal * dist + center
+
+        # if we have a candidate solution
+        if cand_sol is not None:
+            # if our test point is inside a region we can safely break
+            cand_sol.point_location_tolerance = 0.0
+            if cand_sol.get_region(test_point) is not None:
+                return None
 
         sol = program.solve_theta(test_point)
 

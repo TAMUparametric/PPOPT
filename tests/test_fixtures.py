@@ -254,3 +254,25 @@ def mpMIQP_market_problem():
 
     miqp_prog = MPMIQP_Program(A, b, c, H, Q, A_t, b_t, F, binary_indices)
     return miqp_prog
+
+@pytest.fixture()
+def portfolio_problem_analog():
+
+    num_assets = 8
+    S = numpy.diag([i + 1 for i in range(num_assets)])
+    mu = [0.09551451, 0.00317183, 0.06799116, 0.12334409, 0.10235298, 0.0754139, 0.00730871, 0.11324299]
+
+    A = numpy.block([[1 for _ in range(num_assets)], [mu[i] for i in range(num_assets)], [-numpy.eye(num_assets)]])
+    b = numpy.array([1, 0, *[0 for _ in range(num_assets)]]).reshape(-1, 1)
+    F = numpy.block([[0], [1], [numpy.zeros((num_assets, 1))]])
+    A_t = numpy.array([[-1], [1]])
+    b_t = numpy.array([[-min(mu)], [max(mu)]])
+    Q = S
+    c = numpy.zeros((num_assets, 1))
+    H = numpy.zeros((A.shape[1], F.shape[1]))
+    program = MPQP_Program(A, b, c, H, Q, A_t, b_t, F, equality_indices=[0, 1])
+
+    program.solver.solvers['lp'] = 'glpk'
+    program.solver.solvers['qp'] = 'quadprog'
+
+    return program
