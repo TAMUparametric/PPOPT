@@ -467,7 +467,7 @@ def find_implicit_equalities(A: numpy.ndarray, b: numpy.ndarray, F: numpy.ndarra
 
 
 def numerically_nonzero_rows(A) -> List[int]:
-    return [index for index, row in enumerate(A) if not numpy.allclose(A[index], 0)]
+    return [index for index, row in enumerate(A) if not numpy.allclose(A[index], 0, atol=10**-8)]
 
 
 def remove_numerically_zero_rows(A, b) -> (numpy.ndarray, numpy.ndarray):

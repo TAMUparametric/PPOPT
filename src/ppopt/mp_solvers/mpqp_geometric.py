@@ -24,6 +24,7 @@ def solve(program: MPQP_Program, active_set=None) -> Optional[Solution]:
     initial_region = gen_cr_from_active_set(program, active_set, check_full_dim=False)
 
     solution = Solution(program, [initial_region])
+    solution_tol = solution.point_location_tolerance
 
     unchecked_regions = [initial_region]
 
@@ -46,11 +47,13 @@ def solve(program: MPQP_Program, active_set=None) -> Optional[Solution]:
             center_c = make_column(center)
             normal_c = make_column(normal)
 
-            possible_cr = fathem_facet(center_c, normal_c, radius, program, indexed_region_as, cur_region.active_set)
+            possible_cr = fathem_facet(center_c, normal_c, radius, program, indexed_region_as, cur_region.active_set, solution)
 
             if possible_cr is not None:
                 indexed_region_as.add(tuple(possible_cr.active_set))
                 unchecked_regions.append(possible_cr)
                 solution.add_region(possible_cr)
+
+    solution.point_location_tolerance = solution_tol
 
     return solution

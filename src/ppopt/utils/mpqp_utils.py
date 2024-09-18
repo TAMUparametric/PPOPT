@@ -85,7 +85,8 @@ def build_suboptimal_critical_region(program: MPQP_Program, active_set: List[int
 
 
 # noinspection PyUnusedLocal
-def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_full_dim=True) -> Optional[CriticalRegion]:
+def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_full_dim=True) -> Optional[
+    CriticalRegion]:
     """
     Builds the critical region of the given mpqp from the active set.
 
@@ -94,6 +95,9 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
     :param check_full_dim: Keyword Arg, if true will return null if the region has lower dimensionality
     :return: Returns the associated critical region if fully dimensional else returns None
     """
+
+    if program.num_t() == 1:
+        return gen_cr_from_active_set_1d(program=program, active_set=active_set, check_full_dim=check_full_dim)
 
     num_equality = program.num_equality_constraints()
 
@@ -186,12 +190,134 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
     CR_As, CR_bs = remove_duplicate_rows(CR_As, CR_bs)
     # CR_As, CR_bs = remove_numerically_zero_rows(CR_As, CR_bs)
 
+    return CriticalRegion(parameter_A, parameter_b, lagrange_A, lagrange_b, CR_As, CR_bs, active_set,
+                          kept_omega_indices, relevant_lambda, regular)
+
+
+def gen_cr_from_active_set_1d(program: MPQP_Program, active_set: List[int], check_full_dim=True) -> Optional[
+    CriticalRegion]:
+    """
+    Builds the critical region of the given mpqp from the active set specifically for the 1D parameter case.
+
+    :param program: the MQMP_Program to be solved
+    :param active_set: the active set combination to build this critical region from
+    :param check_full_dim: Keyword Arg, if true will return null if the region has lower dimensionality
+    :return: Returns the associated critical region if fully dimensional else returns None
+    """
+
+    num_equality = program.num_equality_constraints()
+
+    active = active_set[num_equality:]
+    inactive = [i for i in range(program.num_constraints()) if i not in active_set]
+
+    parameter_A, parameter_b, lagrange_A, lagrange_b = program.optimal_control_law(active_set)
+
+    # lagrange constraints
+    lambda_A, lambda_b = -lagrange_A[num_equality:], lagrange_b[num_equality:]
+
+    # Theta Constraints
+    omega_A, omega_b = program.A_t, program.b_t
+
+    # Inactive Constraints remain inactive
+    inactive_A = program.A[inactive] @ parameter_A - program.F[inactive]
+    inactive_b = program.b[inactive] - program.A[inactive] @ parameter_b
+
+    CR_As = ppopt_block([[lambda_A], [inactive_A], [omega_A]])
+    CR_bs = ppopt_block([[lambda_b], [inactive_b], [omega_b]])
+    # print(CR_As.shape)
+    kept_rows = numerically_nonzero_rows(CR_As)
+
+    CR_As, CR_bs = remove_numerically_zero_rows(CR_As, CR_bs)
+    CR_As, CR_bs = scale_constraint(CR_As, CR_bs)
+
+    # if check_full_dim is set check if region is lower dimensional if so return None
+    if check_full_dim:
+        if not is_full_dimensional_1d(CR_As, CR_bs):
+            return None
+
+    # get the bounds of the problem
+    min_bound, max_bound = get_bounds_1d(CR_As, CR_bs)
+
+    # if it is fully dimensional we get to classify the constraints and then reduce them (important)!
+    kept_lambda_indices = []
+    kept_inequality_indices = []
+    kept_omega_indices = []
+
+    # iterate over the non-zero lagrange constraints
+    for index in range(lambda_A.shape[0]):
+
+        if index not in kept_rows:
+            continue
+
+        new_idx = kept_rows.index(index)
+
+        # sol = program.solver.solve_lp(None, CR_As, CR_bs, [kept_rows.index(index)])
+        is_not_redundant = min_bound <= CR_bs[new_idx] / CR_As[new_idx] <= max_bound
+
+        if is_not_redundant:
+            kept_lambda_indices.append(index)
+
+    # iterate over the non-zero inequality constraints
+    for index in range(inactive_A.shape[0]):
+
+        check_idx = index + lambda_A.shape[0]
+
+        if check_idx not in kept_rows:
+            continue
+
+        new_idx = kept_rows.index(check_idx)
+
+        is_not_redundant = min_bound <= CR_bs[new_idx] / CR_As[new_idx] <= max_bound
+
+        if is_not_redundant:
+            kept_inequality_indices.append(index)
+
+    # iterate over the omega constraints
+    for index in range(omega_A.shape[0]):
+
+        if check_idx not in kept_rows:
+            continue
+
+        new_idx = kept_rows.index(check_idx)
+
+        is_not_redundant = min_bound <= CR_bs[new_idx] / CR_As[new_idx] <= max_bound
+
+        if is_not_redundant:
+            kept_omega_indices.append(index)
+
+    # recover the lambda boundaries that remain
+    relevant_lambda = [active[index] for index in kept_lambda_indices]
+
+    real_regular = [inactive[index] for index in kept_inequality_indices]
+    regular = [kept_inequality_indices, real_regular]
+
+    CR_As = numpy.array([[1], [-1]])
+    CR_bs = numpy.array([[max_bound], [-min_bound]])
 
     return CriticalRegion(parameter_A, parameter_b, lagrange_A, lagrange_b, CR_As, CR_bs, active_set,
                           kept_omega_indices, relevant_lambda, regular)
 
 
-def is_full_dimensional(A, b, solver: Solver = None):
+def get_bounds_1d(CR_As: numpy.ndarray, CR_bs: numpy.ndarray) -> (float, float):
+    min_val = float('-inf')
+    max_val = float('inf')
+
+    for index in range(CR_As.shape[0]):
+
+        if CR_As[index] > 0:
+            max_val = min(max_val, CR_bs[index][0] / CR_As[index][0])
+        else:
+            min_val = max(min_val, CR_bs[index][0] / CR_As[index][0])
+
+    return min_val, max_val
+
+
+def is_full_dimensional_1d(CR_As: numpy.ndarray, CR_bs: numpy.ndarray) -> bool:
+    min_val, max_val = get_bounds_1d(CR_As, CR_bs)
+    return min_val + 10 ** -8 <= max_val
+
+
+def is_full_dimensional(A, b, solver: Solver = None) -> bool:
     """
     This checks the dimensionality of a polytope defined by P = {x: Ax≤b}. Current method is based on checking if the
     radii of the chebychev ball is nonzero. However, this is numerically not so stable, and will eventually be replaced
