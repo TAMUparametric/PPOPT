@@ -1,6 +1,6 @@
 # PPOPT
 
-[![Python package](https://github.com/TAMUparametric/PPOPT/actions/workflows/python-package.yml/badge.svg)](https://github.com/TAMUparametric/PPOPT/actions/workflows/python-package.yml)
+[![Python package](https://github.com/TAMUparametric/PPOPT/actions/workflows/PPOPT_CI.yml/badge.svg)](https://github.com/TAMUparametric/PPOPT/actions/workflows/PPOPT_CI.yml)
 [![Documentation Status](https://readthedocs.org/projects/ppopt/badge/?version=latest)](https://ppopt.readthedocs.io/en/latest/?badge=latest)
 [![PyPI](https://img.shields.io/pypi/v/ppopt.svg)](https://pypi.org/project/ppopt)
 [![Downloads](https://static.pepy.tech/personalized-badge/ppopt?period=total&units=none&left_color=grey&right_color=brightgreen&left_text=Downloads)](https://pepy.tech/project/ppopt)
