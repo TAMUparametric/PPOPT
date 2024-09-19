@@ -471,6 +471,6 @@ def numerically_nonzero_rows(A) -> List[int]:
 
 
 def remove_numerically_zero_rows(A, b) -> (numpy.ndarray, numpy.ndarray):
-    keep = [i for i in range(A.shape[0]) if i in numerically_nonzero_rows(A)]
-
+    num_nonzero = numerically_nonzero_rows(A)
+    keep = [i for i in range(A.shape[0]) if i in num_nonzero]
     return A[keep], b[keep]
