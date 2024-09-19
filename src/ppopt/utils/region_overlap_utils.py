@@ -1,4 +1,5 @@
 from itertools import combinations, permutations
+from typing import List, Tuple
 
 import numpy
 from ..mpmilp_program import MPMILP_Program
@@ -28,7 +29,7 @@ def reduce_overlapping_critical_regions_1d(program: MPMILP_Program, regions: lis
     return regions, overlaps_remaining
 
 
-def identify_overlaps(program, regions):
+def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) -> Tuple[bool, bool, list]:
     # In a first step, we identify regions that are fully or partially overlapping If a region is fully contained in
     # another one, we make it infeasible, in order to prevent weird stuff from happening by deleting during iteration
     # In the second step, we delete all infeasible regions (i.e. keep only full dimensional regions) and add all
@@ -44,7 +45,6 @@ def identify_overlaps(program, regions):
         x1s = [cr1.evaluate(numpy.array([[x]])) for x in [lb1, ub1, lb2, ub2]]
         x2s = [cr2.evaluate(numpy.array([[x]])) for x in [lb1, ub1, lb2, ub2]]
 
-        f1lb = program.evaluate_objective(x1s[0], numpy.array([[lb1]]))
         f1ub = program.evaluate_objective(x1s[1], numpy.array([[ub1]]))
         f2lb = program.evaluate_objective(x2s[0], numpy.array([[lb2]]))
         f2ub = program.evaluate_objective(x2s[1], numpy.array([[ub2]]))
@@ -97,15 +97,16 @@ def identify_overlaps(program, regions):
     return possible_dual_degeneracy, region_added, regions
 
 
-def append_region(regions, cr):
+def append_region(regions: List[CriticalRegion], cr: CriticalRegion) -> List[CriticalRegion]:
     regions.append(
         CriticalRegion(cr.A, cr.b, cr.C, cr.d, cr.E, cr.f, cr.active_set, cr.omega_set, cr.lambda_set, cr.regular_set,
                        cr.y_fixation, cr.y_indices, cr.x_indices))
     return regions
 
 
-def adjust_regions_at_intersection(new_regions, inner_region, outer_region, inner_lb, intersection, inner_ub,
-                                   intersection_on_left):
+def adjust_regions_at_intersection(new_regions: List[CriticalRegion], inner_region: CriticalRegion, outer_region: CriticalRegion,
+                                   inner_lb: float, intersection: float, inner_ub: float,
+                                   intersection_on_left: bool):
     if intersection_on_left:
         new_regions = append_region(new_regions, outer_region)
         outer_region.E = numpy.concatenate([outer_region.E, [[1]]], 0)
@@ -124,12 +125,12 @@ def adjust_regions_at_intersection(new_regions, inner_region, outer_region, inne
         new_regions[-1].f = numpy.concatenate([new_regions[-1].f, [[-intersection]]], 0)
 
 
-def make_infeasible(cr):
+def make_infeasible(cr: CriticalRegion):
     cr.E = numpy.array([[1], [-1]])
     cr.f = numpy.array([[-1], [-1]])
 
 
-def split_outer_region(new_regions, cr, inner_lb, inner_ub):
+def split_outer_region(new_regions: List[CriticalRegion], cr: CriticalRegion, inner_lb: float, inner_ub: float):
     new_regions = append_region(new_regions, cr)
     cr.E = numpy.concatenate([cr.E, [[1]]], 0)
     cr.f = numpy.concatenate([cr.f, [[inner_lb]]])
@@ -137,22 +138,22 @@ def split_outer_region(new_regions, cr, inner_lb, inner_ub):
     new_regions[-1].f = numpy.concatenate([new_regions[-1].f, [[-inner_ub]]], 0)
 
 
-def tighten_lb(cr, new_lb):
+def tighten_lb(cr: CriticalRegion, new_lb: float):
     cr.E = numpy.concatenate([cr.E, [[1]]], 0)
     cr.f = numpy.concatenate([cr.f, [[new_lb]]], 0)
 
 
-def tighten_ub(cr, new_ub):
+def tighten_ub(cr: CriticalRegion, new_ub: float):
     cr.E = numpy.concatenate([cr.E, [[-1]]], 0)
     cr.f = numpy.concatenate([cr.f, [[-new_ub]]], 0)
 
-def full_overlap(cr1, cr2):
+def full_overlap(cr1: CriticalRegion, cr2: CriticalRegion) -> bool:
     # region 2 fully inside region 1
     lb1, ub1 = get_bounds_1d(cr1.E, cr1.f)
     lb2, ub2 = get_bounds_1d(cr2.E, cr2.f)
     return lb1 <= lb2 and ub1 >= ub2
 
-def partial_overlap(cr1, cr2):
+def partial_overlap(cr1: CriticalRegion, cr2: CriticalRegion) -> bool:
     # region 1 to the left of region 2
     lb1, ub1 = get_bounds_1d(cr1.E, cr1.f)
     lb2, ub2 = get_bounds_1d(cr2.E, cr2.f)
