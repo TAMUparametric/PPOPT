@@ -8,18 +8,18 @@ from ..critical_region import CriticalRegion
 from .mpqp_utils import get_bounds_1d, is_full_dimensional_1d
 
 
-def reduce_overlapping_critical_regions_1d(program: MPMILP_Program, regions: list) -> list:
+def reduce_overlapping_critical_regions_1d(program: MPMILP_Program, regions: List[CriticalRegion]) -> Tuple[List[CriticalRegion], bool]:
     """
     This adjusts critical regions for the 1d-parameter case, so that there are no overlaps.
 
     :param program: the MPMILP_Program to be solved
     :param regions: a list of CriticalRegion objects
-    :return: a list of non-overlapping CriticalRegion objects
+    :return: a list of CriticalRegion objects and a flag indicating whether there are still overlaps
     """
 
     # guard around the statement
     if program.num_t() != 1:
-        raise ValueError('reduce_overlapping_critical_regions_1d  requires a 1d-parameter problem')
+        raise ValueError('reduce_overlapping_critical_regions_1d requires a 1d-parameter problem')
 
     overlaps_remaining, region_added, regions = identify_overlaps(program, regions)
     while region_added:
