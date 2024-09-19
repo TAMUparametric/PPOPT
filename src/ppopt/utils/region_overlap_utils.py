@@ -36,6 +36,7 @@ def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) ->
     # those that were newly identified
     region_added = False
     new_regions = []
+    to_remove = []
     possible_dual_degeneracy = False
     # test all permutations rather than combinations: this way we only need to test for 2 cases (CR 2 fully inside CR 1, or CR 1 left of CR 2 but overlapping), since the other 2 cases are handled by the swapped permutation
     for cr1, cr2 in permutations(regions, 2):
@@ -58,7 +59,7 @@ def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) ->
                 # in this case, we keep both regions to have both solutions
                 possible_dual_degeneracy = True
             elif f1lb2 <= f2lb and f1ub2 <= f2ub:
-                make_infeasible(cr2)
+                mark_for_removal(cr2, to_remove)
             elif f1lb2 > f2lb and f1ub2 > f2ub:
                 # objective of 2 always less than objective of 1 --> cr1_l, cr2, cr1_r
                 split_outer_region(new_regions, cr1, lb2, ub2)
@@ -90,7 +91,7 @@ def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) ->
                 tighten_lb(cr1, lb2)
 
     # purge
-    regions = [cr for cr in regions if is_full_dimensional_1d(cr.E, cr.f)]
+    regions = [cr for cr in regions if cr not in to_remove]
     # add new
     regions = regions + new_regions
 
@@ -125,9 +126,8 @@ def adjust_regions_at_intersection(new_regions: List[CriticalRegion], inner_regi
         new_regions[-1].f = numpy.concatenate([new_regions[-1].f, [[-intersection]]], 0)
 
 
-def make_infeasible(cr: CriticalRegion):
-    cr.E = numpy.array([[1], [-1]])
-    cr.f = numpy.array([[-1], [-1]])
+def mark_for_removal(cr: CriticalRegion, removal_list: List[CriticalRegion]):
+    removal_list.append(cr)
 
 
 def split_outer_region(new_regions: List[CriticalRegion], cr: CriticalRegion, inner_lb: float, inner_ub: float):
