@@ -10,6 +10,7 @@ from src.ppopt.mpmiqp_program import MPMIQP_Program
 from src.ppopt.mpqp_program import MPQP_Program
 from src.ppopt.solution import Solution
 from src.ppopt.utils.general_utils import make_column
+from src.ppopt.mpmodel import MPModeler, VariableType
 
 
 @pytest.fixture()
@@ -274,5 +275,101 @@ def portfolio_problem_analog():
 
     program.solver.solvers['lp'] = 'glpk'
     program.solver.solvers['qp'] = 'quadprog'
+
+    return program
+
+@pytest.fixture()
+def bard_mpMILP_adapted_degenerate():
+
+    program_model = MPModeler()
+
+    x = program_model.add_param(name='x')
+    y1 = program_model.add_var(name='y1', vtype=VariableType.binary)
+    y2 = program_model.add_var(name='y2', vtype=VariableType.binary)
+    y3 = program_model.add_var(name='y3', vtype=VariableType.binary)
+    z = program_model.add_var()
+
+    y = y1 + 2*y2 + 4*y3
+
+    program_model.add_constr(x >= 0)
+    program_model.add_constr(x <= 10)
+
+    program_model.add_constr(y <= 4)
+
+    program_model.add_constr(-25*x+20*y <= 30)
+    program_model.add_constr(x+2*y <= 10)
+    program_model.add_constr(2*x-y <= 15)
+    program_model.add_constr(2*x+10*y >= 15 + z)
+
+    program_model.add_constr(z >= 0)
+    program_model.add_constr(z <= 0.1)
+
+    program_model.set_objective(y)
+
+    program = program_model.formulate_problem()
+
+    return program
+
+@pytest.fixture()
+def bard_mpMILP_adapted():
+
+    program_model = MPModeler()
+
+    x = program_model.add_param(name='x')
+    y1 = program_model.add_var(name='y1', vtype=VariableType.binary)
+    y2 = program_model.add_var(name='y2', vtype=VariableType.binary)
+    y3 = program_model.add_var(name='y3', vtype=VariableType.binary)
+    z = program_model.add_var()
+
+    y = y1 + 2*y2 + 4*y3
+
+    program_model.add_constr(x >= 0)
+    program_model.add_constr(x <= 10)
+
+    program_model.add_constr(y <= 4)
+
+    program_model.add_constr(-25*x+20*y <= 30)
+    program_model.add_constr(x+2*y <= 10)
+    program_model.add_constr(2*x-y <= 15)
+    program_model.add_constr(2*x+10*y >= 15 + z)
+
+    program_model.add_constr(z >= 0)
+    program_model.add_constr(z <= 0.1)
+
+    program_model.set_objective(y + z)
+
+    program = program_model.formulate_problem()
+
+    return program
+
+@pytest.fixture()
+def bard_mpMILP_adapted_2():
+
+    program_model = MPModeler()
+
+    x = program_model.add_param(name='x')
+    y1 = program_model.add_var(name='y1', vtype=VariableType.binary)
+    y2 = program_model.add_var(name='y2', vtype=VariableType.binary)
+    y3 = program_model.add_var(name='y3', vtype=VariableType.binary)
+    z = program_model.add_var()
+
+    y = y1 + 2*y2 + 4*y3
+
+    program_model.add_constr(x >= 0)
+    program_model.add_constr(x <= 10)
+
+    program_model.add_constr(y <= 4)
+
+    program_model.add_constr(-25*x+20*y <= 30)
+    program_model.add_constr(x+2*y <= 15)
+    program_model.add_constr(2*x-y <= 15)
+    program_model.add_constr(2*x+10*y >= 15 + z)
+
+    program_model.add_constr(z >= 0)
+    program_model.add_constr(z <= 0.1)
+
+    program_model.set_objective(y)
+
+    program = program_model.formulate_problem()
 
     return program

@@ -5,7 +5,7 @@ import numpy
 from src.ppopt.mp_solvers.solve_mpmiqp import solve_mpmiqp
 from src.ppopt.mp_solvers.solve_mpqp import mpqp_algorithm
 from src.ppopt.mpmilp_program import MPMILP_Program
-from tests.test_fixtures import simple_mpMILP, simple_mpMIQP, mpMILP_market_problem, mpMIQP_market_problem
+from tests.test_fixtures import simple_mpMILP, simple_mpMIQP, mpMILP_market_problem, mpMIQP_market_problem, bard_mpMILP_adapted, bard_mpMILP_adapted_2, bard_mpMILP_adapted_degenerate
 
 
 def test_mpmilp_process_constraints(simple_mpMILP):
@@ -88,3 +88,22 @@ def test_mpmilp_incorrect_algo(simple_mpMILP):
     except TypeError as e:
         print(e)
         assert(True)
+
+def test_mpmilp_cr_removal_1D(bard_mpMILP_adapted):
+    sol = solve_mpmiqp(bard_mpMILP_adapted)
+    assert(len(sol) == 2)
+    assert(numpy.isclose(sol.evaluate_objective(numpy.array([[2.]])), 2))
+    assert(numpy.isclose(sol.evaluate_objective(numpy.array([[3.]])), 1))
+
+def test_mpmilp_cr_removal_1D(bard_mpMILP_adapted_degenerate):
+    sol = solve_mpmiqp(bard_mpMILP_adapted_degenerate)
+    assert(len(sol) == 5)
+    assert(numpy.isclose(sol.evaluate_objective(numpy.array([[2.]])), 2))
+    assert(numpy.isclose(sol.evaluate_objective(numpy.array([[3.]])), 1))
+
+def test_mpmilp_cr_removal_1D_2(bard_mpMILP_adapted_2):
+    sol = solve_mpmiqp(bard_mpMILP_adapted_2)
+    assert(numpy.isclose(sol.evaluate_objective(numpy.array([[2.]])), 2))
+    assert(numpy.isclose(sol.evaluate_objective(numpy.array([[3.]])), 1))
+    assert(numpy.isclose(sol.evaluate_objective(numpy.array([[8.]])), 1))
+    assert(numpy.isclose(sol.evaluate_objective(numpy.array([[9.]])), 3))
