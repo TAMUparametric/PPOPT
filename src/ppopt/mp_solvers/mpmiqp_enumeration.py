@@ -110,15 +110,10 @@ def identify_overlaps(program, regions):
                 # in this case, we keep both regions to have both solutions
                 possible_dual_degeneracy = True
             elif f1lb2 <= f2lb and f1ub2 <= f2ub:
-                cr2.E = numpy.array([[1], [-1]])
-                cr2.f = numpy.array([[-1], [-1]])
+                make_infeasible(cr2)
             elif f1lb2 > f2lb and f1ub2 > f2ub:
                 # objective of 2 always less than objective of 1 --> cr1_l, cr2, cr1_r
-                new_regions.append(CriticalRegion(cr1.A, cr1.b, cr1.C, cr1.d, cr1.E, cr1.f, cr1.active_set, cr1.omega_set, cr1.lambda_set, cr1.regular_set, cr1.y_fixation, cr1.y_indices, cr1.x_indices))
-                cr1.E = numpy.concatenate([cr1.E, [[1]]], 0)
-                cr1.f = numpy.concatenate([cr1.f, [[lb2]]])
-                new_regions[-1].E = numpy.concatenate([new_regions[-1].E, [[-1]]], 0)
-                new_regions[-1].f = numpy.concatenate([new_regions[-1].f, [[-ub2]]], 0)
+                split_outer_region(new_regions, cr1, lb2, ub2)
                 region_added = True
             else:
                 # compute intersection point between CR1 and CR2
@@ -148,15 +143,10 @@ def identify_overlaps(program, regions):
                 possible_dual_degeneracy = True
             elif f2lb1 <= f1lb and f2ub1 <= f1ub:
                 # if objective of 1 is always greater than objective of 2, just discard 1
-                cr1.E = numpy.array([[1], [-1]])
-                cr1.f = numpy.array([[-1], [-1]])
+                make_infeasible(cr1)
             elif f2lb1 >= f1lb and f2ub1 >= f1ub:
                 # objective of 1 always less than objective of 2 --> cr2_l, cr1, cr2_r
-                new_regions.append(CriticalRegion(cr2.A, cr2.b, cr2.C, cr2.d, cr2.E, cr2.f, cr2.active_set, cr2.omega_set, cr2.lambda_set, cr2.regular_set, cr2.y_fixation, cr2.y_indices, cr2.x_indices))
-                cr2.E = numpy.concatenate([cr2.E, [[1]]], 0)
-                cr2.f = numpy.concatenate([cr2.f, [[lb1]]])
-                new_regions[-1].E = numpy.concatenate([new_regions[-1].E, [[-1]]], 0)
-                new_regions[-1].f = numpy.concatenate([new_regions[-1].f, [[-ub1]]], 0)
+                split_outer_region(new_regions, cr2, lb1, ub1)
                 region_added = True
             else:
                 # compute intersection point between CR1 and CR2
@@ -180,20 +170,22 @@ def identify_overlaps(program, regions):
         elif lb2 < ub1 and ub2 >= ub1: # 1, 2
             # determine lower objective value in overlap and adjust region
             if f1ub < f2lb:
-                cr2.E = numpy.concatenate([cr2.E, [[-1]]], 0)
-                cr2.f = numpy.concatenate([cr2.f, [[-ub1]]], 0)
+                # cr2.E = numpy.concatenate([cr2.E, [[-1]]], 0)
+                # cr2.f = numpy.concatenate([cr2.f, [[-ub1]]], 0)
+                tighten_ub(cr2, ub1)
             else:
-                cr1.E = numpy.concatenate([cr1.E, [[1]]], 0)
-                cr1.f = numpy.concatenate([cr1.f, [[lb2]]], 0)
+                # cr1.E = numpy.concatenate([cr1.E, [[1]]], 0)
+                # cr1.f = numpy.concatenate([cr1.f, [[lb2]]], 0)
+                tighten_lb(cr1, lb2)
         elif lb1 < ub2 and ub1 >= ub2: # 2, 1
             if f1lb < f2ub:
-                cr2.E = numpy.concatenate([cr2.E, [[1]]], 0)
-                cr2.f = numpy.concatenate([cr2.f, [[lb1]]], 0)
-                # cr2.f[1] = lb1 * cr2.E[1]
+                # cr2.E = numpy.concatenate([cr2.E, [[1]]], 0)
+                # cr2.f = numpy.concatenate([cr2.f, [[lb1]]], 0)
+                tighten_lb(cr2, lb1)
             else:
-                cr1.E = numpy.concatenate([cr1.E, [[-1]]], 0)
-                cr1.f = numpy.concatenate([cr1.f, [[-ub2]]], 0)
-                cr1.f[0] = ub2 * cr1.E[0]
+                # cr1.E = numpy.concatenate([cr1.E, [[-1]]], 0)
+                # cr1.f = numpy.concatenate([cr1.f, [[-ub2]]], 0)
+                tighten_ub(cr1, ub2)
 
     # purge
     regions = [cr for cr in regions if is_full_dimensional_1d(cr.E, cr.f)]
@@ -223,3 +215,22 @@ def adjust_regions_at_intersection(new_regions, inner_region, outer_region, inne
         inner_region.f = numpy.concatenate([inner_region.f, [[intersection]]])
         new_regions[-1].E = numpy.concatenate([new_regions[-1].E, [[-1]]], 0)
         new_regions[-1].f = numpy.concatenate([new_regions[-1].f, [[-intersection]]], 0)
+
+def make_infeasible(cr):
+    cr.E = numpy.array([[1], [-1]])
+    cr.f = numpy.array([[-1], [-1]])
+
+def split_outer_region(new_regions, cr, inner_lb, inner_ub):
+    new_regions = append_region(new_regions, cr)
+    cr.E = numpy.concatenate([cr.E, [[1]]], 0)
+    cr.f = numpy.concatenate([cr.f, [[inner_lb]]])
+    new_regions[-1].E = numpy.concatenate([new_regions[-1].E, [[-1]]], 0)
+    new_regions[-1].f = numpy.concatenate([new_regions[-1].f, [[-inner_ub]]], 0)
+
+def tighten_lb(cr, new_lb):
+    cr.E = numpy.concatenate([cr.E, [[1]]], 0)
+    cr.f = numpy.concatenate([cr.f, [[new_lb]]], 0)
+
+def tighten_ub(cr, new_ub):
+    cr.E = numpy.concatenate([cr.E, [[-1]]], 0)
+    cr.f = numpy.concatenate([cr.f, [[-new_ub]]], 0)
