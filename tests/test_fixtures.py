@@ -376,6 +376,7 @@ def bard_mpMILP_adapted_2():
 
     return program
 
+@pytest.fixture()
 def non_negative_least_squares():
 
     N = 10
