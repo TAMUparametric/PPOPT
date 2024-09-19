@@ -10,8 +10,7 @@ from .solve_mpqp import mpqp_algorithm, solve_mpqp
 
 
 def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
-                             cont_algorithm: mpqp_algorithm = mpqp_algorithm.combinatorial,
-                             reduce_overlap=True) -> Solution:
+                             cont_algorithm: mpqp_algorithm = mpqp_algorithm.combinatorial) -> Solution:
     """
     The enumeration algorithm is based on the following approach
 
@@ -22,7 +21,6 @@ def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
     :param program: An mpQP/mpLP of a problem with the binary variables without added constraints for the binary variables
     :param num_cores: the number of cores to use in this calculation to solve the mpLP/mpQP sub-problems
     :param cont_algorithm: the algorithm to solve the mpLP/mpQP algorithms (might not be required)
-    :param reduce_overlap: if the critical regions should be reduced overlapping (default: True)
     :return: a solution to the mpMILP/mpMIQP (might have overlapping critical regions depending on algorithm choice)
     """
     # if core count is unspecified use all available cores

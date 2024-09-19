@@ -50,7 +50,7 @@ def solve_mpmiqp(problem: MPMILP_Program, mpmiqp_algo: mpmiqp_algorithm = mpmiqp
 
     # listing of all available algorithms
     if mpmiqp_algo == mpmiqp_algorithm.enumerate:
-        cand_sol = solve_mpmiqp_enumeration(problem, num_cores, cont_algo, reduce_overlap)
+        cand_sol = solve_mpmiqp_enumeration(problem, num_cores, cont_algo)
 
     # see if we can actually reduce the overlaps given current limitations
     sum_abs_H = numpy.sum(numpy.abs(problem.H[problem.cont_indices, :]))
@@ -58,7 +58,7 @@ def solve_mpmiqp(problem: MPMILP_Program, mpmiqp_algo: mpmiqp_algorithm = mpmiqp
 
     # we currently only support for pMILP problems no H term
     if not (problem.num_t() > 1 or hasattr(problem, 'Q') or not reduce_overlap or is_bilinear_terms):
-        # For 1D MILP case, we remove overlaps
+        # For 1D mpMILP case, we remove overlaps
         # In case of dual degeneracy we keep all solutions so in this case there could still be overlaps
         collected_regions, is_overlapping = reduce_overlapping_critical_regions_1d(problem, cand_sol.critical_regions)
         return Solution(problem, collected_regions, is_overlapping)
