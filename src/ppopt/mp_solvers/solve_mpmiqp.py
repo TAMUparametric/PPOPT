@@ -27,7 +27,7 @@ class mpmiqp_algorithm(Enum):
         return output
 
 def solve_mpmiqp(problem: MPMILP_Program, mpmiqp_algo: mpmiqp_algorithm = mpmiqp_algorithm.enumerate,
-                 cont_algo: mpqp_algorithm = mpqp_algorithm.combinatorial, num_cores=-1) -> Solution:
+                 cont_algo: mpqp_algorithm = mpqp_algorithm.combinatorial, num_cores=-1, reduce_overlap=True) -> Solution:
 
     # the case of a continuous problem just solve it and return
     if len(problem.binary_indices) == 0:
@@ -43,7 +43,7 @@ def solve_mpmiqp(problem: MPMILP_Program, mpmiqp_algo: mpmiqp_algorithm = mpmiqp
 
     # listing of all available algorithms
     if mpmiqp_algo == mpmiqp_algorithm.enumerate:
-        return solve_mpmiqp_enumeration(problem, num_cores, cont_algo)
+        return solve_mpmiqp_enumeration(problem, num_cores, cont_algo, reduce_overlap)
 
     # this shouldn't happen but if you ask for an unavailable algorithm you get an emtpy solution
     return Solution(problem, [])

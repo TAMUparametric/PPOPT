@@ -15,7 +15,8 @@ import numpy
 
 
 def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
-                             cont_algorithm: mpqp_algorithm = mpqp_algorithm.combinatorial) -> Solution:
+                             cont_algorithm: mpqp_algorithm = mpqp_algorithm.combinatorial,
+                             reduce_overlap = True) -> Solution:
     """
     The enumeration algorithm is based on the following approach
 
@@ -55,7 +56,7 @@ def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
             sol.critical_regions[i].x_indices = program.cont_indices
         region_list.append(sol.critical_regions)
 
-    if program.num_t() > 1 or hasattr(program, 'Q'):
+    if program.num_t() > 1 or hasattr(program, 'Q') or not reduce_overlap:
         # this has the possibility for overlapping critical regions, so we set the overlapping flag
         return Solution(program, [item for sublist in region_list for item in sublist], is_overlapping=True)
     else:
