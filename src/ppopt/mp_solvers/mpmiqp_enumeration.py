@@ -170,21 +170,13 @@ def identify_overlaps(program, regions):
         elif lb2 < ub1 and ub2 >= ub1: # 1, 2
             # determine lower objective value in overlap and adjust region
             if f1ub < f2lb:
-                # cr2.E = numpy.concatenate([cr2.E, [[-1]]], 0)
-                # cr2.f = numpy.concatenate([cr2.f, [[-ub1]]], 0)
                 tighten_ub(cr2, ub1)
             else:
-                # cr1.E = numpy.concatenate([cr1.E, [[1]]], 0)
-                # cr1.f = numpy.concatenate([cr1.f, [[lb2]]], 0)
                 tighten_lb(cr1, lb2)
         elif lb1 < ub2 and ub1 >= ub2: # 2, 1
             if f1lb < f2ub:
-                # cr2.E = numpy.concatenate([cr2.E, [[1]]], 0)
-                # cr2.f = numpy.concatenate([cr2.f, [[lb1]]], 0)
                 tighten_lb(cr2, lb1)
             else:
-                # cr1.E = numpy.concatenate([cr1.E, [[-1]]], 0)
-                # cr1.f = numpy.concatenate([cr1.f, [[-ub2]]], 0)
                 tighten_ub(cr1, ub2)
 
     # purge
