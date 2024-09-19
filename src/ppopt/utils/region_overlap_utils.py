@@ -30,9 +30,9 @@ def reduce_overlapping_critical_regions_1d(program: MPMILP_Program, regions: lis
 
 
 def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) -> Tuple[bool, bool, list]:
-    # In a first step, we identify regions that are fully or partially overlapping If a region is fully contained in
-    # another one, we make it infeasible, in order to prevent weird stuff from happening by deleting during iteration
-    # In the second step, we delete all infeasible regions (i.e. keep only full dimensional regions) and add all
+    # In a first step, we identify regions that are fully or partially overlapping. If a region is fully contained in
+    # another one, we mark it for removal, in order to prevent weird stuff from happening by deleting during iteration
+    # In the second step, we delete all marked regions (i.e. keep only full dimensional regions) and add all
     # those that were newly identified
     region_added = False
     new_regions = []
@@ -49,6 +49,7 @@ def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) ->
         f1ub = program.evaluate_objective(x1s[1], numpy.array([[ub1]]))
         f2lb = program.evaluate_objective(x2s[0], numpy.array([[lb2]]))
         f2ub = program.evaluate_objective(x2s[1], numpy.array([[ub2]]))
+        # check if region 2 is fully inside region 1
         if full_overlap(cr1, cr2):
             # if objective of 2 is always greater than objective of 1, just discard 2
             # have evaluations of objective for CR2, need them at bounds of CR2 for CR1
@@ -59,10 +60,10 @@ def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) ->
                 # in this case, we keep both regions to have both solutions
                 possible_dual_degeneracy = True
             elif f1lb2 <= f2lb and f1ub2 <= f2ub:
-                mark_for_removal(cr2, to_remove)
+                to_remove = mark_for_removal(cr2, to_remove)
             elif f1lb2 > f2lb and f1ub2 > f2ub:
                 # objective of 2 always less than objective of 1 --> cr1_l, cr2, cr1_r
-                split_outer_region(new_regions, cr1, lb2, ub2)
+                new_regions, cr1 = split_outer_region(new_regions, cr1, lb2, ub2)
                 region_added = True
             else:
                 # compute intersection point between CR1 and CR2
@@ -75,20 +76,21 @@ def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) ->
                     # CR1_l = [lb1, lb2]
                     # CR2 = [lb2, intersection]
                     # CR1_r = [intersection, ub1]
-                    adjust_regions_at_intersection(new_regions, cr2, cr1, lb2, intersection, ub1, False)
+                    new_regions, cr2, cr1 = adjust_regions_at_intersection(new_regions, cr2, cr1, lb2, intersection, ub1, False)
                 else:
                     # new CRs:
                     # CR1_l = [lb1, intersection]
                     # CR2 = [intersection, ub2]
                     # CR1_r = [ub2, ub1]
-                    adjust_regions_at_intersection(new_regions, cr2, cr1, lb2, intersection, ub1, True)
+                    new_regions, cr2, cr1 = adjust_regions_at_intersection(new_regions, cr2, cr1, lb2, intersection, ub1, True)
                 region_added = True
+        # check if region 1 is to the left of region 2 but overlapping
         elif partial_overlap(cr1, cr2):
             # determine lower objective value in overlap and adjust region
             if f1ub < f2lb:
-                tighten_ub(cr2, ub1)
+                cr2 = tighten_ub(cr2, ub1)
             else:
-                tighten_lb(cr1, lb2)
+                cr1 = tighten_lb(cr1, lb2)
 
     # purge
     regions = [cr for cr in regions if cr not in to_remove]
@@ -107,7 +109,7 @@ def append_region(regions: List[CriticalRegion], cr: CriticalRegion) -> List[Cri
 
 def adjust_regions_at_intersection(new_regions: List[CriticalRegion], inner_region: CriticalRegion, outer_region: CriticalRegion,
                                    inner_lb: float, intersection: float, inner_ub: float,
-                                   intersection_on_left: bool):
+                                   intersection_on_left: bool) -> Tuple[List[CriticalRegion], CriticalRegion, CriticalRegion]:
     if intersection_on_left:
         new_regions = append_region(new_regions, outer_region)
         outer_region.E = numpy.concatenate([outer_region.E, [[1]]], 0)
@@ -124,28 +126,33 @@ def adjust_regions_at_intersection(new_regions: List[CriticalRegion], inner_regi
         inner_region.f = numpy.concatenate([inner_region.f, [[intersection]]])
         new_regions[-1].E = numpy.concatenate([new_regions[-1].E, [[-1]]], 0)
         new_regions[-1].f = numpy.concatenate([new_regions[-1].f, [[-intersection]]], 0)
+    return new_regions, inner_region, outer_region
 
 
-def mark_for_removal(cr: CriticalRegion, removal_list: List[CriticalRegion]):
+def mark_for_removal(cr: CriticalRegion, removal_list: List[CriticalRegion]) -> List[CriticalRegion]:
     removal_list.append(cr)
+    return removal_list
 
 
-def split_outer_region(new_regions: List[CriticalRegion], cr: CriticalRegion, inner_lb: float, inner_ub: float):
+def split_outer_region(new_regions: List[CriticalRegion], cr: CriticalRegion, inner_lb: float, inner_ub: float) -> Tuple[List[CriticalRegion], CriticalRegion]:
     new_regions = append_region(new_regions, cr)
     cr.E = numpy.concatenate([cr.E, [[1]]], 0)
     cr.f = numpy.concatenate([cr.f, [[inner_lb]]])
     new_regions[-1].E = numpy.concatenate([new_regions[-1].E, [[-1]]], 0)
     new_regions[-1].f = numpy.concatenate([new_regions[-1].f, [[-inner_ub]]], 0)
+    return new_regions, cr
 
 
-def tighten_lb(cr: CriticalRegion, new_lb: float):
+def tighten_lb(cr: CriticalRegion, new_lb: float) -> CriticalRegion:
     cr.E = numpy.concatenate([cr.E, [[1]]], 0)
     cr.f = numpy.concatenate([cr.f, [[new_lb]]], 0)
+    return cr
 
 
-def tighten_ub(cr: CriticalRegion, new_ub: float):
+def tighten_ub(cr: CriticalRegion, new_ub: float) -> CriticalRegion:
     cr.E = numpy.concatenate([cr.E, [[-1]]], 0)
     cr.f = numpy.concatenate([cr.f, [[-new_ub]]], 0)
+    return cr
 
 def full_overlap(cr1: CriticalRegion, cr2: CriticalRegion) -> bool:
     # region 2 fully inside region 1
