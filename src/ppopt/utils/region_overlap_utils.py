@@ -1,4 +1,4 @@
-from itertools import combinations
+from itertools import combinations, permutations
 
 import numpy
 from ..mpmilp_program import MPMILP_Program
@@ -36,7 +36,8 @@ def identify_overlaps(program, regions):
     region_added = False
     new_regions = []
     possible_dual_degeneracy = False
-    for cr1, cr2 in combinations(regions, 2):
+    # test all permutations rather than combinations: this way we only need to test for 2 cases (CR 2 fully inside CR 1, or CR 1 left of CR 2 but overlapping), since the other 2 cases are handled by the swapped permutation
+    for cr1, cr2 in permutations(regions, 2):
         lb1, ub1 = get_bounds_1d(cr1.E, cr1.f)
         lb2, ub2 = get_bounds_1d(cr2.E, cr2.f)
 
@@ -47,7 +48,7 @@ def identify_overlaps(program, regions):
         f1ub = program.evaluate_objective(x1s[1], numpy.array([[ub1]]))
         f2lb = program.evaluate_objective(x2s[0], numpy.array([[lb2]]))
         f2ub = program.evaluate_objective(x2s[1], numpy.array([[ub2]]))
-        if lb1 <= lb2 and ub1 >= ub2:  # 2 inside 1
+        if full_overlap(cr1, cr2):
             # if objective of 2 is always greater than objective of 1, just discard 2
             # have evaluations of objective for CR2, need them at bounds of CR2 for CR1
             f1lb2 = program.evaluate_objective(x1s[2], numpy.array([[lb2]]))
@@ -81,50 +82,12 @@ def identify_overlaps(program, regions):
                     # CR1_r = [ub2, ub1]
                     adjust_regions_at_intersection(new_regions, cr2, cr1, lb2, intersection, ub1, True)
                 region_added = True
-        elif lb2 <= lb1 and ub2 >= ub1:  # 1 inside 2
-            f2lb1 = program.evaluate_objective(x2s[2], numpy.array([[lb1]]))
-            f2ub1 = program.evaluate_objective(x2s[3], numpy.array([[ub1]]))
-            if f2lb1 == f1lb and f2ub1 == f1ub:
-                # equal objective value over entire overlapping region indicates possible dual degeneracy
-                # in this case, we keep both regions to have both solutions
-                possible_dual_degeneracy = True
-            elif f2lb1 <= f1lb and f2ub1 <= f1ub:
-                # if objective of 1 is always greater than objective of 2, just discard 1
-                make_infeasible(cr1)
-            elif f2lb1 >= f1lb and f2ub1 >= f1ub:
-                # objective of 1 always less than objective of 2 --> cr2_l, cr1, cr2_r
-                split_outer_region(new_regions, cr2, lb1, ub1)
-                region_added = True
-            else:
-                # compute intersection point between CR1 and CR2
-                deltaf1 = f1ub - f1lb
-                deltaf2 = f2ub1 - f2lb1
-                delta = ub1 - lb1
-                intersection = (f2lb1 - f1lb) / (deltaf1 - deltaf2) * delta + lb1
-                if f2lb1 > f1lb:
-                    # new CRs:
-                    # CR2_l = [lb2, lb1]
-                    # CR1 = [lb1, intersection]
-                    # CR2_r = [intersection, ub2]
-                    adjust_regions_at_intersection(new_regions, cr1, cr2, lb1, intersection, ub2, False)
-                else:
-                    # new CRs:
-                    # CR2_l = [lb2, intersection]
-                    # CR1 = [intersection, ub1]
-                    # CR2_r = [ub1, ub2]
-                    adjust_regions_at_intersection(new_regions, cr1, cr2, lb1, intersection, ub2, True)
-                region_added = True
-        elif lb2 < ub1 and ub2 >= ub1:  # 1, 2
+        elif partial_overlap(cr1, cr2):
             # determine lower objective value in overlap and adjust region
             if f1ub < f2lb:
                 tighten_ub(cr2, ub1)
             else:
                 tighten_lb(cr1, lb2)
-        elif lb1 < ub2 and ub1 >= ub2:  # 2, 1
-            if f1lb < f2ub:
-                tighten_lb(cr2, lb1)
-            else:
-                tighten_ub(cr1, ub2)
 
     # purge
     regions = [cr for cr in regions if is_full_dimensional_1d(cr.E, cr.f)]
@@ -182,3 +145,15 @@ def tighten_lb(cr, new_lb):
 def tighten_ub(cr, new_ub):
     cr.E = numpy.concatenate([cr.E, [[-1]]], 0)
     cr.f = numpy.concatenate([cr.f, [[-new_ub]]], 0)
+
+def full_overlap(cr1, cr2):
+    # region 2 fully inside region 1
+    lb1, ub1 = get_bounds_1d(cr1.E, cr1.f)
+    lb2, ub2 = get_bounds_1d(cr2.E, cr2.f)
+    return lb1 <= lb2 and ub1 >= ub2
+
+def partial_overlap(cr1, cr2):
+    # region 1 to the left of region 2
+    lb1, ub1 = get_bounds_1d(cr1.E, cr1.f)
+    lb2, ub2 = get_bounds_1d(cr2.E, cr2.f)
+    return lb1 < lb2 and ub1 > lb2 and ub2 > ub1
