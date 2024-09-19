@@ -4,12 +4,10 @@ from pathos.multiprocessing import ProcessingPool as Pool
 from ..mpmilp_program import MPMILP_Program
 from ..solution import Solution
 from ..utils.general_utils import num_cpu_cores
-from ..utils.region_overlap_utils import reduce_overlapping_critical_regions_1d
 
 from .mitree import MITree
 from .solve_mpqp import mpqp_algorithm, solve_mpqp
 
-import numpy
 
 def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
                              cont_algorithm: mpqp_algorithm = mpqp_algorithm.combinatorial,
@@ -56,14 +54,4 @@ def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
 
     collected_regions = [item for sublist in region_list for item in sublist]
 
-    sum_abs_H = numpy.sum(numpy.abs(program.H[program.cont_indices, :]))
-    is_bilinear_terms: bool = not numpy.isclose(sum_abs_H, 0)
-
-    if program.num_t() > 1 or hasattr(program, 'Q') or not reduce_overlap or is_bilinear_terms:
-        # this has the possibility for overlapping critical regions, so we set the overlapping flag
-        return Solution(program, collected_regions, is_overlapping=True)
-    else:
-        # For 1D MILP case, we remove overlaps
-        # In case of dual degeneracy we keep all solutions so in this case there could still be overlaps
-        collected_regions, overlaps_remaining = reduce_overlapping_critical_regions_1d(program, collected_regions)
-        return Solution(program, collected_regions, is_overlapping=overlaps_remaining)
+    return Solution(program, collected_regions, is_overlapping=True)
