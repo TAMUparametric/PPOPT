@@ -115,22 +115,15 @@ def append_region(regions: List[CriticalRegion], cr: CriticalRegion) -> List[Cri
 def adjust_regions_at_intersection(new_regions: List[CriticalRegion], inner_region: CriticalRegion, outer_region: CriticalRegion,
                                    inner_lb: float, intersection: float, inner_ub: float,
                                    intersection_on_left: bool) -> Tuple[List[CriticalRegion], CriticalRegion, CriticalRegion]:
+    new_regions = append_region(new_regions, outer_region)
     if intersection_on_left:
-        new_regions = append_region(new_regions, outer_region)
-        outer_region.E = numpy.concatenate([outer_region.E, [[1]]], 0)
-        outer_region.f = numpy.concatenate([outer_region.f, [[intersection]]])
-        inner_region.E = numpy.concatenate([inner_region.E, [[-1]]], 0)
-        inner_region.f = numpy.concatenate([inner_region.f, [[-intersection]]])
-        new_regions[-1].E = numpy.concatenate([new_regions[-1].E, [[-1]]], 0)
-        new_regions[-1].f = numpy.concatenate([new_regions[-1].f, [[-inner_ub]]], 0)
+        outer_region = tighten_ub(outer_region, intersection)
+        inner_region = tighten_lb(inner_region, intersection)
+        new_regions[-1] = new_regions[-1].tighten_lb(inner_ub)
     else:
-        new_regions = append_region(new_regions, outer_region)
-        outer_region.E = numpy.concatenate([outer_region.E, [[1]]], 0)
-        outer_region.f = numpy.concatenate([outer_region.f, [[inner_lb]]])
-        inner_region.E = numpy.concatenate([inner_region.E, [[1]]], 0)
-        inner_region.f = numpy.concatenate([inner_region.f, [[intersection]]])
-        new_regions[-1].E = numpy.concatenate([new_regions[-1].E, [[-1]]], 0)
-        new_regions[-1].f = numpy.concatenate([new_regions[-1].f, [[-intersection]]], 0)
+        outer_region = tighten_ub(outer_region, inner_lb)
+        inner_region = tighten_ub(inner_region, intersection)
+        new_regions[-1] = new_regions[-1].tighten_lb(intersection)
     return new_regions, inner_region, outer_region
 
 
