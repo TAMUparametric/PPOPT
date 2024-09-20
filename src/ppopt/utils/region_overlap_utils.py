@@ -1,4 +1,4 @@
-from itertools import combinations, permutations
+from itertools import permutations
 from typing import List, Tuple
 from collections import deque
 
@@ -6,7 +6,7 @@ import numpy
 from ..mpmilp_program import MPMILP_Program
 from ..critical_region import CriticalRegion
 
-from .mpqp_utils import get_bounds_1d, is_full_dimensional_1d
+from .mpqp_utils import get_bounds_1d
 
 
 def reduce_overlapping_critical_regions_1d(program: MPMILP_Program, regions: List[CriticalRegion]) -> Tuple[List[CriticalRegion], bool]:
