@@ -1,5 +1,6 @@
 from itertools import combinations, permutations
 from typing import List, Tuple
+from collections import deque
 
 import numpy
 from ..mpmilp_program import MPMILP_Program
@@ -21,25 +22,24 @@ def reduce_overlapping_critical_regions_1d(program: MPMILP_Program, regions: Lis
     if program.num_t() != 1:
         raise ValueError('reduce_overlapping_critical_regions_1d requires a 1d-parameter problem')
 
-    overlaps_remaining, region_added, regions = identify_overlaps(program, regions)
-    while region_added:
-        possible_dual_degeneracy, region_added, regions = identify_overlaps(program, regions)
-        overlaps_remaining = overlaps_remaining or possible_dual_degeneracy
+    overlaps_remaining, regions = identify_overlaps(program, regions)
 
     return regions, overlaps_remaining
 
 
-def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) -> Tuple[bool, bool, list]:
-    # In a first step, we identify regions that are fully or partially overlapping. If a region is fully contained in
-    # another one, we mark it for removal, in order to prevent weird stuff from happening by deleting during iteration
-    # In the second step, we delete all marked regions (i.e. keep only full dimensional regions) and add all
-    # those that were newly identified
-    region_added = False
+def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) -> Tuple[bool, list]:
     new_regions = []
     to_remove = []
     possible_dual_degeneracy = False
     # test all permutations rather than combinations: this way we only need to test for 2 cases (CR 2 fully inside CR 1, or CR 1 left of CR 2 but overlapping), since the other 2 cases are handled by the swapped permutation
-    for cr1, cr2 in permutations(regions, 2):
+    to_check = deque(permutations(regions, 2))
+    while to_check:
+    # for cr1, cr2 in permutations(regions, 2):
+        region_added = False
+        cr1, cr2 = to_check.popleft()
+        # check if region has already been marked for removal, if so, no need to check again
+        if cr1 in to_remove or cr2 in to_remove:
+            continue
         lb1, ub1 = get_bounds_1d(cr1.E, cr1.f)
         lb2, ub2 = get_bounds_1d(cr2.E, cr2.f)
 
@@ -88,16 +88,21 @@ def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) ->
         elif partial_overlap(cr1, cr2):
             # determine lower objective value in overlap and adjust region
             if f1ub < f2lb:
-                cr2 = tighten_ub(cr2, ub1)
+                cr2 = tighten_lb(cr2, ub1)
             else:
-                cr1 = tighten_lb(cr1, lb2)
+                cr1 = tighten_ub(cr1, lb2)
+        # if we added a new region, add all permutations with this region to the queue except for those with regions just checked (new region is a subset of those regions, no need to check again)
+        if region_added:
+            other_regions = [cr for cr in regions if cr not in [cr1, cr2]]
+            to_check.extend([r, new_regions[-1]] for r in other_regions)
+            to_check.extend([new_regions[-1], r] for r in other_regions)
 
-    # purge
-    regions = [cr for cr in regions if cr not in to_remove]
     # add new
     regions = regions + new_regions
+    # purge
+    regions = [cr for cr in regions if cr not in to_remove]
 
-    return possible_dual_degeneracy, region_added, regions
+    return possible_dual_degeneracy, regions
 
 
 def append_region(regions: List[CriticalRegion], cr: CriticalRegion) -> List[CriticalRegion]:
@@ -143,15 +148,15 @@ def split_outer_region(new_regions: List[CriticalRegion], cr: CriticalRegion, in
     return new_regions, cr
 
 
-def tighten_lb(cr: CriticalRegion, new_lb: float) -> CriticalRegion:
+def tighten_ub(cr: CriticalRegion, new_ub: float) -> CriticalRegion:
     cr.E = numpy.concatenate([cr.E, [[1]]], 0)
-    cr.f = numpy.concatenate([cr.f, [[new_lb]]], 0)
+    cr.f = numpy.concatenate([cr.f, [[new_ub]]], 0)
     return cr
 
 
-def tighten_ub(cr: CriticalRegion, new_ub: float) -> CriticalRegion:
+def tighten_lb(cr: CriticalRegion, new_lb: float) -> CriticalRegion:
     cr.E = numpy.concatenate([cr.E, [[-1]]], 0)
-    cr.f = numpy.concatenate([cr.f, [[-new_ub]]], 0)
+    cr.f = numpy.concatenate([cr.f, [[-new_lb]]], 0)
     return cr
 
 def full_overlap(cr1: CriticalRegion, cr2: CriticalRegion) -> bool:
