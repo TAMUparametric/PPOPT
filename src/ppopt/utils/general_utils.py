@@ -48,9 +48,12 @@ def render_number(x, trade_off=1e-4) -> str:
     elif abs(x) > trade_off:
         return f"{float(x):.4}"
     else:
-        base_10 = numpy.log10(abs(x))
+        base_10 = int(numpy.floor(numpy.log10(abs(x))))
+
         exponent = 10 ** base_10
-        return f"{x / exponent:.4} " + "10^{" + f"{exponent}" + "}"
+        x_scaled = x / exponent
+
+        return f"{x_scaled:.4} " + "10^{" + f"{base_10}" + "}"
 
 
 def latex_matrix(A: Union[List[str], numpy.ndarray]) -> str:
