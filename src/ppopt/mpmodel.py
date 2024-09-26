@@ -211,7 +211,7 @@ class Expression:
 
             prefix = ' + ' if coeff > 0 else ' - '
 
-            if numpy.isclose(abs(coeff),1):
+            if numpy.isclose(abs(coeff), 1):
                 output += f'{prefix}{var}'
             else:
                 output += f'{prefix}{abs(coeff)}{var}'
@@ -223,7 +223,7 @@ class Expression:
 
             prefix = ' + ' if coeff > 0 else ' - '
 
-            if numpy.isclose(abs(coeff),1):
+            if numpy.isclose(abs(coeff), 1):
                 output += f'{prefix}{v1}{v2}'
             else:
                 output += f'{prefix}{abs(coeff)}{v1}{v2}'
@@ -432,7 +432,8 @@ class MPModeler:
 
         return output
 
-    def formulate_problem(self, process: bool = True) -> Union[MPLP_Program, MPQP_Program, MPMILP_Program, MPMIQP_Program]:
+    def formulate_problem(self, process: bool = True) -> Union[
+        MPLP_Program, MPQP_Program, MPMILP_Program, MPMIQP_Program]:
         """
         Formulates the problem into the appropriate program type
 
@@ -530,14 +531,16 @@ class MPModeler:
 
             # if we don't have any binary variables then we have an mpLP
             if len(binary_indices) == 0:
-                return MPLP_Program(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices=equality_indices,post_process=process)
+                return MPLP_Program(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices=equality_indices,
+                                    post_process=process)
             else:
                 return MPMILP_Program(A, b, c, H, A_t, b_t, F, binary_indices, c_c, c_t, Q_t,
                                       equality_indices=equality_indices, post_process=process)
 
         # otherwise we have a mpQP or a mpMIQP
         if len(binary_indices) == 0:
-            return MPQP_Program(A, b, c, H, 2 * Q, A_t, b_t, F, c_c, c_t, Q_t, equality_indices=equality_indices,post_process=process)
+            return MPQP_Program(A, b, c, H, 2 * Q, A_t, b_t, F, c_c, c_t, Q_t, equality_indices=equality_indices,
+                                post_process=process)
         else:
             return MPMIQP_Program(A, b, c, H, 2 * Q, A_t, b_t, F, binary_indices, c_c, c_t, Q_t,
-                                  equality_indices=equality_indices,post_process=process)
+                                  equality_indices=equality_indices, post_process=process)
