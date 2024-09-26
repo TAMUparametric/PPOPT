@@ -211,7 +211,10 @@ class Expression:
 
             prefix = ' + ' if coeff > 0 else ' - '
 
-            output += f'{prefix}{abs(coeff)}{var}'
+            if numpy.isclose(abs(coeff),1):
+                output += f'{prefix}{var}'
+            else:
+                output += f'{prefix}{abs(coeff)}{var}'
 
         for (v1, v2), coeff in self.quad_coeffs.items():
 
@@ -220,7 +223,10 @@ class Expression:
 
             prefix = ' + ' if coeff > 0 else ' - '
 
-            output += f'{prefix}{abs(coeff)}{v1}{v2}'
+            if numpy.isclose(abs(coeff),1):
+                output += f'{prefix}{v1}{v2}'
+            else:
+                output += f'{prefix}{abs(coeff)}{v1}{v2}'
 
         return output
 
