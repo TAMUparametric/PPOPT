@@ -272,7 +272,7 @@ def portfolio_problem_analog():
     Q = S
     c = numpy.zeros((num_assets, 1))
     H = numpy.zeros((A.shape[1], F.shape[1]))
-    program = MPQP_Program(A, b, c, H, Q, A_t, b_t, F, equality_indices=[0, 1])
+    program = MPQP_Program(A, b, c, H, Q, A_t, b_t, F, equality_indices=[0, 1], post_process=False)
 
     program.solver.solvers['lp'] = 'glpk'
     program.solver.solvers['qp'] = 'quadprog'
@@ -303,5 +303,5 @@ def non_negative_least_squares():
 
     m.set_objective(sum(z[i] ** 2 for i in range(N)) + t * sum(x))
 
-    return m.formulate_problem()
+    return m.formulate_problem(process=False)
 

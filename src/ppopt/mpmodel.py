@@ -211,7 +211,10 @@ class Expression:
 
             prefix = ' + ' if coeff > 0 else ' - '
 
-            output += f'{prefix}{abs(coeff)}{var}'
+            if numpy.isclose(abs(coeff), 1):
+                output += f'{prefix}{var}'
+            else:
+                output += f'{prefix}{abs(coeff)}{var}'
 
         for (v1, v2), coeff in self.quad_coeffs.items():
 
@@ -220,7 +223,10 @@ class Expression:
 
             prefix = ' + ' if coeff > 0 else ' - '
 
-            output += f'{prefix}{abs(coeff)}{v1}{v2}'
+            if numpy.isclose(abs(coeff), 1):
+                output += f'{prefix}{v1}{v2}'
+            else:
+                output += f'{prefix}{abs(coeff)}{v1}{v2}'
 
         return output
 
@@ -426,10 +432,12 @@ class MPModeler:
 
         return output
 
-    def formulate_problem(self) -> Union[MPLP_Program, MPQP_Program, MPMILP_Program, MPMIQP_Program]:
+    def formulate_problem(self, process: bool = True) -> Union[
+        MPLP_Program, MPQP_Program, MPMILP_Program, MPMIQP_Program]:
         """
         Formulates the problem into the appropriate program type
 
+        :param process: if the generated mpp should be processed or not
         :return: the formulated program of the appropriate type (mpLP, mpQP, mpMILP, mpMIQP)
         """
 
@@ -504,7 +512,8 @@ class MPModeler:
 
             # if the quadratic term is between two variables add it to the Q matrix
             if v1.is_var() and v2.is_var():
-                Q[v1.var_id, v2.var_id] = coeff
+                Q[v1.var_id, v2.var_id] += 0.5 * coeff
+                Q[v2.var_id, v1.var_id] += 0.5 * coeff
 
             # if the quadratic term is between two parameters add it to the Q_t matrix
             if v1.is_param() and v2.is_param():
@@ -522,14 +531,16 @@ class MPModeler:
 
             # if we don't have any binary variables then we have an mpLP
             if len(binary_indices) == 0:
-                return MPLP_Program(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices=equality_indices)
+                return MPLP_Program(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices=equality_indices,
+                                    post_process=process)
             else:
                 return MPMILP_Program(A, b, c, H, A_t, b_t, F, binary_indices, c_c, c_t, Q_t,
-                                      equality_indices=equality_indices)
+                                      equality_indices=equality_indices, post_process=process)
 
         # otherwise we have a mpQP or a mpMIQP
         if len(binary_indices) == 0:
-            return MPQP_Program(A, b, c, H, 2 * Q, A_t, b_t, F, c_c, c_t, Q_t, equality_indices=equality_indices)
+            return MPQP_Program(A, b, c, H, 2 * Q, A_t, b_t, F, c_c, c_t, Q_t, equality_indices=equality_indices,
+                                post_process=process)
         else:
             return MPMIQP_Program(A, b, c, H, 2 * Q, A_t, b_t, F, binary_indices, c_c, c_t, Q_t,
-                                  equality_indices=equality_indices)
+                                  equality_indices=equality_indices, post_process=process)

@@ -71,18 +71,6 @@ class MPMILP_Program(MPLP_Program):
 
     def post_process(self):
         """Called after __init__ this is used as a post-processing step after the dataclass generated __init__."""
-        if self.equality_indices is None:
-            self.equality_indices = []
-
-        if len(self.equality_indices) != 0:
-            # move all equality constraints to the top
-            self.A = numpy.block([[self.A[self.equality_indices]], [select_not_in_list(self.A, self.equality_indices)]])
-            self.b = numpy.block([[self.b[self.equality_indices]], [select_not_in_list(self.b, self.equality_indices)]])
-            self.F = numpy.block([[self.F[self.equality_indices]], [select_not_in_list(self.F, self.equality_indices)]])
-
-            self.equality_indices = list(range(len(self.equality_indices)))
-
-        # now we call the process constraints routine to polish the constraints before we move to solving
         self.process_constraints()
 
     def evaluate_objective(self, x: numpy.ndarray, theta_point: numpy.ndarray):
