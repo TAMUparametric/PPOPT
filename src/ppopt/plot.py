@@ -147,7 +147,8 @@ def parametric_plot(solution: Solution, save_path: Optional[str] = None, show=Tr
         pyplot.show()
 
 
-def parametric_plot_1D(solution: Solution, save_path: Optional[str] = None, show=True, save_format: str = 'png') -> None:
+def parametric_plot_1D(solution: Solution, save_path: Optional[str] = None, show=True, save_format: str = 'png',
+                       legend: List[str] = None, plot_subset: List[int] = None) -> None:
     """
     Makes a simple plot from a 1D parametric solution. This uses matplotlib to generate a plot, it is the general
     plotting backend.
@@ -164,15 +165,28 @@ def parametric_plot_1D(solution: Solution, save_path: Optional[str] = None, show
         print(f"Solution is not 1D, the dimensionality of the solution is {solution.theta_dim()}")
         return
 
+    if plot_subset is None:
+        plot_subset = list(range(solution.program.num_x()))
+
     # set up the plotting object
     _, ax = pyplot.subplots()
+
+    cm = pyplot.cm.get_cmap('rainbow')
+
+    colors = [cm(x_i) for x_i in numpy.linspace(0, 1, solution.program.num_x())]
 
     # plot the critical regions w.r.t. x*
     for critical_region in solution.critical_regions:
         # get extents
         boundaries = critical_region.f / critical_region.E
-        y = [critical_region.evaluate(theta=make_column(boundary)).flatten() for boundary in boundaries]
-        ax.plot(boundaries, y, solid_capstyle='round')
+        y = numpy.block([critical_region.evaluate(theta=make_column(boundary)) for boundary in boundaries])
+
+        for v in range(solution.program.num_x()):
+            if v in plot_subset:
+                ax.plot(boundaries.flatten(), y[v].flatten(), solid_capstyle='round', color=colors[v])
+
+    if legend is not None:
+        ax.legend(legend)
 
     if save_path is not None:
         pyplot.savefig(save_path + "." + save_format, dpi=1000, format=save_format)

@@ -17,6 +17,7 @@ Tutorial
     portfolio
     mpc
     robust_regression
+    flexibility
 
 
 API
