@@ -78,6 +78,8 @@ Now we can plot the explicit solution flexibility function. We can visually see 
 
     parametric_plot_1D(sol, legend=[r'$\Psi^*(\theta)$'], plot_subset=[0])
 
+.. image:: flex.svg
+
 However, this is not generally a good way to approach the problem, here what we can do is find the maximum of the objective function over the explicit solution with the following code, which will give us the exact value. As a note, this code is specialized for the one parameter case but multidimensional generalization of this are direct.
 
 .. code:: python
