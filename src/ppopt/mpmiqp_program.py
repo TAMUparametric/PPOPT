@@ -38,10 +38,9 @@ class MPMIQP_Program(MPMILP_Program):
         if solver is None:
             solver = Solver()
 
+        self.Q = Q
         super(MPMIQP_Program, self).__init__(A, b, c, H, A_t, b_t, F, binary_indices, c_c, c_t, Q_t, equality_indices,
                                              solver, post_process=False)
-        self.Q = Q
-        self.constraint_datatype_conversion()
 
         if post_process:
             self.post_process()

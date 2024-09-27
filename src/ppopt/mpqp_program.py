@@ -35,9 +35,7 @@ class MPQP_Program(MPLP_Program):
         # calls MPLP_Program's constructor to reduce out burden
         self.Q = Q
         super(MPQP_Program, self).__init__(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices, solver, post_process = False)
-
-        # assignees member variables
-        self.constraint_datatype_conversion()
+        self.base_constraint_processing()
         # calls the MPLP __post_init__ to handle equality constraints
         if post_process:
             self.post_process()
