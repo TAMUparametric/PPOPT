@@ -43,9 +43,6 @@ def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) ->
         if cr1 in to_remove or cr2 in to_remove:
             continue
 
-        lb1, ub1 = get_bounds_1d(cr1.E, cr1.f)
-        lb2, ub2 = get_bounds_1d(cr2.E, cr2.f)
-
         # check if region 2 is fully inside region 1
         if full_overlap(cr1, cr2):
             if equal_linear_objective(program, outer_region=cr1, inner_region=cr2):
@@ -56,18 +53,19 @@ def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) ->
                 to_remove.append(cr2)
             elif region_2_dominates(program, cr1, cr2):
                 # objective of 2 always less than objective of 1 --> cr1_l, cr2, cr1_r
-                new_regions, cr1 = split_outer_region(new_regions, cr1, lb2, ub2)
+                new_regions, cr1 = split_outer_region(new_regions, outer_region=cr1, inner_region=cr2)
                 region_added = True
             else:
-                intersection, expand_outer_on_left = compute_objective_intersection_point(program, cr1, cr2)
-                new_regions, cr2, cr1 = adjust_regions_at_intersection(new_regions, inner_region=cr2, outer_region=cr1, intersection=intersection, expand_outer_on_left=expand_outer_on_left)
+                new_regions, cr2, cr1 = adjust_fully_overlapping_regions(program, new_regions, inner_region=cr2, outer_region=cr1)
                 region_added = True
         # check if region 1 is to the left of region 2 but overlapping
         elif partial_overlap(cr1, cr2):
             # determine lower objective value in overlap and adjust region
             if region_1_dominates(program, cr1, cr2):
+                ub1 = get_bounds_1d(cr1.E, cr1.f)[1]
                 cr2 = cr_new_bounds(cr2, lb_new=ub1, ub_new=None)
             elif region_2_dominates(program, cr1, cr2):
+                lb2 = get_bounds_1d(cr2.E, cr2.f)[0]
                 cr1 = cr_new_bounds(cr1, lb_new=None, ub_new=lb2)
             else:
                 intersection = compute_objective_intersection_point(program, cr1, cr2)[0]
@@ -87,8 +85,8 @@ def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) ->
 
     return possible_dual_degeneracy, regions
 
-def adjust_regions_at_intersection(new_regions: List[CriticalRegion], inner_region: CriticalRegion, outer_region: CriticalRegion,
-                                   intersection: float, expand_outer_on_left: bool) -> Tuple[List[CriticalRegion], CriticalRegion, CriticalRegion]:
+def adjust_fully_overlapping_regions(program: MPMILP_Program, new_regions: List[CriticalRegion], inner_region: CriticalRegion, outer_region: CriticalRegion) -> Tuple[List[CriticalRegion], CriticalRegion, CriticalRegion]:
+    intersection, expand_outer_on_left = compute_objective_intersection_point(program, inner_region, outer_region)
     new_regions.append(copy.deepcopy(outer_region))
     inner_lb, inner_ub = get_bounds_1d(inner_region.E, inner_region.f)
     if expand_outer_on_left:
@@ -101,11 +99,12 @@ def adjust_regions_at_intersection(new_regions: List[CriticalRegion], inner_regi
         new_regions[-1] = cr_new_bounds(new_regions[-1], lb_new=intersection, ub_new=None)
     return new_regions, inner_region, outer_region
 
-def split_outer_region(new_regions: List[CriticalRegion], cr: CriticalRegion, inner_lb: float, inner_ub: float) -> Tuple[List[CriticalRegion], CriticalRegion]:
-    new_regions.append(copy.deepcopy(cr))
-    cr = cr_new_bounds(cr, lb_new=None, ub_new=inner_lb)
+def split_outer_region(new_regions: List[CriticalRegion], outer_region: CriticalRegion, inner_region: CriticalRegion) -> Tuple[List[CriticalRegion], CriticalRegion]:
+    inner_lb, inner_ub = get_bounds_1d(inner_region.E, inner_region.f)
+    new_regions.append(copy.deepcopy(outer_region))
+    outer_region = cr_new_bounds(outer_region, lb_new=None, ub_new=inner_lb)
     new_regions[-1] = cr_new_bounds(new_regions[-1], lb_new=inner_ub, ub_new=None)
-    return new_regions, cr
+    return new_regions, outer_region
 
 def cr_new_bounds(cr: CriticalRegion, lb_new: Optional[float], ub_new: Optional[float]) -> CriticalRegion:
     
