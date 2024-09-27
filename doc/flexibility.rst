@@ -1,22 +1,23 @@
 Flexibility Analysis
 ====================
 
-In this example we will show how multiparametric programming can be used to solve a flexibility problem using PPOPT. This example is  from 'Active Constraint Strategy For Flexible Analysis in Chemical Processes' by Grossmann and Floudas.
+In this example we will show how multiparametric programming can be used to solve a flexibility problem using PPOPT. This example is  from 'Active Constraint Strategy For Flexible Analysis in Chemical Processes' by Grossmann and Floudas. This is in effect a particular instance of using multiparametric programming to solve a bilevel optimization problem.
 
-The general statement of Flexibility Analysis can be stated as follows. Where we are trying to minimize the maximum values of our :math:`f_j` constraints.
+The general statement of Flexibility Analysis can be stated as follows. Where we are trying to minimize the maximum values of our :math:`f_j` constraints. Where if :math:`\Chi \leq 0`, then the process is flexible in that it can adapt without violating any operational constraints for any realization of uncertainty that we are considering. If this statement is not true, then there is a realization of uncertainty that the system cannot mitigate with the control actions :math:`z`, and lead to operational violations.
 
 .. math::
 
     \begin{align}
-        \Psi = \min_{z}\max_{j\in\mathcal{J}}\{\dots, f_j, \dots \}
+        \Psi = \min_{z}\max_{j\in\mathcal{J}}\{\dots, f_j, \dots \}\\
+        \Chi = \max_\theta \Psi(\theta)
     \end{align}
 
-This min-max problem can be reformulated into the following mathematical problem, where we have introduced an auxiliary variable :math:`u`. Where if for every realization of uncertainty :math:`\theta`, there is a control variable :math:`z` that allows us to satisfy :math:`u \leq 0` then we can say a process is flexible to this uncertainty.
+The lower level min-max problem can be reformulated into the following mathematical problem, where we have introduced an auxiliary variable :math:`u`. Where if for every realization of uncertainty :math:`\theta`, there are a control variables :math:`z` that allows us to satisfy :math:`u \leq 0` then we can say a process is flexible to this uncertainty.
 
 .. math::
 
     \begin{align}
-        \Psi = \quad  \min_{z,u} &\quad u\\
+        \Psi(\theta) = \quad  \min_{z,u} &\quad u\\
         \text{s.t.} \quad f_j(z,\theta) \leq &u, \quad \forall j \in \mathcal{J}\\
         \theta &\in \Theta
     \end{align}
@@ -70,7 +71,7 @@ We can now solve the formulated multiparametric program, here we will solve it w
 
     sol = solve_mpqp(prob, mpqp_algorithm.geometric)
 
-Now we can plot the explicit solution flexibility function. We can visually see here that this process is NOT flexible to the entire range of uncertainty.
+Now we can plot the explicit solution flexibility function. We can visually see here that this process is NOT flexible to the entire range of uncertainty, as for some :math:`\theta` realizations it is above zero.
 
 .. code:: python
 
@@ -80,7 +81,7 @@ Now we can plot the explicit solution flexibility function. We can visually see 
 
 .. image:: flex.svg
 
-However, this is not generally a good way to approach the problem, here what we can do is find the maximum of the objective function over the explicit solution with the following code, which will give us the exact value. As a note, this code is specialized for the one parameter case but multidimensional generalization of this are direct.
+However, this is not generally a good way to validate that the process is flexible for the entire range of uncertainty. Here what we can do is find the maximum of the objective function over the explicit solution with the following code, which will give us the exact value of :math:`\Psi`. If the maximum value of :math:`\Psi > 0`, then we know that the process is NOT flexible for the entire range of uncertainty. As a note, this code is specialized for the one parameter case but multidimensional generalization of this are direct.
 
 .. code:: python
 
@@ -99,6 +100,6 @@ However, this is not generally a good way to approach the problem, here what we 
         return max(J_max, J_min)
 
     # find the largest objective (e.g. u) over the uncertainty space
-    flex = max(map(lambda x: get_max_obj_1d(sol, x), sol.critical_regions))
+    chi = max(map(lambda x: get_max_obj_1d(sol, x), sol.critical_regions))
 
-If we run this code, we get that it evaluates to :math:`\frac{2}{3}`, meaning that the best we can do in the worst case scenario is violate our operational constraints by :math:`\frac{2}{3}` and therefore this is not flexible.
+If we run this code, we get that it evaluates to :math:`\Chi = \frac{2}{3}`, meaning that the process is not flexible for the entire range of uncertainty.
