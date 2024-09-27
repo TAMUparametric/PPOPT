@@ -21,23 +21,7 @@ from .utils.general_utils import (
     select_not_in_list,
 )
 
-
-def calc_weakly_redundant(A, b, equality_set: Optional[List[int]] = None, deterministic_solver='gurobi'):
-    if equality_set is None:
-        equality_set = []
-
-    kept_indices = []
-    for i in range(len(equality_set), A.shape[0]):
-        sol = chebyshev_ball(A, b, [*equality_set, i], deterministic_solver=deterministic_solver)
-        if sol is not None:
-            if sol.sol[-1] >= 1e-12:
-                kept_indices.append(i)
-
-    return [*equality_set, *kept_indices]
-
-
 # noinspection GrazieInspection
-
 
 class MPLP_Program:
     r"""
@@ -118,6 +102,7 @@ class MPLP_Program:
         if len(warnings) > 0:
             print(warnings)
 
+        # calls constraint processing to remove redundant constraints
         if post_process:
             self.post_process()
 
