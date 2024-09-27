@@ -11,7 +11,8 @@ from ..critical_region import CriticalRegion
 from .mpqp_utils import get_bounds_1d
 
 
-def reduce_overlapping_critical_regions_1d(program: MPMILP_Program, regions: List[CriticalRegion]) -> Tuple[List[CriticalRegion], bool]:
+def reduce_overlapping_critical_regions_1d(program: MPMILP_Program, regions: List[CriticalRegion]) -> Tuple[
+    List[CriticalRegion], bool]:
     """
     This adjusts critical regions for the 1d-parameter case, so that there are no overlaps.
 
@@ -28,6 +29,7 @@ def reduce_overlapping_critical_regions_1d(program: MPMILP_Program, regions: Lis
 
     return regions, overlaps_remaining
 
+
 def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) -> Tuple[bool, list]:
     new_regions = []
     to_remove = []
@@ -35,7 +37,7 @@ def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) ->
     # test all permutations rather than combinations: this way we only need to test for 2 cases (CR 2 fully inside CR 1, or CR 1 left of CR 2 but overlapping), since the other 2 cases are handled by the swapped permutation
     to_check = deque(permutations(regions, 2))
     while len(to_check) > 0:
-    
+
         region_added = False
 
         cr1, cr2 = to_check.popleft()
@@ -60,7 +62,9 @@ def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) ->
                 region_added = True
             else:
                 intersection, expand_outer_on_left = compute_objective_intersection_point(program, cr1, cr2)
-                new_regions, cr2, cr1 = adjust_regions_at_intersection(new_regions, inner_region=cr2, outer_region=cr1, intersection=intersection, expand_outer_on_left=expand_outer_on_left)
+                new_regions, cr2, cr1 = adjust_regions_at_intersection(new_regions, inner_region=cr2, outer_region=cr1,
+                                                                       intersection=intersection,
+                                                                       expand_outer_on_left=expand_outer_on_left)
                 region_added = True
         # check if region 1 is to the left of region 2 but overlapping
         elif partial_overlap(cr1, cr2):
@@ -87,8 +91,11 @@ def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) ->
 
     return possible_dual_degeneracy, regions
 
-def adjust_regions_at_intersection(new_regions: List[CriticalRegion], inner_region: CriticalRegion, outer_region: CriticalRegion,
-                                   intersection: float, expand_outer_on_left: bool) -> Tuple[List[CriticalRegion], CriticalRegion, CriticalRegion]:
+
+def adjust_regions_at_intersection(new_regions: List[CriticalRegion], inner_region: CriticalRegion,
+                                   outer_region: CriticalRegion,
+                                   intersection: float, expand_outer_on_left: bool) -> Tuple[
+    List[CriticalRegion], CriticalRegion, CriticalRegion]:
     new_regions.append(copy.deepcopy(outer_region))
     inner_lb, inner_ub = get_bounds_1d(inner_region.E, inner_region.f)
     if expand_outer_on_left:
@@ -101,14 +108,16 @@ def adjust_regions_at_intersection(new_regions: List[CriticalRegion], inner_regi
         new_regions[-1] = cr_new_bounds(new_regions[-1], lb_new=intersection, ub_new=None)
     return new_regions, inner_region, outer_region
 
-def split_outer_region(new_regions: List[CriticalRegion], cr: CriticalRegion, inner_lb: float, inner_ub: float) -> Tuple[List[CriticalRegion], CriticalRegion]:
+
+def split_outer_region(new_regions: List[CriticalRegion], cr: CriticalRegion, inner_lb: float, inner_ub: float) -> \
+        Tuple[List[CriticalRegion], CriticalRegion]:
     new_regions.append(copy.deepcopy(cr))
     cr = cr_new_bounds(cr, lb_new=None, ub_new=inner_lb)
     new_regions[-1] = cr_new_bounds(new_regions[-1], lb_new=inner_ub, ub_new=None)
     return new_regions, cr
 
+
 def cr_new_bounds(cr: CriticalRegion, lb_new: Optional[float], ub_new: Optional[float]) -> CriticalRegion:
-    
     lb, ub = get_bounds_1d(cr.E, cr.f)
 
     lb = lb if lb_new is None else lb_new
@@ -117,7 +126,8 @@ def cr_new_bounds(cr: CriticalRegion, lb_new: Optional[float], ub_new: Optional[
     cr.E = numpy.array([[1], [-1]])
     cr.f = numpy.array([[ub], [-lb]])
 
-    return cr 
+    return cr
+
 
 def full_overlap(cr1: CriticalRegion, cr2: CriticalRegion) -> bool:
     # region 2 fully inside region 1
@@ -125,26 +135,33 @@ def full_overlap(cr1: CriticalRegion, cr2: CriticalRegion) -> bool:
     lb2, ub2 = get_bounds_1d(cr2.E, cr2.f)
     return lb1 <= lb2 and ub1 >= ub2
 
+
 def partial_overlap(cr1: CriticalRegion, cr2: CriticalRegion) -> bool:
     # region 1 to the left of region 2
     lb1, ub1 = get_bounds_1d(cr1.E, cr1.f)
     lb2, ub2 = get_bounds_1d(cr2.E, cr2.f)
     return lb1 < lb2 and ub1 > lb2 and ub2 > ub1
 
+
 def equal_linear_objective(program: MPMILP_Program, inner_region: CriticalRegion, outer_region: CriticalRegion) -> bool:
-    f_inner_lb, f_inner_ub, f_outer_lb, f_outer_ub = evaluate_objective_at_middle_bounds(program, inner_region, outer_region)
+    f_inner_lb, f_inner_ub, f_outer_lb, f_outer_ub = evaluate_objective_at_middle_bounds(program, inner_region,
+                                                                                         outer_region)
     return f_inner_lb == f_outer_lb and f_inner_ub == f_outer_ub
+
 
 def region_2_dominates(program: MPMILP_Program, cr_1: CriticalRegion, cr_2: CriticalRegion) -> bool:
     f_1_lower, f_1_upper, f_2_lower, f_2_upper = evaluate_objective_at_middle_bounds(program, cr_1, cr_2)
     return f_1_lower >= f_2_lower and f_1_upper >= f_2_upper
 
+
 def region_1_dominates(program: MPMILP_Program, cr_1: CriticalRegion, cr_2: CriticalRegion) -> bool:
     f_1_lower, f_1_upper, f_2_lower, f_2_upper = evaluate_objective_at_middle_bounds(program, cr_1, cr_2)
     return f_1_lower <= f_2_lower and f_1_upper <= f_2_upper
 
+
 # cr_1 is the outer region or the left region, depending on calling context
-def compute_objective_intersection_point(program: MPMILP_Program, cr_1: CriticalRegion, cr_2: CriticalRegion) -> Tuple[float, bool]:
+def compute_objective_intersection_point(program: MPMILP_Program, cr_1: CriticalRegion, cr_2: CriticalRegion) -> Tuple[
+    float, bool]:
     f_1_lower, f_1_upper, f_2_lower, f_2_upper = evaluate_objective_at_middle_bounds(program, cr_1, cr_2)
     deltaf_1 = f_1_upper - f_1_lower
     deltaf_outer = f_2_upper - f_2_lower
@@ -152,13 +169,16 @@ def compute_objective_intersection_point(program: MPMILP_Program, cr_1: Critical
     delta = upper - lower
     return (f_2_lower - f_1_lower) / (deltaf_1 - deltaf_outer) * delta + lower, f_1_lower < f_2_lower
 
-def evaluate_objective_at_middle_bounds(program: MPMILP_Program, cr_1: CriticalRegion, cr_2: CriticalRegion) -> Tuple[float, float, float, float]:
+
+def evaluate_objective_at_middle_bounds(program: MPMILP_Program, cr_1: CriticalRegion, cr_2: CriticalRegion) -> Tuple[
+    float, float, float, float]:
     lower, upper = find_middle_bounds(cr_1, cr_2)
     f_1_lower = program.evaluate_objective(cr_1.evaluate(numpy.array([[lower]])), numpy.array([[lower]]))
     f_1_upper = program.evaluate_objective(cr_1.evaluate(numpy.array([[upper]])), numpy.array([[upper]]))
     f_2_lower = program.evaluate_objective(cr_2.evaluate(numpy.array([[lower]])), numpy.array([[lower]]))
     f_2_upper = program.evaluate_objective(cr_2.evaluate(numpy.array([[upper]])), numpy.array([[upper]]))
-    return float(f_1_lower), float(f_1_upper), float(f_2_lower), float(f_2_upper)
+    return f_1_lower, f_1_upper, f_2_lower, f_2_upper
+
 
 def find_middle_bounds(cr_1: CriticalRegion, cr_2: CriticalRegion) -> Tuple[float, float]:
     lb_1, ub_1 = get_bounds_1d(cr_1.E, cr_1.f)

@@ -6,7 +6,7 @@ import numpy
 from .utils.chebyshev_ball import chebyshev_ball
 
 
-@dataclass
+@dataclass(eq=False)
 class CriticalRegion:
     r"""
     Critical region is a polytope that defines a region in the uncertainty space
@@ -110,6 +110,3 @@ class CriticalRegion:
         :return: a list with E, and f as elements
         """
         return [self.E, self.f]
-
-    def __eq__(self, other:object) -> bool:
-        return self.__dir__ == other.__dir__
