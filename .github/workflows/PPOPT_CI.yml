@@ -13,6 +13,11 @@ on:
       - '*.yml'
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - 'doc/**'
+      - 'README.md'
+      - 'LICENSE'
+      - '*.yml'
 
 jobs:
   build:
