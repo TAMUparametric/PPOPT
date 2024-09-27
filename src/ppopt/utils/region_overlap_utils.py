@@ -1,8 +1,10 @@
 from itertools import permutations
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from collections import deque
 
 import numpy
+import copy
+
 from ..mpmilp_program import MPMILP_Program
 from ..critical_region import CriticalRegion
 
@@ -26,131 +28,96 @@ def reduce_overlapping_critical_regions_1d(program: MPMILP_Program, regions: Lis
 
     return regions, overlaps_remaining
 
-
 def identify_overlaps(program: MPMILP_Program, regions: List[CriticalRegion]) -> Tuple[bool, list]:
     new_regions = []
     to_remove = []
     possible_dual_degeneracy = False
     # test all permutations rather than combinations: this way we only need to test for 2 cases (CR 2 fully inside CR 1, or CR 1 left of CR 2 but overlapping), since the other 2 cases are handled by the swapped permutation
     to_check = deque(permutations(regions, 2))
-    while to_check:
-    # for cr1, cr2 in permutations(regions, 2):
+    while len(to_check) > 0:
+    
         region_added = False
+
         cr1, cr2 = to_check.popleft()
         # check if region has already been marked for removal, if so, no need to check again
         if cr1 in to_remove or cr2 in to_remove:
             continue
+
         lb1, ub1 = get_bounds_1d(cr1.E, cr1.f)
         lb2, ub2 = get_bounds_1d(cr2.E, cr2.f)
 
-        x1s = [cr1.evaluate(numpy.array([[x]])) for x in [lb1, ub1, lb2, ub2]]
-        x2s = [cr2.evaluate(numpy.array([[x]])) for x in [lb1, ub1, lb2, ub2]]
-
-        f1ub = program.evaluate_objective(x1s[1], numpy.array([[ub1]]))
-        f2lb = program.evaluate_objective(x2s[0], numpy.array([[lb2]]))
-        f2ub = program.evaluate_objective(x2s[1], numpy.array([[ub2]]))
         # check if region 2 is fully inside region 1
         if full_overlap(cr1, cr2):
-            # if objective of 2 is always greater than objective of 1, just discard 2
-            # have evaluations of objective for CR2, need them at bounds of CR2 for CR1
-            f1lb2 = program.evaluate_objective(x1s[2], numpy.array([[lb2]]))
-            f1ub2 = program.evaluate_objective(x1s[3], numpy.array([[ub2]]))
-            if f1lb2 == f2lb and f1ub2 == f2ub:
+            if equal_linear_objective(program, outer_region=cr1, inner_region=cr2):
                 # equal objective value over entire overlapping region indicates possible dual degeneracy
                 # in this case, we keep both regions to have both solutions
                 possible_dual_degeneracy = True
-            elif f1lb2 <= f2lb and f1ub2 <= f2ub:
-                to_remove = mark_for_removal(cr2, to_remove)
-            elif f1lb2 > f2lb and f1ub2 > f2ub:
+            elif region_1_dominates(program, cr1, cr2):
+                to_remove.append(cr2)
+            elif region_2_dominates(program, cr1, cr2):
                 # objective of 2 always less than objective of 1 --> cr1_l, cr2, cr1_r
                 new_regions, cr1 = split_outer_region(new_regions, cr1, lb2, ub2)
                 region_added = True
             else:
-                # compute intersection point between CR1 and CR2
-                deltaf1 = f1ub2 - f1lb2
-                deltaf2 = f2ub - f2lb
-                delta = ub2 - lb2
-                intersection = (f1lb2 - f2lb) / (deltaf2 - deltaf1) * delta + lb2
-                if f1lb2 > f2lb:
-                    # new CRs:
-                    # CR1_l = [lb1, lb2]
-                    # CR2 = [lb2, intersection]
-                    # CR1_r = [intersection, ub1]
-                    new_regions, cr2, cr1 = adjust_regions_at_intersection(new_regions, cr2, cr1, lb2, intersection, ub1, False)
-                else:
-                    # new CRs:
-                    # CR1_l = [lb1, intersection]
-                    # CR2 = [intersection, ub2]
-                    # CR1_r = [ub2, ub1]
-                    new_regions, cr2, cr1 = adjust_regions_at_intersection(new_regions, cr2, cr1, lb2, intersection, ub1, True)
+                intersection, expand_outer_on_left = compute_objective_intersection_point(program, cr1, cr2)
+                new_regions, cr2, cr1 = adjust_regions_at_intersection(new_regions, inner_region=cr2, outer_region=cr1, intersection=intersection, expand_outer_on_left=expand_outer_on_left)
                 region_added = True
         # check if region 1 is to the left of region 2 but overlapping
         elif partial_overlap(cr1, cr2):
             # determine lower objective value in overlap and adjust region
-            if f1ub < f2lb:
-                cr2 = tighten_lb(cr2, ub1)
+            if region_1_dominates(program, cr1, cr2):
+                cr2 = cr_new_bounds(cr2, lb_new=ub1, ub_new=None)
+            elif region_2_dominates(program, cr1, cr2):
+                cr1 = cr_new_bounds(cr1, lb_new=None, ub_new=lb2)
             else:
-                cr1 = tighten_ub(cr1, lb2)
+                intersection = compute_objective_intersection_point(program, cr1, cr2)[0]
+                cr1 = cr_new_bounds(cr1, lb_new=None, ub_new=intersection)
+                cr2 = cr_new_bounds(cr2, lb_new=intersection, ub_new=None)
         # if we added a new region, add all permutations with this region to the queue except for those with regions just checked (new region is a subset of those regions, no need to check again)
         if region_added:
-            other_regions = [cr for cr in regions if cr not in [cr1, cr2]]
+            other_regions = [cr for cr in regions if cr not in [cr1, cr2] and cr not in to_remove]
             to_check.extend([r, new_regions[-1]] for r in other_regions)
             to_check.extend([new_regions[-1], r] for r in other_regions)
 
     # add new
-    regions = regions + new_regions
+    regions = [*regions, *new_regions]
+    # regions[0] == to_remove[0]
     # purge
     regions = [cr for cr in regions if cr not in to_remove]
 
     return possible_dual_degeneracy, regions
 
-
-def append_region(regions: List[CriticalRegion], cr: CriticalRegion) -> List[CriticalRegion]:
-    regions.append(
-        CriticalRegion(cr.A, cr.b, cr.C, cr.d, cr.E, cr.f, cr.active_set, cr.omega_set, cr.lambda_set, cr.regular_set,
-                       cr.y_fixation, cr.y_indices, cr.x_indices))
-    return regions
-
-
 def adjust_regions_at_intersection(new_regions: List[CriticalRegion], inner_region: CriticalRegion, outer_region: CriticalRegion,
-                                   inner_lb: float, intersection: float, inner_ub: float,
-                                   intersection_on_left: bool) -> Tuple[List[CriticalRegion], CriticalRegion, CriticalRegion]:
-    new_regions = append_region(new_regions, outer_region)
-    if intersection_on_left:
-        outer_region = tighten_ub(outer_region, intersection)
-        inner_region = tighten_lb(inner_region, intersection)
-        new_regions[-1] = new_regions[-1].tighten_lb(inner_ub)
+                                   intersection: float, expand_outer_on_left: bool) -> Tuple[List[CriticalRegion], CriticalRegion, CriticalRegion]:
+    new_regions.append(copy.deepcopy(outer_region))
+    inner_lb, inner_ub = get_bounds_1d(inner_region.E, inner_region.f)
+    if expand_outer_on_left:
+        outer_region = cr_new_bounds(outer_region, lb_new=None, ub_new=intersection)
+        inner_region = cr_new_bounds(inner_region, lb_new=intersection, ub_new=None)
+        new_regions[-1] = cr_new_bounds(new_regions[-1], lb_new=inner_ub, ub_new=None)
     else:
-        outer_region = tighten_ub(outer_region, inner_lb)
-        inner_region = tighten_ub(inner_region, intersection)
-        new_regions[-1] = new_regions[-1].tighten_lb(intersection)
+        outer_region = cr_new_bounds(outer_region, lb_new=None, ub_new=inner_lb)
+        inner_region = cr_new_bounds(inner_region, lb_new=None, ub_new=intersection)
+        new_regions[-1] = cr_new_bounds(new_regions[-1], lb_new=intersection, ub_new=None)
     return new_regions, inner_region, outer_region
 
-
-def mark_for_removal(cr: CriticalRegion, removal_list: List[CriticalRegion]) -> List[CriticalRegion]:
-    removal_list.append(cr)
-    return removal_list
-
-
 def split_outer_region(new_regions: List[CriticalRegion], cr: CriticalRegion, inner_lb: float, inner_ub: float) -> Tuple[List[CriticalRegion], CriticalRegion]:
-    new_regions = append_region(new_regions, cr)
-    cr.E = numpy.concatenate([cr.E, [[1]]], 0)
-    cr.f = numpy.concatenate([cr.f, [[inner_lb]]])
-    new_regions[-1].E = numpy.concatenate([new_regions[-1].E, [[-1]]], 0)
-    new_regions[-1].f = numpy.concatenate([new_regions[-1].f, [[-inner_ub]]], 0)
+    new_regions.append(copy.deepcopy(cr))
+    cr = cr_new_bounds(cr, lb_new=None, ub_new=inner_lb)
+    new_regions[-1] = cr_new_bounds(new_regions[-1], lb_new=inner_ub, ub_new=None)
     return new_regions, cr
 
+def cr_new_bounds(cr: CriticalRegion, lb_new: Optional[float], ub_new: Optional[float]) -> CriticalRegion:
+    
+    lb, ub = get_bounds_1d(cr.E, cr.f)
 
-def tighten_ub(cr: CriticalRegion, new_ub: float) -> CriticalRegion:
-    cr.E = numpy.concatenate([cr.E, [[1]]], 0)
-    cr.f = numpy.concatenate([cr.f, [[new_ub]]], 0)
-    return cr
+    lb = lb if lb_new is None else lb_new
+    ub = ub if ub_new is None else ub_new
 
+    cr.E = numpy.array([[1], [-1]])
+    cr.f = numpy.array([[ub], [-lb]])
 
-def tighten_lb(cr: CriticalRegion, new_lb: float) -> CriticalRegion:
-    cr.E = numpy.concatenate([cr.E, [[-1]]], 0)
-    cr.f = numpy.concatenate([cr.f, [[-new_lb]]], 0)
-    return cr
+    return cr 
 
 def full_overlap(cr1: CriticalRegion, cr2: CriticalRegion) -> bool:
     # region 2 fully inside region 1
@@ -163,3 +130,39 @@ def partial_overlap(cr1: CriticalRegion, cr2: CriticalRegion) -> bool:
     lb1, ub1 = get_bounds_1d(cr1.E, cr1.f)
     lb2, ub2 = get_bounds_1d(cr2.E, cr2.f)
     return lb1 < lb2 and ub1 > lb2 and ub2 > ub1
+
+def equal_linear_objective(program: MPMILP_Program, inner_region: CriticalRegion, outer_region: CriticalRegion) -> bool:
+    f_inner_lb, f_inner_ub, f_outer_lb, f_outer_ub = evaluate_objective_at_middle_bounds(program, inner_region, outer_region)
+    return f_inner_lb == f_outer_lb and f_inner_ub == f_outer_ub
+
+def region_2_dominates(program: MPMILP_Program, cr_1: CriticalRegion, cr_2: CriticalRegion) -> bool:
+    f_1_lower, f_1_upper, f_2_lower, f_2_upper = evaluate_objective_at_middle_bounds(program, cr_1, cr_2)
+    return f_1_lower >= f_2_lower and f_1_upper >= f_2_upper
+
+def region_1_dominates(program: MPMILP_Program, cr_1: CriticalRegion, cr_2: CriticalRegion) -> bool:
+    f_1_lower, f_1_upper, f_2_lower, f_2_upper = evaluate_objective_at_middle_bounds(program, cr_1, cr_2)
+    return f_1_lower <= f_2_lower and f_1_upper <= f_2_upper
+
+# cr_1 is the outer region or the left region, depending on calling context
+def compute_objective_intersection_point(program: MPMILP_Program, cr_1: CriticalRegion, cr_2: CriticalRegion) -> Tuple[float, bool]:
+    f_1_lower, f_1_upper, f_2_lower, f_2_upper = evaluate_objective_at_middle_bounds(program, cr_1, cr_2)
+    deltaf_1 = f_1_upper - f_1_lower
+    deltaf_outer = f_2_upper - f_2_lower
+    lower, upper = find_middle_bounds(cr_1, cr_2)
+    delta = upper - lower
+    return (f_2_lower - f_1_lower) / (deltaf_1 - deltaf_outer) * delta + lower, f_1_lower < f_2_lower
+
+def evaluate_objective_at_middle_bounds(program: MPMILP_Program, cr_1: CriticalRegion, cr_2: CriticalRegion) -> Tuple[float, float, float, float]:
+    lower, upper = find_middle_bounds(cr_1, cr_2)
+    f_1_lower = program.evaluate_objective(cr_1.evaluate(numpy.array([[lower]])), numpy.array([[lower]]))
+    f_1_upper = program.evaluate_objective(cr_1.evaluate(numpy.array([[upper]])), numpy.array([[upper]]))
+    f_2_lower = program.evaluate_objective(cr_2.evaluate(numpy.array([[lower]])), numpy.array([[lower]]))
+    f_2_upper = program.evaluate_objective(cr_2.evaluate(numpy.array([[upper]])), numpy.array([[upper]]))
+    return float(f_1_lower), float(f_1_upper), float(f_2_lower), float(f_2_upper)
+
+def find_middle_bounds(cr_1: CriticalRegion, cr_2: CriticalRegion) -> Tuple[float, float]:
+    lb_1, ub_1 = get_bounds_1d(cr_1.E, cr_1.f)
+    lb_2, ub_2 = get_bounds_1d(cr_2.E, cr_2.f)
+    values = [lb_1, ub_1, lb_2, ub_2]
+    values.sort()
+    return values[1], values[2]

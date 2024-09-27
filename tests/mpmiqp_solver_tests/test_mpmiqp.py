@@ -5,7 +5,8 @@ import numpy
 from src.ppopt.mp_solvers.solve_mpmiqp import solve_mpmiqp
 from src.ppopt.mp_solvers.solve_mpqp import mpqp_algorithm
 from src.ppopt.mpmilp_program import MPMILP_Program
-from tests.test_fixtures import simple_mpMILP, simple_mpMIQP, mpMILP_market_problem, mpMIQP_market_problem, bard_mpMILP_adapted, bard_mpMILP_adapted_2, bard_mpMILP_adapted_degenerate
+from tests.test_fixtures import simple_mpMILP, simple_mpMIQP, mpMILP_market_problem, mpMIQP_market_problem, bard_mpMILP_adapted, bard_mpMILP_adapted_2, bard_mpMILP_adapted_degenerate, mpMILP_1d
+from src.ppopt.utils.mpqp_utils import get_bounds_1d
 
 
 def test_mpmilp_process_constraints(simple_mpMILP):
@@ -107,3 +108,15 @@ def test_mpmilp_cr_removal_1D_2(bard_mpMILP_adapted_2):
     assert(numpy.isclose(sol.evaluate_objective(numpy.array([[3.]])), 1))
     assert(numpy.isclose(sol.evaluate_objective(numpy.array([[8.]])), 1))
     assert(numpy.isclose(sol.evaluate_objective(numpy.array([[9.]])), 3))
+
+def test_small_mpmilp_1d(mpMILP_1d):
+    sol = solve_mpmiqp(mpMILP_1d)
+    assert(len(sol) == 3)
+    assert(numpy.isclose(sol.evaluate_objective(numpy.array([[2.]])), 2))
+    assert(numpy.isclose(sol.evaluate_objective(numpy.array([[45.]])), 40))
+    assert(numpy.isclose(sol.evaluate_objective(numpy.array([[60.]])), 50))
+
+    expected_bounds = [(0, 40), (40, 50), (50, 100)]
+    for cr in sol.critical_regions:
+        lb, ub = get_bounds_1d(cr.E, cr.f)
+        assert any(numpy.isclose(lb, expected_lb) and numpy.isclose(ub, expected_ub) for expected_lb, expected_ub in expected_bounds)

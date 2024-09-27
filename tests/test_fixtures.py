@@ -401,3 +401,20 @@ def non_negative_least_squares():
     m.set_objective(sum(z[i] ** 2 for i in range(N)) + t * sum(x))
 
     return m.formulate_problem()
+
+@pytest.fixture()
+def mpMILP_1d():
+    m = MPModeler()
+    x = m.add_var()
+    y = m.add_var(vtype=VariableType.binary)
+    t = m.add_param()
+
+    m.add_constr(x >= 0)
+    m.add_constr(x + 50 * y >= t)
+    m.add_constr(x <= 100)
+    m.add_constr(t >= 0)
+    m.add_constr(t <= 100)
+
+    m.set_objective(x + 40*y)
+
+    return m.formulate_problem()
