@@ -3,13 +3,13 @@ Flexibility Analysis
 
 In this example we will show how multiparametric programming can be used to solve a flexibility problem using PPOPT. This example is  from 'Active Constraint Strategy For Flexible Analysis in Chemical Processes' by Grossmann and Floudas. This is in effect a particular instance of using multiparametric programming to solve a bilevel optimization problem.
 
-The general statement of Flexibility Analysis can be stated as follows. Where we are trying to minimize the maximum values of our :math:`f_j` constraints. Where if :math:`\Chi \leq 0`, then the process is flexible in that it can adapt without violating any operational constraints for any realization of uncertainty that we are considering. If this statement is not true, then there is a realization of uncertainty that the system cannot mitigate with the control actions :math:`z`, and lead to operational violations.
+The general statement of Flexibility Analysis can be stated as follows. Where we are trying to minimize the maximum values of our :math:`f_j` constraints. Where if :math:`\chi \leq 0`, then the process is flexible in that it can adapt without violating any operational constraints for any realization of uncertainty that we are considering. If this statement is not true, then there is a realization of uncertainty that the system cannot mitigate with the control actions :math:`z`, and lead to operational violations.
 
 .. math::
 
     \begin{align}
         \Psi = \min_{z}\max_{j\in\mathcal{J}}\{\dots, f_j, \dots \}\\
-        \Chi = \max_\theta \Psi(\theta)
+        \chi = \max_\theta \Psi(\theta)
     \end{align}
 
 The lower level min-max problem can be reformulated into the following mathematical problem, where we have introduced an auxiliary variable :math:`u`. Where if for every realization of uncertainty :math:`\theta`, there are a control variables :math:`z` that allows us to satisfy :math:`u \leq 0` then we can say a process is flexible to this uncertainty.
@@ -102,4 +102,4 @@ However, this is not generally a good way to validate that the process is flexib
     # find the largest objective (e.g. u) over the uncertainty space
     chi = max(map(lambda x: get_max_obj_1d(sol, x), sol.critical_regions))
 
-If we run this code, we get that it evaluates to :math:`\Chi = \frac{2}{3}`, meaning that the process is not flexible for the entire range of uncertainty.
+If we run this code, we get that it evaluates to :math:`\chi = \frac{2}{3}`, meaning that the process is not flexible for the entire range of uncertainty.
