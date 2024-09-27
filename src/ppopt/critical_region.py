@@ -111,21 +111,5 @@ class CriticalRegion:
         """
         return [self.E, self.f]
 
-    def __eq__(self, other: object) -> bool:
-        try:
-            numpy.testing.assert_array_equal(self.A, other.A)
-            numpy.testing.assert_array_equal(self.b, other.b)
-            numpy.testing.assert_array_equal(self.C, other.C)
-            numpy.testing.assert_array_equal(self.d, other.d)
-            numpy.testing.assert_array_equal(self.E, other.E)
-            numpy.testing.assert_array_equal(self.f, other.f)
-            numpy.testing.assert_array_equal(self.active_set, other.active_set)
-            numpy.testing.assert_array_equal(self.omega_set, other.omega_set)
-            numpy.testing.assert_array_equal(self.lambda_set, other.lambda_set)
-            numpy.testing.assert_array_equal(self.regular_set, other.regular_set)
-            numpy.testing.assert_array_equal(self.y_fixation, other.y_fixation)
-            numpy.testing.assert_array_equal(self.y_indices, other.y_indices)
-            numpy.testing.assert_array_equal(self.x_indices, other.x_indices)
-            return True
-        except AssertionError:
-            return False
+    def __eq__(self, other:object) -> bool:
+        return self.__dir__ == other.__dir__
