@@ -276,7 +276,7 @@ def process_region_constraints(A: numpy.ndarray, b: numpy.ndarray, deterministic
     return [A, b]
 
 
-def get_indices_of_zero_rows(A: numpy.array, epsilon: float = 10 ** (-6)) -> [list, list]:
+def get_indices_of_zero_rows(A: numpy.ndarray, epsilon: float = 10 ** (-6)) -> [list, list]:
     is_zero = lambda x: numpy.linalg.norm(x) >= epsilon
 
     # sorts rows based on if they are zeros (numerically) or non-zero

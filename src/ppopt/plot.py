@@ -148,7 +148,7 @@ def parametric_plot(solution: Solution, save_path: Optional[str] = None, show=Tr
 
 
 def parametric_plot_1D(solution: Solution, save_path: Optional[str] = None, show=True, save_format: str = 'png',
-                       legend: List[str] = None, plot_subset: List[int] = None) -> None:
+                       legend: Optional[List[str]] = None, plot_subset: Optional[List[int]] = None) -> None:
     """
     Makes a simple plot from a 1D parametric solution. This uses matplotlib to generate a plot, it is the general
     plotting backend.
@@ -157,6 +157,8 @@ def parametric_plot_1D(solution: Solution, save_path: Optional[str] = None, show
     :param save_path: if specified saves the plot in the directory
     :param save_format: changes the saved image format to the specified
     :param show: Keyword argument, if True displays the plot otherwise does not display
+    :param legend: A list of strings that will be used to label the critical regions
+    :param plot_subset: A list of integers that specify which variables of the explicit solution to plot
     :return: no return, creates graph of solution
     """
 

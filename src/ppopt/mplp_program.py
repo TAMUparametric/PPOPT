@@ -592,6 +592,8 @@ class MPLP_Program:
 
         sol = self.feasible_space_chebychev_ball()
 
+        prng = numpy.random.default_rng()
+
         if sol is None:
             return None
 
@@ -602,7 +604,7 @@ class MPLP_Program:
 
         for _ in range(max_iter):
 
-            pert = numpy.random.uniform(-radius, radius, (self.num_t(), 1))
+            pert = prng.uniform(-radius, radius, (self.num_t(), 1))
             test_point = pert + theta_point
 
             is_optimal = self.solve_theta(test_point)
@@ -635,6 +637,8 @@ class MPLP_Program:
 
         sol = self.feasible_space_chebychev_ball()
 
+        prng = numpy.random.default_rng()
+
         if sol is None:
             return None
 
@@ -643,12 +647,12 @@ class MPLP_Program:
         found_active_sets = []
 
         def random_direction():
-            vec = numpy.random.randn(self.num_t()).reshape(self.num_t(), -1)
+            vec = prng.standard_normal(self.num_t()).reshape(self.num_t(), -1)
             return vec / numpy.linalg.norm(vec, 2)
 
         for _ in range(num_samples):
 
-            new_theta = theta + numpy.random.rand() * radius * random_direction()
+            new_theta = theta + prng.random() * radius * random_direction()
             sol = self.solve_theta(new_theta)
 
             if sol is not None:

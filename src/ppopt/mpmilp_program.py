@@ -6,7 +6,7 @@ from .mplp_program import MPLP_Program
 from .solver import Solver
 from .solver_interface.solver_interface_utils import SolverOutput
 from .utils.constraint_utilities import detect_implicit_equalities
-from .utils.general_utils import ppopt_block, select_not_in_list
+from .utils.general_utils import ppopt_block
 
 
 class MPMILP_Program(MPLP_Program):
