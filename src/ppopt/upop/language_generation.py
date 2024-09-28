@@ -1,5 +1,5 @@
 # language specific generation code for C++
-from typing import Optional, Tuple
+from typing import Tuple
 
 
 def gen_cpp_array(data: list, name: str, vartype: str, options: Tuple[str] = ("const",)) -> str:
