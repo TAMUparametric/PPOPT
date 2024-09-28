@@ -148,7 +148,7 @@ class MITree:
             opt_row = numpy.block([zed, self.problem.F[constraint_index]])
 
             # if F_i is just zeros then we can skip as it doesn't give any information
-            if all(numpy.isclose(opt_row, numpy.zeros_like(opt_row))):
+            if numpy.isclose(opt_row, numpy.zeros_like(opt_row)):
                 continue
 
             # Solve the min F_i theta problem

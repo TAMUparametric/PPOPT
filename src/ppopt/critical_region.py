@@ -79,7 +79,7 @@ class CriticalRegion:
         """Evaluates λ(θ) = Cθ + d."""
         return self.C @ theta + self.d
 
-    def is_inside(self, theta: numpy.ndarray, tol: float = 1e-5) -> numpy.ndarray:
+    def is_inside(self, theta: numpy.ndarray, tol: float = 1e-5) -> bool:
         """Tests if point θ is inside the critical region."""
         # check if all constraints EΘ <= f
         return numpy.all(self.E @ theta - self.f < tol)

@@ -1,4 +1,4 @@
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Sequence
 
 import numpy
 
@@ -27,8 +27,8 @@ def solver_not_supported(solver_name: str) -> None:
 
 # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
 def solve_miqp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
-               equality_constraints: Optional[Iterable[int]] = None,
-               bin_vars: Optional[Iterable[int]] = None, verbose: bool = False,
+               equality_constraints: Optional[Sequence[int]] = None,
+               bin_vars: Optional[Sequence[int]] = None, verbose: bool = False,
                get_duals: bool = True, deterministic_solver='gurobi') -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving mixed integer quadratic programs

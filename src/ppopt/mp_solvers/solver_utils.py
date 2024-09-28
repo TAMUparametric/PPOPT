@@ -162,7 +162,7 @@ def generate_children_sets(active_set, num_constraints: int, murder_list=None):
         return [[*active_set, i] for i in range(active_set[-1] + 1, num_constraints) if check([*active_set, i])]
 
 
-def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> list:
+def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> List[Tuple[numpy.ndarray, numpy.ndarray, float]]:
     r"""
     This takes the polytope P, and finds all the chebychev centers and normal vectors of each facet and the radius.
 
@@ -179,7 +179,7 @@ def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> list:
 
         # theta point to look out of
         theta = None
-        radius = 0
+        radius = 0.0
         if A.shape[1] == 1:
             # if A is 1 dim then we can safely skip the chebyshev ball
             theta = numpy.array([[b[facet_index] / A[facet_index][0]]])

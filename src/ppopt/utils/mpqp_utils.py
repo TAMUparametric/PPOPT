@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import numpy
 
@@ -300,7 +300,7 @@ def gen_cr_from_active_set_1d(program: MPQP_Program, active_set: List[int], chec
                           kept_omega_indices, relevant_lambda, regular)
 
 
-def get_bounds_1d(CR_As: numpy.ndarray, CR_bs: numpy.ndarray) -> (float, float):
+def get_bounds_1d(CR_As: numpy.ndarray, CR_bs: numpy.ndarray) -> Tuple[float, float]:
     min_val = float('-inf')
     max_val = float('inf')
 
@@ -319,7 +319,7 @@ def is_full_dimensional_1d(CR_As: numpy.ndarray, CR_bs: numpy.ndarray) -> bool:
     return min_val + 10 ** -8 <= max_val
 
 
-def is_full_dimensional(A, b, solver: Solver = None) -> bool:
+def is_full_dimensional(A, b, solver: Optional[Solver] = None) -> bool:
     """
     This checks the dimensionality of a polytope defined by P = {x: Ax≤b}. Current method is based on checking if the
     radii of the chebychev ball is nonzero. However, this is numerically not so stable, and will eventually be replaced

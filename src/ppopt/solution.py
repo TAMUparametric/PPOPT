@@ -123,10 +123,12 @@ class Solution:
         :return: True if all is verified, else False
         """
 
-        # print(len(self.critical_regions))
-
         for region in self.critical_regions:
             sol = get_chebyshev_information(region)
+
+            if sol is None:
+                return False
+
             theta = make_column(sol.sol)[0:numpy.size(sol.sol) - 1]
 
             x_star = region.evaluate(theta)

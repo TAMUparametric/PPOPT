@@ -1,3 +1,5 @@
+from typing import List
+
 # noinspection PyProtectedMember
 from pathos.multiprocessing import ProcessingPool as Pool
 
@@ -61,6 +63,7 @@ def solve(program: MPQP_Program, initial_active_sets=None, num_cores=-1, use_pru
 
     # This will contain all the attempted active sets
     attempted = set()
+    in_process = set()
 
     murder_list = CombinationTester()
 
@@ -69,9 +72,6 @@ def solve(program: MPQP_Program, initial_active_sets=None, num_cores=-1, use_pru
 
     to_attempt = [tuple(a_set) for a_set in initial_active_sets]
 
-    attempted = set()
-    in_process = set()
-
     solution = Solution(program, [])
 
     if num_cores == -1:
@@ -79,7 +79,7 @@ def solve(program: MPQP_Program, initial_active_sets=None, num_cores=-1, use_pru
 
     pool = Pool(num_cores)
 
-    tiered_to_attempt = [[]] * max(program.num_x() + 3, program.num_t() + 3)
+    tiered_to_attempt: List[List] = [[]] * max(program.num_x() + 3, program.num_t() + 3)
     tiered_to_attempt[0].extend(to_attempt)
 
     # loop until there aren't any more candidates

@@ -52,7 +52,7 @@ class MPMILP_Program(MPLP_Program):
                  b_t: numpy.ndarray, F: numpy.ndarray, binary_indices=None, c_c: Optional[numpy.ndarray] = None,
                  c_t: Optional[numpy.ndarray] = None, Q_t: Optional[numpy.ndarray] = None,
                  equality_indices: Optional[List[int]] = None,
-                 solver: Solver = None, post_process=True):
+                 solver: Optional[Solver] = None, post_process=True):
         """Initializes the MPMILP_Program"""
 
         if solver is None:

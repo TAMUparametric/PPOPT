@@ -1,4 +1,4 @@
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Sequence
 
 import numpy
 
@@ -16,8 +16,8 @@ from ..solver_interface.solver_interface_utils import (
 
 def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None, A: numpy.ndarray = None,
                       b: numpy.ndarray = None,
-                      equality_constraints: Optional[Iterable[int]] = None,
-                      bin_vars: Optional[Iterable[int]] = None, verbose: bool = False,
+                      equality_constraints: Optional[Sequence[int]] = None,
+                      bin_vars: Optional[Sequence[int]] = None, verbose: bool = False,
                       get_duals: bool = True) -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving mixed integer quadratic programs with gruobi
@@ -209,8 +209,8 @@ def solve_lp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
 
 
 def solve_milp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
-                      equality_constraints: Optional[Iterable[int]] = None,
-                      bin_vars: Optional[Iterable[int]] = None, verbose=False, get_duals=True) -> Optional[
+                      equality_constraints: Optional[Sequence[int]] = None,
+                      bin_vars: Optional[Sequence[int]] = None, verbose=False, get_duals=True) -> Optional[
     SolverOutput]:
     r"""
     This is the breakout for solving mixed integer linear programs with gruobi, This is feed directly into the

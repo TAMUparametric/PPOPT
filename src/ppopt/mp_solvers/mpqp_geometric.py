@@ -7,7 +7,7 @@ from ..utils.mpqp_utils import gen_cr_from_active_set
 from .solver_utils import fathem_facet, get_facet_centers
 
 
-def solve(program: MPQP_Program, active_set=None) -> Optional[Solution]:
+def solve(program: MPQP_Program, active_set=None) -> Solution:
     """
     This solved the multiparametric program using the geometric algorithm described in Spjotvold et al.
 
@@ -22,6 +22,9 @@ def solve(program: MPQP_Program, active_set=None) -> Optional[Solution]:
         print(f'Using a found active set {active_set}')
 
     initial_region = gen_cr_from_active_set(program, active_set, check_full_dim=False)
+
+    if initial_region is None:
+        return Solution(program, [])
 
     solution = Solution(program, [initial_region])
     solution_tol = solution.point_location_tolerance

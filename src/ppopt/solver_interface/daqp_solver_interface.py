@@ -1,4 +1,4 @@
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Sequence
 
 import numpy
 
@@ -14,7 +14,7 @@ from ..utils.general_utils import make_column
 
 
 def solve_qp_daqp(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
-                  equality_constraints: Optional[Iterable[int]] = None, verbose=False,
+                  equality_constraints: Optional[Sequence[int]] = None, verbose=False,
                   get_duals: bool = True) -> Optional[SolverOutput]:
     r"""
     Calls DAQP to solve the following optimization problem

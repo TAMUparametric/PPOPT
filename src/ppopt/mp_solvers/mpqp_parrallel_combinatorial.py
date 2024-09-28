@@ -1,6 +1,7 @@
+from src.ppopt.critical_region import CriticalRegion
 import time
 from random import shuffle
-from typing import List
+from typing import List, Set, Tuple
 
 # noinspection PyProtectedMember
 from pathos.multiprocessing import ProcessingPool as Pool
@@ -27,31 +28,35 @@ def full_process(program: MPQP_Program, active_set: List[int], murder_list, gen_
     """
     t_set = (*active_set,)
 
-    return_list = [None, set(), []]
+    candidate_cr = None
+    pruned_active_sets = set()
+    child_active_sets = []
+
+    # return_list: Tuple[CriticalRegion, Set, List] = [None, set(), []]
 
     is_feasible_ = program.check_feasibility(active_set)
 
     if not is_feasible_:
-        return_list[1].add(t_set)
-        return return_list
+        pruned_active_sets.add(t_set)
+        return candidate_cr, pruned_active_sets, child_active_sets
 
     is_optimal_ = program.check_optimality(active_set)  # is_optimal(program, equality_indices)
 
     if not is_optimal_:
         if gen_children:
-            return_list[2] = generate_children_sets(active_set, program.num_constraints(), murder_list)
-        return return_list
+            child_active_sets = generate_children_sets(active_set, program.num_constraints(), murder_list)
+        return candidate_cr, pruned_active_sets, child_active_sets
 
-    return_list[0] = gen_cr_from_active_set(program, active_set)
+    candidate_cr = gen_cr_from_active_set(program, active_set)
 
-    if return_list[0] is None:
-        return_list[1].add(t_set)
-        return return_list
+    if candidate_cr is None:
+        pruned_active_sets.add(t_set)
+        return candidate_cr, pruned_active_sets, child_active_sets
 
     if gen_children:
-        return_list[2] = generate_children_sets(active_set, program.num_constraints(), murder_list)
+        child_active_sets = generate_children_sets(active_set, program.num_constraints(), murder_list)
 
-    return return_list
+    return candidate_cr, pruned_active_sets, child_active_sets
 
 
 def solve(program: MPQP_Program, num_cores=-1) -> Solution:

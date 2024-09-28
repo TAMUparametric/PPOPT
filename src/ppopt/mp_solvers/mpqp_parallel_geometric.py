@@ -35,7 +35,7 @@ def full_process(center: numpy.ndarray, norm: numpy.ndarray, radius: float, prog
     return found_solution, get_facet_centers(found_solution.E, found_solution.f)
 
 
-def solve(program: MPQP_Program, active_set=None, num_cores=-1) -> Optional[Solution]:
+def solve(program: MPQP_Program, active_set=None, num_cores=-1) -> Solution:
     """
     This solved the multiparametric program using the geometric algorithm described in Spjotvold et al.
 
