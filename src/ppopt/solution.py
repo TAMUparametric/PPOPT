@@ -125,15 +125,13 @@ class Solution:
 
         for region in self.critical_regions:
             sol = get_chebyshev_information(region)
-            soln = self.program.solve_theta(theta)
 
-            if sol is None and soln is None:
-                return True
+            theta = make_column(sol.sol)[0:numpy.size(sol.sol) - 1]
+
+            soln = self.program.solve_theta(theta)
 
             if sol is None or soln is None:
                 return False
-
-            theta = make_column(sol.sol)[0:numpy.size(sol.sol) - 1]
 
             x_star = region.evaluate(theta)
             l_star = region.lagrange_multipliers(theta)
