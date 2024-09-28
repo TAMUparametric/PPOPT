@@ -1,6 +1,5 @@
 import copy
 from datetime import datetime
-from typing import List
 
 import numpy
 import scipy.io as sio
@@ -68,7 +67,7 @@ def generate_code_cpp(solution: Solution, float_type: str = 'float') -> str:
     to_augment.append(f"const bool solution_overlap = {cpp_vals[sol.is_overlapping]};")
 
     # check for a Q term, this can be done with instance checks instead
-    has_Q = "Q" in sol.program.__dict__
+    has_Q = hasattr(sol.program, 'Q')
 
     to_augment.append(f"const bool is_qp = {cpp_vals[has_Q]};")
 
@@ -133,7 +132,7 @@ def generate_code_cpp(solution: Solution, float_type: str = 'float') -> str:
     return cpp_upop.replace("<==PayloadHere==>", inset_data)
 
 
-def generate_code_js(solution: Solution) -> List[str]:
+def generate_code_js(solution: Solution) -> str:
     """
     Generates Javascript code for point location and function evaluation for Scripting Engines and IOT servers \n
 
@@ -154,7 +153,7 @@ def generate_code_js(solution: Solution) -> List[str]:
 
     for region in sol.critical_regions:
         region_boundary_index.append(region.E.shape[0] + region_boundary_index[-1])
-    has_Q = "Q" in sol.program.__dict__
+    has_Q = hasattr(sol.program, 'Q')
     to_augment = []
 
     to_augment.append(gen_array(region_boundary_index, 'region_indices', "int", lang='js'))
@@ -263,17 +262,17 @@ def generate_code_matlab(solution: Solution, path: str = '') -> None:
     num_regions = len(region_list) - 1
     region_list = numpy.array(region_list) + 1
 
-    has_Q = "Q" in sol.program.__dict__
+    Q = 0.0 * numpy.eye(sol.program.num_x())
 
-    if not has_Q:
+    if hasattr(sol.program, 'Q'):
         # just add a Q to simplify
-        sol.program.Q = 0.0 * numpy.eye(sol.program.num_x())
+        Q = sol.program.Q
 
     p = sol.program
 
     solution_information = {"constraint_block": const_block, "constraint_vector": const_vec,
                             "function_block": func_block, "function_vec": func_vec, "region_list": region_list,
-                            "num_regions": num_regions, "Q": p.Q, "H": p.H, "c": p.c, "c_c": p.c_c, "c_t": p.c_t,
+                            "num_regions": num_regions, "Q": Q, "H": p.H, "c": p.c, "c_c": p.c_c, "c_t": p.c_t,
                             "Q_t": p.Q_t}
 
     sio.savemat(path, {'upop_solution': solution_information})

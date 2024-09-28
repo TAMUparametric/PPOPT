@@ -1,3 +1,5 @@
+from typing import List, Optional, Set, Tuple
+
 # noinspection PyProtectedMember
 from pathos.multiprocessing import ProcessingPool as Pool
 
@@ -54,23 +56,22 @@ def solve(program: MPQP_Program, initial_active_sets=None, num_cores=-1, use_pru
     :param program: MPQP to be solved
     :param initial_active_sets:An initial critical region to start this algorithm with, otherwise one will be found
     :param num_cores: number of cores to run this calculation on, default of -1 means use all available cores
+    :param use_pruning: if the pruning list should be shared to the other threads
     :return: the solution of the MPQP
     """
     if initial_active_sets is None:
         initial_active_sets = [program.gen_optimal_active_set()]
 
     # This will contain all the attempted active sets
-    attempted = set()
+    attempted: Set[Tuple[int]] = set()
+    in_process = set()
 
-    murder_list = CombinationTester()
+    murder_list: Optional[CombinationTester] = CombinationTester()
 
     if not use_pruning:
         murder_list = None
 
     to_attempt = [tuple(a_set) for a_set in initial_active_sets]
-
-    attempted = set()
-    in_process = set()
 
     solution = Solution(program, [])
 
@@ -79,7 +80,7 @@ def solve(program: MPQP_Program, initial_active_sets=None, num_cores=-1, use_pru
 
     pool = Pool(num_cores)
 
-    tiered_to_attempt = [[]] * max(program.num_x() + 3, program.num_t() + 3)
+    tiered_to_attempt: List[List] = [[]] * max(program.num_x() + 3, program.num_t() + 3)
     tiered_to_attempt[0].extend(to_attempt)
 
     # loop until there aren't any more candidates

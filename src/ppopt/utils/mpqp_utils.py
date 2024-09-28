@@ -1,8 +1,9 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple, Union
 
 import numpy
 
 from ..critical_region import CriticalRegion
+from ..mplp_program import MPLP_Program
 from ..mpqp_program import MPQP_Program
 from ..solver import Solver
 from ..utils.constraint_utilities import (
@@ -51,7 +52,7 @@ def get_boundary_types(region: numpy.ndarray, omega: numpy.ndarray, lagrange: nu
     return [omega_list, lagrange_list, regular_list]
 
 
-def build_suboptimal_critical_region(program: MPQP_Program, active_set: List[int]):
+def build_suboptimal_critical_region(program: Union[MPQP_Program, MPLP_Program], active_set: List[int]):
     """
     Builds the critical region without considering culling facets or any other operation.
     Primary uses for this is based on culling lower dimensional feasible sets.
@@ -85,7 +86,7 @@ def build_suboptimal_critical_region(program: MPQP_Program, active_set: List[int
 
 
 # noinspection PyUnusedLocal
-def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_full_dim=True) -> Optional[
+def gen_cr_from_active_set(program: Union[MPQP_Program, MPLP_Program], active_set: List[int], check_full_dim=True) -> Optional[
     CriticalRegion]:
     """
     Builds the critical region of the given mpqp from the active set.
@@ -194,7 +195,7 @@ def gen_cr_from_active_set(program: MPQP_Program, active_set: List[int], check_f
                           kept_omega_indices, relevant_lambda, regular)
 
 
-def gen_cr_from_active_set_1d(program: MPQP_Program, active_set: List[int], check_full_dim=True) -> Optional[
+def gen_cr_from_active_set_1d(program: Union[MPQP_Program, MPLP_Program], active_set: List[int], check_full_dim=True) -> Optional[
     CriticalRegion]:
     """
     Builds the critical region of the given mpqp from the active set specifically for the 1D parameter case.
@@ -300,7 +301,7 @@ def gen_cr_from_active_set_1d(program: MPQP_Program, active_set: List[int], chec
                           kept_omega_indices, relevant_lambda, regular)
 
 
-def get_bounds_1d(CR_As: numpy.ndarray, CR_bs: numpy.ndarray) -> (float, float):
+def get_bounds_1d(CR_As: numpy.ndarray, CR_bs: numpy.ndarray) -> Tuple[float, float]:
     min_val = float('-inf')
     max_val = float('inf')
 
@@ -319,7 +320,7 @@ def is_full_dimensional_1d(CR_As: numpy.ndarray, CR_bs: numpy.ndarray) -> bool:
     return min_val + 10 ** -8 <= max_val
 
 
-def is_full_dimensional(A, b, solver: Solver = None) -> bool:
+def is_full_dimensional(A, b, solver: Optional[Solver] = None) -> bool:
     """
     This checks the dimensionality of a polytope defined by P = {x: Ax≤b}. Current method is based on checking if the
     radii of the chebychev ball is nonzero. However, this is numerically not so stable, and will eventually be replaced

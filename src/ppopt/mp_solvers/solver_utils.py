@@ -1,8 +1,10 @@
-from typing import List, Optional, Set, Tuple
+from typing import List, Optional, Set, Tuple, Union
 
 import numpy
 
 from ..critical_region import CriticalRegion
+from ..mplp_program import MPLP_Program
+from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.chebyshev_ball import chebyshev_ball
 from ..utils.general_utils import make_column
@@ -104,7 +106,7 @@ def generate_extra(candidate: tuple, expansion_set, murder_list=None, attempted=
     return accepted_sets
 
 
-def find_optimal_set(problem) -> List[int]:
+def find_optimal_set(problem: Union[MPLP_Program, MPQP_Program]) -> List[int]:
     """
     This is a simple combinatorial algorithm for finding the first optimal active set. This is more or less only here for
     implementation completeness as this should never be used in practice.
@@ -147,7 +149,7 @@ def find_optimal_set(problem) -> List[int]:
     return optimal_set
 
 
-def generate_children_sets(active_set, num_constraints: int, murder_list=None):
+def generate_children_sets(active_set, num_constraints: int, murder_list=None) -> List[List[int]]:
     # takes the active set and then generates all super sets of higher cardinality
 
     def check(x) -> bool:
@@ -162,7 +164,7 @@ def generate_children_sets(active_set, num_constraints: int, murder_list=None):
         return [[*active_set, i] for i in range(active_set[-1] + 1, num_constraints) if check([*active_set, i])]
 
 
-def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> list:
+def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> List[Tuple[numpy.ndarray, numpy.ndarray, float]]:
     r"""
     This takes the polytope P, and finds all the chebychev centers and normal vectors of each facet and the radius.
 
@@ -179,7 +181,7 @@ def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> list:
 
         # theta point to look out of
         theta = None
-        radius = 0
+        radius = 0.0
         if A.shape[1] == 1:
             # if A is 1 dim then we can safely skip the chebyshev ball
             theta = numpy.array([[b[facet_index] / A[facet_index][0]]])
@@ -206,7 +208,7 @@ def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> list:
 
 
 def fathem_facet(center: numpy.ndarray, normal: numpy.ndarray, radius: float, program, indexed_region_as: Set,
-                 current_active_set: list, cand_sol: Solution = None) -> Optional[CriticalRegion]:
+                 current_active_set: list, cand_sol: Optional[Solution] = None) -> Optional[CriticalRegion]:
     """
     This explores the feasible space looking out from a chebychev center of a critical region facet.
 

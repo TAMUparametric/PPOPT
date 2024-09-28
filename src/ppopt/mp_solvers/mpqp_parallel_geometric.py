@@ -1,4 +1,3 @@
-from typing import Optional
 
 import numpy
 
@@ -35,7 +34,7 @@ def full_process(center: numpy.ndarray, norm: numpy.ndarray, radius: float, prog
     return found_solution, get_facet_centers(found_solution.E, found_solution.f)
 
 
-def solve(program: MPQP_Program, active_set=None, num_cores=-1) -> Optional[Solution]:
+def solve(program: MPQP_Program, active_set=None, num_cores=-1) -> Solution:
     """
     This solved the multiparametric program using the geometric algorithm described in Spjotvold et al.
 
@@ -51,6 +50,10 @@ def solve(program: MPQP_Program, active_set=None, num_cores=-1) -> Optional[Solu
         print(f'Using a found active set {active_set}')
 
     initial_region = gen_cr_from_active_set(program, active_set, check_full_dim=False)
+
+    if initial_region is None:
+        print('Could not find a valid initial region')
+        return Solution(program, [])
 
     if num_cores == -1:
         num_cores = num_cpu_cores()

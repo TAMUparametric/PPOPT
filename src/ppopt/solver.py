@@ -1,6 +1,6 @@
 import sys
 from dataclasses import dataclass, field
-from typing import Dict, Iterable, Optional
+from typing import Dict, Iterable, Optional, Sequence
 
 import numpy
 
@@ -128,8 +128,8 @@ class Solver:
     # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
     def solve_miqp(self, Q: Optional[numpy.ndarray], c: Optional[numpy.ndarray], A: Optional[numpy.ndarray],
                    b: Optional[numpy.ndarray],
-                   equality_constraints: Optional[Iterable[int]] = None,
-                   bin_vars: Optional[Iterable[int]] = None, verbose: bool = False,
+                   equality_constraints: Optional[Sequence[int]] = None,
+                   bin_vars: Optional[Sequence[int]] = None, verbose: bool = False,
                    get_duals: bool = True) -> Optional[SolverOutput]:
         r"""
         This is the breakout for solving mixed integer quadratic programs
@@ -166,7 +166,7 @@ class Solver:
         return self.solver_not_supported(self.solvers['miqp'])
 
     def solve_qp(self, Q: Optional[numpy.ndarray], c: Optional[numpy.ndarray], A: Optional[numpy.ndarray],
-                 b: Optional[numpy.ndarray], equality_constraints: Optional[Iterable[int]] = None,
+                 b: Optional[numpy.ndarray], equality_constraints: Optional[Sequence[int]] = None,
                  verbose=False,
                  get_duals=True) -> Optional[SolverOutput]:
         r"""
@@ -246,8 +246,8 @@ class Solver:
         return self.solver_not_supported(self.solvers['lp'])
 
     def solve_milp(self, c: Optional[numpy.ndarray], A: Optional[numpy.ndarray], b: Optional[numpy.ndarray],
-                   equality_constraints: Optional[Iterable[int]] = None,
-                   bin_vars: Optional[Iterable[int]] = None, verbose=False, get_duals=True) -> Optional[SolverOutput]:
+                   equality_constraints: Optional[Sequence[int]] = None,
+                   bin_vars: Optional[Sequence[int]] = None, verbose=False, get_duals=True) -> Optional[SolverOutput]:
         r"""
         This is the breakout for solving mixed integer linear programs
 

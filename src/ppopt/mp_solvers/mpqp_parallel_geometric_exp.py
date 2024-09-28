@@ -13,7 +13,7 @@ from .solver_utils import get_facet_centers
 
 
 def fathem_facet_exp(center: numpy.ndarray, normal: numpy.ndarray, radius: float, program, current_active_set: list) -> \
-        Optional[List]:
+        Optional[List[int]]:
     # make sure we are pointing in the correct direction
     center = make_column(center)
     normal = make_column(normal)
@@ -64,7 +64,7 @@ def full_process_2(program, current_active_set):
     return critical_region, get_facet_centers(critical_region.E, critical_region.f)
 
 
-def fathem_initial_active_sets(program: MPQP_Program, initial_active_sets: Optional[List[List[int]]] = None):
+def fathem_initial_active_sets(program: MPQP_Program, initial_active_sets: List[List[int]]):
     """
     Covers an initial active set
 
@@ -85,7 +85,7 @@ def fathem_initial_active_sets(program: MPQP_Program, initial_active_sets: Optio
     return work_items, crs
 
 
-def solve(program: MPQP_Program, initial_active_sets: Optional[List[List[int]]] = None, num_cores=-1) -> Optional[Solution]:
+def solve(program: MPQP_Program, initial_active_sets: Optional[List[List[int]]] = None, num_cores=-1) -> Solution:
     """
     This solved the multiparametric program using the geometric algorithm described in Spjotvold et al.
 
@@ -98,9 +98,11 @@ def solve(program: MPQP_Program, initial_active_sets: Optional[List[List[int]]] 
     """
     if initial_active_sets is None:
         initial_active_sets = [program.gen_optimal_active_set()]
-        print(f'Using a found active set {initial_active_sets[-1]}')
 
-    # initial_region = gen_cr_from_active_set(program, initial_active_sets[-1], check_full_dim=False)
+        if initial_active_sets[-1] is None:
+            raise ValueError('No Active Sets Found')
+
+        print(f'Using a found active set {initial_active_sets[-1]}')
 
     if num_cores == -1:
         num_cores = num_cpu_cores()
@@ -133,10 +135,15 @@ def solve(program: MPQP_Program, initial_active_sets: Optional[List[List[int]]] 
         f = lambda x: fathem_facet_exp(x[0], x[1], x[2], program, x[3])
 
         found_active_sets = pool.map(f, work_items)
+        # clear out active sets that are not none
         work_items = [active_set for active_set in found_active_sets if active_set is not None]
+        # clear out active sets that correspond to an already generated CR
         work_items = [active_set for active_set in work_items if (tuple(active_set)) not in indexed_region_as]
+        # remove duplicates
         work_items = list({tuple(active_set) for active_set in work_items})
+        # convert everything back to a list
         work_items = [list(active) for active in work_items]
+
         f = lambda x: full_process_2(program, x)
 
         outputs = pool.map(f, work_items)

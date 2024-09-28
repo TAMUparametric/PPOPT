@@ -88,8 +88,11 @@ def classify_polytope(region: CriticalRegion, hyper_plane: numpy.ndarray) -> int
     min_sol = solve_lp(c, region.E, region.f)
     max_sol = solve_lp(-c, region.E, region.f)
 
-    # extract the objective values
+    # this should never happen
+    if min_sol is None or max_sol is None:
+        raise ValueError("When solving the LPs in classify_polytope, the solution was None")
 
+    # extract the objective values
     min_obj = min_sol.obj - d
     max_obj = max_sol.obj - d
 

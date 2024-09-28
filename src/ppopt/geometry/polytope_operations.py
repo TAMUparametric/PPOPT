@@ -30,8 +30,10 @@ def hit_and_run(p, x_0, n_steps: int = 10):
     # dimension size
     size = x_0.size
 
+    prng = numpy.random.default_rng()
+
     def random_direction():
-        vec = numpy.random.rand(size).reshape(size, -1)
+        vec = prng.standard_normal(size).reshape(size, -1)
         return vec / numpy.linalg.norm(vec, 2)
 
     for _ in range(n_steps):
@@ -43,7 +45,7 @@ def hit_and_run(p, x_0, n_steps: int = 10):
         extend_backward = find_extents(p.A, p.b, -random_direc, x_0)
 
         # sample a delta x from the line
-        pert = numpy.random.uniform(-extend_backward, extent_forward) * random_direc
+        pert = prng.uniform(-extend_backward, extent_forward) * random_direc
 
         # check if still inside polytope
         if not numpy.all(p.A @ (x_0 + pert) <= p.b):

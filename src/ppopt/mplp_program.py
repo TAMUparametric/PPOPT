@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 import numpy
 
@@ -52,7 +52,7 @@ class MPLP_Program:
     c_t: numpy.ndarray
     Q_t: numpy.ndarray
 
-    equality_indices: Union[List[int], numpy.ndarray]
+    equality_indices: List[int]
 
     solver: Solver
 
@@ -393,7 +393,7 @@ class MPLP_Program:
         return parameter_A, parameter_b, lagrange_A, lagrange_b
 
     # noinspection SpellCheckingInspection
-    def check_active_set_rank(self, active_set):
+    def check_active_set_rank(self, active_set: List[int]):
         r"""
         Checks the rank of the matrix is equal to the cardinality of the active set
 
@@ -406,7 +406,7 @@ class MPLP_Program:
         """
         return is_full_rank(self.A, active_set)
 
-    def check_feasibility(self, active_set, check_rank=True) -> bool:
+    def check_feasibility(self, active_set: List[int], check_rank=True) -> bool:
         r"""
         Checks the feasibility of an active set combination w.r.t. a multiparametric program.
 
@@ -592,6 +592,8 @@ class MPLP_Program:
 
         sol = self.feasible_space_chebychev_ball()
 
+        prng = numpy.random.default_rng()
+
         if sol is None:
             return None
 
@@ -602,7 +604,7 @@ class MPLP_Program:
 
         for _ in range(max_iter):
 
-            pert = numpy.random.uniform(-radius, radius, (self.num_t(), 1))
+            pert = prng.uniform(-radius, radius, (self.num_t(), 1))
             test_point = pert + theta_point
 
             is_optimal = self.solve_theta(test_point)
@@ -635,6 +637,8 @@ class MPLP_Program:
 
         sol = self.feasible_space_chebychev_ball()
 
+        prng = numpy.random.default_rng()
+
         if sol is None:
             return None
 
@@ -643,12 +647,12 @@ class MPLP_Program:
         found_active_sets = []
 
         def random_direction():
-            vec = numpy.random.randn(self.num_t()).reshape(self.num_t(), -1)
+            vec = prng.standard_normal(self.num_t()).reshape(self.num_t(), -1)
             return vec / numpy.linalg.norm(vec, 2)
 
         for _ in range(num_samples):
 
-            new_theta = theta + numpy.random.rand() * radius * random_direction()
+            new_theta = theta + prng.random() * radius * random_direction()
             sol = self.solve_theta(new_theta)
 
             if sol is not None:

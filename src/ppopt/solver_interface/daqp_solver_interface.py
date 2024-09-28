@@ -1,10 +1,9 @@
-from typing import Iterable, Optional
+from typing import Optional, Sequence
+from ctypes import c_double, c_int
 
 import numpy
 
 try:
-    from ctypes import c_double, c_int
-
     import daqp
 except ImportError:
     pass
@@ -12,10 +11,12 @@ except ImportError:
 from ..solver_interface.solver_interface_utils import SolverOutput
 from ..utils.general_utils import make_column
 
+Matrix = Optional[numpy.ndarray]
 
-def solve_qp_daqp(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
-                  equality_constraints: Optional[Iterable[int]] = None, verbose=False,
-                  get_duals: bool = True) -> Optional[SolverOutput]:
+
+def solve_qp_daqp(Q: numpy.ndarray, c: Matrix, A: Matrix, b: Matrix,
+                  equality_constraints: Optional[Sequence[int]] = None,
+                  verbose: bool = False, get_duals: bool = True) -> Optional[SolverOutput]:
     r"""
     Calls DAQP to solve the following optimization problem
 
@@ -45,10 +46,7 @@ def solve_qp_daqp(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: numpy
     if equality_constraints is None:
         equality_constraints = []
 
-    num_constraints = A.shape[0]
-    num_x = A.shape[1]
-    num_equality_constraints = len(equality_constraints)
-    num_inequality_constraints = num_constraints - num_equality_constraints
+    num_x = Q.shape[1]
 
     if c is None:
         c = numpy.zeros(num_x).reshape(-1, 1)
@@ -59,6 +57,11 @@ def solve_qp_daqp(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: numpy
         x_sol = numpy.linalg.solve(Q, -c).reshape(-1, 1)
         opt_val = float((0.5 * x_sol.T @ Q @ x_sol + c.T @ x_sol)[0, 0])
         return SolverOutput(opt_val, x_sol, numpy.array([]), numpy.array([]), numpy.array([]))
+
+    num_constraints = A.shape[0]
+
+    num_equality_constraints = len(equality_constraints)
+    num_inequality_constraints = num_constraints - num_equality_constraints
 
     ineq = [i for i in range(A.shape[0]) if i not in equality_constraints]
 
@@ -75,7 +78,7 @@ def solve_qp_daqp(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: numpy
 
     Q_ = (0.5 * (Q + Q.T)).astype(c_double)
     c_ = c.flatten().astype(c_double)
-    blower = numpy.full(num_inequality_constraints+num_equality_constraints, -1e30)
+    blower = numpy.full(num_inequality_constraints + num_equality_constraints, -1e30)
     x_star, opt, status, info = daqp.solve(H=Q_, f=c_, A=new_A, bupper=new_b, blower=blower, sense=constraint_sense)
 
     # if there is anything other than an optimal solution found return nothing

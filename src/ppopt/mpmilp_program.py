@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import List, Optional
 
 import numpy
 
@@ -6,7 +6,7 @@ from .mplp_program import MPLP_Program
 from .solver import Solver
 from .solver_interface.solver_interface_utils import SolverOutput
 from .utils.constraint_utilities import detect_implicit_equalities
-from .utils.general_utils import ppopt_block, select_not_in_list
+from .utils.general_utils import ppopt_block
 
 
 class MPMILP_Program(MPLP_Program):
@@ -41,9 +41,9 @@ class MPMILP_Program(MPLP_Program):
     c_t: numpy.ndarray
     Q_t: numpy.ndarray
 
-    equality_indices: Union[List[int], numpy.ndarray]
+    equality_indices: List[int]
 
-    binary_indices: Union[List[int], numpy.ndarray]
+    binary_indices: List[int]
     cont_indices: List[int]
 
     solver: Solver = Solver()
@@ -52,7 +52,7 @@ class MPMILP_Program(MPLP_Program):
                  b_t: numpy.ndarray, F: numpy.ndarray, binary_indices=None, c_c: Optional[numpy.ndarray] = None,
                  c_t: Optional[numpy.ndarray] = None, Q_t: Optional[numpy.ndarray] = None,
                  equality_indices: Optional[List[int]] = None,
-                 solver: Solver = None, post_process=True):
+                 solver: Optional[Solver] = None, post_process=True):
         """Initializes the MPMILP_Program"""
 
         if solver is None:

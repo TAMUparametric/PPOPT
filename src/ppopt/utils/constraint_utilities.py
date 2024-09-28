@@ -2,7 +2,7 @@
 # Constraint manipulation utilities
 #
 
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import numpy
 
@@ -203,8 +203,8 @@ def find_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, equality_set:
 def remove_strongly_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, include_kept_indices=False,
                                           deterministic_solver: str = 'gurobi'):
     """Removes strongly redundant constraints by testing the feasibility of each constraint if activated."""
-    keep_list = []
-    new_index = []
+    keep_list: List[int] = []
+    new_index: List[int] = []
     for i in range(A.shape[0]):
         sol = solver_interface.solve_lp(None, A, b, [i], deterministic_solver=deterministic_solver)
         if sol is not None:
@@ -276,7 +276,7 @@ def process_region_constraints(A: numpy.ndarray, b: numpy.ndarray, deterministic
     return [A, b]
 
 
-def get_indices_of_zero_rows(A: numpy.array, epsilon: float = 10 ** (-6)) -> [list, list]:
+def get_indices_of_zero_rows(A: numpy.ndarray, epsilon: float = 10 ** (-6)) -> Tuple[list, list]:
     is_zero = lambda x: numpy.linalg.norm(x) >= epsilon
 
     # sorts rows based on if they are zeros (numerically) or non-zero
@@ -470,7 +470,7 @@ def numerically_nonzero_rows(A) -> List[int]:
     return [index for index, row in enumerate(A) if not numpy.allclose(A[index], 0, atol=10**-8)]
 
 
-def remove_numerically_zero_rows(A, b) -> (numpy.ndarray, numpy.ndarray):
+def remove_numerically_zero_rows(A, b) -> Tuple[numpy.ndarray, numpy.ndarray]:
     num_nonzero = numerically_nonzero_rows(A)
     keep = [i for i in range(A.shape[0]) if i in num_nonzero]
     return A[keep], b[keep]
