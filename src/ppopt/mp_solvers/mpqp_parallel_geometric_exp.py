@@ -64,7 +64,7 @@ def full_process_2(program, current_active_set):
     return critical_region, get_facet_centers(critical_region.E, critical_region.f)
 
 
-def fathem_initial_active_sets(program: MPQP_Program, initial_active_sets: Optional[List[List[int]]] = None):
+def fathem_initial_active_sets(program: MPQP_Program, initial_active_sets: List[List[int]]):
     """
     Covers an initial active set
 

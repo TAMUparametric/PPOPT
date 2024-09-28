@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Union
+from typing import List, Union, Optional
 
 import numpy
 
@@ -37,15 +37,15 @@ class CriticalRegion:
     d: numpy.ndarray
     E: numpy.ndarray
     f: numpy.ndarray
-    active_set: Union[List[int], numpy.ndarray]
+    active_set: List[int]
 
-    omega_set: Union[List[int], numpy.ndarray] = field(default_factory=list)
-    lambda_set: Union[List[int], numpy.ndarray] = field(default_factory=list)
-    regular_set: Union[List[int], numpy.ndarray] = field(default_factory=list)
+    omega_set: List[int] = field(default_factory=list)
+    lambda_set: List[int] = field(default_factory=list)
+    regular_set: List[List[int]] = field(default_factory=list)
 
-    y_fixation: numpy.ndarray = None
-    y_indices: numpy.ndarray = None
-    x_indices: numpy.ndarray = None
+    y_fixation: Optional[numpy.ndarray] = None
+    y_indices: Optional[numpy.ndarray] = None
+    x_indices: Optional[numpy.ndarray] = None
 
     def __repr__(self):
         """Returns a String representation of a Critical Region."""
@@ -70,6 +70,7 @@ class CriticalRegion:
 
         # otherwise evalute AΘ+b for the continuous variables, then slice in the binaries at the correct locations
         cont_vars = self.A @ theta + self.b
+
         x_star = numpy.zeros((len(self.x_indices) + len(self.y_indices),))
         x_star[self.x_indices] = cont_vars.flatten()
         x_star[self.y_indices] = self.y_fixation

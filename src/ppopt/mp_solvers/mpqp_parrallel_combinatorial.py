@@ -1,7 +1,7 @@
 from src.ppopt.critical_region import CriticalRegion
 import time
 from random import shuffle
-from typing import List, Set, Tuple
+from typing import List, Set, Tuple, Optional
 
 # noinspection PyProtectedMember
 from pathos.multiprocessing import ProcessingPool as Pool
@@ -13,7 +13,7 @@ from ..utils.mpqp_utils import gen_cr_from_active_set
 from .solver_utils import CombinationTester, generate_children_sets
 
 
-def full_process(program: MPQP_Program, active_set: List[int], murder_list, gen_children):
+def full_process(program: MPQP_Program, active_set: List[int], murder_list, gen_children) -> Tuple[Optional[CriticalRegion], Set[Tuple[int,...]], List[List[int]]]:
     """
 
     This is the fundamental building block of the parallel combinatorial algorithm, here we branch off of a known feasible active set combination\\
@@ -26,11 +26,11 @@ def full_process(program: MPQP_Program, active_set: List[int], murder_list, gen_
     :param gen_children: A boolean flag, that determines if we should generate the children subsets
     :return: a list of the following form [Optional[CriticalRegion], pruned active set combination,Possibly Feasible Active set combinations]
     """
-    t_set = (*active_set,)
+    t_set: Tuple[int, ...] = tuple(active_set)
 
-    candidate_cr = None
-    pruned_active_sets = set()
-    child_active_sets = []
+    candidate_cr: Optional[CriticalRegion] = None
+    pruned_active_sets: Set[Tuple[int,...]] = set()
+    child_active_sets: List[List[int]] = []
 
     # return_list: Tuple[CriticalRegion, Set, List] = [None, set(), []]
 

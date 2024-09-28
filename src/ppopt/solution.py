@@ -125,8 +125,12 @@ class Solution:
 
         for region in self.critical_regions:
             sol = get_chebyshev_information(region)
+            soln = self.program.solve_theta(theta)
 
-            if sol is None:
+            if sol is None and soln is None:
+                return True
+
+            if sol is None or soln is None:
                 return False
 
             theta = make_column(sol.sol)[0:numpy.size(sol.sol) - 1]
@@ -134,8 +138,6 @@ class Solution:
             x_star = region.evaluate(theta)
             l_star = region.lagrange_multipliers(theta)
             active_set = region.active_set
-
-            soln = self.program.solve_theta(theta)
 
             if not numpy.allclose(soln.sol, x_star.flatten()):
                 return False
@@ -154,12 +156,17 @@ class Solution:
         :return: True if they are the same, False if they are different
         """
         region = self.get_region(theta_point)
+        soln = self.program.solve_theta(theta_point)
+
+        if region is None and soln is None:
+            return True
+
+        if region is None or soln is None:
+            return False
 
         x_star = region.evaluate(theta_point)
         l_star = region.lagrange_multipliers(theta_point)
         r_active_set = region.active_set
-
-        soln = self.program.solve_theta(theta_point)
 
         if numpy.allclose(soln.sol, x_star.flatten()):
             if numpy.allclose(soln.dual[soln.active_set], -l_star.flatten()):

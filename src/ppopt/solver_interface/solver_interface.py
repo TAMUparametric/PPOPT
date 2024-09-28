@@ -1,4 +1,4 @@
-from typing import Iterable, Optional, Sequence
+from typing import Optional, Sequence
 
 import numpy
 
@@ -64,7 +64,7 @@ def solve_miqp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
         return None
 
 
-def solve_qp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix, equality_constraints: Optional[Iterable[int]] = None,
+def solve_qp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix, equality_constraints: Optional[Sequence[int]] = None,
              verbose=False,
              get_duals=True, deterministic_solver='gurobi') -> Optional[SolverOutput]:
     r"""
@@ -139,8 +139,8 @@ def solve_lp(c: Matrix, A: Matrix, b: Matrix, equality_constraints=None, verbose
         return None
 
 
-def solve_milp(c: Matrix, A: Matrix, b: Matrix, equality_constraints: Optional[Iterable[int]] = None,
-               bin_vars: Optional[Iterable[int]] = None, verbose=False, get_duals=True,
+def solve_milp(c: Matrix, A: Matrix, b: Matrix, equality_constraints: Optional[Sequence[int]] = None,
+               bin_vars: Optional[Sequence[int]] = None, verbose=False, get_duals=True,
                deterministic_solver='gurobi') -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving mixed integer linear programs

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import numpy
 
@@ -49,7 +49,7 @@ class MPMIQP_Program(MPMILP_Program):
         """Evaluates the objective f(x,theta)"""
         return 0.5 * x.T @ self.Q @ x + theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ theta_point
 
-    def generate_substituted_problem(self, fixed_combination: List[int]):
+    def generate_substituted_problem(self, fixed_combination: Union[numpy.ndarray, List[int]]):
         """
         Generates the fixed binary continuous version of the problem e.g. substitute all the binary variables
         :param fixed_combination:

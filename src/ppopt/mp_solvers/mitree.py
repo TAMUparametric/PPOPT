@@ -9,8 +9,18 @@ from ..utils.constraint_utilities import remove_strongly_redundant_constraints
 
 
 class MITree:
+    b: numpy.ndarray
+    A: numpy.ndarray
 
-    def __init__(self, problem: Union[MPMILP_Program, MPMIQP_Program], fixed_bins: Optional[list] = None, depth: int = 0):
+    problem: Union[MPMILP_Program, MPMIQP_Program]
+    depth: int
+    bin_indices: List[int]
+
+    left: Optional['MITree']
+    right: Optional['MITree']
+
+    def __init__(self, problem: Union[MPMILP_Program, MPMIQP_Program], fixed_bins: Optional[List[int]] = None,
+                 depth: int = 0):
         """
         This is the main data structure for the enumeration based algorithm were we are attempting to find feasible
         binary combinations in a more efficient manner
@@ -24,8 +34,7 @@ class MITree:
         :param fixed_bins: the fixed binaries of this node
         :param depth: the depth of this node in the tree
         """
-        self.b = None
-        self.A = None
+
         self.problem = copy.copy(problem)
         self.depth = depth
         self.bin_indices = problem.binary_indices

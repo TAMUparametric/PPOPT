@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union, Sequence
 
 import numpy
 
@@ -52,7 +52,7 @@ class MPLP_Program:
     c_t: numpy.ndarray
     Q_t: numpy.ndarray
 
-    equality_indices: Union[List[int], numpy.ndarray]
+    equality_indices: List[int]
 
     solver: Solver
 
@@ -393,7 +393,7 @@ class MPLP_Program:
         return parameter_A, parameter_b, lagrange_A, lagrange_b
 
     # noinspection SpellCheckingInspection
-    def check_active_set_rank(self, active_set):
+    def check_active_set_rank(self, active_set: List[int]):
         r"""
         Checks the rank of the matrix is equal to the cardinality of the active set
 
@@ -406,7 +406,7 @@ class MPLP_Program:
         """
         return is_full_rank(self.A, active_set)
 
-    def check_feasibility(self, active_set, check_rank=True) -> bool:
+    def check_feasibility(self, active_set: List[int], check_rank=True) -> bool:
         r"""
         Checks the feasibility of an active set combination w.r.t. a multiparametric program.
 

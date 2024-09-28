@@ -1,6 +1,6 @@
 import sys
 from dataclasses import dataclass, field
-from typing import Dict, Iterable, Optional
+from typing import Dict, Iterable, Optional, Sequence
 
 import numpy
 
@@ -166,7 +166,7 @@ class Solver:
         return self.solver_not_supported(self.solvers['miqp'])
 
     def solve_qp(self, Q: Optional[numpy.ndarray], c: Optional[numpy.ndarray], A: Optional[numpy.ndarray],
-                 b: Optional[numpy.ndarray], equality_constraints: Optional[Iterable[int]] = None,
+                 b: Optional[numpy.ndarray], equality_constraints: Optional[Sequence[int]] = None,
                  verbose=False,
                  get_duals=True) -> Optional[SolverOutput]:
         r"""

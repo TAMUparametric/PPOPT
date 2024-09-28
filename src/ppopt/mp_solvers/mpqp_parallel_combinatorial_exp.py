@@ -1,10 +1,11 @@
 import time
 from random import shuffle
-from typing import List
+from typing import List, Tuple
 
 # noinspection PyProtectedMember
 from pathos.multiprocessing import ProcessingPool as Pool
 
+from ..critical_region import CriticalRegion
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.general_utils import num_cpu_cores
@@ -12,7 +13,7 @@ from ..utils.mpqp_utils import gen_cr_from_active_set
 from .solver_utils import generate_children_sets
 
 
-def full_process(program: MPQP_Program, active_set: List[int]):
+def full_process(program: MPQP_Program, active_set: List[int]) -> Tuple[List[List[int]], List[CriticalRegion]]:
     """
     This is the function block that is executed in parallel. This takes a MPQP program as well as an active set combination, and \\
     checks the feasibility of all super sets of cardinality + 1. This is done without using a pruning list as in the other\\
@@ -50,7 +51,7 @@ def full_process(program: MPQP_Program, active_set: List[int]):
     if is_max_depth:
         feasible_children = []
 
-    return [feasible_children, valid_critical_regions]
+    return feasible_children, valid_critical_regions
 
 
 def solve(program: MPQP_Program, num_cores=-1) -> Solution:

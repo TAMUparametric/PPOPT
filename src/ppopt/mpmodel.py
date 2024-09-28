@@ -37,6 +37,11 @@ class ModelVariable:
     var_type: VariableType
     var_id: int
 
+    def __init__(self, name, var_type, var_id):
+        self.name = name
+        self.var_type = var_type
+        self.var_id = var_id
+
     def make_expr(self) -> 'Expression':
         """
         Makes an expression from the variable

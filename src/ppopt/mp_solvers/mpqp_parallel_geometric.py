@@ -52,6 +52,10 @@ def solve(program: MPQP_Program, active_set=None, num_cores=-1) -> Solution:
 
     initial_region = gen_cr_from_active_set(program, active_set, check_full_dim=False)
 
+    if initial_region is None:
+        print('Could not find a valid initial region')
+        return Solution(program, [])
+
     if num_cores == -1:
         num_cores = num_cpu_cores()
 

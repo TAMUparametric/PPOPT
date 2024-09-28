@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Sequence
 
 import numpy
 
@@ -11,6 +11,8 @@ from ..solver_interface.solver_interface_utils import (
     SolverOutput,
     get_program_parameters,
 )
+
+Matrix = Optional[numpy.ndarray]
 
 
 def process_cvxopt_solution(sol, equality_constraints, inequality_constraints, num_constraints, get_duals) -> Optional[
@@ -140,8 +142,8 @@ def solve_qp_cvxopt(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: num
     return process_cvxopt_solution(sol, equality_constraints, ineq, num_constraints, get_duals)
 
 
-def solve_lp_cvxopt(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray, equality_constraints=None, verbose=False,
-                    get_duals=True, cvx_solver='glpk') -> Optional[SolverOutput]:
+def solve_lp_cvxopt(c: Matrix, A: Matrix, b: Matrix, equality_constraints: Optional[Sequence[int]] = None,
+                    verbose: bool = False, get_duals=True, cvx_solver='glpk') -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving linear programs with cvxopt, This is the preferred Solver as it has the lowest
     interface cost of all the other solvers

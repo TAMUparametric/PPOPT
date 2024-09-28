@@ -1,4 +1,4 @@
-from typing import Iterable, Optional, Sequence
+from typing import Optional, Sequence
 
 import numpy
 
@@ -13,9 +13,11 @@ from ..solver_interface.solver_interface_utils import (
     get_program_parameters,
 )
 
+Matrix = Optional[numpy.ndarray]
 
-def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None, A: numpy.ndarray = None,
-                      b: numpy.ndarray = None,
+
+def solve_miqp_gurobi(Q: Matrix = None, c: Matrix = None, A: Matrix = None,
+                      b: Matrix = None,
                       equality_constraints: Optional[Sequence[int]] = None,
                       bin_vars: Optional[Sequence[int]] = None, verbose: bool = False,
                       get_duals: bool = True) -> Optional[SolverOutput]:
@@ -134,17 +136,18 @@ def solve_miqp_gurobi(Q: numpy.ndarray = None, c: numpy.ndarray = None, A: numpy
         if sol.dual is not None:
             # we have a continuous problem, and we can get the duals directly
             non_zero_duals = numpy.where(sol.dual != 0)[0]
-            sol.active_set = numpy.array([i for i in range(num_constraints) if i in non_zero_duals or i in equality_constraints])
+            sol.active_set = numpy.array(
+                [i for i in range(num_constraints) if i in non_zero_duals or i in equality_constraints])
         else:
             sol.active_set = numpy.where((A @ sol.sol.flatten() - b.flatten()) ** 2 < 10 ** -12)[0]
 
     return sol
 
 
-def solve_qp_gurobi(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
-                    equality_constraints: Optional[Iterable[int]] = None,
-                    verbose=False,
-                    get_duals=True) -> Optional[SolverOutput]:
+def solve_qp_gurobi(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
+                    equality_constraints: Optional[Sequence[int]] = None,
+                    verbose:bool = False,
+                    get_duals:bool = True) -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving quadratic programs with gruobi
 
@@ -174,8 +177,8 @@ def solve_qp_gurobi(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: num
 
 
 # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
-def solve_lp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
-                    equality_constraints: Optional[Iterable[int]] = None,
+def solve_lp_gurobi(c: Matrix, A: Matrix, b: Matrix,
+                    equality_constraints: Optional[Sequence[int]] = None,
                     verbose: bool = False,
                     get_duals: bool = True) -> Optional[SolverOutput]:
     r"""
@@ -208,10 +211,8 @@ def solve_lp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
                              get_duals=get_duals)
 
 
-def solve_milp_gurobi(c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
-                      equality_constraints: Optional[Sequence[int]] = None,
-                      bin_vars: Optional[Sequence[int]] = None, verbose=False, get_duals=True) -> Optional[
-    SolverOutput]:
+def solve_milp_gurobi(c: Matrix, A: Matrix, b: Matrix,equality_constraints: Optional[Sequence[int]] = None,
+                      bin_vars: Optional[Sequence[int]] = None, verbose=False, get_duals=True) -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving mixed integer linear programs with gruobi, This is feed directly into the
     MIQP Solver that is defined in the same file.

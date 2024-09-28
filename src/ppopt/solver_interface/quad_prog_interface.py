@@ -10,6 +10,7 @@ except ImportError:
 from ..solver_interface.solver_interface_utils import SolverOutput
 from ..utils.general_utils import make_column
 
+Matrix = Optional[numpy.ndarray]
 
 def solve_qp_quadprog(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
                       equality_constraints: Optional[Sequence[int]] = None, verbose=False,
