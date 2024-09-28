@@ -1,8 +1,8 @@
 # language specific generation code for C++
-from typing import Optional
+from typing import Tuple
 
 
-def gen_cpp_array(data: list, name: str, vartype: str, options: list = ("const",)) -> str:
+def gen_cpp_array(data: list, name: str, vartype: str, options: Tuple[str] = ("const",)) -> str:
     """
     Generates a static C++ array from the provided data in the following format
 
@@ -20,7 +20,7 @@ def gen_cpp_array(data: list, name: str, vartype: str, options: list = ("const",
     return (f"{vartype} {name} [{len(data)}] = " + "{") + ','.join([str(i) for i in data]) + "};"
 
 
-def gen_cpp_variable(data, name: str, vartype: str, options: list = ("const",)) -> str:
+def gen_cpp_variable(data, name: str, vartype: str, options: Tuple[str] = ("const",)) -> str:
     if "const" in options:
         vartype = "const " + vartype
 
@@ -34,11 +34,11 @@ def gen_cpp_variable(data, name: str, vartype: str, options: list = ("const",)) 
 # language specific generation code for Python
 
 
-def gen_python_array(data: list, name: str, vartype: str, options: list = ("const",)) -> str:
+def gen_python_array(data: list, name: str, vartype: str, options: Tuple[str] = ("const",)) -> str:
     return f"{name} = " + str(data)
 
 
-def gen_python_variable(data, name: str, vartype: str, options: list = ("const",)) -> str:
+def gen_python_variable(data, name: str, vartype: str, options: Tuple[str] = ("const",)) -> str:
     data_str = str(data)
 
     if "string" in vartype.lower():
@@ -49,7 +49,7 @@ def gen_python_variable(data, name: str, vartype: str, options: list = ("const",
 
 # language specific code for Javascript
 
-def gen_js_array(data: list, name: str, vartype: str, options: list = ("const",)) -> str:
+def gen_js_array(data: list, name: str, vartype: str, options: Tuple[str] = ("const",)) -> str:
     if "const" in options:
         name = "const " + name
 
@@ -63,7 +63,7 @@ def gen_js_array(data: list, name: str, vartype: str, options: list = ("const",)
     return f"{name} = [" + ",".join(data_payload) + "];"
 
 
-def gen_js_variable(data, name: str, vartype: Optional[str] = None, options: list = ("const",)) -> str:
+def gen_js_variable(data, name: str, vartype: str, options: Tuple[str] = ("const",)) -> str:
     if "const" in options:
         name = "const " + name
 
@@ -90,7 +90,7 @@ def gen_array(data: list, name: str, vartype: str, options=("const",), lang='cpp
     raise RuntimeError(f"Language {lang} is not a supported lang for array generation")
 
 
-def gen_variable(data, name: str, vartype: Optional[str] = None, options=("const",), lang='cpp') -> str:
+def gen_variable(data, name: str, vartype: str, options=("const",), lang='cpp') -> str:
     if lang == 'cpp':
         return gen_cpp_variable(data, name, vartype, options=options)
 

@@ -1,4 +1,3 @@
-from typing import Optional
 
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution

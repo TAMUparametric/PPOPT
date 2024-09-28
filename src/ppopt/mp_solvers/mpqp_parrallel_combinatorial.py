@@ -1,10 +1,11 @@
-from src.ppopt.critical_region import CriticalRegion
 import time
 from random import shuffle
-from typing import List, Set, Tuple, Optional
+from typing import List, Optional, Set, Tuple
 
 # noinspection PyProtectedMember
 from pathos.multiprocessing import ProcessingPool as Pool
+
+from src.ppopt.critical_region import CriticalRegion
 
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution

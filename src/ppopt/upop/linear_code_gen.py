@@ -1,6 +1,5 @@
 import copy
 from datetime import datetime
-from typing import List
 
 import numpy
 import scipy.io as sio
@@ -133,7 +132,7 @@ def generate_code_cpp(solution: Solution, float_type: str = 'float') -> str:
     return cpp_upop.replace("<==PayloadHere==>", inset_data)
 
 
-def generate_code_js(solution: Solution) -> List[str]:
+def generate_code_js(solution: Solution) -> str:
     """
     Generates Javascript code for point location and function evaluation for Scripting Engines and IOT servers \n
 

@@ -1,4 +1,4 @@
-from typing import List, Set, Tuple, Optional
+from typing import List, Optional, Set, Tuple
 
 # noinspection PyProtectedMember
 from pathos.multiprocessing import ProcessingPool as Pool
