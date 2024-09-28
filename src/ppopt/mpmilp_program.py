@@ -41,9 +41,9 @@ class MPMILP_Program(MPLP_Program):
     c_t: numpy.ndarray
     Q_t: numpy.ndarray
 
-    equality_indices: Union[List[int], numpy.ndarray]
+    equality_indices: List[int]
 
-    binary_indices: Union[List[int], numpy.ndarray]
+    binary_indices: List[int]
     cont_indices: List[int]
 
     solver: Solver = Solver()

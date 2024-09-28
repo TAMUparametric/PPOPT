@@ -98,9 +98,11 @@ def solve(program: MPQP_Program, initial_active_sets: Optional[List[List[int]]] 
     """
     if initial_active_sets is None:
         initial_active_sets = [program.gen_optimal_active_set()]
-        print(f'Using a found active set {initial_active_sets[-1]}')
 
-    # initial_region = gen_cr_from_active_set(program, initial_active_sets[-1], check_full_dim=False)
+        if initial_active_sets[-1] is None:
+            raise ValueError('No Active Sets Found')
+
+        print(f'Using a found active set {initial_active_sets[-1]}')
 
     if num_cores == -1:
         num_cores = num_cpu_cores()

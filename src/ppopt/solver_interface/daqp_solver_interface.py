@@ -1,10 +1,9 @@
 from typing import Optional, Sequence
+from ctypes import c_double, c_int
 
 import numpy
 
 try:
-    from ctypes import c_double, c_int
-
     import daqp
 except ImportError:
     pass

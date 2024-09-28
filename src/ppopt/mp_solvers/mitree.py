@@ -176,7 +176,7 @@ class MITree:
                 min_rows.append(constraint_index)
 
             # in the case that something went wrong with the max step just skip
-            if sol_obj_min is not None:
+            if sol_obj_max is not None:
                 max_vals.append(-sol_obj_max.obj)
                 max_rows.append(constraint_index)
 

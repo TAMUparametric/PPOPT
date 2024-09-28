@@ -31,7 +31,7 @@ class MPMIQP_Program(MPMILP_Program):
                  A_t: numpy.ndarray,
                  b_t: numpy.ndarray, F: numpy.ndarray, binary_indices: List, c_c: Optional[numpy.ndarray] = None,
                  c_t: Optional[numpy.ndarray] = None, Q_t: Optional[numpy.ndarray] = None,
-                 equality_indices=None, solver: Solver = None, post_process=True):
+                 equality_indices:Optional[List[int]]=None, solver: Optional[Solver] = None, post_process:bool=True):
         """Initialized the MPMIQP_Program."""
         # calls MPMILP_Program's constructor to reduce out burden
 

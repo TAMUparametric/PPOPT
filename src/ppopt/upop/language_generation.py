@@ -1,5 +1,5 @@
 # language specific generation code for C++
-from typing import Tuple
+from typing import Optional, Tuple
 
 
 def gen_cpp_array(data: list, name: str, vartype: str, options: Tuple[str] = ("const",)) -> str:
@@ -77,7 +77,7 @@ def gen_js_variable(data, name: str, vartype: str, options: Tuple[str] = ("const
 
 # general code generation interface
 
-def gen_array(data: list, name: str, vartype: str, options=("const",), lang='cpp') -> str:
+def gen_array(data: list, name: str, vartype: str, options: Tuple[str] = ("const",), lang='cpp') -> str:
     if lang == 'cpp':
         return gen_cpp_array(data, name, vartype, options=options)
 
@@ -90,7 +90,7 @@ def gen_array(data: list, name: str, vartype: str, options=("const",), lang='cpp
     raise RuntimeError(f"Language {lang} is not a supported lang for array generation")
 
 
-def gen_variable(data, name: str, vartype: str, options=("const",), lang='cpp') -> str:
+def gen_variable(data, name: str, vartype: str, options: Tuple[str] = ("const",), lang='cpp') -> str:
     if lang == 'cpp':
         return gen_cpp_variable(data, name, vartype, options=options)
 

@@ -12,6 +12,7 @@ from ..utils.general_utils import make_column
 
 Matrix = Optional[numpy.ndarray]
 
+
 def solve_qp_quadprog(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: numpy.ndarray,
                       equality_constraints: Optional[Sequence[int]] = None, verbose=False,
                       get_duals: bool = True) -> Optional[SolverOutput]:
@@ -75,7 +76,8 @@ def solve_qp_quadprog(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: n
         slack = b - A @ make_column(x_star)
 
         non_zero_duals = numpy.where(lagrange != 0)[0]
-        active_set = numpy.array([i for i in range(num_constraints) if i in non_zero_duals or i in equality_constraints])
+        active_set = numpy.array(
+            [i for i in range(num_constraints) if i in non_zero_duals or i in equality_constraints])
 
         return SolverOutput(opt, x_star, slack.flatten(), numpy.array(active_set).astype('int64'), lagrange)
 
