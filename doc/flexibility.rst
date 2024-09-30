@@ -93,7 +93,7 @@ However, this is not generally a good way to validate that the process is flexib
         min_theta, max_theta = get_bounds_1d(cr.E, cr.f)
 
         # find the objective at the bounds
-        J_min = sol.evaluate_objective(numpy.array([[min_theta]]))
+        J_min = sol.evaluate_objective(numpy.array([[max_theta]]))
         J_max = sol.evaluate_objective(numpy.array([[min_theta]]))
 
         # return the largest objective
