@@ -107,14 +107,14 @@ With the explicit solution now in hand, we can evaluate the the gain of the cont
             \dots\\\
             A_J\theta + b_J\text{ if } \theta \in \Theta_J
         \end{cases}\\
-        \kappa_p &= \max_{j\in [0,\dots,J]}||K_j||_p
+        \kappa_p &= \max_{j\in [0,\dots,J]}||A_j||_p
     \end{align}
 
-Implementing this in code, we take the piece of the explicit solution relating to :math:`u_0(\theta)`, which here is just taking the row from the explicit solution relating to the initial input action. We can then compute :math:`\kappa_1`, which is equal to 1.61., directly from the explicit solution. Other :math:`\kappa_p` values can be computed by changing the norm that we are taking in the max function.
+Implementing this in code, we take the piece of the explicit solution relating to :math:`u_0(\theta)`, which here is just taking the row from the explicit solution relating to the initial input action. We can then compute :math:`\kappa_1`, which is equal to 1.61, directly from the explicit solution. Other :math:`\kappa_p` values can be computed by changing the norm that we are taking in the max function.
 
 .. code:: python
 
     # get the index of the variable from the modeler
-    idx = [_ for idx, v in enumerate(m.variables) if "u_[0]" == v.name]
+    idx = [idx for idx, v in enumerate(m.variables) if "u_[0]" == v.name]
     kappa_1 = max(numpy.linalg.norm(cr.A[idx],1), for cr in sol.critical_regions)
 
