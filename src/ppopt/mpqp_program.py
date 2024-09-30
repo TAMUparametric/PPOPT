@@ -34,7 +34,8 @@ class MPQP_Program(MPLP_Program):
         """Initialized the MPQP_Program."""
         # calls MPLP_Program's constructor to reduce out burden
         self.Q = Q
-        super(MPQP_Program, self).__init__(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices, solver, post_process = False)
+        super(MPQP_Program, self).__init__(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices, solver,
+                                           post_process=False)
 
         # assignees member variables
         self.constraint_datatype_conversion()
@@ -42,7 +43,7 @@ class MPQP_Program(MPLP_Program):
         if post_process:
             self.post_process()
 
-    def evaluate_objective(self, x, theta_point):
+    def evaluate_objective(self, x, theta_point) -> float:
         r"""
         Evaluates the objective of the multiparametric program. for a given x and θ.
 
@@ -53,7 +54,9 @@ class MPQP_Program(MPLP_Program):
         :param theta_point: θ input
         :return: Objective function evaluated at x, θ
         """
-        return 0.5 * x.T @ self.Q @ x + theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ theta_point
+        obj_val = 0.5 * x.T @ self.Q @ x + theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ theta_point
+
+        return float(obj_val[0, 0])
 
     def warnings(self) -> List[str]:
         """Checks the dimensions of the matrices to ensure consistency."""

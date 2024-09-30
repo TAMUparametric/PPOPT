@@ -85,10 +85,6 @@ class MPMILP_Program(MPLP_Program):
         # now we call the process constraints routine to polish the constraints before we move to solving
         self.process_constraints()
 
-    def evaluate_objective(self, x: numpy.ndarray, theta_point: numpy.ndarray):
-        """Evaluates the objective f(x,theta)"""
-        return theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ theta_point
-
     def process_constraints(self, find_implicit_equalities=True) -> None:
         """
         This is the constraint processing function for the mixed integer multiparametric case, this is separate from
