@@ -97,7 +97,7 @@ Now that the problem is formulated, we can solve it, we are going to be using on
     sol = solve_mpqp(prog, mpqp_algorithm.graph_parallel_exp)
 
 
-With the explicit solution now in hand, we can evaluate the the gain of the controller. It was shown in 'On the maximal controller gain in linear MPC' by Darun et al, that if we have a explicit solution that is a continuous piecewise affine function which is true for an mpMPC based on mpQP, then we can compute :math:`kappa_p` in a rather simple way.
+With the explicit solution now in hand, we can evaluate the the gain of the controller. It was shown in 'On the maximal controller gain in linear MPC' by Darun et al, that if we have a explicit solution that is a continuous piecewise affine function which is true for an mpMPC based on mpQP, then we can compute :math:`\kappa_p` in a rather simple way.
 
 .. math::
 
