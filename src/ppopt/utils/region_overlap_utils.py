@@ -154,7 +154,9 @@ def compute_objective_intersection_point(program: MPMILP_Program, cr_1: Critical
     deltaf_outer = f_2_upper - f_2_lower
     lower, upper = find_middle_bounds(cr_1, cr_2)
     delta = upper - lower
-    return (f_2_lower - f_1_lower) / (deltaf_1 - deltaf_outer) * delta + lower, f_1_lower < f_2_lower
+    intersection_point = (f_2_lower - f_1_lower) / (deltaf_1 - deltaf_outer) * delta + lower
+    expand_left_of_intersection = f_1_lower < f_2_lower # if the objective of cr_1 is lower to the left of the intersection, we want to expand cr_1 on the left
+    return intersection_point, expand_left_of_intersection
 
 
 def evaluate_objective_at_middle_bounds(program: MPMILP_Program, cr_1: CriticalRegion, cr_2: CriticalRegion) -> Tuple[
