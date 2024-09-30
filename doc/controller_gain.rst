@@ -1,14 +1,14 @@
 Maximal Controller Gain 
 =======================
 
-In some optimal control applications it can be beneficial to not just solve the optimal control problem (in this case a Model Predictive Control (MPC) problem), but also have a bound on the controller gain to verify robustness of a controller. In this example we will show how to compute the maximum gain of an MPC using PPOPT. Here we will use the an example 10.4.1 from the book 'Multi-Parametric Optimization and Control' by Pistikopoulos, Diangelakis, and Oberdieck.
+In some optimal control applications it can be beneficial to not just solve the optimal control problem, but also have a bound on the controller gain to verify robustness of a controller. In this example we will show how to compute the maximum gain of an MPC using PPOPT. Here we will use the an example 10.4.1 from the book 'Multi-Parametric Optimization and Control' by Pistikopoulos, Diangelakis, and Oberdieck.
 
 The maximum gain of a controller can be seen as the :math:`\kappa_p`, where :math:`\theta_1` and :math:`\theta_0` can be seen as realizations different process states, and :math:`u_0(\theta_1)` and :math:`u_0(\theta_0)` are the corresponding initial control actions that are applied at the first time stage of each MPC.
 
 .. math::
     || u_0(\theta_1) - u_0(\theta_0)||_p \leq \kappa_p ||\theta_1 - \theta_0||_p
 
-The mathematical description of the controller that we are looking at today. This is based on a state space model, with constraints on state, inputs, operational constraints, and a terminal set constraint. This considers 10 time steps into the future.
+The mathematical description of the controller that we are looking at today can be seen below. This is based on a state space model, with constraints on state, inputs, operational constraints, and a terminal set constraint. This considers 10 time steps into the future.
 
 .. math::
 
@@ -36,7 +36,7 @@ This multiparametric program can be modeled in PPOPT, with the ``MPModeler`` int
 
 .. code:: python
 
-        import numpy
+    import numpy
     from ppopt.mpmodel import MPModeler
 
     num_x = 2
@@ -97,7 +97,7 @@ Now that the problem is formulated, we can solve it, we are going to be using on
     sol = solve_mpqp(prog, mpqp_algorithm.graph_parallel_exp)
 
 
-With the explicit solution now in hand, we can evaluate the the gain of the controller. It was shown in 'On the maximal controller gain in linear MPC' by Darun et al. that if we have a explicit solution that is a continuous piecewise affine function which is true for an mpMPC based on mpQP, then we can compute :math:`kappa_p` in a simple way.
+With the explicit solution now in hand, we can evaluate the the gain of the controller. It was shown in 'On the maximal controller gain in linear MPC' by Darun et al, that if we have a explicit solution that is a continuous piecewise affine function which is true for an mpMPC based on mpQP, then we can compute :math:`kappa_p` in a rather simple way.
 
 .. math::
 
@@ -107,12 +107,14 @@ With the explicit solution now in hand, we can evaluate the the gain of the cont
             \dots\\\
             K_J\theta + b_J\text{ if } \theta \in \Theta_J
         \end{cases}\\
-        \kappa_p &= \max_{j\in J}||K_j||_p
+        \kappa_p &= \max_{j\in [0,\dots,J]}||K_j||_p
     \end{align}
 
-Implementing this in code, we take the piece of the explicit solution relating to :math:`u_0(\theta)`, which here is just taking the row from the explicit solution relating to the initial input action. We can then compute :math:`kappa_1`, which is equal to 1.61., directly from the explicit solution. Other :math:`\kappa_p` values can be computed by changing the norm that we are taking in the max function.
+Implementing this in code, we take the piece of the explicit solution relating to :math:`u_0(\theta)`, which here is just taking the row from the explicit solution relating to the initial input action. We can then compute :math:`\kappa_1`, which is equal to 1.61., directly from the explicit solution. Other :math:`\kappa_p` values can be computed by changing the norm that we are taking in the max function.
 
 .. code:: python
+
     # get the index of the variable from the modeler
     idx = [_ for idx, v in enumerate(m.variables) if "u_[0]" == v.name]
     kappa_1 = max(numpy.linalg.norm(cr.A[idx],1), for cr in sol.critical_regions)
+
