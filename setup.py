@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-__version__ = "1.6.5"
+__version__ = "1.6.6"
 
 short_desc = (
     "Extensible Multiparametric Solver in Python"
