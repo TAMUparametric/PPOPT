@@ -16,6 +16,7 @@ Tutorial
     control_allocation_example
     portfolio
     mpc
+    controller_gain
     flexibility
 
 
