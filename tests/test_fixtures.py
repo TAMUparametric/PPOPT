@@ -282,6 +282,12 @@ def portfolio_problem_analog():
 
 @pytest.fixture()
 def bard_mpMILP_adapted_degenerate():
+    """
+    This is adapted from the inner problem of the bilevel problem given on p. 246 of the book "Practical Bilevel Optimization" by J.F. Bard.
+    The upper level variable x is treated as a continuous parameter here.
+    Since at the time of implementation of this, PPOPT can't handle a pure mpILP, we add a dummy continuous variable z to the problem.
+    z is designed to not affect the objective, but as a result, the problem becomes degenerate.
+    """
 
     program_model = MPModeler()
 
@@ -314,6 +320,13 @@ def bard_mpMILP_adapted_degenerate():
 
 @pytest.fixture()
 def bard_mpMILP_adapted():
+    """
+    This is adapted from the inner problem of the bilevel problem given on p. 246 of the book "Practical Bilevel Optimization" by J.F. Bard.
+    The upper level variable x is treated as a parameter here.
+    Since at the time of implementation of this, PPOPT can't handle a pure mpILP, we add a dummy continuous variable z to the problem.
+    By adding z to the objective, we make the problem non-degenerate.
+    """
+
 
     program_model = MPModeler()
 
@@ -346,6 +359,14 @@ def bard_mpMILP_adapted():
 
 @pytest.fixture()
 def bard_mpMILP_adapted_2():
+    """
+    This is adapted from the inner problem of the bilevel problem given on p. 246 of the book "Practical Bilevel Optimization" by J.F. Bard.
+    The upper level variable x is treated as a parameter here.
+    Since at the time of implementation of this, PPOPT can't handle a pure mpILP, we add a dummy continuous variable z to the problem.
+    The RHS of the constraint x+2y <= 10 is changed to 15 to increase the feasible space, which causes the critical regions to have different properties from the original problem.
+    E.g., we can now have fully overlapping regions instead of just partially overlapping regions.
+    """
+
 
     program_model = MPModeler()
 
