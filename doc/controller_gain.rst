@@ -103,9 +103,9 @@ With the explicit solution now in hand, we can evaluate the the gain of the cont
 
     \begin{align}
         u_0(\theta) &= \begin{cases}
-            K_0\theta + b_0 \text{ if } \theta \in \Theta_0\\
+            A_0\theta + b_0 \text{ if } \theta \in \Theta_0\\
             \dots\\\
-            K_J\theta + b_J\text{ if } \theta \in \Theta_J
+            A_J\theta + b_J\text{ if } \theta \in \Theta_J
         \end{cases}\\
         \kappa_p &= \max_{j\in [0,\dots,J]}||K_j||_p
     \end{align}
