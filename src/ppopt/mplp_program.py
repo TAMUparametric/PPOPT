@@ -154,8 +154,9 @@ class MPLP_Program:
     def num_equality_constraints(self) -> int:
         return len(self.equality_indices)
 
-    def evaluate_objective(self, x: numpy.ndarray, theta_point: numpy.ndarray):
-        return theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ theta_point
+    def evaluate_objective(self, x: numpy.ndarray, theta_point: numpy.ndarray) -> float:
+        obj_val = theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ theta_point
+        return float(obj_val[0, 0])
 
     def warnings(self) -> List[str]:
         """Checks the dimensions of the matrices to ensure consistency."""

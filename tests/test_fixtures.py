@@ -12,6 +12,7 @@ from src.ppopt.mpmiqp_program import MPMIQP_Program
 from src.ppopt.mpqp_program import MPQP_Program
 from src.ppopt.solution import Solution
 from src.ppopt.utils.general_utils import make_column
+from src.ppopt.mpmodel import MPModeler, VariableType
 
 
 @pytest.fixture()
@@ -280,6 +281,123 @@ def portfolio_problem_analog():
     return program
 
 @pytest.fixture()
+def bard_mpMILP_adapted_degenerate():
+    """
+    This is adapted from the inner problem of the bilevel problem given on p. 246 of the book "Practical Bilevel Optimization" by J.F. Bard.
+    The upper level variable x is treated as a continuous parameter here.
+    Since at the time of implementation of this, PPOPT can't handle a pure mpILP, we add a dummy continuous variable z to the problem.
+    z is designed to not affect the objective, but as a result, the problem becomes degenerate.
+    """
+
+    program_model = MPModeler()
+
+    x = program_model.add_param(name='x')
+    y1 = program_model.add_var(name='y1', vtype=VariableType.binary)
+    y2 = program_model.add_var(name='y2', vtype=VariableType.binary)
+    y3 = program_model.add_var(name='y3', vtype=VariableType.binary)
+    z = program_model.add_var()
+
+    y = y1 + 2*y2 + 4*y3
+
+    program_model.add_constr(x >= 0)
+    program_model.add_constr(x <= 10)
+
+    program_model.add_constr(y <= 4)
+
+    program_model.add_constr(-25*x+20*y <= 30)
+    program_model.add_constr(x+2*y <= 10)
+    program_model.add_constr(2*x-y <= 15)
+    program_model.add_constr(2*x+10*y >= 15 + z)
+
+    program_model.add_constr(z >= 0)
+    program_model.add_constr(z <= 0.1)
+
+    program_model.set_objective(y)
+
+    program = program_model.formulate_problem()
+
+    return program
+
+@pytest.fixture()
+def bard_mpMILP_adapted():
+    """
+    This is adapted from the inner problem of the bilevel problem given on p. 246 of the book "Practical Bilevel Optimization" by J.F. Bard.
+    The upper level variable x is treated as a parameter here.
+    Since at the time of implementation of this, PPOPT can't handle a pure mpILP, we add a dummy continuous variable z to the problem.
+    By adding z to the objective, we make the problem non-degenerate.
+    """
+
+
+    program_model = MPModeler()
+
+    x = program_model.add_param(name='x')
+    y1 = program_model.add_var(name='y1', vtype=VariableType.binary)
+    y2 = program_model.add_var(name='y2', vtype=VariableType.binary)
+    y3 = program_model.add_var(name='y3', vtype=VariableType.binary)
+    z = program_model.add_var()
+
+    y = y1 + 2*y2 + 4*y3
+
+    program_model.add_constr(x >= 0)
+    program_model.add_constr(x <= 10)
+
+    program_model.add_constr(y <= 4)
+
+    program_model.add_constr(-25*x+20*y <= 30)
+    program_model.add_constr(x+2*y <= 10)
+    program_model.add_constr(2*x-y <= 15)
+    program_model.add_constr(2*x+10*y >= 15 + z)
+
+    program_model.add_constr(z >= 0)
+    program_model.add_constr(z <= 0.1)
+
+    program_model.set_objective(y + z)
+
+    program = program_model.formulate_problem()
+
+    return program
+
+@pytest.fixture()
+def bard_mpMILP_adapted_2():
+    """
+    This is adapted from the inner problem of the bilevel problem given on p. 246 of the book "Practical Bilevel Optimization" by J.F. Bard.
+    The upper level variable x is treated as a parameter here.
+    Since at the time of implementation of this, PPOPT can't handle a pure mpILP, we add a dummy continuous variable z to the problem.
+    The RHS of the constraint x+2y <= 10 is changed to 15 to increase the feasible space, which causes the critical regions to have different properties from the original problem.
+    E.g., we can now have fully overlapping regions instead of just partially overlapping regions.
+    """
+
+
+    program_model = MPModeler()
+
+    x = program_model.add_param(name='x')
+    y1 = program_model.add_var(name='y1', vtype=VariableType.binary)
+    y2 = program_model.add_var(name='y2', vtype=VariableType.binary)
+    y3 = program_model.add_var(name='y3', vtype=VariableType.binary)
+    z = program_model.add_var()
+
+    y = y1 + 2*y2 + 4*y3
+
+    program_model.add_constr(x >= 0)
+    program_model.add_constr(x <= 10)
+
+    program_model.add_constr(y <= 4)
+
+    program_model.add_constr(-25*x+20*y <= 30)
+    program_model.add_constr(x+2*y <= 15)
+    program_model.add_constr(2*x-y <= 15)
+    program_model.add_constr(2*x+10*y >= 15 + z)
+
+    program_model.add_constr(z >= 0)
+    program_model.add_constr(z <= 0.1)
+
+    program_model.set_objective(y)
+
+    program = program_model.formulate_problem()
+
+    return program
+
+@pytest.fixture()
 def non_negative_least_squares():
 
     N = 10
@@ -305,3 +423,19 @@ def non_negative_least_squares():
 
     return m.formulate_problem(process=False)
 
+@pytest.fixture()
+def mpMILP_1d():
+    m = MPModeler()
+    x = m.add_var()
+    y = m.add_var(vtype=VariableType.binary)
+    t = m.add_param()
+
+    m.add_constr(x >= 0)
+    m.add_constr(x + 50 * y >= t)
+    m.add_constr(x <= 100)
+    m.add_constr(t >= 0)
+    m.add_constr(t <= 100)
+
+    m.set_objective(x + 40*y)
+
+    return m.formulate_problem()

@@ -4,6 +4,7 @@ from pathos.multiprocessing import ProcessingPool as Pool
 from ..mpmilp_program import MPMILP_Program
 from ..solution import Solution
 from ..utils.general_utils import num_cpu_cores
+
 from .mitree import MITree
 from .solve_mpqp import mpqp_algorithm, solve_mpqp
 
@@ -49,5 +50,6 @@ def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
             sol.critical_regions[i].x_indices = program.cont_indices
         region_list.append(sol.critical_regions)
 
-    # this has the possibility for overlapping critical regions, so we set the overlapping flag
-    return Solution(program, [item for sublist in region_list for item in sublist], is_overlapping=True)
+    collected_regions = [item for sublist in region_list for item in sublist]
+
+    return Solution(program, collected_regions, is_overlapping=True)
