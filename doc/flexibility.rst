@@ -8,8 +8,8 @@ The general statement of Flexibility Analysis can be stated as follows. Where we
 .. math::
 
     \begin{align}
-        \Psi = \min_{z}\max_{j\in\mathcal{J}}\{\dots, f_j, \dots \}\\
-        \chi = \max_\theta \Psi(\theta)
+        \Psi &= \min_{z}\max_{j\in\mathcal{J}}\{\dots, f_j, \dots \}\\
+        \chi &= \max_\theta \Psi(\theta)
     \end{align}
 
 The lower level min-max problem can be reformulated into the following mathematical problem, where we have introduced an auxiliary variable :math:`u`. Where if for every realization of uncertainty :math:`\theta`, there are a control variables :math:`z` that allows us to satisfy :math:`u \leq 0` then we can say a process is flexible to this uncertainty.
