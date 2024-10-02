@@ -19,11 +19,13 @@ Here the covariance matrix and the return coefficients were generated from rando
 
 .. code-block:: python
 
+    import numpy
+
     numpy.random.seed(123456789)
     num_assets = 10
     S = numpy.random.randn(num_assets,num_assets)
     S = S@S.T / 10
-    mu = numpy.random.rand(num_assets)/100
+    mu = numpy.random.rand(num_assets)
 
 Here is the problem that we are going to be tackling in this tutorial. Some of the constraints have been noticeably modified. This is due to a standard preprocessing pass that ``ppopt`` runs. This modification increases numerical stability for ill-conditioned optimization problems but has nearly for the problem we are looking at in this example, as it is numerically well conditioned.
 
@@ -103,15 +105,43 @@ To plot the parametric solution of commodities that we should invest in as a fun
 
     parametric_plot_1D(sol)
 
-.. image:: port_soln.svg
+.. image:: port.svg
 
-That is fine an good an all, but typically we want to view how this effects the balance of risk and reward. Here we can see the classical shape of the risk-reward tradeoff. The pareto front of all portfolios is completely recovered and is algebraic form.
+Another way to look at this solution via a stackplot of the asset allocations. This can be done with the following code. This uses a color pallet from seaborn to make the plot more visually appealing.
+
+.. code-block:: python
+
+    from ppopt.utils.mpqp_utils import get_bounds_1d
+    import seaborn as sns
+
+
+    # get all of the bounds from each critical region
+    bounds = [bound for cr in sol.critical_regions for bound in get_bounds_1d(cr.E, cr.f)]
+
+    # sort them in order
+    bounds.sort()
+
+    # compute all portfolio positions at each boundary
+    positions = numpy.block([sol.evaluate(numpy.array([[bound]])) for bound in bounds])
+
+    col = sns.color_palette("husl", 10)
+    fig, ax = plt.subplots()
+    ax.stackplot(bounds, positions, labels = [f'w[{i}]' for i in range(num_assets)], colors=col, baseline='zero', edgecolor = 'black')
+    ax.legend(loc='upper left')
+    ax.set_title(r'Portfolio positions $w_i$ with different levels of return')
+    ax.set_xlabel(r'Expected Portfolio Return')
+
+
+.. image:: port_stack.svg
+
+
+We might also want to visualize the what the trade off between risk and reward. Here we can see the classical shape of the risk-reward tradeoff, e.g. the Markowitz Bullet. The pareto front of all portfolios is completely recovered and is algebraic form.
 
 .. code-block:: python
 
     import matplotlib.pyplot as plt
 
-    returns = numpy.linspace(min(mu)+ .00001,max(mu) - .000001,1000)
+    returns = numpy.linspace(min(mu),max(mu),1000)
     risk = numpy.array([sol.evaluate_objective(numpy.array([[x]])) for x in returns]).flatten()
 
     plt.title('Optimal risk v. return pareto front')
