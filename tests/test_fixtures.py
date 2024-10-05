@@ -3,7 +3,6 @@ import pytest
 from scipy.stats import random_correlation
 
 from src.ppopt.critical_region import CriticalRegion
-from src.ppopt.mpmodel import MPModeler
 from src.ppopt.mp_solvers.mpqp_combinatorial import CombinationTester
 from src.ppopt.mp_solvers.solve_mpqp import solve_mpqp
 from src.ppopt.mplp_program import MPLP_Program
@@ -238,6 +237,7 @@ def mpMILP_market_problem():
     milp_prog = MPMILP_Program(A, b, c, H, A_t, b_t, F, binary_indices)
     return milp_prog
 
+
 @pytest.fixture()
 def mpMIQP_market_problem():
     """Simple mpMIQP for Seatle-to-Topeka"""
@@ -258,9 +258,9 @@ def mpMIQP_market_problem():
     miqp_prog = MPMIQP_Program(A, b, c, H, Q, A_t, b_t, F, binary_indices)
     return miqp_prog
 
+
 @pytest.fixture()
 def portfolio_problem_analog():
-
     num_assets = 8
     S = numpy.diag([i + 1 for i in range(num_assets)])
     mu = [0.09551451, 0.00317183, 0.06799116, 0.12334409, 0.10235298, 0.0754139, 0.00730871, 0.11324299]
@@ -280,6 +280,7 @@ def portfolio_problem_analog():
 
     return program
 
+
 @pytest.fixture()
 def bard_mpMILP_adapted_degenerate():
     """
@@ -297,17 +298,17 @@ def bard_mpMILP_adapted_degenerate():
     y3 = program_model.add_var(name='y3', vtype=VariableType.binary)
     z = program_model.add_var()
 
-    y = y1 + 2*y2 + 4*y3
+    y = y1 + 2 * y2 + 4 * y3
 
     program_model.add_constr(x >= 0)
     program_model.add_constr(x <= 10)
 
     program_model.add_constr(y <= 4)
 
-    program_model.add_constr(-25*x+20*y <= 30)
-    program_model.add_constr(x+2*y <= 10)
-    program_model.add_constr(2*x-y <= 15)
-    program_model.add_constr(2*x+10*y >= 15 + z)
+    program_model.add_constr(-25 * x + 20 * y <= 30)
+    program_model.add_constr(x + 2 * y <= 10)
+    program_model.add_constr(2 * x - y <= 15)
+    program_model.add_constr(2 * x + 10 * y >= 15 + z)
 
     program_model.add_constr(z >= 0)
     program_model.add_constr(z <= 0.1)
@@ -318,6 +319,7 @@ def bard_mpMILP_adapted_degenerate():
 
     return program
 
+
 @pytest.fixture()
 def bard_mpMILP_adapted():
     """
@@ -327,7 +329,6 @@ def bard_mpMILP_adapted():
     By adding z to the objective, we make the problem non-degenerate.
     """
 
-
     program_model = MPModeler()
 
     x = program_model.add_param(name='x')
@@ -336,17 +337,17 @@ def bard_mpMILP_adapted():
     y3 = program_model.add_var(name='y3', vtype=VariableType.binary)
     z = program_model.add_var()
 
-    y = y1 + 2*y2 + 4*y3
+    y = y1 + 2 * y2 + 4 * y3
 
     program_model.add_constr(x >= 0)
     program_model.add_constr(x <= 10)
 
     program_model.add_constr(y <= 4)
 
-    program_model.add_constr(-25*x+20*y <= 30)
-    program_model.add_constr(x+2*y <= 10)
-    program_model.add_constr(2*x-y <= 15)
-    program_model.add_constr(2*x+10*y >= 15 + z)
+    program_model.add_constr(-25 * x + 20 * y <= 30)
+    program_model.add_constr(x + 2 * y <= 10)
+    program_model.add_constr(2 * x - y <= 15)
+    program_model.add_constr(2 * x + 10 * y >= 15 + z)
 
     program_model.add_constr(z >= 0)
     program_model.add_constr(z <= 0.1)
@@ -356,6 +357,7 @@ def bard_mpMILP_adapted():
     program = program_model.formulate_problem()
 
     return program
+
 
 @pytest.fixture()
 def bard_mpMILP_adapted_2():
@@ -367,7 +369,6 @@ def bard_mpMILP_adapted_2():
     E.g., we can now have fully overlapping regions instead of just partially overlapping regions.
     """
 
-
     program_model = MPModeler()
 
     x = program_model.add_param(name='x')
@@ -376,17 +377,17 @@ def bard_mpMILP_adapted_2():
     y3 = program_model.add_var(name='y3', vtype=VariableType.binary)
     z = program_model.add_var()
 
-    y = y1 + 2*y2 + 4*y3
+    y = y1 + 2 * y2 + 4 * y3
 
     program_model.add_constr(x >= 0)
     program_model.add_constr(x <= 10)
 
     program_model.add_constr(y <= 4)
 
-    program_model.add_constr(-25*x+20*y <= 30)
-    program_model.add_constr(x+2*y <= 15)
-    program_model.add_constr(2*x-y <= 15)
-    program_model.add_constr(2*x+10*y >= 15 + z)
+    program_model.add_constr(-25 * x + 20 * y <= 30)
+    program_model.add_constr(x + 2 * y <= 15)
+    program_model.add_constr(2 * x - y <= 15)
+    program_model.add_constr(2 * x + 10 * y >= 15 + z)
 
     program_model.add_constr(z >= 0)
     program_model.add_constr(z <= 0.1)
@@ -397,9 +398,9 @@ def bard_mpMILP_adapted_2():
 
     return program
 
+
 @pytest.fixture()
 def non_negative_least_squares():
-
     N = 10
     numpy.random.seed(123)
     rng = numpy.random.default_rng(seed=123)
@@ -423,6 +424,7 @@ def non_negative_least_squares():
 
     return m.formulate_problem(process=False)
 
+
 @pytest.fixture()
 def mpMILP_1d():
     m = MPModeler()
@@ -436,6 +438,37 @@ def mpMILP_1d():
     m.add_constr(t >= 0)
     m.add_constr(t <= 100)
 
-    m.set_objective(x + 40*y)
+    m.set_objective(x + 40 * y)
+
+    return m.formulate_problem()
+
+
+@pytest.fixture()
+def acevedo_mpmilp():
+    """
+    This is a MP-MILP problem from the paper "An algorithm for multiparametric mixed-integer linear programming
+    problems" by Acevedo et al. 1998, Example 1
+    """
+
+    m = MPModeler()
+    x = {i: m.add_var(name=f'x_[{i}]') for i in range(1, 3)}
+    y = {i: m.add_var(name=f'y_[{i}]', vtype=VariableType.binary) for i in range(1, 3)}
+    t = {i: m.add_param(name = f't_[{i}]') for i in range(1, 4)}
+
+    # cost function
+    m.set_objective(-3*x[1] - 2*x[2] + 10*y[1] + 5*y[2])
+
+    m.add_constr(x[1] <= 10 + t[1] + 2 * t[2])
+    m.add_constr(x[2] <= 10 - t[1] - t[2])
+
+    m.add_constr(x[1] + x[2] <= 20 + t[1] - t[3])
+    m.add_constr(x[1] <= 20 * y[1])
+    m.add_constr(x[2] <= 20 * y[2])
+    m.add_constr(-x[1] + x[2] >= 4 - t[3])
+    m.add_constr(y[1] + y[2] >= 1)
+
+    m.add_constrs(t[i] >= 0 for i in range(1, 4))
+    m.add_constrs(t[i] <= 5 for i in range(1, 4))
+    m.add_constrs(x[i] >= 0 for i in range(1, 3))
 
     return m.formulate_problem()

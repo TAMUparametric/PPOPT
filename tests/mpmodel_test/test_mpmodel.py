@@ -148,7 +148,7 @@ def test_simple_mpMILP_modeler():
 
     mpmilp.solver.solvers['lp'] = 'glpk'
 
-    sol = solve_mpmiqp(mpmilp)
+    sol = solve_mpmiqp(mpmilp, num_cores=1)
 
 
 def test_simple_mpMIQP_modeler():
@@ -176,7 +176,7 @@ def test_simple_mpMIQP_modeler():
 
     mpmilp.solver.solvers['lp'] = 'glpk'
 
-    sol = solve_mpmiqp(mpmilp)
+    sol = solve_mpmiqp(mpmilp, num_cores=1)
 
 
 def test_simple_mpMIQP_H_modeler():
@@ -198,14 +198,16 @@ def test_simple_mpMIQP_H_modeler():
     model.add_constr(theta <= 2)
     model.add_constr(theta >= -2)
 
-    model.set_objective(-3 * x_0 + theta**2 + theta + x_0 ** 2 + y_1 ** 2 + y_2 ** 2 + theta * x_0 + theta * y_1 + theta * y_2 + x_0*theta)
+    model.set_objective(
+        -3 * x_0 + theta ** 2 + theta + x_0 ** 2 + y_1 ** 2 + y_2 ** 2 + theta * x_0 + theta * y_1 + theta * y_2 + x_0 * theta)
 
     mpmilp = model.formulate_problem()
 
     mpmilp.solver.solvers['lp'] = 'glpk'
     mpmilp.solver.solvers['qp'] = 'daqp'
 
-    sol = solve_mpmiqp(mpmilp)
+    sol = solve_mpmiqp(mpmilp, num_cores=1)
+
 
 def test_assigment_problem():
     model = MPModeler()
