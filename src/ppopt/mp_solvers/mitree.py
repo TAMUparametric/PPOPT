@@ -35,7 +35,7 @@ class MITree:
         :param depth: the depth of this node in the tree
         """
 
-        self.problem = copy.copy(problem)
+        self.problem = problem
         self.depth = depth
         self.bin_indices = problem.binary_indices
 
