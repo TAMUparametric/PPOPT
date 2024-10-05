@@ -139,7 +139,7 @@ class MPMILP_Program(MPLP_Program):
             if sol is not None:
                 saved_indices.append(i + self.num_equality_constraints())
 
-        saved_upper = [i for i in saved_indices if i < self.A.shape[0]]
+        saved_upper = [*self.equality_indices, *[i for i in saved_indices if i < self.A.shape[0]]]
 
         self.A = self.A[saved_upper]
         self.F = self.F[saved_upper]
