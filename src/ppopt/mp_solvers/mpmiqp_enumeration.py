@@ -33,17 +33,19 @@ def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
     # grab all feasible binary combinations
     feasible_combinations = [leaf_nodes.fixed_bins for leaf_nodes in tree.get_full_leafs()]
 
-    # generate all substituted problems from these binary combinations to make continuous sub-problems
-    problems = [program.generate_substituted_problem(fixed_bins) for fixed_bins in feasible_combinations]
-
-    # if we only use one core, then we simply solve the problems in sequence otherwise we use of parallel processing
     sols = []
 
+    # if we only use one core, then we simply solve the problems in sequence otherwise we use of parallel processing
     if num_cores == 1:
+        # generate all substituted problems from these binary combinations to make continuous sub-problems
+        problems = [program.generate_substituted_problem(fixed_bins) for fixed_bins in feasible_combinations]
+
         sols = [solve_mpqp(x, cont_algorithm) for x in problems]
     else:
+        # generate all substituted problems from these binary combinations to make continuous sub-problems
+
         pool = Pool(num_cores)
-        sols = list(pool.map(lambda x: solve_mpqp(x, cont_algorithm), problems))
+        sols = list(pool.map(lambda x: solve_mpqp(program.generate_substituted_problem(x), cont_algorithm), feasible_combinations))
 
     # add the fixed binary values to the critical regions
     region_list = []
