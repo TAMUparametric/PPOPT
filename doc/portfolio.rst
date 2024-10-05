@@ -132,7 +132,7 @@ Another way to look at this solution via a stackplot of the asset allocations. T
     ax.set_xlabel(r'Expected Portfolio Return')
 
 
-.. image:: port_stack.svg
+.. image:: port_comp.svg
 
 
 We might also want to visualize the what the trade off between risk and reward. Here we can see the classical shape of the risk-reward tradeoff, e.g. the Markowitz Bullet. The pareto front of all portfolios is completely recovered and is algebraic form.
