@@ -95,5 +95,4 @@ class MPMIQP_Program(MPMILP_Program):
 
         sub_problem = MPQP_Program(A_cont, b, c, H_c, Q_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, equality_set,
                                    self.solver)
-        sub_problem.process_constraints()
         return sub_problem

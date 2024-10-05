@@ -66,9 +66,6 @@ class MITree:
             self.left = None
             self.right = None
 
-            if self.depth == len(self.bin_indices):
-                self.problem.process_constraints()
-                # pass
 
     def count_nodes(self) -> int:
         """
