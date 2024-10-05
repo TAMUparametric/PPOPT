@@ -36,9 +36,14 @@ def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
     # generate all substituted problems from these binary combinations to make continuous sub-problems
     problems = [program.generate_substituted_problem(fixed_bins) for fixed_bins in feasible_combinations]
 
-    # make a thread pool then solve all problems in parallel with the supplied continuous algorithm
-    pool = Pool(num_cores)
-    sols = list(pool.map(lambda x: solve_mpqp(x, cont_algorithm), problems))
+    # if we only use one core, then we simply solve the problems in sequence otherwise we use of parallel processing
+    sols = []
+
+    if num_cores == 1:
+        sols = [solve_mpqp(x, cont_algorithm) for x in problems]
+    else:
+        pool = Pool(num_cores)
+        sols = list(pool.map(lambda x: solve_mpqp(x, cont_algorithm), problems))
 
     # add the fixed binary values to the critical regions
     region_list = []

@@ -92,6 +92,10 @@ def identify_overlaps_1d(program: MPMILP_Program, regions: List[CriticalRegion])
     # purge
     regions = [cr for cr in regions if cr not in to_remove]
 
+    # remove numerically nil regions
+    region_bounds = [get_bounds_1d(cr.E, cr.f) for cr in regions]
+    regions = [ cr for cr, bounds in zip(regions, region_bounds) if abs(bounds[0]- bounds[1]) > 1e-8]
+
     return possible_dual_degeneracy, regions
 
 def adjust_fully_overlapping_regions(program: MPMILP_Program, new_regions: List[CriticalRegion], inner_region: CriticalRegion, outer_region: CriticalRegion) -> Tuple[List[CriticalRegion], CriticalRegion, CriticalRegion]:

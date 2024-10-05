@@ -35,7 +35,7 @@ class MITree:
         :param depth: the depth of this node in the tree
         """
 
-        self.problem = copy.copy(problem)
+        self.problem = problem
         self.depth = depth
         self.bin_indices = problem.binary_indices
 
@@ -66,9 +66,6 @@ class MITree:
             self.left = None
             self.right = None
 
-            if self.depth == len(self.bin_indices):
-                self.problem.process_constraints()
-                # pass
 
     def count_nodes(self) -> int:
         """
