@@ -193,8 +193,13 @@ class MPMILP_Program(MPLP_Program):
         :param deterministic_solver:
         :return:
         """
-        return self.solver.solve_milp(self.c + self.H @ theta_point, self.A, self.b + self.F @ theta_point,
+        soln = self.solver.solve_milp(self.c + self.H @ theta_point, self.A, self.b + self.F @ theta_point,
                                       self.equality_indices, self.binary_indices)
+        if soln is not None:
+            const_term = self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ theta_point
+            soln.obj += float(const_term[0, 0])
+
+        return soln
 
     def check_bin_feasibility(self, partial_fixed_bins: Optional[List] = None) -> bool:
         """

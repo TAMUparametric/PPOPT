@@ -5,6 +5,7 @@ import numpy
 from .mpmilp_program import MPMILP_Program
 from .mpqp_program import MPQP_Program
 from .solver import Solver
+from .solver_interface.solver_interface_utils import SolverOutput
 
 
 class MPMIQP_Program(MPMILP_Program):
@@ -49,6 +50,22 @@ class MPMIQP_Program(MPMILP_Program):
         """Evaluates the objective f(x,theta)"""
         obj_val = 0.5 * x.T @ self.Q @ x + theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ theta_point
         return float(obj_val[0, 0])
+
+    def solve_theta(self, theta_point: numpy.ndarray) -> Optional[SolverOutput]:
+        """
+        Solves the substituted problem,with the provided theta
+
+        :param theta_point:
+        :param deterministic_solver:
+        :return:
+        """
+        soln = self.solver.solve_miqp(self.Q, self.c + self.H @ theta_point, self.A, self.b + self.F @ theta_point,
+                                      self.equality_indices, self.binary_indices)
+        if soln is not None:
+            const_term = self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ theta_point
+            soln.obj += float(const_term[0,0])
+
+        return soln
 
     def generate_substituted_problem(self, fixed_combination: Union[numpy.ndarray, List[int]]):
         """
