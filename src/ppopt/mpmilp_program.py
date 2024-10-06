@@ -139,7 +139,7 @@ class MPMILP_Program(MPLP_Program):
             if sol is not None:
                 saved_indices.append(i + self.num_equality_constraints())
 
-        saved_upper = [i for i in saved_indices if i < self.A.shape[0]]
+        saved_upper = [*self.equality_indices, *[i for i in saved_indices if i < self.A.shape[0]]]
 
         self.A = self.A[saved_upper]
         self.F = self.F[saved_upper]
@@ -180,7 +180,7 @@ class MPMILP_Program(MPLP_Program):
         H_c = self.H[self.cont_indices]
         H_d = self.H[self.binary_indices]
 
-        c_t = self.c_t + fixed_combination.T @ H_d
+        c_t = self.c_t + (fixed_combination.T @ H_d).T
 
         sub_problem = MPLP_Program(A_cont, b, c, H_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, equality_set, self.solver)
         return sub_problem
@@ -193,8 +193,13 @@ class MPMILP_Program(MPLP_Program):
         :param deterministic_solver:
         :return:
         """
-        return self.solver.solve_milp(self.c + self.H @ theta_point, self.A, self.b + self.F @ theta_point,
+        soln = self.solver.solve_milp(self.c + self.H @ theta_point, self.A, self.b + self.F @ theta_point,
                                       self.equality_indices, self.binary_indices)
+        if soln is not None:
+            const_term = self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ theta_point
+            soln.obj += float(const_term[0, 0])
+
+        return soln
 
     def check_bin_feasibility(self, partial_fixed_bins: Optional[List] = None) -> bool:
         """

@@ -3,9 +3,9 @@ import numpy
 
 from src.ppopt.mp_solvers.solve_mpmiqp import solve_mpmiqp
 from src.ppopt.mp_solvers.solve_mpqp import mpqp_algorithm
-from src.ppopt.mpmilp_program import MPMILP_Program
 from tests.test_fixtures import simple_mpMILP, simple_mpMIQP, mpMILP_market_problem, mpMIQP_market_problem, \
-    bard_mpMILP_adapted, bard_mpMILP_adapted_2, bard_mpMILP_adapted_degenerate, mpMILP_1d, acevedo_mpmilp
+    bard_mpMILP_adapted, bard_mpMILP_adapted_2, bard_mpMILP_adapted_degenerate, mpMILP_1d, acevedo_mpmilp, \
+    pappas_multi_objective
 from src.ppopt.utils.mpqp_utils import get_bounds_1d
 
 
@@ -127,7 +127,6 @@ def test_small_mpmilp_1d(mpMILP_1d):
 
 
 def test_acevedo_mpmilp(acevedo_mpmilp):
-
     # for small problems the cost of running the parallel pool is higher than the cost of solving the problem serially
     sol = solve_mpmiqp(acevedo_mpmilp, num_cores=1)
 
@@ -137,3 +136,8 @@ def test_acevedo_mpmilp(acevedo_mpmilp):
     assert (numpy.allclose(sol.evaluate(theta_point).flatten(), det_sol.sol))
     assert (numpy.allclose(sol.evaluate_objective(theta_point), det_sol.obj))
 
+
+def test_pappas_mpmilp(pappas_multi_objective):
+    sol = solve_mpmiqp(pappas_multi_objective, num_cores=1)
+
+    assert (len(sol) == 3)

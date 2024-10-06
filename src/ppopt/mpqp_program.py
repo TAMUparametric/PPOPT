@@ -145,7 +145,7 @@ class MPQP_Program(MPLP_Program):
 
     def optimal_control_law(self, active_set: List[int]) -> Tuple:
         r"""
-        This function calculates the optimal control law corresponding to an active set combination. This is effectivley
+        This function calculates the optimal control law corresponding to an active set combination. This is effectively
         just manipulating the stationarity conditions and active constraints for x, and λ
 
         .. math::

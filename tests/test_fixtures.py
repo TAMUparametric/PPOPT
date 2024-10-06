@@ -453,10 +453,10 @@ def acevedo_mpmilp():
     m = MPModeler()
     x = {i: m.add_var(name=f'x_[{i}]') for i in range(1, 3)}
     y = {i: m.add_var(name=f'y_[{i}]', vtype=VariableType.binary) for i in range(1, 3)}
-    t = {i: m.add_param(name = f't_[{i}]') for i in range(1, 4)}
+    t = {i: m.add_param(name=f't_[{i}]') for i in range(1, 4)}
 
     # cost function
-    m.set_objective(-3*x[1] - 2*x[2] + 10*y[1] + 5*y[2])
+    m.set_objective(-3 * x[1] - 2 * x[2] + 10 * y[1] + 5 * y[2])
 
     m.add_constr(x[1] <= 10 + t[1] + 2 * t[2])
     m.add_constr(x[2] <= 10 - t[1] - t[2])
@@ -470,5 +470,35 @@ def acevedo_mpmilp():
     m.add_constrs(t[i] >= 0 for i in range(1, 4))
     m.add_constrs(t[i] <= 5 for i in range(1, 4))
     m.add_constrs(x[i] >= 0 for i in range(1, 3))
+
+    return m.formulate_problem()
+
+@pytest.fixture()
+def pappas_multi_objective():
+    """
+    This is a MP-MILP problem from the paper "Multiobjective Optimization of Mixed-Integer Linear Programming
+    Problems: A Multiparametric Optimization Approach" by Pappas et al. 2021, the numerical example in section 3.
+    """
+
+    m = MPModeler()
+    x = {i: m.add_var(name=f'x_[{i}]') for i in range(1, 3)}
+    y = {i: m.add_var(name=f'y_[{i}]', vtype=VariableType.binary) for i in range(1, 3)}
+    e = m.add_param(name=f'e')
+
+    # cost function
+    m.set_objective(0.2 * x[1] - 0.48 * x[2] - 55 * y[1] - 20.7 * y[2])
+
+    # constraints
+    m.add_constr(11.01* x[1] + 0.49*x[2] + 52.4*y[1] + 24.8*y[2] <= e)
+    m.add_constr(0.07*x[1] - x[2] <= 1.78)
+
+    m.add_constr(-0.87*x[1] - 0.5*x[2] + 0.02*y[1] <= 0.05)
+    m.add_constr(y[1] + y[2] <= 1)
+
+    m.add_constr(e >= 0)
+    m.add_constr(e <= 101.4)
+
+    m.add_constrs(x[i] >= 0 for i in range(1, 3))
+    m.add_constrs(x[i] <= 100 for i in range(1, 3))
 
     return m.formulate_problem()
