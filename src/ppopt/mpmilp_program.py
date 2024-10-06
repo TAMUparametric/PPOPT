@@ -180,7 +180,7 @@ class MPMILP_Program(MPLP_Program):
         H_c = self.H[self.cont_indices]
         H_d = self.H[self.binary_indices]
 
-        c_t = self.c_t + fixed_combination.T @ H_d
+        c_t = self.c_t + (fixed_combination.T @ H_d).T
 
         sub_problem = MPLP_Program(A_cont, b, c, H_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, equality_set, self.solver)
         return sub_problem

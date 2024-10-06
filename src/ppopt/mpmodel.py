@@ -508,10 +508,10 @@ class MPModeler:
         # fill in the objective matrices
         for var, coeff in self.objective.linear_coeffs.items():
             if var.is_var():
-                c[var.var_id] = coeff
+                c[var.var_id] += coeff
 
             if var.is_param():
-                c_t[var.var_id] = coeff
+                c_t[var.var_id] += coeff
 
         for (v1, v2), coeff in self.objective.quad_coeffs.items():
 
@@ -522,7 +522,8 @@ class MPModeler:
 
             # if the quadratic term is between two parameters add it to the Q_t matrix
             if v1.is_param() and v2.is_param():
-                Q_t[v1.var_id, v2.var_id] = coeff
+                Q_t[v1.var_id, v2.var_id] += 0.5 * coeff
+                Q_t[v2.var_id, v1.var_id] += 0.5 * coeff
 
             # if the quadratic term is between a variable and a parameter add it to the H matrix
             if v1.is_var() and v2.is_param():
