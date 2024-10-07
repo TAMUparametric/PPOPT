@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-__version__ = "1.6.6"
+__version__ = "1.6.7"
 
 short_desc = (
     "Extensible Multiparametric Solver in Python"
@@ -20,7 +20,7 @@ setup(
     license='MIT',
     url='https://github.com/TAMUparametric/PPOPT',
     extras_require={
-        'test': ['pytest'],
+        'test': ['pytest', 'cvxopt', 'quadprog'],
         'optional': ['cvxopt', 'quadprog'],
     },
     install_requires=["numpy",
