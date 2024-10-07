@@ -163,28 +163,37 @@ class MPQP_Program(MPLP_Program):
 
         :param active_set: an active set combination
         :return: a tuple of the optimal x* and λ* functions in the following form(A_x, b_x, A_l, b_l)
-
-
         """
-        # Q*x + H*theta + A[AS].T*lambda + c = 0
-        # x = H_tilde*theta + A_tilde*lambda + c_tilde
-        H_tilde = -numpy.linalg.solve(self.Q, self.H)
-        A_tilde = -numpy.linalg.solve(self.Q, self.A[active_set].T)
-        c_tilde = -numpy.linalg.solve(self.Q, self.c)
 
-        # A[AS] @ x = b[AS] + F[AS]*theta
-        # A[AS] @ (H_tilde*theta + A_tilde*lambda + c_tilde) = b[AS] + F[AS]*theta
-        # A[AS]@A_tilde*lambda = b[AS] - A[AS]*c_tilde + (F[AS] - A[AS]*H_tilde)*theta
+        # if x = A*theta + b & l = C*theta + d then the stat. conditions and the primal conditions become the following
+        # Q*x + H*theta + A[AS].T*lambda + c = 0 -> Q(A theta + b) + H theta + A[AS].T(C theta + d) + c = 0
+        # A[AS]x = b[AS] + F[AS] -> A[AS](A theta + b) = b[AS] + F[AS]
+        #
+        # If we separate terms e.g. constants cant effect theta terms and vise versa we get the following linear
+        # equations
 
-        lagrange_mat = self.A[active_set]@A_tilde
+        # [A[AS]   0   ] [b] = [b[AS]]
+        # [Q    A[AS].T] [d] = [ -c  ]
+        #
+        # [A[AS]   0   ] [A] = [F[AS]]
+        # [Q    A[AS].T] [C] = [ -H  ]
 
-        lagrange_b = numpy.linalg.solve(lagrange_mat, self.b[active_set] - self.A[active_set]@c_tilde)
-        lagrange_A = numpy.linalg.solve(lagrange_mat, self.F[active_set] - self.A[active_set]@H_tilde)
+        # set up the LHS matrix
+        A_hat = self.A[active_set]
+        zeros = numpy.zeros((len(active_set),len(active_set)))
+        M_mat = numpy.block([[A_hat,zeros], [self.Q, A_hat.T]])
 
-        # x = H_tilde*theta + A_tilde * lambda + c_tilde
-        # x = H_tilde*theta + A_tilde * (lagrange_A theta + lagrange_b) + c_tilde
-        parameter_A = H_tilde + A_tilde@lagrange_A
-        parameter_b = A_tilde@lagrange_b + c_tilde
+        # solve the equation for the constant terms b, d
+        consts = numpy.linalg.solve(M_mat, numpy.block([[self.b[active_set]], [-self.c]]))
+
+        # solve the equation for the theta terms A, C
+        mats = numpy.linalg.solve(M_mat, numpy.block([[self.F[active_set]], [-self.H]]))
+
+        parameter_A = mats[:self.num_x()]
+        parameter_b = consts[:self.num_x()]
+
+        lagrange_A = mats[self.num_x():]
+        lagrange_b = consts[self.num_x():]
 
         return parameter_A, parameter_b, lagrange_A, lagrange_b
 
