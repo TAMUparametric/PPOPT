@@ -166,18 +166,25 @@ class MPQP_Program(MPLP_Program):
 
 
         """
+        # Q*x + H*theta + A[AS].T*lambda + c = 0
+        # x = H_tilde*theta + A_tilde*lambda + c_tilde
+        H_tilde = -numpy.linalg.solve(self.Q, self.H)
+        A_tilde = -numpy.linalg.solve(self.Q, self.A[active_set].T)
+        c_tilde = -numpy.linalg.solve(self.Q, self.c)
 
-        inverse_Q = numpy.linalg.pinv(self.Q)
-        aux = self.A[active_set] @ inverse_Q
-        auxinv = numpy.linalg.pinv(aux @ self.A[active_set].T)
+        # A[AS] @ x = b[AS] + F[AS]*theta
+        # A[AS] @ (H_tilde*theta + A_tilde*lambda + c_tilde) = b[AS] + F[AS]*theta
+        # A[AS]@A_tilde*lambda = b[AS] - A[AS]*c_tilde + (F[AS] - A[AS]*H_tilde)*theta
 
-        lagrange_A = -auxinv @ (aux @ self.H + self.F[active_set])
-        lagrange_b = -auxinv @ (self.b[active_set] + aux @ self.c)
+        lagrange_mat = self.A[active_set]@A_tilde
 
-        aux = inverse_Q @ self.A[active_set].T
+        lagrange_b = numpy.linalg.solve(lagrange_mat, self.b[active_set] - self.A[active_set]@c_tilde)
+        lagrange_A = numpy.linalg.solve(lagrange_mat, self.F[active_set] - self.A[active_set]@H_tilde)
 
-        parameter_A = - aux @ lagrange_A - inverse_Q @ self.H
-        parameter_b = -aux @ lagrange_b - inverse_Q @ self.c
+        # x = H_tilde*theta + A_tilde * lambda + c_tilde
+        # x = H_tilde*theta + A_tilde * (lagrange_A theta + lagrange_b) + c_tilde
+        parameter_A = H_tilde + A_tilde@lagrange_A
+        parameter_b = A_tilde@lagrange_b + c_tilde
 
         return parameter_A, parameter_b, lagrange_A, lagrange_b
 
