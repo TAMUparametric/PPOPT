@@ -32,7 +32,8 @@ class MPMIQP_Program(MPMILP_Program):
                  A_t: numpy.ndarray,
                  b_t: numpy.ndarray, F: numpy.ndarray, binary_indices: List, c_c: Optional[numpy.ndarray] = None,
                  c_t: Optional[numpy.ndarray] = None, Q_t: Optional[numpy.ndarray] = None,
-                 equality_indices:Optional[List[int]]=None, solver: Optional[Solver] = None, post_process:bool=True):
+                 equality_indices: Optional[List[int]] = None, solver: Optional[Solver] = None,
+                 post_process: bool = True):
         """Initialized the MPMIQP_Program."""
         # calls MPMILP_Program's constructor to reduce out burden
 
@@ -63,7 +64,7 @@ class MPMIQP_Program(MPMILP_Program):
                                       self.equality_indices, self.binary_indices)
         if soln is not None:
             const_term = self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ theta_point
-            soln.obj += float(const_term[0,0])
+            soln.obj += float(const_term[0, 0])
 
         return soln
 
@@ -80,18 +81,18 @@ class MPMIQP_Program(MPMILP_Program):
 
         fixed_combination = numpy.array(fixed_combination).reshape(-1, 1)
 
-        # find any integer only constraints and remove them (these are safe to remove as they are not used in the
-        # substituted problem)
-        kept_constraints = []
-        for i in range(self.num_constraints()):
+        # helper function to classify constraint types
+        def is_not_binary_constraint(i: int):
+            return not (numpy.allclose(A_cont[i], 0 * A_cont[i]) and numpy.allclose(self.F[i], 0 * self.F[i]))
 
-            # constraint of the type sum(y_i, i in I) ?? b -> we do not need this
-            if numpy.allclose(A_cont[i], 0 * A_cont[i]) and numpy.allclose(self.F[i], 0 * self.F[i]):
-                continue
-            kept_constraints.append(i)
+        inequality_indices = [i for i in range(self.num_constraints()) if i not in self.equality_indices]
 
-        # remove integer only constraints from equality set
-        equality_set = [i for i in self.equality_indices if i in kept_constraints]
+        kept_equality_constraints = list(filter(is_not_binary_constraint, self.equality_indices))
+        kept_ineq_constraints = list(filter(is_not_binary_constraint, inequality_indices))
+
+        kept_constraints = [*kept_equality_constraints, *kept_ineq_constraints]
+
+        new_equality_set = [i for i in range(len(kept_equality_constraints))]
 
         A_cont = A_cont[kept_constraints]
         A_bin = A_bin[kept_constraints]
@@ -102,7 +103,7 @@ class MPMIQP_Program(MPMILP_Program):
         Q_d = self.Q[:, self.binary_indices][self.binary_indices]
 
         H_alpha = self.Q[:, self.cont_indices][self.binary_indices]
-        c = self.c[self.cont_indices] + (H_alpha.T@fixed_combination)
+        c = self.c[self.cont_indices] + (H_alpha.T @ fixed_combination)
         c_c = self.c_c + self.c[
             self.binary_indices].T @ fixed_combination + 0.5 * fixed_combination.T @ Q_d @ fixed_combination
         H_c = self.H[self.cont_indices]
@@ -110,6 +111,38 @@ class MPMIQP_Program(MPMILP_Program):
 
         c_t = self.c_t + (fixed_combination.T @ H_d).T
 
-        sub_problem = MPQP_Program(A_cont, b, c, H_c, Q_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, equality_set,
+        sub_problem = MPQP_Program(A_cont, b, c, H_c, Q_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, new_equality_set,
                                    self.solver)
         return sub_problem
+
+    def generate_relaxed_problem(self, process: bool = True) -> MPQP_Program:
+        """
+        Generates the relaxed problem, were all binaries are relaxed to real numbers between [0,1].
+
+        :param process: if processing should be done
+        :return: the relaxation of the problem, an mpQP
+        """
+
+        # generate 0 <= y <= 1 constraints for every binary variable
+
+        A_ub_add = numpy.zeros((len(self.binary_indices), self.num_x()))
+        A_lb_add = numpy.zeros((len(self.binary_indices), self.num_x()))
+
+        b_ub_add = numpy.zeros((len(self.binary_indices))).reshape(-1, 1)
+        b_lb_add = numpy.zeros((len(self.binary_indices))).reshape(-1, 1)
+
+        F_ub_add = numpy.zeros((len(self.binary_indices), self.num_t()))
+        F_lb_add = numpy.zeros((len(self.binary_indices), self.num_t()))
+
+        for idx, v in enumerate(self.binary_indices):
+            A_ub_add[idx, v] = 1.0
+            A_lb_add[idx, v] = -1.0
+            b_ub_add[idx] = 1.0
+            b_lb_add[idx] = 0.0
+
+        A = numpy.block([[self.A], [A_ub_add], [A_lb_add]])
+        b = numpy.block([[self.b], [b_ub_add], [b_lb_add]])
+        F = numpy.block([[self.F], [F_ub_add], [F_lb_add]])
+
+        return MPQP_Program(A, b, self.c, self.H, self.Q, self.A_t, self.b_t, F, self.c_c, self.c_t, self.Q_t,
+                            self.equality_indices, self.solver, post_process=process)

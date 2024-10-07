@@ -158,17 +158,18 @@ class MPMILP_Program(MPLP_Program):
 
         fixed_combination = numpy.array(fixed_combination).reshape(-1, 1)
 
-        # find any integer only constraints and ignore them
-        kept_constraints = []
-        for i in range(self.num_constraints()):
+        # helper function to classify constraint types
+        def is_not_binary_constraint(i: int):
+            return not (numpy.allclose(A_cont[i], 0 * A_cont[i]) and numpy.allclose(self.F[i], 0 * self.F[i]))
 
-            # constraint of the type sum(a_i*y_i, i in I) ?? b -> we do not need this
-            if numpy.allclose(A_cont[i], 0 * A_cont[i]) and numpy.allclose(self.F[i], 0 * self.F[i]):
-                continue
-            kept_constraints.append(i)
+        inequality_indices = [i for i in range(self.num_constraints()) if i not in self.equality_indices]
 
-        # remove integer only constraints from equality set
-        equality_set = [i for i in self.equality_indices if i in kept_constraints]
+        kept_equality_constraints = list(filter(is_not_binary_constraint, self.equality_indices))
+        kept_ineq_constraints = list(filter(is_not_binary_constraint, inequality_indices))
+
+        kept_constraints = [*kept_equality_constraints, *kept_ineq_constraints]
+
+        new_equality_set = [i for i in range(len(kept_equality_constraints))]
 
         A_cont = A_cont[kept_constraints]
         A_bin = A_bin[kept_constraints]
@@ -182,7 +183,8 @@ class MPMILP_Program(MPLP_Program):
 
         c_t = self.c_t + (fixed_combination.T @ H_d).T
 
-        sub_problem = MPLP_Program(A_cont, b, c, H_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, equality_set, self.solver)
+        sub_problem = MPLP_Program(A_cont, b, c, H_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, new_equality_set,
+                                   self.solver)
         return sub_problem
 
     def solve_theta(self, theta_point: numpy.ndarray) -> Optional[SolverOutput]:
@@ -233,3 +235,35 @@ class MPMILP_Program(MPLP_Program):
 
         eq = [*list(range(len(partial_fixed_bins))), *[i + len(partial_fixed_bins) for i in self.equality_indices]]
         return self.solver.solve_milp(None, problem_A, problem_b, eq, bin_vars=self.binary_indices) is not None
+
+    def generate_relaxed_problem(self, process: bool = True) -> MPLP_Program:
+        """
+        Generates the relaxed problem, were all binaries are relaxed to real numbers between [0,1].
+
+        :param process: if processing should be done
+        :return: the relaxation of the problem, an mpLP
+        """
+
+        # generate 0 <= y <= 1 constraints for every binary variable
+
+        A_ub_add = numpy.zeros((len(self.binary_indices), self.num_x()))
+        A_lb_add = numpy.zeros((len(self.binary_indices), self.num_x()))
+
+        b_ub_add = numpy.zeros((len(self.binary_indices))).reshape(-1, 1)
+        b_lb_add = numpy.zeros((len(self.binary_indices))).reshape(-1, 1)
+
+        F_ub_add = numpy.zeros((len(self.binary_indices), self.num_t()))
+        F_lb_add = numpy.zeros((len(self.binary_indices), self.num_t()))
+
+        for idx, v in enumerate(self.binary_indices):
+            A_ub_add[idx, v] = 1.0
+            A_lb_add[idx, v] = -1.0
+            b_ub_add[idx] = 1.0
+            b_lb_add[idx] = 0.0
+
+        A = numpy.block([[self.A], [A_ub_add], [A_lb_add]])
+        b = numpy.block([[self.b], [b_ub_add], [b_lb_add]])
+        F = numpy.block([[self.F], [F_ub_add], [F_lb_add]])
+
+        return MPLP_Program(A, b, self.c, self.H, self.A_t, self.b_t, F, self.c_c, self.c_t, self.Q_t,
+                            self.equality_indices, self.solver, post_process=process)
