@@ -158,17 +158,18 @@ class MPMILP_Program(MPLP_Program):
 
         fixed_combination = numpy.array(fixed_combination).reshape(-1, 1)
 
-        # find any integer only constraints and ignore them
-        kept_constraints = []
-        for i in range(self.num_constraints()):
+        # helper function to classify constraint types
+        def is_not_binary_constraint(i: int):
+            return not (numpy.allclose(A_cont[i], 0 * A_cont[i]) and numpy.allclose(self.F[i], 0 * self.F[i]))
 
-            # constraint of the type sum(a_i*y_i, i in I) ?? b -> we do not need this
-            if numpy.allclose(A_cont[i], 0 * A_cont[i]) and numpy.allclose(self.F[i], 0 * self.F[i]):
-                continue
-            kept_constraints.append(i)
+        inequality_indices = [i for i in range(self.num_constraints()) if i not in self.equality_indices]
 
-        # remove integer only constraints from equality set
-        equality_set = [i for i in self.equality_indices if i in kept_constraints]
+        kept_equality_constraints = list(filter(is_not_binary_constraint, self.equality_indices))
+        kept_ineq_constraints = list(filter(is_not_binary_constraint, inequality_indices))
+
+        kept_constraints = [*kept_equality_constraints, *kept_ineq_constraints]
+
+        new_equality_set = [i for i in range(len(kept_equality_constraints))]
 
         A_cont = A_cont[kept_constraints]
         A_bin = A_bin[kept_constraints]
@@ -182,7 +183,7 @@ class MPMILP_Program(MPLP_Program):
 
         c_t = self.c_t + (fixed_combination.T @ H_d).T
 
-        sub_problem = MPLP_Program(A_cont, b, c, H_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, equality_set, self.solver)
+        sub_problem = MPLP_Program(A_cont, b, c, H_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, new_equality_set, self.solver)
         return sub_problem
 
     def solve_theta(self, theta_point: numpy.ndarray) -> Optional[SolverOutput]:

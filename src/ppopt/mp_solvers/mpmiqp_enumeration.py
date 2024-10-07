@@ -18,6 +18,8 @@ def solve_mpmiqp_enumeration(program: MPMILP_Program, num_cores: int = -1,
     2) Solving the resulting continuous mpQP/mpLP sub-problems for every feasible binary combination
     3) Merging all solutions together
 
+    This algorithm is quite slow in the general sense, but can solve a rich class of problems.
+
     :param program: An mpQP/mpLP of a problem with the binary variables without added constraints for the binary variables
     :param num_cores: the number of cores to use in this calculation to solve the mpLP/mpQP sub-problems
     :param cont_algorithm: the algorithm to solve the mpLP/mpQP algorithms (might not be required)

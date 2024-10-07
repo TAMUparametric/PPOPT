@@ -94,7 +94,7 @@ def identify_overlaps_1d(program: MPMILP_Program, regions: List[CriticalRegion])
 
     # remove numerically nil regions
     region_bounds = [get_bounds_1d(cr.E, cr.f) for cr in regions]
-    regions = [ cr for cr, bounds in zip(regions, region_bounds) if abs(bounds[0]- bounds[1]) > 1e-8]
+    regions = [cr for cr, bounds in zip(regions, region_bounds) if abs(bounds[0]- bounds[1]) > 1e-8]
 
     return possible_dual_degeneracy, regions
 
