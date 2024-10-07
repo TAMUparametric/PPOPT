@@ -114,3 +114,35 @@ class MPMIQP_Program(MPMILP_Program):
         sub_problem = MPQP_Program(A_cont, b, c, H_c, Q_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, new_equality_set,
                                    self.solver)
         return sub_problem
+
+    def generate_relaxed_problem(self, process: bool = True) -> MPQP_Program:
+        """
+        Generates the relaxed problem, were all binaries are relaxed to real numbers between [0,1].
+
+        :param process: if processing should be done
+        :return: the relaxation of the problem, an mpQP
+        """
+
+        # generate 0 <= y <= 1 constraints for every binary variable
+
+        A_ub_add = numpy.zeros((len(self.binary_indices), self.num_x()))
+        A_lb_add = numpy.zeros((len(self.binary_indices), self.num_x()))
+
+        b_ub_add = numpy.zeros((len(self.binary_indices))).reshape(-1, 1)
+        b_lb_add = numpy.zeros((len(self.binary_indices))).reshape(-1, 1)
+
+        F_ub_add = numpy.zeros((len(self.binary_indices), self.num_t()))
+        F_lb_add = numpy.zeros((len(self.binary_indices), self.num_t()))
+
+        for idx, v in enumerate(self.binary_indices):
+            A_ub_add[idx, v] = 1.0
+            A_lb_add[idx, v] = -1.0
+            b_ub_add[idx] = 1.0
+            b_lb_add[idx] = 0.0
+
+        A = numpy.block([[self.A], [A_ub_add], [A_lb_add]])
+        b = numpy.block([[self.b], [b_ub_add], [b_lb_add]])
+        F = numpy.block([[self.F], [F_ub_add], [F_lb_add]])
+
+        return MPQP_Program(A, b, self.c, self.H, self.Q, self.A_t, self.b_t, F, self.c_c, self.c_t, self.Q_t,
+                            self.equality_indices, self.solver, post_process=process)

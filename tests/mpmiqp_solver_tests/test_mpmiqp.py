@@ -2,7 +2,7 @@
 import numpy
 
 from src.ppopt.mp_solvers.solve_mpmiqp import solve_mpmiqp
-from src.ppopt.mp_solvers.solve_mpqp import mpqp_algorithm
+from src.ppopt.mp_solvers.solve_mpqp import mpqp_algorithm, solve_mpqp
 from tests.test_fixtures import simple_mpMILP, simple_mpMIQP, mpMILP_market_problem, mpMIQP_market_problem, \
     bard_mpMILP_adapted, bard_mpMILP_adapted_2, bard_mpMILP_adapted_degenerate, mpMILP_1d, acevedo_mpmilp, \
     pappas_multi_objective, pappas_multi_objective_2
@@ -142,6 +142,7 @@ def test_pappas_mpmilp(pappas_multi_objective):
 
     assert (len(sol) == 3)
 
+
 def test_pappas_mpmilp_2(pappas_multi_objective_2):
     sol = solve_mpmiqp(pappas_multi_objective_2, num_cores=1)
 
@@ -150,9 +151,8 @@ def test_pappas_mpmilp_2(pappas_multi_objective_2):
     theta_sol = sol.evaluate(theta_point)
     theta_obj = sol.evaluate_objective(theta_point)
 
-    # determanistic solution at theta = 90
+    # deterministic solution at theta = 90
     det_sol = pappas_multi_objective_2.solve_theta(theta_point)
 
     assert numpy.allclose(theta_sol.flatten(), det_sol.sol)
     assert numpy.allclose(theta_obj, det_sol.obj)
-

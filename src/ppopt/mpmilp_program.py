@@ -183,7 +183,8 @@ class MPMILP_Program(MPLP_Program):
 
         c_t = self.c_t + (fixed_combination.T @ H_d).T
 
-        sub_problem = MPLP_Program(A_cont, b, c, H_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, new_equality_set, self.solver)
+        sub_problem = MPLP_Program(A_cont, b, c, H_c, self.A_t, self.b_t, F, c_c, c_t, self.Q_t, new_equality_set,
+                                   self.solver)
         return sub_problem
 
     def solve_theta(self, theta_point: numpy.ndarray) -> Optional[SolverOutput]:
@@ -234,3 +235,35 @@ class MPMILP_Program(MPLP_Program):
 
         eq = [*list(range(len(partial_fixed_bins))), *[i + len(partial_fixed_bins) for i in self.equality_indices]]
         return self.solver.solve_milp(None, problem_A, problem_b, eq, bin_vars=self.binary_indices) is not None
+
+    def generate_relaxed_problem(self, process: bool = True) -> MPLP_Program:
+        """
+        Generates the relaxed problem, were all binaries are relaxed to real numbers between [0,1].
+
+        :param process: if processing should be done
+        :return: the relaxation of the problem, an mpLP
+        """
+
+        # generate 0 <= y <= 1 constraints for every binary variable
+
+        A_ub_add = numpy.zeros((len(self.binary_indices), self.num_x()))
+        A_lb_add = numpy.zeros((len(self.binary_indices), self.num_x()))
+
+        b_ub_add = numpy.zeros((len(self.binary_indices))).reshape(-1, 1)
+        b_lb_add = numpy.zeros((len(self.binary_indices))).reshape(-1, 1)
+
+        F_ub_add = numpy.zeros((len(self.binary_indices), self.num_t()))
+        F_lb_add = numpy.zeros((len(self.binary_indices), self.num_t()))
+
+        for idx, v in enumerate(self.binary_indices):
+            A_ub_add[idx, v] = 1.0
+            A_lb_add[idx, v] = -1.0
+            b_ub_add[idx] = 1.0
+            b_lb_add[idx] = 0.0
+
+        A = numpy.block([[self.A], [A_ub_add], [A_lb_add]])
+        b = numpy.block([[self.b], [b_ub_add], [b_lb_add]])
+        F = numpy.block([[self.F], [F_ub_add], [F_lb_add]])
+
+        return MPLP_Program(A, b, self.c, self.H, self.A_t, self.b_t, F, self.c_c, self.c_t, self.Q_t,
+                            self.equality_indices, self.solver, post_process=process)
