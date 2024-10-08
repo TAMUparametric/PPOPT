@@ -6,6 +6,7 @@ from typing import List, Optional, Set, Tuple
 from pathos.multiprocessing import ProcessingPool as Pool
 
 from ..critical_region import CriticalRegion
+from ..mplp_program import MPLP_Program
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.general_utils import num_cpu_cores
@@ -32,8 +33,6 @@ def full_process(program: MPQP_Program, active_set: List[int], murder_list, gen_
     pruned_active_sets: Set[Tuple[int,...]] = set()
     child_active_sets: List[List[int]] = []
 
-    # return_list: Tuple[CriticalRegion, Set, List] = [None, set(), []]
-
     is_feasible_ = program.check_feasibility(active_set)
 
     if not is_feasible_:
@@ -45,6 +44,12 @@ def full_process(program: MPQP_Program, active_set: List[int], murder_list, gen_
     if not is_optimal_:
         if gen_children:
             child_active_sets = generate_children_sets(active_set, program.num_constraints(), murder_list)
+
+            # filter children
+            if type(program) is MPLP_Program:
+                condition = lambda child: child[-1] >= len(child) + program.num_constraints() - program.num_x()
+                child_active_sets = [child for child in child_active_sets if not condition(child)]
+
         return candidate_cr, pruned_active_sets, child_active_sets
 
     candidate_cr = gen_cr_from_active_set(program, active_set)

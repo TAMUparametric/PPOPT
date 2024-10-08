@@ -1,5 +1,6 @@
 from typing import List
 
+from ..mplp_program import MPLP_Program
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.mpqp_utils import gen_cr_from_active_set
@@ -33,6 +34,13 @@ def solve(program: MPQP_Program) -> Solution:
 
         future_sets = []
         # creates the list of feasible active sets
+
+        # if this is a mpLP we can do a reduction on the active sets
+        # this is not required but will give a perf boost
+        if type(program) is MPLP_Program:
+            condition = lambda child: child[-1] >= len(child) + program.num_constraints() - program.num_x()
+            to_check = [child for child in to_check if not condition(child)]
+
         feasible_sets = check_child_feasibility(program, to_check, murder_list)
 
         for child_set in feasible_sets:
