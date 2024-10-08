@@ -6,6 +6,7 @@ from typing import List, Tuple
 from pathos.multiprocessing import ProcessingPool as Pool
 
 from ..critical_region import CriticalRegion
+from ..mplp_program import MPLP_Program
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.general_utils import num_cpu_cores
@@ -33,6 +34,11 @@ def full_process(program: MPQP_Program, active_set: List[int]) -> Tuple[List[Lis
     children = generate_children_sets(active_set, program.num_constraints())
 
     for child in children:
+
+        # mpLP reduction
+        if type(program) is MPLP_Program:
+            if child[-1] >= len(child) + program.num_constraints() - program.num_x():
+                continue
 
         if program.check_feasibility(child):  # is_feasible(program, child):
             feasible_children.append(child)
