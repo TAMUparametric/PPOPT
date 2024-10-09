@@ -32,14 +32,22 @@ def process_cvxopt_solution(sol, equality_constraints, inequality_constraints, n
         lagrange[equality_constraints] = -numpy.array(sol['y']).flatten()
     lagrange[inequality_constraints] = -numpy.array(sol['z']).flatten()
 
-    non_zero_duals = numpy.where(lagrange != 0)[0]
-    active_set = numpy.array([i for i in range(num_constraints) if i in non_zero_duals or i in equality_constraints])
+    active = []
+
+    for i in range(num_constraints):
+        if abs(slack[i]) <= 10 ** -10 or lagrange[i] != 0:
+            active.append(i)
+
+    active = numpy.array(active)
+
+    # non_zero_duals = numpy.where(lagrange != 0)[0]
+    # active_set = numpy.array([i for i in range(num_constraints) if i in non_zero_duals or i in equality_constraints])
 
     if not get_duals:
         lagrange = None
 
     return SolverOutput(obj=sol['primal objective'], sol=numpy.array(sol['x']).flatten(), slack=slack,
-                        active_set=active_set,
+                        active_set=active,
                         dual=lagrange)
 
 

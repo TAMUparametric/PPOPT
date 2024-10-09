@@ -93,7 +93,13 @@ def solve_qp_daqp(Q: numpy.ndarray, c: Matrix, A: Matrix, b: Matrix,
 
     slack = b - A @ make_column(x_star)
 
-    non_zero_duals = numpy.where(lagrange != 0)[0]
-    active_set = numpy.array([i for i in range(num_constraints) if i in non_zero_duals or i in equality_constraints])
+    active = []
 
-    return SolverOutput(opt, x_star, slack.flatten(), numpy.array(active_set).astype('int64'), lagrange)
+    for i in range(num_constraints):
+        if abs(slack[i]) <= 10 ** -10 or lagrange[i] != 0:
+            active.append(i)
+
+    # non_zero_duals = numpy.where(lagrange != 0)[0]
+    # active_set = numpy.array([i for i in range(num_constraints) if i in non_zero_duals or i in equality_constraints])
+
+    return SolverOutput(opt, x_star, slack.flatten(), numpy.array(active).astype('int64'), lagrange)
