@@ -167,6 +167,6 @@ def solve(program: MPQP_Program, initial_active_sets: Optional[List[List[int]]] 
                 work_items.extend(
                     [(theta, facet_normal, radius, found_cr.active_set) for theta, facet_normal, radius in facets])
 
-    pool.clear()
+    # pool.clear()
 
     return solution
