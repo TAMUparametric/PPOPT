@@ -533,3 +533,27 @@ def pappas_multi_objective_2():
     m.add_constrs(x[i] <= 100 for i in range(1, 3))
 
     return m.formulate_problem()
+
+@pytest.fixture()
+def over_determined_as_mplp():
+    """
+    The relaxation of this mpMILP was found to generate over determined active sets in some regions of the parametric
+    space. So it would cause problems with incomplete solutions.
+
+    """
+    A = numpy.array(
+        [[1, 1, 0, 0, 0], [0, 0, 1, 1, 0], [-1, 0, -1, 0, 0], [0, -1, 0, -1, -500], [-1, 0, 0, 0, 0], [0, -1, 0, 0, 0],
+         [0, 0, -1, 0, 0], [0, 0, 0, -1, 0], [0, 0, 0, 0, -1], [0, 0, 0, 0, 1]], float)
+    b = numpy.array([350, 600, 0, 0, 0, 0, 0, 0, 0, 1], float).reshape(-1, 1)
+    F = numpy.array([[0, 0], [0, 0], [-1, 0], [0, -1], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]], float)
+    A_t = numpy.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]], float)
+    b_t = numpy.array([[1000.0], [1000.0], [0.0], [0.0]], float)
+    H = numpy.zeros([5, 2])
+    binary_indices = [4]
+
+    Q = 2 * numpy.diag([153, 162, 162, 126, 0.1])
+    c = numpy.array([25, 25, 25, 25, 100]).reshape(-1, 1)
+
+    miqp_prog = MPMILP_Program(A, b, c, H, A_t, b_t, F, binary_indices)
+
+    return miqp_prog.generate_relaxed_problem()
