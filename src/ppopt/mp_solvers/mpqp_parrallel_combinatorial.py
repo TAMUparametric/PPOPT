@@ -145,6 +145,6 @@ def solve(program: MPQP_Program, num_cores=-1) -> Solution:
             if region is not None:
                 solution.add_region(region)
 
-    pool.clear()
+    # pool.clear()
 
     return solution

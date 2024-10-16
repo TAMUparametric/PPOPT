@@ -54,17 +54,17 @@ def test_generate_children_4(filled_combo_tester):
     assert output == [[0, 4], [0, 5], [0, 6], [0, 7]]
 
 
-def test_generate_children_5(blank_combo_tester, linear_program):
-    output = generate_children_sets(linear_program.equality_indices, linear_program.num_constraints(), blank_combo_tester)
+def test_generate_children_5(blank_combo_tester):
+    output = generate_children_sets([0], 3, blank_combo_tester)
     assert output == [[0, 1], [0, 2]]
 
 
-def test_generate_children_6(blank_combo_tester, linear_program):
-    output = generate_children_sets([0, 1], linear_program.num_constraints(), blank_combo_tester)
+def test_generate_children_6(blank_combo_tester):
+    output = generate_children_sets([0, 1], 3, blank_combo_tester)
     assert output == [[0, 1, 2]]
 
 
-def test_generate_children_7(blank_combo_tester, linear_program):
+def test_generate_children_7(blank_combo_tester):
     A = numpy.array(
         [[1, 1, 0, 0], [0, 0, 1, 1], [-1, 0, -1, 0], [0, -1, 0, -1], [-1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0],
          [0, 0, 0, -1]])
@@ -74,9 +74,9 @@ def test_generate_children_7(blank_combo_tester, linear_program):
     Q = numpy.diag([153, 162, 162, 126])
 
     CRa = numpy.vstack((numpy.eye(2), -numpy.eye(2)))
-    CRb = numpy.array([1000, 1000, 0, 0]).reshape(4, 1)
+    CRb = numpy.array([1000, 1000, 0, 0]).reshape(-1, 1)
     H = numpy.zeros((F.shape[1], Q.shape[0]))
-    program = MPQP_Program(A, b, c, H, Q, CRa, CRb, F, equality_indices = [0])
+    program = MPQP_Program(A, b, c, H, Q, CRa, CRb, F, equality_indices=[0])
 
     output = generate_children_sets(program.equality_indices, program.num_constraints(), blank_combo_tester)
     assert output == [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7]]

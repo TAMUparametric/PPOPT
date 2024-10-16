@@ -1,6 +1,7 @@
 from typing import List, Optional, Tuple
 
 import numpy
+import warnings
 
 from .solver import Solver
 from .solver_interface.solver_interface_utils import SolverOutput
@@ -96,11 +97,11 @@ class MPLP_Program:
         self.base_constraint_processing()
 
         # grab all warnings
-        warnings = self.warnings()
+        problem_warning = self.warnings()
 
         # print warnings if there are any
-        if len(warnings) > 0:
-            print(warnings)
+        for warning in problem_warning:
+            warnings.warn(warning, UserWarning)
 
         # calls constraint processing to remove redundant constraints
         if post_process:

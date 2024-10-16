@@ -131,6 +131,6 @@ def solve(program: MPQP_Program, num_cores=-1) -> Solution:
         if len(to_check) == 0:
             break
 
-    pool.clear()
+    # pool.clear()
 
     return solution
