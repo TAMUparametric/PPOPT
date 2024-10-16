@@ -132,14 +132,7 @@ def solve_miqp_gurobi(Q: Matrix = None, c: Matrix = None, A: Matrix = None,
                 sol.dual = numpy.array(model.getAttr("Pi"))
 
         sol.slack = numpy.array(model.getAttr("Slack"))
-
-        if sol.dual is not None:
-            # we have a continuous problem, and we can get the duals directly
-            non_zero_duals = numpy.where(sol.dual != 0)[0]
-            sol.active_set = numpy.array(
-                [i for i in range(num_constraints) if i in non_zero_duals or i in equality_constraints])
-        else:
-            sol.active_set = numpy.where((A @ sol.sol.flatten() - b.flatten()) ** 2 < 10 ** -12)[0]
+        sol.active_set = numpy.where((A @ sol.sol.flatten() - b.flatten()) ** 2 < 10 ** -12)[0]
 
     return sol
 

@@ -3,7 +3,7 @@ import numpy
 from src.ppopt.utils.chebyshev_ball import chebyshev_ball
 from src.ppopt.mp_solvers import mpqp_parrallel_combinatorial
 from src.ppopt.mp_solvers.solve_mpqp import mpqp_algorithm, solve_mpqp
-from tests.test_fixtures import qp_problem, simple_mpLP, portfolio_problem_analog, non_negative_least_squares
+from tests.test_fixtures import qp_problem, simple_mpLP, portfolio_problem_analog, non_negative_least_squares, over_determined_as_mplp
 
 
 def test_solve_mpqp_combinatorial(qp_problem):
@@ -83,6 +83,12 @@ def test_solve_mplp_combinatorial(simple_mpLP):
     solution = solve_mpqp(simple_mpLP, mpqp_algorithm.combinatorial)
     assert solution is not None
     assert len(solution.critical_regions) == 4
+
+def tesT_solve_mplp_overdetermined_active_set(over_determined_as_mplp):
+
+    solution = solve_mpqp(over_determined_as_mplp, mpqp_algorithm.combinatorial)
+    assert solution is not None
+    assert len(solution.critical_regions) == 5
 
 
 def test_solve_missing_algorithm(qp_problem):

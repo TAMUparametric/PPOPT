@@ -66,7 +66,8 @@ def manufacture_lambda(attempted, murder_list):
         return lambda x: x not in attempted and murder_list.check(x)
 
 
-def generate_reduce(candidate: tuple, murder_list=None, attempted=None, equality_set: Optional[Set[int]] = None) -> list:
+def generate_reduce(candidate: tuple, murder_list=None, attempted=None,
+                    equality_set: Optional[Set[int]] = None) -> list:
     if equality_set is None:
         equality_set = set()
 
@@ -164,6 +165,43 @@ def generate_children_sets(active_set, num_constraints: int, murder_list=None) -
         return [[*active_set, i] for i in range(active_set[-1] + 1, num_constraints) if check([*active_set, i])]
 
 
+def find_sub_active_set(program: Union[MPLP_Program, MPQP_Program], active_set: List[int]) -> List[int]:
+    """
+    In the situation that there is an overdetermined active set we need to find the subset that is full rank and allows
+    for generating active sets that are well defined.
+
+
+    """
+
+    eq_cons = program.equality_indices
+    ineq_constraints = [i for i in active_set if i not in eq_cons]
+    kept_inequalities = []
+
+    current_rank = 0
+
+    if len(eq_cons) == 0:
+        current_rank = 0
+    else:
+        current_rank = numpy.linalg.matrix_rank(program.A[eq_cons])
+
+    for i in ineq_constraints:
+
+        trial_ineq = [*kept_inequalities, i]
+
+        A_block = numpy.block([[program.A[eq_cons]], [program.A[trial_ineq]]])
+
+        A_rank = numpy.linalg.matrix_rank(A_block)
+
+        if A_rank > current_rank:
+            kept_inequalities.append(i)
+            current_rank = A_rank
+
+        if current_rank == program.num_x():
+            return [*eq_cons, *kept_inequalities]
+
+    return [*eq_cons, *kept_inequalities]
+
+
 def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> List[Tuple[numpy.ndarray, numpy.ndarray, float]]:
     r"""
     This takes the polytope P, and finds all the chebychev centers and normal vectors of each facet and the radius.
@@ -192,7 +230,6 @@ def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> List[Tuple[numpy.nd
             if chev_ball is not None:
                 theta = chev_ball.sol[:-1]
                 radius = chev_ball.sol[-1]
-
         if theta is None:
             continue
 
@@ -253,6 +290,10 @@ def fathem_facet(center: numpy.ndarray, normal: numpy.ndarray, radius: float, pr
         # grab the active set
         # noinspection PyTypeChecker
         projected_set: List[int] = sol.active_set.tolist()
+
+        # if we have an overdetermined active set we need to find the subset that is full rank
+        if len(projected_set) > program.num_x():
+            projected_set = find_sub_active_set(program, projected_set)
 
         # test for accidental self inclusion
         if projected_set == current_active_set:
