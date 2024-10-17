@@ -1,4 +1,5 @@
 from typing import List, Optional, Set, Tuple
+import logging
 
 # noinspection PyProtectedMember
 from pathos.multiprocessing import ProcessingPool as Pool
@@ -14,6 +15,7 @@ from .solver_utils import (
     manufacture_lambda,
 )
 
+logger = logging.getLogger(__name__)
 
 def full_process(program, candidate, murder_list):
     """
@@ -99,7 +101,7 @@ def solve(program: MPQP_Program, initial_active_sets=None, num_cores=-1, use_pru
             tiered_to_attempt[cursor] = []
             cursor += 1
 
-        print(f'Processing {len(to_attempt)} in this parallel swap')
+        logger.debug(f'Processing {len(to_attempt)} in this parallel swap')
         outputs = pool.map(f, to_attempt)
 
         for candidate in to_attempt:

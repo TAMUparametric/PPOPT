@@ -1,4 +1,5 @@
 from typing import List, Optional
+import logging
 
 import numpy
 
@@ -10,6 +11,8 @@ from ..solution import Solution
 from ..utils.general_utils import make_column, num_cpu_cores
 from ..utils.mpqp_utils import gen_cr_from_active_set
 from .solver_utils import get_facet_centers
+
+logger = logging.getLogger(__name__)
 
 
 def fathem_facet_exp(center: numpy.ndarray, normal: numpy.ndarray, radius: float, program, current_active_set: list) -> \
@@ -102,12 +105,12 @@ def solve(program: MPQP_Program, initial_active_sets: Optional[List[List[int]]] 
         if initial_active_sets[-1] is None:
             raise ValueError('No Active Sets Found')
 
-        print(f'Using a found active set {initial_active_sets[-1]}')
+        logger.info(f'Using a found active set {initial_active_sets[-1]}')
 
     if num_cores == -1:
         num_cores = num_cpu_cores()
 
-    print(f'Spawned threads across {num_cores}')
+    logger.debug(f'Spawned threads across {num_cores}')
 
     pool = Pool(num_cores)
 
@@ -131,7 +134,7 @@ def solve(program: MPQP_Program, initial_active_sets: Optional[List[List[int]]] 
 
     while len(work_items) > 0:
 
-        print(f' Number of Facets to look at this time {len(work_items)}')
+        logger.debug(f' Number of Facets to look at this time {len(work_items)}')
         f = lambda x: fathem_facet_exp(x[0], x[1], x[2], program, x[3])
 
         found_active_sets = pool.map(f, work_items)
@@ -150,7 +153,7 @@ def solve(program: MPQP_Program, initial_active_sets: Optional[List[List[int]]] 
         work_items = []
         # process the outputs
         filtered_outputs = [output for output in outputs if output is not None]
-        print(f' Number of Regions adding in this pass {len(filtered_outputs)}!')
+        logger.debug(f' Number of Regions adding in this pass {len(filtered_outputs)}!')
 
         for output in filtered_outputs:
 

@@ -1,4 +1,5 @@
 import time
+import logging
 from math import atan2
 from typing import List, Optional
 
@@ -12,6 +13,7 @@ from .solution import Solution
 from .solver import Solver
 from .utils.general_utils import make_column
 
+logger = logging.getLogger(__name__)
 
 def vertex_enumeration_2d(A: numpy.ndarray, b: numpy.ndarray, solver: Solver) -> List[numpy.ndarray]:
     """
@@ -120,7 +122,7 @@ def parametric_plot(solution: Solution, save_path: Optional[str] = None, show=Tr
 
     # check if the solution is actually 2 dimensional
     if solution.theta_dim() != 2:
-        print(f"Solution is not 2D, the dimensionality of the solution is {solution.theta_dim()}")
+        logger.error(f"Solution is not 2D, the dimensionality of the solution is {solution.theta_dim()}")
         return
 
     vertex_list = gen_vertices(solution)
@@ -164,7 +166,7 @@ def parametric_plot_1D(solution: Solution, save_path: Optional[str] = None, show
 
     # check if the solution is actually 1 dimensional
     if solution.theta_dim() != 1:
-        print(f"Solution is not 1D, the dimensionality of the solution is {solution.theta_dim()}")
+        logger.error(f"Solution is not 1D, the dimensionality of the solution is {solution.theta_dim()}")
         return
 
     if plot_subset is None:

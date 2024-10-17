@@ -1,6 +1,7 @@
 import time
 from random import shuffle
 from typing import List, Optional, Set, Tuple
+import logging
 
 # noinspection PyProtectedMember
 from pathos.multiprocessing import ProcessingPool as Pool
@@ -12,6 +13,8 @@ from ..solution import Solution
 from ..utils.general_utils import num_cpu_cores
 from ..utils.mpqp_utils import gen_cr_from_active_set
 from .solver_utils import CombinationTester, generate_children_sets
+
+logger = logging.getLogger(__name__)
 
 
 def full_process(program: MPQP_Program, active_set: List[int], murder_list, gen_children) -> Tuple[Optional[CriticalRegion], Set[Tuple[int,...]], List[List[int]]]:
@@ -82,7 +85,7 @@ def solve(program: MPQP_Program, num_cores=-1) -> Solution:
     if num_cores == -1:
         num_cores = num_cpu_cores()
 
-    print(f'Spawned threads across {num_cores}')
+    logger.debug(f'Spawned threads across {num_cores}')
 
     pool = Pool(num_cores)
 
@@ -100,8 +103,8 @@ def solve(program: MPQP_Program, num_cores=-1) -> Solution:
     to_check.extend(root_node)
 
     for i in range(max_depth):
-        print(f'Time at depth test {i + 1}, {time.time() - start}')
-        print(f'Number of active sets to be considered is {len(to_check)}')
+        logger.debug(f'Time at depth test {i + 1}, {time.time() - start}')
+        logger.debug(f'Number of active sets to be considered is {len(to_check)}')
 
         depth_time = time.time()
 
@@ -115,7 +118,7 @@ def solve(program: MPQP_Program, num_cores=-1) -> Solution:
 
         outputs = pool.map(f, to_check)
 
-        print(f'Time to run all tasks in parallel {time.time() - depth_time}')
+        logger.debug(f'Time to run all tasks in parallel {time.time() - depth_time}')
         depth_time = time.time()
 
         if i + 1 == max_depth:
@@ -130,7 +133,7 @@ def solve(program: MPQP_Program, num_cores=-1) -> Solution:
             if output[0] is not None:
                 solution.add_region(output[0])
 
-        print(f'Time to process all depth outputs {time.time() - depth_time}')
+        logger.debug(f'Time to process all depth outputs {time.time() - depth_time}')
 
         to_check = future_list
 
