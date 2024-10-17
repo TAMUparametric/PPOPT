@@ -1,5 +1,6 @@
 from typing import List, Optional, Tuple
 
+import logging
 import numpy
 import warnings
 
@@ -23,6 +24,8 @@ from .utils.general_utils import (
 )
 
 # noinspection GrazieInspection
+
+logger = logging.getLogger(__name__)
 
 class MPLP_Program:
     r"""
@@ -101,7 +104,7 @@ class MPLP_Program:
 
         # print warnings if there are any
         for warning in problem_warning:
-            warnings.warn(warning, UserWarning)
+            logger.warn(warning)
 
         # calls constraint processing to remove redundant constraints
         if post_process:

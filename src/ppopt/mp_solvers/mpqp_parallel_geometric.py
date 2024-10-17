@@ -1,4 +1,4 @@
-
+import logging
 import numpy
 
 # noinspection PyProtectedMember
@@ -10,6 +10,7 @@ from ..utils.general_utils import num_cpu_cores
 from ..utils.mpqp_utils import gen_cr_from_active_set
 from .solver_utils import fathem_facet, get_facet_centers
 
+logger = logging.getLogger(__name__)
 
 def full_process(center: numpy.ndarray, norm: numpy.ndarray, radius: float, program: MPQP_Program, current_active_set,
                  indexed_region_as):
@@ -47,18 +48,18 @@ def solve(program: MPQP_Program, active_set=None, num_cores=-1) -> Solution:
     """
     if active_set is None:
         active_set = program.gen_optimal_active_set()
-        print(f'Using a found active set {active_set}')
+        logger.info(f'Using a found active set {active_set}')
 
     initial_region = gen_cr_from_active_set(program, active_set, check_full_dim=False)
 
     if initial_region is None:
-        print('Could not find a valid initial region')
+        logger.warn('Could not find a valid initial region')
         return Solution(program, [])
 
     if num_cores == -1:
         num_cores = num_cpu_cores()
 
-    print(f'Spawned threads across {num_cores}')
+    logger.debug(f'Spawned threads across {num_cores}')
 
     pool = Pool(num_cores)
 
@@ -74,7 +75,7 @@ def solve(program: MPQP_Program, active_set=None, num_cores=-1) -> Solution:
 
     while len(work_items) > 0:
 
-        print(f' Number of Facets to look at this time {len(work_items)}')
+        logger.debug(f' Number of Facets to look at this time {len(work_items)}')
         f = lambda x: full_process(x[0], x[1], x[2], program, x[3], indexed_region_as)
 
         outputs = pool.map(f, work_items)

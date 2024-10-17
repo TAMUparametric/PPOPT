@@ -1,9 +1,12 @@
+import logging
 
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.general_utils import make_column
 from ..utils.mpqp_utils import gen_cr_from_active_set
 from .solver_utils import fathem_facet, get_facet_centers
+
+logger = logging.getLogger(__name__)
 
 
 def solve(program: MPQP_Program, active_set=None) -> Solution:
@@ -18,7 +21,7 @@ def solve(program: MPQP_Program, active_set=None) -> Solution:
     """
     if active_set is None:
         active_set = program.gen_optimal_active_set()
-        print(f'Using a found active set {active_set}')
+        logger.info(f'Using a found active set {active_set}')
 
     initial_region = gen_cr_from_active_set(program, active_set, check_full_dim=False)
 

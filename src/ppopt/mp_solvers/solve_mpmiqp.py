@@ -1,4 +1,5 @@
 from enum import Enum
+import logging
 
 from ..mpmilp_program import MPMILP_Program
 from ..solution import Solution
@@ -9,6 +10,7 @@ import numpy
 
 from ..utils.region_overlap_utils import reduce_overlapping_critical_regions_1d
 
+logger = logging.getLogger(__name__)
 
 class mpmiqp_algorithm(Enum):
     """
@@ -36,7 +38,7 @@ def solve_mpmiqp(problem: MPMILP_Program, mpmiqp_algo: mpmiqp_algorithm = mpmiqp
                  reduce_overlap=True) -> Solution:
     # the case of a continuous problem just solve it and return
     if len(problem.binary_indices) == 0:
-        print("The problem does not have any binary variables, solving as a continuous problem instead.")
+        logger.warn("The problem does not have any binary variables, solving as a continuous problem instead.")
         # noinspection PyTypeChecker
         return solve_mpqp(problem, cont_algo)
 

@@ -1,4 +1,5 @@
 from typing import List, Optional
+import logging
 
 import numpy
 
@@ -7,6 +8,8 @@ from .solver import Solver
 from .solver_interface.solver_interface_utils import SolverOutput
 from .utils.constraint_utilities import detect_implicit_equalities
 from .utils.general_utils import ppopt_block
+
+logger = logging.getLogger(__name__)
 
 
 class MPMILP_Program(MPLP_Program):
@@ -64,7 +67,7 @@ class MPMILP_Program(MPLP_Program):
         self.cont_indices = [i for i in range(self.num_x()) if i not in self.binary_indices]
 
         if len(self.cont_indices) == 0:
-            print("Pure Integer case is not considered here only the Mixed case!!!")
+            logger.warn("Pure Integer case is not considered here only the Mixed case!!!")
 
         if post_process:
             self.post_process()

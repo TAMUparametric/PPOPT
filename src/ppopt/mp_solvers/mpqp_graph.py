@@ -1,10 +1,13 @@
 from typing import List, Optional
+import logging
 
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
 from ..utils.constraint_utilities import is_full_rank
 from ..utils.mpqp_utils import gen_cr_from_active_set
 from .solver_utils import CombinationTester, generate_extra, generate_reduce
+
+logger = logging.getLogger(__name__)
 
 
 def graph_initialization(program, initial_active_sets):
@@ -28,9 +31,9 @@ def graph_initialization(program, initial_active_sets):
     to_attempt = [tuple(a_set) for a_set in initial_active_sets]
 
     if len(to_attempt) != 0:
-        print(f'First region {to_attempt[0]}')
+        logger.info(f'First region {to_attempt[0]}')
     else:
-        print('Failed to find an initial region!')
+        logger.warn('Failed to find an initial region!')
 
     return attempted, solution, murder_list, to_attempt
 
