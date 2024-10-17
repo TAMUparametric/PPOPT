@@ -104,7 +104,7 @@ class MPLP_Program:
 
         # print warnings if there are any
         for warning in problem_warning:
-            logger.warn(warning)
+            logger.warning(warning)
 
         # calls constraint processing to remove redundant constraints
         if post_process:

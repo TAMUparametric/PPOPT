@@ -33,7 +33,7 @@ def graph_initialization(program, initial_active_sets):
     if len(to_attempt) != 0:
         logger.info(f'First region {to_attempt[0]}')
     else:
-        logger.warn('Failed to find an initial region!')
+        logger.warning('Failed to find an initial region!')
 
     return attempted, solution, murder_list, to_attempt
 

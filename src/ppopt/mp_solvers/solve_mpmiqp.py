@@ -38,7 +38,7 @@ def solve_mpmiqp(problem: MPMILP_Program, mpmiqp_algo: mpmiqp_algorithm = mpmiqp
                  reduce_overlap=True) -> Solution:
     # the case of a continuous problem just solve it and return
     if len(problem.binary_indices) == 0:
-        logger.warn("The problem does not have any binary variables, solving as a continuous problem instead.")
+        logger.warning("The problem does not have any binary variables, solving as a continuous problem instead.")
         # noinspection PyTypeChecker
         return solve_mpqp(problem, cont_algo)
 
