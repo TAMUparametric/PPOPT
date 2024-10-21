@@ -14,6 +14,7 @@ from .solver_utils import get_facet_centers
 
 def fathem_facet_exp(center: numpy.ndarray, normal: numpy.ndarray, radius: float, program, current_active_set: list) -> \
         Optional[List[int]]:
+
     # make sure we are pointing in the correct direction
     center = make_column(center)
     normal = make_column(normal)
@@ -53,8 +54,6 @@ def fathem_facet_exp(center: numpy.ndarray, normal: numpy.ndarray, radius: float
 
 
 def full_process_2(program, current_active_set):
-    if program.check_optimality(current_active_set) is None:
-        return None
 
     critical_region = gen_cr_from_active_set(program, current_active_set, check_full_dim=True)
 
@@ -147,10 +146,13 @@ def solve(program: MPQP_Program, initial_active_sets: Optional[List[List[int]]] 
         f = lambda x: full_process_2(program, x)
 
         outputs = pool.map(f, work_items)
+
         work_items = []
         # process the outputs
         filtered_outputs = [output for output in outputs if output is not None]
-        print(f' Number of Regions adding in this pass {len(filtered_outputs)}!')
+        # print(f' Number of Regions adding in this pass {len(filtered_outputs)}!')
+
+        len_pre_filtered = len(indexed_region_as)
 
         for output in filtered_outputs:
 
@@ -166,6 +168,10 @@ def solve(program: MPQP_Program, initial_active_sets: Optional[List[List[int]]] 
                 # add the associated work items from the facets to the queue
                 work_items.extend(
                     [(theta, facet_normal, radius, found_cr.active_set) for theta, facet_normal, radius in facets])
+
+        len_post_filtered = len(indexed_region_as)
+
+        print(f' Number of Regions added in this pass {len_post_filtered - len_pre_filtered}!')
 
     # pool.clear()
 
