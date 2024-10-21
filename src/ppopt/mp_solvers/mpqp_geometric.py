@@ -41,7 +41,7 @@ def solve(program: MPQP_Program, active_set=None) -> Solution:
         A, b = cur_region.E, cur_region.f
 
         # we want to look at every facet on the region
-        facet_information = get_facet_centers(A, b)
+        facet_information = get_facet_centers(A, b, program.solver)
 
         for center, normal, radius in facet_information:
 

@@ -6,6 +6,7 @@ from ..critical_region import CriticalRegion
 from ..mplp_program import MPLP_Program
 from ..mpqp_program import MPQP_Program
 from ..solution import Solution
+from ..solver import Solver
 from ..utils.chebyshev_ball import chebyshev_ball
 from ..utils.general_utils import make_column
 from ..utils.mpqp_utils import gen_cr_from_active_set
@@ -202,7 +203,8 @@ def find_sub_active_set(program: Union[MPLP_Program, MPQP_Program], active_set: 
     return [*eq_cons, *kept_inequalities]
 
 
-def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> List[Tuple[numpy.ndarray, numpy.ndarray, float]]:
+def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray, solver: Optional[Solver] = None) -> List[
+    Tuple[numpy.ndarray, numpy.ndarray, float]]:
     r"""
     This takes the polytope P, and finds all the chebychev centers and normal vectors of each facet and the radius.
 
@@ -215,6 +217,9 @@ def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> List[Tuple[numpy.nd
     """
     facet_centers = []
 
+    if solver is None:
+        solver = Solver()
+
     for facet_index in range(A.shape[0]):
 
         # theta point to look out of
@@ -226,7 +231,7 @@ def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray) -> List[Tuple[numpy.nd
             radius = 1.0
         else:
             # We take the chebychev ball of the facet
-            chev_ball = chebyshev_ball(A, b, [facet_index])
+            chev_ball = chebyshev_ball(A, b, [facet_index], deterministic_solver=solver.solvers['lp'])
             if chev_ball is not None:
                 theta = chev_ball.sol[:-1]
                 radius = chev_ball.sol[-1]
