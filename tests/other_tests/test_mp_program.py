@@ -60,50 +60,60 @@ def simple_qp_program() -> MPQP_Program:
     return MPQP_Program(A, b, c, H, Q, A_t, b_t, F, post_process=True)
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_active_set(linear_program):
     assert linear_program.equality_indices == [0]
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_num_x(linear_program):
     assert linear_program.num_x() == 3
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_num_t(linear_program):
     assert linear_program.num_t() == 10
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_num_constraints(linear_program):
     assert linear_program.num_constraints() == 3
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_warnings_1(linear_program):
     assert len(linear_program.warnings()) > 0
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_warnings_2(linear_program):
     linear_program_2 = copy.deepcopy(linear_program)
     linear_program_2.A = numpy.eye(10)
     assert len(linear_program_2.warnings()) > 0
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_warnings_3(linear_program):
     linear_program_2 = copy.deepcopy(linear_program)
     linear_program_2.b = numpy.zeros((4, 1))
     assert len(linear_program_2.warnings()) > 0
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_warnings_4(linear_program):
     linear_program_2 = copy.deepcopy(linear_program)
     linear_program_2.b_t = numpy.zeros((12, 1))
     assert len(linear_program_2.warnings()) > 0
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_warnings_5(linear_program):
     linear_program_2 = copy.deepcopy(linear_program)
     linear_program_2.c = numpy.zeros((12, 1))
     assert len(linear_program_2.warnings()) > 0
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_warnings_6(linear_program):
     try:
         linear_program_2 = copy.deepcopy(linear_program)
@@ -113,30 +123,35 @@ def test_warnings_6(linear_program):
         assert True
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_warnings_7(linear_program):
     linear_program_2 = copy.deepcopy(linear_program)
     linear_program_2.c = numpy.zeros((12))
     assert len(linear_program_2.warnings()) > 0
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_warnings_8(linear_program):
     linear_program_2 = copy.deepcopy(linear_program)
     linear_program_2.b = numpy.zeros((12))
     assert len(linear_program_2.warnings()) > 0
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_warnings_9(linear_program):
     linear_program_2 = copy.deepcopy(linear_program)
     linear_program_2.F = numpy.zeros((12, 10))
     assert len(linear_program_2.warnings()) > 0
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_warnings_10(linear_program):
     linear_program_2 = copy.deepcopy(linear_program)
     linear_program_2.A = numpy.zeros((12, 10))
     assert len(linear_program_2.warnings()) > 0
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_latex_lp(linear_program):
     _ = linear_program.latex()
 
@@ -153,6 +168,7 @@ def test_latex_lp(linear_program):
     assert True
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_scale_constraints_1(linear_program):
     lp_2 = copy.deepcopy(linear_program)
     lp_2.scale_constraints()
@@ -166,24 +182,28 @@ def test_scale_constraints_1(linear_program):
 # mpQP programming
 ################
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_warnings_qp_1(quadratic_program):
     qp_program_2 = copy.deepcopy(quadratic_program)
     qp_program_2.Q = numpy.zeros((3, 4))
     assert len(qp_program_2.warnings()) > 0
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_warnings_qp_2(quadratic_program):
     qp_program_2 = copy.deepcopy(quadratic_program)
     qp_program_2.Q = numpy.zeros((5, 5))
     assert len(qp_program_2.warnings()) > 0
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_warnings_qp_3(quadratic_program):
     qp_program_2 = copy.deepcopy(quadratic_program)
     qp_program_2.Q = numpy.diag([1, 0, -1])
     assert len(qp_program_2.warnings()) > 0
 
 
+@pytest.mark.filterwarnings("ignore::UserWarning")
 def test_warnings_qp_4(quadratic_program):
     qp_program_2 = copy.deepcopy(quadratic_program)
     qp_program_2.Q = numpy.diag([1, 0, 10 ** -5])
