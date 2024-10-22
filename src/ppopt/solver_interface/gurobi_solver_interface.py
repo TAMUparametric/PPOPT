@@ -20,6 +20,7 @@ def solve_miqcqp_gurobi(Q: Matrix = None, c: Matrix = None, A: Matrix = None,
                       b: Matrix = None,
                       Q_q: List[Matrix] = None, A_q: Matrix = None, b_q: Matrix = None,
                       equality_constraints: Optional[Sequence[int]] = None,
+                      q_equality_constraints: Optional[Sequence[int]] = None,
                       bin_vars: Optional[Sequence[int]] = None, verbose: bool = False,
                       get_duals: bool = True) -> Optional[SolverOutput]:
     r"""
@@ -48,6 +49,7 @@ def solve_miqcqp_gurobi(Q: Matrix = None, c: Matrix = None, A: Matrix = None,
     :param A_q: Constraint LHS matrix for quadratic constraints
     :param b_q: Constraint RHS matrix for quadratic constraints
     :param equality_constraints: List of Equality constraints
+    :param q_equality_constraints: List of Equality constraints for quadratic constraints
     :param bin_vars: List of binary variable indices
     :param verbose: Flag for output of underlying Solver, default False
     :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
@@ -61,6 +63,9 @@ def solve_miqcqp_gurobi(Q: Matrix = None, c: Matrix = None, A: Matrix = None,
 
     if equality_constraints is None:
         equality_constraints = []
+
+    if q_equality_constraints is None:
+        q_equality_constraints = []
 
     if bin_vars is None:
         bin_vars = []
@@ -83,7 +88,7 @@ def solve_miqcqp_gurobi(Q: Matrix = None, c: Matrix = None, A: Matrix = None,
     if Q_q is not None:
         if get_duals:
             model.Params.QCPDual = 1
-        if numpy.min([numpy.min(numpy.linalg.eigvalsh(Q)) for Q in Q_q]) < 0:
+        if numpy.min([numpy.min(numpy.linalg.eigvalsh(Q)) for Q in Q_q]) < 0 or len(q_equality_constraints) > 0:
             model.Params.NonConvex = 2
             # noinspection SpellCheckingInspection
             model.Params.MIPgap = 0
@@ -112,10 +117,13 @@ def solve_miqcqp_gurobi(Q: Matrix = None, c: Matrix = None, A: Matrix = None,
         model.addMConstr(A, x, sense, b.flatten())
 
     if num_quadratic_constraints != 0:
+        sense = [GRB.LESS_EQUAL for _ in range(num_quadratic_constraints)]
+        for i in q_equality_constraints:
+            sense[i] = GRB.EQUAL
         if A_q is None:
             A_q = numpy.zeros((num_quadratic_constraints, num_vars))
         for i in range(num_quadratic_constraints):
-            model.addMQConstr(Q_q[i], A_q[i,:].flatten(), GRB.LESS_EQUAL, b_q[i], x, x, x)
+            model.addMQConstr(Q_q[i], A_q[i,:].flatten(), sense[i], b_q[i], x, x, x)
 
     objective = 0
 

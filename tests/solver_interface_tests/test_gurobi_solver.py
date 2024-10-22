@@ -145,6 +145,16 @@ def test_qcqp_4():
     soln = solve_miqcqp_gurobi(Q=Q, c=None, A=A, b=b, Q_q=Q_q, A_q=None, b_q=b_q, equality_constraints=[2], get_duals=False)
     assert numpy.allclose(numpy.array([1/numpy.sqrt(2), 1/numpy.sqrt(2)]), soln.sol)
 
+def test_qcqp_5():
+    Q = numpy.array([[0, 0], [0, 1]])
+    c = numpy.array([[1], [0]])
+    A = numpy.array([[0, -1]])
+    b = numpy.array([[0]])
+    Q_q = [numpy.array([[1, 0], [0, 0]])]
+    b_q = numpy.array([[1]])
+    soln = solve_miqcqp_gurobi(Q=Q, c=c, A=A, b=b, Q_q=Q_q, A_q=None, b_q=b_q, q_equality_constraints=[0], get_duals=False)
+    assert numpy.allclose(numpy.array([-1, 0]), soln.sol)
+    
 def test_infeasible_qcqp():
     Q = numpy.array([[1, 0], [0, 1]])
     Q_q = [numpy.array([[1, 0], [0, 1]])]

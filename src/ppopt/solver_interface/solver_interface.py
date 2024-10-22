@@ -30,6 +30,7 @@ def solver_not_supported(solver_name: str) -> None:
 def solve_miqcqp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
                  Q_q: List[Matrix], A_q: Matrix, b_q: Matrix,
                equality_constraints: Optional[Sequence[int]] = None,
+               q_equality_constraints: Optional[Sequence[int]] = None,
                bin_vars: Optional[Sequence[int]] = None, verbose: bool = False,
                get_duals: bool = True, deterministic_solver='gurobi') -> Optional[SolverOutput]:
     r"""
@@ -56,6 +57,7 @@ def solve_miqcqp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
     :param A_q: Constraint LHS matrix for quadratic constraints, can be None
     :param b_q: Constraint RHS matrix for quadratic constraints, can be None
     :param equality_constraints: List of Equality constraints
+    :param q_equality_constraints: List of Equality constraints for quadratic constraints
     :param bin_vars: List of binary variable indices
     :param verbose: Flag for output of underlying Solver, default False
     :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
@@ -64,7 +66,7 @@ def solve_miqcqp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
     :return: A SolverOutput object if optima found, otherwise None.
     """
     if deterministic_solver == "gurobi":
-        return solve_miqp_gurobi(Q, c, A, b, Q_q, A_q, b_q, equality_constraints, bin_vars, verbose, get_duals)
+        return solve_miqp_gurobi(Q, c, A, b, Q_q, A_q, b_q, equality_constraints, q_equality_constraints, bin_vars, verbose, get_duals)
     else:
         solver_not_supported(deterministic_solver)
         return None

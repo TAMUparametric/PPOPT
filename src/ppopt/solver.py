@@ -131,6 +131,7 @@ class Solver:
                      A: Optional[numpy.ndarray], b: Optional[numpy.ndarray], Q_q: Optional[List[numpy.ndarray]],
                      A_q: Optional[numpy.ndarray], b_q: Optional[numpy.ndarray],
                      equality_constraints: Optional[Sequence[int]] = None,
+                     q_equality_constraints: Optional[Sequence[int]] = None,
                      bin_vars: Optional[Sequence[int]] = None, verbose: bool = False,
                      get_duals: bool = True) -> Optional[SolverOutput]:
         r"""
@@ -157,6 +158,7 @@ class Solver:
         :param A_q: Constraint LHS matrix for quadratic constraints, can be None
         :param b_q: Constraint RHS matrix for quadratic constraints, can be None
         :param equality_constraints: List of Equality constraints
+        :param q_equality_constraints: List of Equality constraints for quadratic constraints
         :param bin_vars: List of binary variable indices
         :param verbose: Flag for output of underlying Solver, default False
         :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
@@ -164,7 +166,7 @@ class Solver:
         :return: A SolverOutput object if optima found, otherwise None.
         """
         if self.solvers['miqcqp'] == "gurobi":
-            return solve_miqcqp_gurobi(Q, c, A, b, Q_q, A_q, b_q, equality_constraints, bin_vars, verbose, get_duals)
+            return solve_miqcqp_gurobi(Q, c, A, b, Q_q, A_q, b_q, equality_constraints, q_equality_constraints, bin_vars, verbose, get_duals)
         else:
             return self.solver_not_supported(self.solvers['miqcqp'])
 
