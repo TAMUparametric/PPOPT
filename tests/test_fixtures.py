@@ -12,6 +12,7 @@ from src.ppopt.mpqp_program import MPQP_Program
 from src.ppopt.solution import Solution
 from src.ppopt.utils.general_utils import make_column
 from src.ppopt.mpmodel import MPModeler, VariableType
+from src.ppopt.mpqcqp_program import MPQCQP_Program, QConstraint
 
 
 @pytest.fixture()
@@ -557,3 +558,33 @@ def over_determined_as_mplp():
     miqp_prog = MPMILP_Program(A, b, c, H, A_t, b_t, F, binary_indices)
 
     return miqp_prog.generate_relaxed_problem()
+
+@pytest.fixture()
+def small_mpqcqp():
+    A = numpy.array([[-1, 0], [0, -1]])
+    b = numpy.array([[-5], [0]])
+    Q = numpy.array([[1, 0], [0, -1]])
+    Q_q = numpy.array([[0, 0], [0, 1]])
+    b_q = numpy.array([[4]])
+
+    F_q = numpy.array([[1]])
+    Q_t = numpy.array([[2]])
+    F = numpy.array([[1], [1]])
+
+    H_q = numpy.zeros((2, 1))
+    A_q = numpy.zeros((1, 2))
+    c = numpy.zeros((2, 1))
+    H = numpy.zeros((2, 1))
+
+    A_t = numpy.array([[1], [-1]])
+    b_t = numpy.array([[1], [0]])
+
+    qcon0 = QConstraint(Q_q, H_q, A_q, b_q, F_q, Q_t)
+
+    Q_q1 = numpy.array([[1, 0], [0, 0]])
+    b_q1 = numpy.array([[100]])
+
+    qcon1 = QConstraint(Q_q1, H_q, A_q, b_q1, F_q, Q_t)
+
+    prog = MPQCQP_Program(A, b, c, H, Q, A_t, b_t, F, [qcon0, qcon1], post_process=False)
+    return prog
