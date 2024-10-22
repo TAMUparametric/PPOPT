@@ -1,6 +1,6 @@
 import sys
 from dataclasses import dataclass, field
-from typing import Dict, Iterable, Optional, Sequence
+from typing import Dict, Iterable, Optional, Sequence, List
 
 import numpy
 
@@ -11,6 +11,7 @@ from .solver_interface.gurobi_solver_interface import (
     solve_milp_gurobi,
     solve_miqp_gurobi,
     solve_qp_gurobi,
+    solve_miqcqp_gurobi,
 )
 from .solver_interface.quad_prog_interface import solve_qp_quadprog
 from .solver_interface.solver_interface_utils import SolverOutput
@@ -62,7 +63,7 @@ def default_solver_options():
 
     # default to gurobi as a base solver
 
-    default_solver = {'lp': 'gurobi', 'qp': 'gurobi', 'milp': 'gurobi', 'miqp': 'gurobi'}
+    default_solver = {'lp': 'gurobi', 'qp': 'gurobi', 'milp': 'gurobi', 'miqp': 'gurobi', 'miqcqp': 'gurobi'}
 
     if 'glpk' in available_LP_solvers():
         default_solver['lp'] = 'glpk'
@@ -82,7 +83,7 @@ class Solver:
     """
     solvers: Dict[str, str] = field(default_factory=default_solver_options)
 
-    supported_problems = ('lp', 'qp', 'milp', 'miqp')
+    supported_problems = ('lp', 'qp', 'milp', 'miqp', 'miqcqp')
     supported_solvers = ('gurobi', 'glpk', 'quadprog', 'daqp')
 
     def __post_init__(self):
@@ -124,6 +125,49 @@ class Solver:
                       + f'This solver has the following problem types defined {self.solvers.items()!s} \n' \
                       + f'If this is one of the supported problems {Solver.supported_problems!s} then simply add it when defining the solver object\n'
             raise RuntimeError(message)
+
+    # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
+    def solve_miqcqp(self, Q: Optional[numpy.ndarray], c: Optional[numpy.ndarray],
+                     A: Optional[numpy.ndarray], b: Optional[numpy.ndarray], Q_q: Optional[List[numpy.ndarray]],
+                     A_q: Optional[numpy.ndarray], b_q: Optional[numpy.ndarray],
+                     equality_constraints: Optional[Sequence[int]] = None,
+                     bin_vars: Optional[Sequence[int]] = None, verbose: bool = False,
+                     get_duals: bool = True) -> Optional[SolverOutput]:
+        r"""
+        This is the breakout for solving mixed integer quadratic programs
+
+        .. math::
+
+            \min_{xy} \frac{1}{2} [xy]^TQ[xy] + c^T[xy]
+
+        .. math::
+            \begin{align}
+            A[xy] &\leq b\\
+            A_{eq}[xy] &= b_{eq}\\
+            [xy]^TQ_q[xy] + A_q[xy] &\leq b_q \ forall q\\
+            x &\in R^n\\
+            y &\in \{0, 1\}^m
+            \end{align}
+
+        :param Q: Square matrix, can be None
+        :param c: Column Vector, can be None
+        :param A: Constraint LHS matrix, can be None
+        :param b: Constraint RHS matrix, can be None
+        :param Q_q: List of quadratic constraint matrices, can be None
+        :param A_q: Constraint LHS matrix for quadratic constraints, can be None
+        :param b_q: Constraint RHS matrix for quadratic constraints, can be None
+        :param equality_constraints: List of Equality constraints
+        :param bin_vars: List of binary variable indices
+        :param verbose: Flag for output of underlying Solver, default False
+        :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
+
+        :return: A SolverOutput object if optima found, otherwise None.
+        """
+        if self.solvers['miqcqp'] == "gurobi":
+            return solve_miqcqp_gurobi(Q, c, A, b, Q_q, A_q, b_q, equality_constraints, bin_vars, verbose, get_duals)
+        else:
+            return self.solver_not_supported(self.solvers['miqcqp'])
+
 
     # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
     def solve_miqp(self, Q: Optional[numpy.ndarray], c: Optional[numpy.ndarray], A: Optional[numpy.ndarray],

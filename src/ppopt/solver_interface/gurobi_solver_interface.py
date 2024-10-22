@@ -115,7 +115,7 @@ def solve_miqcqp_gurobi(Q: Matrix = None, c: Matrix = None, A: Matrix = None,
         if A_q is None:
             A_q = numpy.zeros((num_quadratic_constraints, num_vars))
         for i in range(num_quadratic_constraints):
-            model.addMQConstr(Q_q[i], A_q[i,:], GRB.LESS_EQUAL, b_q[i], x, x, x)
+            model.addMQConstr(Q_q[i], A_q[i,:].flatten(), GRB.LESS_EQUAL, b_q[i], x, x, x)
 
     objective = 0
 
