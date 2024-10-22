@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, List
 
 import numpy
 
@@ -41,9 +41,12 @@ class SolverOutput:
 
 
 def get_program_parameters(Q: Optional[numpy.ndarray], c: Optional[numpy.ndarray], A: Optional[numpy.ndarray],
-                           b: Optional[numpy.ndarray]):
+                           b: Optional[numpy.ndarray],
+                           Q_q: Optional[List[numpy.ndarray]] = None, A_q: Optional[numpy.ndarray] = None,
+                           b_q: Optional[numpy.ndarray] = None):
     """ Given a set of possibly None optimization parameters determine the number of variables and constraints """
-    num_c = 0
+    num_c_l = 0
+    num_c_q = 0
     num_v = 0
 
     if Q is not None:
@@ -51,9 +54,12 @@ def get_program_parameters(Q: Optional[numpy.ndarray], c: Optional[numpy.ndarray
 
     if A is not None:
         num_v = A.shape[1]
-        num_c = A.shape[0]
+        num_c_l = A.shape[0]
 
     if c is not None:
         num_v = numpy.size(c)
 
-    return num_v, num_c
+    if Q_q is not None:
+        num_c_q = len(Q_q)
+
+    return num_v, num_c_l, num_c_q

@@ -5,6 +5,7 @@ from src.ppopt.solver_interface.gurobi_solver_interface import (
     solve_milp_gurobi,
     solve_miqp_gurobi,
     solve_qp_gurobi,
+    solve_miqcqp_gurobi,
 )
 
 
@@ -109,3 +110,55 @@ def test_infeasfible_qp():
     c = numpy.zeros((1, 1))
     soln = solve_qp_gurobi(None, c, A, b)
     assert soln is None
+
+def test_qcqp_1():
+    A = numpy.array([[-1, 0], [0, -1]])
+    b = numpy.array([[-5], [0]])
+    Q = numpy.array([[1, 0], [0, -1]])
+    Q_q = [numpy.array([[0, 0], [0, 1]])]
+    b_q = numpy.array([[4]])
+    soln = solve_miqcqp_gurobi(Q=Q, c=None, A=A, b=b, Q_q=Q_q, A_q=None, b_q=b_q)
+    assert numpy.allclose(numpy.array([5, 2]), soln.sol)
+
+def test_qcqp_2():
+    A = numpy.array([[-1, 0], [0, 1]])
+    b = numpy.array([[-5], [0]])
+    Q = numpy.array([[1, 0], [0, 1]])
+    Q_q = [numpy.array([[0, 0], [0, -1]])]
+    b_q = numpy.array([[-4]])
+    soln = solve_miqcqp_gurobi(Q=Q, c=None, A=A, b=b, Q_q=Q_q, A_q=None, b_q=b_q)
+    assert numpy.allclose(numpy.array([5, -2]), soln.sol)
+
+def test_qcqp_3():
+    c = numpy.array([[1], [1]])
+    Q_q = [numpy.array([[1, 0], [0, 0]]), numpy.array([[0, 0], [0, 1]])]
+    b_q = numpy.array([[4], [4]])
+    soln = solve_miqcqp_gurobi(Q=None, c=c, A=None, b=None, Q_q=Q_q, A_q=None, b_q=b_q)
+    assert numpy.allclose(numpy.array([-2, -2]), soln.sol)
+
+def test_qcqp_4():
+    Q = numpy.array([[1, 0], [0, 1]])
+    A = numpy.array([[-1, 0], [0, -1], [1, -1]])
+    b = numpy.array([[0], [0], [0]])
+    Q_q = [numpy.array([[-1, 0], [0, -1]])]
+    b_q = numpy.array([[-1]])
+    soln = solve_miqcqp_gurobi(Q=Q, c=None, A=A, b=b, Q_q=Q_q, A_q=None, b_q=b_q, equality_constraints=[2], get_duals=False)
+    assert numpy.allclose(numpy.array([1/numpy.sqrt(2), 1/numpy.sqrt(2)]), soln.sol)
+
+def test_infeasible_qcqp():
+    Q = numpy.array([[1, 0], [0, 1]])
+    Q_q = [numpy.array([[1, 0], [0, 1]])]
+    b_q = numpy.array([[-1]])
+    soln = solve_miqcqp_gurobi(Q=Q, c=None, A=None, b=None, Q_q=Q_q, A_q=None, b_q=b_q)
+    assert soln is None
+
+def test_miqcqp_1():
+    Q = numpy.array([[1, 1], [1, -1]])
+    c = numpy.array([[0], [0]])
+    A = numpy.array([[1, 0], [-1, 0]])
+    b = numpy.array([[5], [5]])
+    Q_q = [numpy.array([[1, 0], [0, 0]])]
+    A_q = numpy.array([[0, 0]])
+    b_q = numpy.array([[0.5]])
+    soln = solve_miqcqp_gurobi(Q=Q, c=c, A=A, b=b, Q_q=Q_q, A_q=A_q, b_q=b_q, bin_vars=[1])
+    assert numpy.allclose(numpy.array([-1/numpy.sqrt(2), 1]), soln.sol)

@@ -134,7 +134,7 @@ def solve_qp_cvxopt(Q: numpy.ndarray, c: numpy.ndarray, A: numpy.ndarray, b: num
     if equality_constraints is None:
         equality_constraints = []
 
-    num_variables, num_constraints = get_program_parameters(Q, c, A, b)
+    num_variables, num_constraints = get_program_parameters(Q, c, A, b)[0:2]
 
     # if n objective is supplied, set to Obj(x) = 0 aka. we are looking for feasibility
     if c is None:
@@ -180,7 +180,7 @@ def solve_lp_cvxopt(c: Matrix, A: Matrix, b: Matrix, equality_constraints: Optio
     if equality_constraints is None:
         equality_constraints = []
 
-    num_variables, num_constraints = get_program_parameters(None, c, A, b)
+    num_variables, num_constraints = get_program_parameters(None, c, A, b)[0:2]
 
     # if no matrix is supplied then LP is unbounded
     if A is None:
