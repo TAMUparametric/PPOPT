@@ -3,6 +3,7 @@ from src.ppopt.solver_interface.solver_interface import (
     solve_milp,
     solve_miqp,
     solve_qp,
+    solve_miqcqp,
 )
 
 
@@ -33,6 +34,13 @@ def test_solver_not_supported_3():
 def test_solver_not_supported_4():
     try:
         solve_milp(None, None, None, deterministic_solver='MyBigBrain')
+        assert False
+    except RuntimeError:
+        assert True
+
+def test_solver_not_supported_5():
+    try:
+        solve_miqcqp(None, None, None, None, None, None, None, deterministic_solver='MyBigBrain')
         assert False
     except RuntimeError:
         assert True

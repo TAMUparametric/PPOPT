@@ -1,4 +1,4 @@
-from typing import Optional, Sequence
+from typing import Optional, Sequence, List
 
 import numpy
 
@@ -9,6 +9,7 @@ from ..solver_interface.gurobi_solver_interface import (
     solve_milp_gurobi,
     solve_miqp_gurobi,
     solve_qp_gurobi,
+    solve_miqcqp_gurobi,
 )
 from ..solver_interface.quad_prog_interface import solve_qp_quadprog
 from .solver_interface_utils import SolverOutput
@@ -26,12 +27,56 @@ def solver_not_supported(solver_name: str) -> None:
 
 
 # noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
-def solve_miqp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
+def solve_miqcqp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
+                 Q_q: List[Matrix], A_q: Matrix, b_q: Matrix,
                equality_constraints: Optional[Sequence[int]] = None,
                bin_vars: Optional[Sequence[int]] = None, verbose: bool = False,
                get_duals: bool = True, deterministic_solver='gurobi') -> Optional[SolverOutput]:
     r"""
     This is the breakout for solving mixed integer quadratic programs
+
+    .. math::
+
+        \min_{xy} \frac{1}{2} [xy]^TQ[xy] + c^T[xy]
+
+    .. math::
+        \begin{align}
+        A[xy] &\leq b\\
+        A_{eq}[xy] &= b_{eq}\\
+        [xy]^TQ_q[xy] + A_q[xy] &\leq b_q \ forall q\\
+        x &\in R^n\\
+        y &\in \{0, 1\}^m
+        \end{align}
+
+    :param Q: Square matrix, can be None
+    :param c: Column Vector, can be None
+    :param A: Constraint LHS matrix, can be None
+    :param b: Constraint RHS matrix, can be None
+    :param Q_q: List of quadratic constraint matrices, can be None
+    :param A_q: Constraint LHS matrix for quadratic constraints, can be None
+    :param b_q: Constraint RHS matrix for quadratic constraints, can be None
+    :param equality_constraints: List of Equality constraints
+    :param bin_vars: List of binary variable indices
+    :param verbose: Flag for output of underlying Solver, default False
+    :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
+    :param deterministic_solver: The underlying Solver to use, e.g. gurobi, ect
+
+    :return: A SolverOutput object if optima found, otherwise None.
+    """
+    if deterministic_solver == "gurobi":
+        return solve_miqp_gurobi(Q, c, A, b, Q_q, A_q, b_q, equality_constraints, bin_vars, verbose, get_duals)
+    else:
+        solver_not_supported(deterministic_solver)
+        return None
+
+
+# noinspection PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList,PyArgumentList
+def solve_miqp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
+               equality_constraints: Optional[Sequence[int]] = None,
+               bin_vars: Optional[Sequence[int]] = None, verbose: bool = False,
+               get_duals: bool = True, deterministic_solver='gurobi') -> Optional[SolverOutput]:
+    r"""
+    This is the breakout for solving mixed integer quadratically constrained quadratic programs
 
     .. math::
 
@@ -53,7 +98,7 @@ def solve_miqp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
     :param bin_vars: List of binary variable indices
     :param verbose: Flag for output of underlying Solver, default False
     :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
-    :param deterministic_solver: The underlying Solver to use, e.g. gurobi, ect
+    :param deterministic_solver: The underlying Solver to use, e.g. gurobi, etc
 
     :return: A SolverOutput object if optima found, otherwise None.
     """
@@ -88,7 +133,7 @@ def solve_qp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix, equality_constraints: O
     :param equality_constraints: List of Equality constraints
     :param verbose: Flag for output of underlying Solver, default False
     :param get_duals: Flag for returning dual variable of problem, default True (false for all mixed integer models)
-    :param deterministic_solver: The underlying Solver to use, e.g. gurobi, ect
+    :param deterministic_solver: The underlying Solver to use, e.g. gurobi, etc
 
     :return: A SolverOutput object if optima found, otherwise None.
     """
