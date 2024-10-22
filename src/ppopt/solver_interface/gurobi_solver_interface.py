@@ -44,6 +44,9 @@ def solve_miqcqp_gurobi(Q: Matrix = None, c: Matrix = None, A: Matrix = None,
     :param c: Column Vector, can be None
     :param A: Constraint LHS matrix, can be None
     :param b: Constraint RHS matrix, can be None
+    :param Q_q: List of quadratic constraint matrices
+    :param A_q: Constraint LHS matrix for quadratic constraints
+    :param b_q: Constraint RHS matrix for quadratic constraints
     :param equality_constraints: List of Equality constraints
     :param bin_vars: List of binary variable indices
     :param verbose: Flag for output of underlying Solver, default False
