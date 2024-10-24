@@ -261,21 +261,25 @@ class MPQCQP_Program(MPQP_Program):
 
     def check_optimality(self, active_set: list):
         r"""
-        Tests if the active set is optimal for the provided mpqp program
+        Tests if the active set is optimal for the provided mpqcqp program
 
         .. math::
 
-            \max_{x, \theta, \lambda, s, t} \quad t
+            \max_{x, \theta, \lambda, s, t, \nu, \beta} \quad t
 
         .. math::
             \begin{align*}
-                Qx + H \theta + (A_{A_i})^T \lambda_{A_i} + c &= 0\\
-                A_{A_i}x - b_ai-F_{a_i}\theta &= 0\\
-                A_{A_j}x - b_{A_j}-F_{A_j}\theta + s{j_k} &= 0\\
+                \nu Qx + \lambda_{A_i} Q_c x + \nu H \theta + \lambda_{A_i} H_c \theta + (A_{A_i})^T \lambda_{A_i} + \nu c &= 0\\
+                A_{A_i}x - b_ai-F_{A_i}\theta &= 0\\
+                A_{A_j}x - b_{A_j}-F_{A_j}\theta + s_{j_k} &= 0\\
+                x^TQ_{A_i}x + \theta^TH_{A_i}^Tx + A_{A_i}x - b_{A_i} - F_{A_i}\theta + \theta^TQ_{\theta,A_i}\theta &= 0\\
+                x^TQ_{A_j}x + \theta^TH_{A_j}^Tx + A_{A_j}x - b_{A_j} - F_{A_j}\theta + \theta^TQ_{\theta,A_j}\theta + s_{j_k}&= 0\\
+                \nu^2 + \lambda^T \lambda - \beta^2 = 0\\
                t*e_1 &\leq \lambda_{A_i}\\
                t*e_2 &\leq s_{J_i}\\
                t &\geq 0\\
                \lambda_{A_i} &\geq 0\\
+               \nu &\ge 0\\
                s_{J_i} &\geq 0\\
                A_t\theta &\leq b_t
             \end{align*}
@@ -284,17 +288,36 @@ class MPQCQP_Program(MPQP_Program):
         :return: dictionary of parameters, or None if active set is not optimal
         """
 
+        # IMPLICIT ASSUMPTION HERE BASED ON HOW THIS FUNCTION IS CALLED
+        # active_set always begins with the indices of the equality constraints
+
+        # everything for pure linear constraints can be reused from the QP case and extended with more 0s for the quadratic constraint lambdas and slacks
+        # we use FJ conditions for the general non convex case, if convex, set nu to 1 which results in KKT --> leave handling up to subsolver
+        # for the quadratic constraints, we need to add extra quadratic constraint terms
+
         zeros = lambda x, y: numpy.zeros((x, y))
+
+        # helper function to convert a 1d array to a row vector, which is required for some ppopt_block uses
+        to_row = lambda x: x.reshape(1, -1)
 
         num_x = self.num_x()
         num_constraints = self.num_constraints()
+        num_linear_constraints = self.num_linear_constraints()
+        num_quadratic_constraints = self.num_quadratic_constraints()
         num_active = len(active_set)
+        linear_active = [i for i in active_set if i < num_linear_constraints]
+        quadratic_active = [i - num_linear_constraints for i in active_set if i >= num_linear_constraints]
+        num_linear_active = len(linear_active)
+        num_quadratic_active = num_active - num_linear_active
         num_theta_c = self.A_t.shape[0]
         num_activated = len(active_set) - len(self.equality_indices)
 
-        inactive = [i for i in range(num_constraints) if i not in active_set]
+        linear_inactive = [i for i in range(num_linear_constraints) if i not in active_set]
+        quadratic_inactive = [i - num_linear_constraints for i in range(num_linear_constraints, num_linear_constraints + num_quadratic_constraints) if i not in active_set]
 
-        num_inactive = num_constraints - num_active
+        num_linear_inactive = num_linear_constraints - num_linear_active
+        num_quadratic_inactive = num_quadratic_constraints - num_quadratic_active
+        num_inactive = num_linear_inactive + num_quadratic_inactive
 
         num_theta = self.num_t()
 
@@ -302,53 +325,115 @@ class MPQCQP_Program(MPQP_Program):
         A_list = []
         b_list = []
 
-        # 1) Qu + H theta + (A_Ai)^T lambda_Ai + c = 0
-        # if num_active > 0:
-        # A_list.append([program.Q, zeros(num_x, num_theta), program.A[equality_indices].T, zeros(num_x, num_inactive), zeros(num_x, 1)])
-        A_list.append([self.Q, self.H, self.A[active_set].T, zeros(num_x, num_inactive), zeros(num_x, 1)])
-        b_list.append([-self.c])
+        Q_q_list = []
+        A_q_list = []
+        b_q_list = []
+
+        # 1) (nu * Q + lambda * Q_c)u + (nu * H + lambda * H_c)theta + (A_Ai)^T * lambda_Ai + c * nu = 0
+
+        # assemble quadratic term of each dimension of the lagrangian
+        for i in range(num_x):
+            tmp = zeros(num_x + num_theta + num_constraints + 3, num_x + num_theta + num_constraints + 3)
+            # if quadratic constraints are active, add their terms to the quadratic part of the lagrangian
+            if num_quadratic_active > 0:
+                lambda_block = ppopt_block([[to_row(self.qconstraints[j].Q[i, :]), to_row(self.qconstraints[j].H[i, :])] for j in quadratic_active])
+                tmp[num_x + num_theta + num_linear_active:num_x + num_theta + num_active - num_linear_active, 0:num_x + num_theta] = lambda_block
+            # add the quadratic part of the objective to the lagrangian
+            nu_row = ppopt_block([to_row(self.Q[i,:]), to_row(self.H[i,:])])
+            tmp[-2, 0:num_x + num_theta] = nu_row
+            Q_q_list.append(tmp)
+
+        # now, we build the linear terms of the lagrangian
+        linear_active_matrix = self.A[linear_active].T
+        quadratic_active_matrix = zeros(num_x, num_quadratic_active)
+        if num_quadratic_active > 0:
+            quadratic_active_matrix = ppopt_block([[self.qconstraints[i].A] for i in quadratic_active]).T # linear terms of quadratic constraints, each row is a separate constraint
+
+        A_q_list.append([ppopt_block([zeros(num_x, num_x + num_theta), linear_active_matrix, quadratic_active_matrix, zeros(num_x, num_inactive + 1), self.c, zeros(num_x, 1)])])
+        b_q_list.append([zeros(num_x, 1)])
+
         # 2) A_Ai*u - b_ai-F_ai*theta = 0
-        A_list.append([self.A[active_set], -self.F[active_set], zeros(num_active, num_constraints + 1)])
-        b_list.append([self.b[active_set]])
+        # zeros for all lambda (linear and quadratic), slacks (linear and quadratic), t, nu, beta
+        A_list.append([self.A[linear_active], -self.F[linear_active], zeros(num_linear_active, num_constraints + 3)])
+        b_list.append([self.b[linear_active]])
         # 3) A_Aj*u - b_aj-F_aj*theta + sj_k= 0
         A_list.append(
-            [self.A[inactive], -self.F[inactive], zeros(num_inactive, num_active), numpy.eye(num_inactive),
-             zeros(num_inactive, 1)])
-        b_list.append([self.b[inactive]])
+            [self.A[linear_inactive], -self.F[linear_inactive], zeros(num_linear_inactive, num_active), numpy.eye(num_linear_inactive),
+             zeros(num_linear_inactive, num_quadratic_inactive + 3)])
+        b_list.append([self.b[linear_inactive]])
         # 4) t*e_1 <= lambda_Ai
-        # edited on 2/19/2021 to remove the positivity constraint on the equality constraints
         if num_activated >= 0:
             A_list.append(
                 [zeros(num_activated, num_x + num_theta + num_active - num_activated), -numpy.eye(num_activated),
-                 zeros(num_activated, num_inactive), numpy.ones((num_activated, 1))])
-            # A_list.append([zeros(num_active, num_x + num_theta), -numpy.eye(num_active), zeros(num_active, num_inactive),numpy.ones((num_active, 1))])
+                 zeros(num_activated, num_inactive), numpy.ones((num_activated, 1)), zeros(num_activated, 2)])
             b_list.append([zeros(num_activated, 1)])
-            # b_list.append([zeros(num_active, 1)])
         # 5) t*e_2 <= s_Ji
         A_list.append([zeros(num_inactive, num_x + num_theta + num_active), -numpy.eye(num_inactive),
-                       numpy.ones((num_inactive, 1))])
+                       numpy.ones((num_inactive, 1)), zeros(num_inactive, 2)])
         b_list.append([zeros(num_inactive, 1)])
         # 6) t >= 0
-        t_row = zeros(1, num_x + num_theta + num_constraints + 1)
-        t_row[0][-1] = -1
+        # t is now the third to last variable
+        t_row = zeros(1, num_x + num_theta + num_constraints + 3)
+        t_row[0][-3] = -1
         A_list.append([t_row])
         b_list.append([numpy.array([[0]])])
         # 7) lambda_Ai>= 0
         if num_activated >= 0:
-            # edited on 2/19/2021 to remove the positivity constraint on the equality constraints
             A_list.append(
                 [zeros(num_activated, num_x + num_theta + num_active - num_activated), -numpy.eye(num_activated),
-                 zeros(num_activated, num_inactive + 1)])
-            # A_list.append([zeros(num_active, num_x + num_theta), -numpy.eye(num_active), zeros(num_active, num_inactive + 1)])
+                 zeros(num_activated, num_inactive + 3)])
             b_list.append([zeros(num_activated, 1)])
-            # b_list.append([zeros(num_active, 1)])
         # 8) s_Ji>=0
         A_list.append(
-            [zeros(num_inactive, num_x + num_theta + num_active), -numpy.eye(num_inactive), zeros(num_inactive, 1)])
+            [zeros(num_inactive, num_x + num_theta + num_active), -numpy.eye(num_inactive), zeros(num_inactive, 3)])
         b_list.append([zeros(num_inactive, 1)])
         # 9) A_t*theta<= b_t
-        A_list.append([zeros(num_theta_c, num_x), self.A_t, zeros(num_theta_c, num_constraints + 1)])
+        A_list.append([zeros(num_theta_c, num_x), self.A_t, zeros(num_theta_c, num_constraints + 3)])
         b_list.append([self.b_t])
+        # 10) active quadratic constraints
+        if num_quadratic_active > 0:
+            A_q_active = ppopt_block([[q.A, -q.F, zeros(1, num_constraints + 3)] for q in [self.qconstraints[i] for i in quadratic_active]])
+            b_q_active = ppopt_block([q.b for q in [self.qconstraints[i] for i in quadratic_active]])
+            for i in quadratic_active:
+                q = self.qconstraints[i]
+                tmp = zeros(num_x + num_theta + num_constraints + 3, num_x + num_theta + num_constraints + 3)
+                tmp[0:num_x, 0:num_x] = q.Q
+                tmp[0:num_x, num_x:num_x + num_theta] = 0.5 * q.H
+                tmp[num_x:num_x + num_theta, 0:num_x] = 0.5 * q.H.T
+                tmp[num_x:num_x + num_theta, num_x:num_x + num_theta] = -q.Q_t
+                Q_q_list.append(tmp)
+            A_q_list.append([A_q_active])
+            b_q_list.append([b_q_active])
+        # 11) inactive quadratic constraints
+        if num_quadratic_inactive > 0:
+            A_q_inactive = ppopt_block([[q.A, -q.F, zeros(1, num_constraints + 3)] for q in [self.qconstraints[i] for i in quadratic_inactive]])
+            A_q_inactive[:, num_x+num_theta+num_active+num_linear_inactive:num_x+num_theta+num_constraints] = numpy.eye(num_quadratic_inactive)
+            b_q_inactive = ppopt_block([q.b for q in [self.qconstraints[i] for i in quadratic_inactive]])
+            for i in quadratic_inactive:
+                q = self.qconstraints[i]
+                tmp = zeros(num_x + num_theta + num_constraints + 3, num_x + num_theta + num_constraints + 3)
+                tmp[0:num_x, 0:num_x] = q.Q
+                tmp[0:num_x, num_x:num_x + num_theta] = 0.5 * q.H
+                tmp[num_x:num_x + num_theta, 0:num_x] = 0.5 * q.H.T
+                tmp[num_x:num_x + num_theta, num_x:num_x + num_theta] = -q.Q_t
+                Q_q_list.append(tmp)
+            A_q_list.append([A_q_inactive])
+            b_q_list.append([b_q_inactive.reshape((-1, 1))])
+        # 12) nu^2 + lambda^T lambda - beta^2 = 0
+        tmp = zeros(num_x + num_theta + num_constraints + 3, num_x + num_theta + num_constraints + 3)
+        tmp[-3][-3] = -1
+        tmp[-2][-2] = 1
+        lambda_indices = numpy.arange(num_x + num_theta - 1, num_activated)
+        tmp[lambda_indices, lambda_indices] = 1
+        Q_q_list.append(tmp)
+        A_q_list.append([zeros(1, num_x + num_theta + num_constraints + 3)])
+        b_q_list.append([zeros(1, 1)])
+        # 13) nu >= 0
+        A_list.append([zeros(1, num_x + num_theta + num_constraints + 1), -numpy.eye(1), zeros(1, 1)])
+        nu_zero_threshold = zeros(1, 1)
+        nu_zero_threshold[0][0] = 10**(-3)
+        b_list.append([-nu_zero_threshold])
+        # TODO if convex modify this to set nu equal to 1
 
         A_list = [i for i in list(map(remove_size_zero_matrices, A_list)) if i != []]
         b_list = [i for i in list(map(remove_size_zero_matrices, b_list)) if i != []]
@@ -356,27 +441,36 @@ class MPQCQP_Program(MPQP_Program):
         A = ppopt_block(A_list)
         b = ppopt_block(b_list)
         c = make_column(t_row.T)
+        A_q = ppopt_block(A_q_list)
+        b_q = ppopt_block(b_q_list)
 
-        lp_active_limit = num_x + num_constraints
+        # lp_active_limit = num_x + num_linear_constraints
 
-        if num_active == 0:
-            lp_active_limit = num_constraints
+        # if num_active == 0:
+        #     lp_active_limit = num_linear_constraints
 
-        equality_indices = list(range(0, lp_active_limit))
+        # equality_indices = list(range(0, lp_active_limit))
 
-        sol = self.solver.solve_lp(c, A, b, equality_indices)
+        linear_equality_indices = list(range(0, num_linear_constraints))
+        quadratic_equality_indices = list(range(0, num_x + num_quadratic_constraints + 1))
+
+        # sol = self.solver.solve_lp(c, A, b, equality_indices)
+        # TODO set the equality constraints correctly
+        sol = self.solver.solve_miqcqp(None, c, A, b, Q_q_list, A_q, b_q, linear_equality_indices, quadratic_equality_indices, get_duals=False, verbose=False)
 
         if sol is not None:
-            # separate out the x|theta|lambda|slack|t
-            theta_offset = self.Q.shape[0]
-            lambda_offset = theta_offset + self.F.shape[1]
+            # separate out the x|theta|lambda|slack|t|nu|beta
+            theta_offset = num_x
+            lambda_offset = theta_offset + num_theta
             slacks_offset = lambda_offset + num_active
             t_offset = slacks_offset + num_inactive
             return {"x": sol.sol[0:theta_offset],
                     'theta': sol.sol[theta_offset: lambda_offset],
                     'lambda': sol.sol[lambda_offset: slacks_offset],
                     'slack': sol.sol[slacks_offset: t_offset],
-                    't': sol.sol[-1],
+                    't': sol.sol[-3],
+                    'nu': sol.sol[-2],
+                    'beta': sol.sol[-1],
                     'equality_indices': active_set}
         return None
 
