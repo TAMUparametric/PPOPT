@@ -588,3 +588,32 @@ def small_mpqcqp():
 
     prog = MPQCQP_Program(A, b, c, H, Q, A_t, b_t, F, [qcon0, qcon1], post_process=False)
     return prog
+
+@pytest.fixture()
+def pappas_qcqp_2():
+    """
+    This is example 2 from https://doi.org/10.1007/s10898-020-00933-9
+    """
+    Q = numpy.array([[1]])
+    c = numpy.array([[-5]])
+    c_c = numpy.array([[6]])
+
+    A = numpy.array([[1], [-1], [1]])
+    b = numpy.array([[12], [10], [10]])
+    F = numpy.array([[0, -5], [0, 0], [0, 0]])
+
+    Q_q = numpy.array([[-1]])
+    A_q = numpy.array([[-1]])
+    b_q = numpy.array([[-15]])
+    F_q = numpy.array([[-10, 0]])
+
+    A_t = numpy.array([[1, 0], [-1, 0], [0, 1], [0, -1]])
+    b_t = numpy.array([[3], [3], [3], [2]])
+
+    H = numpy.zeros((1, 2))
+    Q_qt = numpy.zeros((2, 2))
+
+    qcon = QConstraint(Q_q, H, A_q, b_q, F_q, Q_qt)
+
+    prog = MPQCQP_Program(A, b, c, H, Q, A_t, b_t, F, [qcon], c_c, post_process=False)
+    return prog
