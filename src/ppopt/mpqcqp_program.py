@@ -48,7 +48,7 @@ class QConstraint:
     
     def is_convex(self) -> bool:
         """Checks if the quadratic constraint is convex."""
-        return numpy.all(numpy.linalg.eigvals(self.Q) >= 0)
+        return numpy.all(numpy.linalg.eigvals(self.Q) >= 10 ** -4)
 
 
 class MPQCQP_Program(MPQP_Program):
@@ -97,6 +97,10 @@ class MPQCQP_Program(MPQP_Program):
     
     def num_inequality_constraints(self) -> int:
         return self.num_constraints() - len(self.equality_indices)
+    
+    def is_convex(self) -> bool:
+        """Checks if the program is convex. Assumes that all quadratic constraints are inequalities."""
+        return bool(numpy.all(numpy.linalg.eigvals(self.Q) >= 10 ** -4) and all([q.is_convex() for q in self.qconstraints]))
 
     def evaluate_objective(self, x, theta_point) -> float:
         r"""
@@ -134,7 +138,7 @@ class MPQCQP_Program(MPQP_Program):
         if self.Q.shape[0] == self.Q.shape[1]:
             e_values, _ = numpy.linalg.eig(self.Q)
             if min(e_values) < 0:
-                warning_list.append(f'Non-convex quadratic program detected, with eigenvalues {e_values}')
+                warning_list.append(f'Non-convex quadratic objective detected, with eigenvalues {e_values}')
             elif min(e_values) < 10 ** -4:
                 warning_list.append(f'Possible positive semi-definite nature detected in Q, eigenvalues {e_values}')
 
@@ -435,20 +439,23 @@ class MPQCQP_Program(MPQP_Program):
             A_q_list.append([A_q_inactive])
             b_q_list.append([b_q_inactive.reshape((-1, 1))])
         # 12) nu^2 + lambda^T lambda - beta^2 = 0
-        tmp = zeros(num_x + num_theta + num_constraints + 3, num_x + num_theta + num_constraints + 3)
-        tmp[-3][-3] = -1
-        tmp[-2][-2] = 1
-        lambda_indices = numpy.arange(num_x + num_theta - 1, num_activated)
-        tmp[lambda_indices, lambda_indices] = 1
-        Q_q_list.append(tmp)
-        A_q_list.append([zeros(1, num_x + num_theta + num_constraints + 3)])
-        b_q_list.append([zeros(1, 1)])
+        if not self.is_convex():
+            tmp = zeros(num_x + num_theta + num_constraints + 3, num_x + num_theta + num_constraints + 3)
+            tmp[-3][-3] = -1
+            tmp[-2][-2] = 1
+            lambda_indices = numpy.arange(num_x + num_theta - 1, num_activated)
+            tmp[lambda_indices, lambda_indices] = 1
+            Q_q_list.append(tmp)
+            A_q_list.append([zeros(1, num_x + num_theta + num_constraints + 3)])
+            b_q_list.append([zeros(1, 1)])
         # 13) nu >= 0
         A_list.append([zeros(1, num_x + num_theta + num_constraints + 1), -numpy.eye(1), zeros(1, 1)])
-        nu_zero_threshold = zeros(1, 1)
-        nu_zero_threshold[0][0] = 10**(-3)
-        b_list.append([-nu_zero_threshold])
-        # TODO if convex modify this to set nu equal to 1
+        if not self.is_convex():
+            nu_zero_threshold = zeros(1, 1)
+            nu_zero_threshold[0][0] = 10**(-3)
+            b_list.append([-nu_zero_threshold])
+        else:
+            b_list.append([-numpy.ones((1, 1))])
 
         A_list = [i for i in list(map(remove_size_zero_matrices, A_list)) if i != []]
         b_list = [i for i in list(map(remove_size_zero_matrices, b_list)) if i != []]
@@ -459,18 +466,13 @@ class MPQCQP_Program(MPQP_Program):
         A_q = ppopt_block(A_q_list)
         b_q = ppopt_block(b_q_list)
 
-        # lp_active_limit = num_x + num_linear_constraints
-
-        # if num_active == 0:
-        #     lp_active_limit = num_linear_constraints
-
-        # equality_indices = list(range(0, lp_active_limit))
-
         linear_equality_indices = list(range(0, num_linear_constraints))
-        quadratic_equality_indices = list(range(0, num_x + num_quadratic_constraints + 1))
+        if self.is_convex():
+            linear_equality_indices.append(A.shape[0] - 1) # if convex, we add the constraint -nu = -1 to the equality list
+            quadratic_equality_indices = list(range(0, num_x + num_quadratic_constraints))
+        else:
+            quadratic_equality_indices = list(range(0, num_x + num_quadratic_constraints + 1))
 
-        # sol = self.solver.solve_lp(c, A, b, equality_indices)
-        # TODO set the equality constraints correctly
         sol = self.solver.solve_miqcqp(None, c, A, b, Q_q_list, A_q, b_q, linear_equality_indices, quadratic_equality_indices, get_duals=False, verbose=False)
 
         if sol is not None:
