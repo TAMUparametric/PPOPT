@@ -143,8 +143,8 @@ class MPQCQP_Program(MPQP_Program):
 
     def latex(self) -> List[str]:
         """Creates a latex output for the multiparametric problem."""
-        # calls the latex function inherited from MPLP to get most of the output
-        output = super(MPQP_Program, self).latex()
+        # calls the latex function inherited from MPQP to get most of the output
+        output = super(MPQCQP_Program, self).latex()
 
         # creates a latex output for a column vector of x variables
         x = [rf'x_{i}' for i in range(self.num_x())]
@@ -160,6 +160,17 @@ class MPQCQP_Program(MPQP_Program):
         # modifies the linear output of the MPLP function to include the quadratic term
         output[0] = "$$" + '\\min_{x} \\frac{1}{2}' + x_latex + '^{T}' + latex_matrix(
             self.Q) + x_latex + '+' + latex_matrix(self.c) + "^T" + x_latex + added_term + "$$"
+        
+        # quadratic constraints
+        for q in self.qconstraints:
+            H_term = ''
+            if not numpy.allclose(q.H, numpy.zeros_like(q.H)):
+                H_term = " + " + theta_latex + '^{T}' + latex_matrix(q.H) + x_latex
+            Q_theta_term = ''
+            if not numpy.allclose(q.Q_t, numpy.zeros_like(q.Q_t)):
+                Q_theta_term = " + " + theta_latex + '^{T}' + latex_matrix(q.Q_t) + theta_latex
+
+            output.append(f'$$ {x_latex}^T{latex_matrix(q.Q)}{x_latex} ' + H_term + f' + {latex_matrix(q.A)}{x_latex} \leq {latex_matrix(q.b)} + {latex_matrix(q.F)}{theta_latex}' + Q_theta_term + '  $$')
 
         return output
 
