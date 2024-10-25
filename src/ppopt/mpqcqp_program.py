@@ -45,6 +45,10 @@ class QConstraint:
         A_det = (theta.T @ self.H.T) + self.A
         b_det = self.b + self.F @ theta + theta.T @ self.Q_t @ theta
         return Q_det, A_det, b_det
+    
+    def is_convex(self) -> bool:
+        """Checks if the quadratic constraint is convex."""
+        return numpy.all(numpy.linalg.eigvals(self.Q) >= 0)
 
 
 class MPQCQP_Program(MPQP_Program):
@@ -129,9 +133,9 @@ class MPQCQP_Program(MPQP_Program):
         # check the condition number of the matrix and make sure it is invertible
         if self.Q.shape[0] == self.Q.shape[1]:
             e_values, _ = numpy.linalg.eig(self.Q)
-            if len(e_values) < 0:
+            if min(e_values) < 0:
                 warning_list.append(f'Non-convex quadratic program detected, with eigenvalues {e_values}')
-            elif len(e_values) < 10 ** -4:
+            elif min(e_values) < 10 ** -4:
                 warning_list.append(f'Possible positive semi-definite nature detected in Q, eigenvalues {e_values}')
 
         # return warnings
