@@ -1,13 +1,16 @@
 import numpy
+import pytest
 
 from src.ppopt.mpqcqp_program import MPQCQP_Program
 
 from tests.test_fixtures import small_mpqcqp, pappas_qcqp_2
 
+@pytest.mark.filterwarnings("ignore::UserWarning") # this suppresses a warning about non-convexity which is irrelevant for this test
 def test_solve_theta(small_mpqcqp):
     sol = small_mpqcqp.solve_theta(numpy.array([0]))
     assert numpy.allclose(sol.sol, numpy.array([5, 2]))
 
+@pytest.mark.filterwarnings("ignore::UserWarning") # this suppresses a warning about non-convexity which is irrelevant for this test
 def test_check_feasibility(small_mpqcqp):
     assert small_mpqcqp.check_feasibility(numpy.array([0]))
     assert small_mpqcqp.check_feasibility(numpy.array([1]))

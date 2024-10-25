@@ -170,7 +170,7 @@ class MPQCQP_Program(MPQP_Program):
             if not numpy.allclose(q.Q_t, numpy.zeros_like(q.Q_t)):
                 Q_theta_term = " + " + theta_latex + '^{T}' + latex_matrix(q.Q_t) + theta_latex
 
-            output.append(f'$$ {x_latex}^T{latex_matrix(q.Q)}{x_latex} ' + H_term + f' + {latex_matrix(q.A)}{x_latex} \leq {latex_matrix(q.b)} + {latex_matrix(q.F)}{theta_latex}' + Q_theta_term + '  $$')
+            output.append(f'$${x_latex}^T{latex_matrix(q.Q)}{x_latex} ' + H_term + f' + {latex_matrix(q.A)}{x_latex} \leq {latex_matrix(q.b)} + {latex_matrix(q.F)}{theta_latex}' + Q_theta_term + '$$')
 
         return output
 
