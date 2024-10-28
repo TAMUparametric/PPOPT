@@ -145,9 +145,13 @@ class MPLP_Program:
         """Returns number of uncertain variables."""
         return self.F.shape[1]
 
-    def num_constraints(self) -> int:
-        """Returns number of constraints."""
+    def num_linear_constraints(self) -> int:
+        """Returns number of linear constraints."""
         return self.A.shape[0]
+    
+    def num_constraints(self) -> int:
+        """Returns number of constraints, which is equal to number of linear constraints for an mpLP."""
+        return self.num_linear_constraints()
 
     def num_inequality_constraints(self) -> int:
         return self.A.shape[0] - len(self.equality_indices)
@@ -255,7 +259,7 @@ class MPLP_Program:
         output.append(obj)
 
         # adds the inequality constraint latex if applicable
-        if self.num_constraints() - len(self.equality_indices) > 0:
+        if self.num_linear_constraints() - len(self.equality_indices) > 0:
             A_ineq = latex_matrix(select_not_in_list(self.A, self.equality_indices))
             b_ineq = latex_matrix(select_not_in_list(self.b, self.equality_indices))
             F_ineq = latex_matrix(select_not_in_list(self.F, self.equality_indices))
@@ -293,8 +297,8 @@ class MPLP_Program:
         saved_indices = find_redundant_constraints(problem_A, problem_b, self.equality_indices,
                                                    solver=self.solver.solvers['lp'])
         # calculate the indices in the main body and parametric constraints
-        saved_upper = [x for x in saved_indices if x < self.num_constraints()]
-        saved_lower = [x - self.num_constraints() for x in saved_indices if x >= self.num_constraints()]
+        saved_upper = [x for x in saved_indices if x < self.num_linear_constraints()]
+        saved_lower = [x - self.num_linear_constraints() for x in saved_indices if x >= self.num_linear_constraints()]
 
         # remove redundant constraints
         self.A = self.A[saved_upper]
