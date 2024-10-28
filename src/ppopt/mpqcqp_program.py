@@ -48,6 +48,15 @@ class QConstraint:
         b_det = self.b + self.F @ theta + theta.T @ self.Q_t @ theta
         return Q_det, A_det, b_det
     
+    def evaluate_theta_variable(self) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+        """Considers theta to be an optimization variable, builds a corresponding (deterministic) constraint.
+        [x theta]^T [Q 0.5 H; 0.5 H^T -Q_t] [x theta] + [A -F] [x theta] <= b
+        """
+        Q_det = numpy.block([[self.Q, 0.5 * self.H], [0.5 * self.H.T, -self.Q_t]])
+        A_det = numpy.block([[self.A, -self.F]])
+        b_det = self.b
+        return Q_det, A_det, b_det
+    
     def is_convex(self) -> bool:
         """Checks if the quadratic constraint is convex."""
         return numpy.all(numpy.linalg.eigvals(self.Q) >= 10 ** -4)
@@ -123,8 +132,13 @@ class MPQCQP_Program(MPQP_Program):
         """Checks the dimensions of the matrices to ensure consistency."""
         warning_list = MPQP_Program.warnings(self)
 
-        # Quadratic Problem specific warnings
+        # Quadratically Constrained Quadratic Problem specific warnings
 
+        if len(self.equality_indices) > 0:
+            if max(self.equality_indices) >= self.num_linear_constraints():
+                warning_list.append('Quadratic equality constraints detected.')
+
+        # TODO these are already caught by MPQP_Program, they should be removed and adjusted for the QCQP case
         # Checks if Q is square
         if self.Q.shape[0] != self.Q.shape[1]:
             warning_list.append(f'Q matrix is not square with dimensions {self.Q.shape}')
@@ -204,7 +218,7 @@ class MPQCQP_Program(MPQP_Program):
         :return: The Solver output of the substituted problem, returns None if not solvable
         """
 
-        if not numpy.all(self.A_t @ theta_point <= self.b_t):
+        if not self.valid_parameter_realization(theta_point):
             return None
         
         q_data = [(q.evaluate_theta(theta_point)) for q in self.qconstraints]
@@ -222,6 +236,34 @@ class MPQCQP_Program(MPQP_Program):
             return sol_obj
 
         return None
+    
+    def solve_theta_variable(self) -> Optional[SolverOutput]:
+        """
+        Leaves Theta as an optimization variable, solves the following problem
+
+        define y' = [x^T theta^T]^T
+
+        min [c^T 0]^Ty' + 1/2 y'^T [Q H; H^T 0] y'
+        s.t. [A -F]y' <= b
+             quadratic constraints
+
+        :return: the Solver output of the substituted problem, returns None if not solvable
+        """
+
+        # This is not consistent with the implementation in MPLP_Program, because there, the A_t @ theta <= b_t constraints are not considered, even though they probably should be
+
+        A_prime = numpy.block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.num_x())), self.A_t]])
+        c_prime = numpy.block([[self.c], [numpy.zeros((self.num_t(), 1))]])
+        Q_prime = numpy.block([[self.Q, 0.5 * self.H], [0.5 * self.H.T, self.Q_t]])
+        b_prime = numpy.block([[self.b], [self.b_t]])
+
+        q_data = [(q.evaluate_theta_variable()) for q in self.qconstraints]
+        Q_q_prime = [q[0] for q in q_data]
+        A_q_prime = numpy.array([q[1] for q in q_data])
+        b_q_prime = numpy.array([q[2] for q in q_data])
+
+        return self.solver.solve_miqcqp(Q=Q_prime, c=c_prime, A=A_prime, b=b_prime, Q_q=Q_q_prime, A_q=A_q_prime, b_q=b_q_prime, equality_constraints=self.equality_indices, q_equality_constraints=[], get_duals=False)
+
 
     # TODO this needs updating to the QCQP case
     def optimal_control_law(self, active_set: List[int]) -> Tuple:

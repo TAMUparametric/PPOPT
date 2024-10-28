@@ -651,16 +651,19 @@ def pappas_qcqp_2():
 
 @pytest.fixture()
 def redundant_qcqp():
-    """A small mpQCQP with many redundant constraints."""
+    """
+    A small mpQCQP with many redundant constraints.
+    The feasible space is defined by the first quadratic constraint, the second linear constraint, and the first theta constraint.
+    """
     Q = numpy.array([[2]])
     c = numpy.array([[1]])
 
-    A = numpy.array([[-1], [-1]])
-    b = numpy.array([[0], [0]])
-    F = numpy.array([[0], [-1]])
+    A = numpy.array([[-1], [-1], [1]])
+    b = numpy.array([[0], [0], [10]])
+    F = numpy.array([[0], [-1], [0]])
 
-    A_t = numpy.array([[-1], [-1]])
-    b_t = numpy.array([[-1], [-0.5]])
+    A_t = numpy.array([[-1], [-1], [1]])
+    b_t = numpy.array([[-1], [-0.5], [5]])
 
     Q_q = numpy.array([[1]])
     A_q = numpy.array([[0]])
