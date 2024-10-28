@@ -2,10 +2,12 @@ from typing import List, Optional, Tuple
 
 import numpy
 
+from .mplp_program import MPLP_Program
 from .mpqp_program import MPQP_Program
 from .solver_interface.solver_interface import SolverOutput
 from .utils.constraint_utilities import(
     is_full_rank,
+    find_redundant_constraints_with_quadratic,
 )
 from .utils.general_utils import (
     latex_matrix,
@@ -276,8 +278,42 @@ class MPQCQP_Program(MPQP_Program):
 
         return parameter_A, parameter_b, lagrange_A, lagrange_b
 
-    # def process_constraints(self, find_implicit_equalities = False) -> None:
-    #     super(MPQP_Program, self).process_constraints(find_implicit_equalities = False)
+    
+    def process_constraints(self) -> None:
+        """Removes redundant constraints from the multiparametric programming problem."""
+        
+        # First step: run processing on only the linear constraints, if there are any linear constraints that are within themselves redundant, this will reduce the number of QCQPs we have to solve next
+        super().process_constraints()
+
+        # Now we build the expressions using the remaining linear and the quadratic constraints
+        # form a polytope P := {(x, theta) in R^K : Ax <= b + F theta and A_t theta <= b_t}
+        problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
+        problem_b = ppopt_block([[self.b], [self.b_t]])
+
+        problem_Q_q = [ppopt_block([[q.Q, 0.5 * q.H], [0.5 * q.H.T, q.Q_t]]) for q in self.qconstraints]
+        problem_A_q = numpy.array([ppopt_block([[q.A, -q.F]]) for q in self.qconstraints])
+        problem_b_q = numpy.array([q.b for q in self.qconstraints])
+
+        saved_indices = find_redundant_constraints_with_quadratic(problem_A, problem_b, problem_Q_q, problem_A_q,
+                                                                   problem_b_q, self.equality_indices, solver=self.solver.solvers['miqcqp'])
+
+        # calculate the indices in the main body and parametric constraints
+        saved_linear = [x for x in saved_indices if x < self.num_linear_constraints()]
+        saved_theta = [x - self.num_linear_constraints() for x in saved_indices if x >= self.num_linear_constraints() and x < self.num_linear_constraints() + self.F.shape[0]]
+        saved_quadratic = [x - self.num_linear_constraints() - self.F.shape[0] for x in saved_indices if x >= self.num_linear_constraints() + self.F.shape[0]]
+
+        # remove redundant linear constraints
+        self.A = self.A[saved_linear]
+        self.F = self.F[saved_linear]
+        self.b = self.b[saved_linear]
+
+        # remove redundant constraints from the parametric constraints
+        self.A_t = self.A_t[saved_theta]
+        self.b_t = self.b_t[saved_theta]
+
+        # remove redundant quadratic constraints
+        self.qconstraints = [self.qconstraints[i] for i in saved_quadratic]
+
 
     def check_optimality(self, active_set: list):
         r"""

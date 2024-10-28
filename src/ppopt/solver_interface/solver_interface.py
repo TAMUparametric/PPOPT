@@ -66,7 +66,7 @@ def solve_miqcqp(Q: Matrix, c: Matrix, A: Matrix, b: Matrix,
     :return: A SolverOutput object if optima found, otherwise None.
     """
     if deterministic_solver == "gurobi":
-        return solve_miqp_gurobi(Q, c, A, b, Q_q, A_q, b_q, equality_constraints, q_equality_constraints, bin_vars, verbose, get_duals)
+        return solve_miqcqp_gurobi(Q, c, A, b, Q_q, A_q, b_q, equality_constraints, q_equality_constraints, bin_vars, verbose, get_duals)
     else:
         solver_not_supported(deterministic_solver)
         return None

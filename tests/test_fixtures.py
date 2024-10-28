@@ -616,7 +616,7 @@ def pappas_qcqp_1():
 
     qcon = QConstraint(Q_q, H, A_q, b_q, F_q, Q_qt)
 
-    prog = MPQCQP_Program(A, b, c, H, Q, A_t, b_t, F, [qcon], c_c, post_process=False)
+    prog = MPQCQP_Program(A, b, c, H, Q, A_t, b_t, F, [qcon], c_c, post_process=False) # turn off constraint processing to use the original constraint set and numbering in the tests
     return prog
 
 @pytest.fixture()
@@ -647,4 +647,32 @@ def pappas_qcqp_2():
     qcon = QConstraint(Q_q, H, A_q, b_q, F_q, Q_qt)
 
     prog = MPQCQP_Program(A, b, c, H, Q, A_t, b_t, F, [qcon], c_c, post_process=False)
+    return prog
+
+@pytest.fixture()
+def redundant_qcqp():
+    """A small mpQCQP with many redundant constraints."""
+    Q = numpy.array([[2]])
+    c = numpy.array([[1]])
+
+    A = numpy.array([[-1], [-1]])
+    b = numpy.array([[0], [0]])
+    F = numpy.array([[0], [-1]])
+
+    A_t = numpy.array([[-1], [-1]])
+    b_t = numpy.array([[-1], [-0.5]])
+
+    Q_q = numpy.array([[1]])
+    A_q = numpy.array([[0]])
+    b_q1 = numpy.array([[4]])
+    b_q2 = numpy.array([[5]])
+    F_q = numpy.array([[0]])
+
+    H = numpy.zeros((1, 1))
+    Q_qt = numpy.zeros((1, 1))
+
+    qcon1 = QConstraint(Q_q, H, A_q, b_q1, F_q, Q_qt)
+    qcon2 = QConstraint(Q_q, H, A_q, b_q2, F_q, Q_qt)
+
+    prog = MPQCQP_Program(A, b, c, H, Q, A_t, b_t, F, [qcon1, qcon2], post_process=False)
     return prog

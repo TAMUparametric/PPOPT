@@ -3,7 +3,7 @@ import pytest
 
 from src.ppopt.mpqcqp_program import MPQCQP_Program
 
-from tests.test_fixtures import small_mpqcqp, pappas_qcqp_1, pappas_qcqp_2
+from tests.test_fixtures import small_mpqcqp, pappas_qcqp_1, pappas_qcqp_2, redundant_qcqp
 
 @pytest.mark.filterwarnings("ignore::UserWarning") # this suppresses a warning about non-convexity which is irrelevant for this test
 def test_solve_theta(small_mpqcqp):
@@ -52,3 +52,10 @@ def test_check_optimality_2(pappas_qcqp_2):
     assert pappas_qcqp_2.check_optimality([0, 2, 3]) is None
     assert pappas_qcqp_2.check_optimality([1, 2, 3]) is None
     assert pappas_qcqp_2.check_optimality([0, 1, 2, 3]) is None
+
+def test_constraint_processing(redundant_qcqp):
+    assert redundant_qcqp.num_constraints() == 4
+    assert redundant_qcqp.A_t.shape[0] == 2
+    redundant_qcqp.process_constraints()
+    assert redundant_qcqp.num_constraints() == 2
+    assert redundant_qcqp.A_t.shape[0] == 1

@@ -200,6 +200,36 @@ def find_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, equality_set:
     return [i for i in range(A.shape[0]) if i not in redundant]
 
 
+def find_redundant_constraints_with_quadratic(A: numpy.ndarray, b: numpy.ndarray, Q_q: List[numpy.ndarray],
+                                               A_q: numpy.ndarray, b_q: numpy.ndarray,
+                                               equality_set: Optional[List[int]], solver='gurobi'):
+    """Find and remove redundant constraints from a set of linear and quadratic constraints."""
+    if equality_set is None:
+        equality_set = []
+
+    redundant = []
+
+    num_linear = A_q.shape[0]
+    num_quadratic = len(Q_q)
+
+    # transform single equality set to a set for linear and quadratic constraints, each starting at 0
+    linear_set = [i for i in equality_set if i < num_linear]
+    quadratic_set = [i-num_linear for i in equality_set if i >= num_linear]
+
+    to_check_linear = [x for x in range(num_linear) if x not in linear_set]
+    to_check_quadratic = [x for x in range(num_quadratic) if x not in quadratic_set]
+
+    for i in to_check_linear:
+        if solver_interface.solve_miqcqp(None, None, A, b, Q_q, A_q, b_q, [*linear_set, i], quadratic_set, deterministic_solver=solver) is None:
+            redundant.append(i)
+
+    for i in to_check_quadratic:
+        if solver_interface.solve_miqcqp(None, None, A, b, Q_q, A_q, b_q, linear_set, [*quadratic_set, i], get_duals=False, deterministic_solver=solver) is None:
+            redundant.append(i + num_linear) # add the offset back so that the numbering is the same as in the original equality_set
+
+    return [i for i in range(num_linear + num_quadratic) if i not in redundant]
+
+
 def remove_strongly_redundant_constraints(A: numpy.ndarray, b: numpy.ndarray, include_kept_indices=False,
                                           deterministic_solver: str = 'gurobi'):
     """Removes strongly redundant constraints by testing the feasibility of each constraint if activated."""
