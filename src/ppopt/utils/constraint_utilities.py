@@ -209,7 +209,7 @@ def find_redundant_constraints_with_quadratic(A: numpy.ndarray, b: numpy.ndarray
 
     redundant = []
 
-    num_linear = A_q.shape[0]
+    num_linear = A.shape[0]
     num_quadratic = len(Q_q)
 
     # transform single equality set to a set for linear and quadratic constraints, each starting at 0
