@@ -80,9 +80,9 @@ class MPQCQP_Program(MPQP_Program):
         # calls MPQP_Program's constructor to reduce out burden
         self.qconstraints = qconstraints
         super(MPQCQP_Program, self).__init__(A, b, c, H, Q, A_t, b_t, F, c_c, c_t, Q_t, equality_indices, solver,
-                                           post_process=False)
+                                           post_process)
 
-        # calls the MPLP constraint processing to remove redundant constraints
+        # calls the constraint processing to remove redundant constraints
         if post_process:
             self.post_process()
 
@@ -299,8 +299,8 @@ class MPQCQP_Program(MPQP_Program):
 
         # calculate the indices in the main body and parametric constraints
         saved_linear = [x for x in saved_indices if x < self.num_linear_constraints()]
-        saved_theta = [x - self.num_linear_constraints() for x in saved_indices if x >= self.num_linear_constraints() and x < self.num_linear_constraints() + self.F.shape[0]]
-        saved_quadratic = [x - self.num_linear_constraints() - self.F.shape[0] for x in saved_indices if x >= self.num_linear_constraints() + self.F.shape[0]]
+        saved_theta = [x - self.num_linear_constraints() for x in saved_indices if x >= self.num_linear_constraints() and x < self.num_linear_constraints() + self.A_t.shape[0]]
+        saved_quadratic = [x - self.num_linear_constraints() - self.A_t.shape[0] for x in saved_indices if x >= self.num_linear_constraints() + self.A_t.shape[0]]
 
         # remove redundant linear constraints
         self.A = self.A[saved_linear]
