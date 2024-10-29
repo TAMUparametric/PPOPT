@@ -84,14 +84,14 @@ def solve_miqcqp_gurobi(Q: Matrix = None, c: Matrix = None, A: Matrix = None,
             # noinspection SpellCheckingInspection
             model.Params.MIPgap = 0
 
-    # in the case of non-convex quadratic constraints add the non-convex flag, set the MIP gap the 0 we want exact solutions
+    # in the case of non-convex quadratic constraints add the non-convex flag, set the MIP gap to a small tolerance as QCQPs are harder to solve
     if Q_q is not None:
         if get_duals:
             model.Params.QCPDual = 1
         if numpy.min([numpy.min(numpy.linalg.eigvalsh(Q)) for Q in Q_q]) < 0 or len(q_equality_constraints) > 0:
             model.Params.NonConvex = 2
             # noinspection SpellCheckingInspection
-            model.Params.MIPgap = 0
+            model.Params.MIPgap = 6e-8
 
     # define num variables and num constraints variables
     num_vars, num_linear_constraints, num_quadratic_constraints = get_program_parameters(Q, c, A, b, Q_q, A_q, b_q)
@@ -161,6 +161,7 @@ def solve_miqcqp_gurobi(Q: Matrix = None, c: Matrix = None, A: Matrix = None,
             if len(bin_vars) == 0:
                 sol.dual = numpy.array(model.getAttr("Pi"))
 
+        # TODO slack and active set also needed for quadratic constraints
         sol.slack = numpy.array(model.getAttr("Slack"))
         sol.active_set = numpy.where((A @ sol.sol.flatten() - b.flatten()) ** 2 < 10 ** -12)[0]
 
