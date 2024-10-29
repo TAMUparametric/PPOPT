@@ -8,12 +8,16 @@ from .solver_interface.solver_interface import SolverOutput
 from .utils.constraint_utilities import(
     is_full_rank,
     find_redundant_constraints_with_quadratic,
+    process_program_constraints,
+    find_implicit_equalities,
+    generate_reduced_equality_constraints,
 )
 from .utils.general_utils import (
     latex_matrix,
     make_column,
     ppopt_block,
     remove_size_zero_matrices,
+    select_not_in_list,
 )
 
 class QConstraint:
@@ -321,6 +325,35 @@ class MPQCQP_Program(MPQP_Program):
         return parameter_A, parameter_b, lagrange_A, lagrange_b
 
     
+    def base_constraint_processing(self):
+        # This is identical to the MPLP case, with the exception that we don't scale constraints, as some issues came up with that for the quadratically constrained case (even though we only scale linear ones)
+
+        # ensure that all of the equality constraints are at the top
+        if len(self.equality_indices) != 0:
+            # move all equality constraints to the top
+            self.A = numpy.block([[self.A[self.equality_indices]], [select_not_in_list(self.A, self.equality_indices)]])
+            self.b = numpy.block([[self.b[self.equality_indices]], [select_not_in_list(self.b, self.equality_indices)]])
+            self.F = numpy.block([[self.F[self.equality_indices]], [select_not_in_list(self.F, self.equality_indices)]])
+
+            self.equality_indices = list(range(len(self.equality_indices)))
+
+        self.constraint_datatype_conversion()
+
+        # TODO: add check for a purly parametric equality e.g. c^T theta = b in the main constraint body
+        self.A, self.b, self.F, self.A_t, self.b_t = process_program_constraints(self.A, self.b, self.F, self.A_t,
+                                                                                self.b_t)
+        # we can scale constraints after moving nonzero rows
+        # self.scale_constraints()
+
+        # find implicit inequalities in the main constraint body, add them to the equality constraint set
+        self.A, self.b, self.F, self.equality_indices = find_implicit_equalities(self.A, self.b, self.F,
+                                                                                self.equality_indices)
+
+        # in the case of equality constraints, there can be cases where the constraints are redundant w.r.t. each other
+        self.A, self.b, self.F, self.equality_indices = generate_reduced_equality_constraints(self.A, self.b, self.F,
+                                                                                            self.equality_indices)
+
+
     def process_constraints(self) -> None:
         """Removes redundant constraints from the multiparametric programming problem."""
         
@@ -419,6 +452,10 @@ class MPQCQP_Program(MPQP_Program):
 
         num_theta = self.num_t()
 
+        nonconvex_in_active_set = False
+        if num_quadratic_active > 0:
+            nonconvex_in_active_set = numpy.any([not self.qconstraints[i].is_convex() for i in quadratic_active])
+
         # this will be used to build the optimality expression
         A_list = []
         b_list = []
@@ -434,8 +471,8 @@ class MPQCQP_Program(MPQP_Program):
             tmp = zeros(num_x + num_theta + num_constraints + 3, num_x + num_theta + num_constraints + 3)
             # if quadratic constraints are active, add their terms to the quadratic part of the lagrangian
             if num_quadratic_active > 0:
-                lambda_block = ppopt_block([[to_row(self.qconstraints[j].Q[i, :]), to_row(self.qconstraints[j].H[i, :])] for j in quadratic_active])
-                tmp[num_x + num_theta + num_linear_active:num_x + num_theta + num_active - num_linear_active, 0:num_x + num_theta] = lambda_block
+                lambda_block = ppopt_block([[to_row(self.qconstraints[j].Q[i, :] + self.qconstraints[j].Q[i, :].T), to_row(self.qconstraints[j].H[i, :])] for j in quadratic_active])
+                tmp[num_x + num_theta + num_linear_active:num_x + num_theta + num_active, 0:num_x + num_theta] = lambda_block
             # add the quadratic part of the objective to the lagrangian
             nu_row = ppopt_block([to_row(self.Q[i,:]), to_row(self.H[i,:])])
             tmp[-2, 0:num_x + num_theta] = nu_row
@@ -517,19 +554,21 @@ class MPQCQP_Program(MPQP_Program):
                 Q_q_list.append(tmp)
             A_q_list.append([A_q_inactive])
             b_q_list.append([b_q_inactive.reshape((-1, 1))])
-        # 12) nu^2 + lambda^T lambda - beta^2 = 0
-        if not self.is_convex():
+        # 12) nu^2 + lambda^T lambda - beta^2 = 0, beta >= 0
+        if nonconvex_in_active_set:
             tmp = zeros(num_x + num_theta + num_constraints + 3, num_x + num_theta + num_constraints + 3)
-            tmp[-3][-3] = -1
+            tmp[-1][-1] = -1
             tmp[-2][-2] = 1
-            lambda_indices = numpy.arange(num_x + num_theta - 1, num_activated)
+            lambda_indices = numpy.arange(num_x + num_theta - 1, num_x + num_theta + num_activated)
             tmp[lambda_indices, lambda_indices] = 1
             Q_q_list.append(tmp)
             A_q_list.append([zeros(1, num_x + num_theta + num_constraints + 3)])
             b_q_list.append([zeros(1, 1)])
+            A_list.append([zeros(1, num_x + num_theta + num_constraints + 2), -numpy.eye(1)])
+            b_list.append([zeros(1, 1)])
         # 13) nu >= 0
         A_list.append([zeros(1, num_x + num_theta + num_constraints + 1), -numpy.eye(1), zeros(1, 1)])
-        if not self.is_convex():
+        if nonconvex_in_active_set:
             nu_zero_threshold = zeros(1, 1)
             nu_zero_threshold[0][0] = 10**(-3)
             b_list.append([-nu_zero_threshold])
@@ -546,7 +585,7 @@ class MPQCQP_Program(MPQP_Program):
         b_q = ppopt_block(b_q_list)
 
         linear_equality_indices = list(range(0, num_linear_constraints))
-        if self.is_convex():
+        if not nonconvex_in_active_set:
             linear_equality_indices.append(A.shape[0] - 1) # if convex, we add the constraint -nu = -1 to the equality list
             quadratic_equality_indices = list(range(0, num_x + num_quadratic_constraints))
         else:
