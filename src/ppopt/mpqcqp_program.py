@@ -1,6 +1,7 @@
 from typing import List, Optional, Tuple
 
 import numpy
+import sympy
 
 from .mplp_program import MPLP_Program
 from .mpqp_program import MPQP_Program
@@ -41,6 +42,11 @@ class QConstraint:
         val = x.T @ self.Q @ x + theta.T @ self.H.T @ x + self.A @ x - self.b - self.F @ theta - theta.T @ self.Q_t @ theta
         return float(val[0, 0])
     
+    # TODO this does basically the same as evaluate, but for symbolics. Maybe we can combine the two into one method and do a type check to determine the output type?
+    def evaluate_symbolic(self, x: sympy.Matrix, theta: sympy.Matrix) -> sympy.Matrix:
+        """Evaluates the constraint for a given x and θ symbolically."""
+        return x.T @ self.Q @ x + theta.T @ self.H.T @ x + self.A @ x - self.b - self.F @ theta - theta.T @ self.Q_t @ theta
+
     def evaluate_theta(self, theta: numpy.ndarray) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
         """
         Evaluates the constraint for a given θ, resulting in a deterministic quadratic constraint.
@@ -64,7 +70,7 @@ class QConstraint:
     def is_convex(self) -> bool:
         """Checks if the quadratic constraint is convex."""
         return numpy.all(numpy.linalg.eigvals(self.Q) >= 10 ** -4)
-
+    
 
 class MPQCQP_Program(MPQP_Program):
     r"""
@@ -292,39 +298,76 @@ class MPQCQP_Program(MPQP_Program):
         :return: a tuple of the optimal x* and λ* functions in the following form(A_x, b_x, A_l, b_l)
         """
 
-        # if x = A*theta + b & l = C*theta + d then the stat. conditions and the primal conditions become the following
-        # Q*x + H*theta + A[AS].T*lambda + c = 0 -> Q(A theta + b) + H theta + A[AS].T(C theta + d) + c = 0
-        # A[AS]x = b[AS] + F[AS] -> A[AS](A theta + b) = b[AS] + F[AS]
-        #
-        # If we separate terms e.g. constants cant effect theta terms and vise versa we get the following linear
-        # equations
+        # if the active set contains only linear constraints, then we can use the QP case
+        # TODO should we be using the returned matrices to build symbolic expressions, for consistency with the QCQP case?
+        if len(active_set) == 0 or max(active_set) < self.num_linear_constraints():
+            return super().optimal_control_law(active_set)
+        else:
+            # create sympy symbols for variables, theta, lagrange multipliers, (nu and beta)
+            x_sym = sympy.symbols('x:' + str(self.num_x()))
+            theta_sym = sympy.symbols('theta:' + str(self.num_t()))
+            lambda_sym = sympy.symbols('lambda:' + str(len(active_set)))
+            nu_sym = sympy.symbols('nu')
+            beta_sym = sympy.symbols('beta')
 
-        # [A[AS]   0   ] [b] = [b[AS]]
-        # [Q    A[AS].T] [d] = [ -c  ]
-        #
-        # [A[AS]   0   ] [A] = [F[AS]]
-        # [Q    A[AS].T] [C] = [ -H  ]
+            active_linear_indices = [i for i in active_set if i < self.num_linear_constraints()]
+            active_quadratic_indices = [i - self.num_linear_constraints() for i in active_set if i >= self.num_linear_constraints()]
+            
+            # set up the system of quadratic equations
+            # TODO determine whether we need the Taylor expansion as in the paper or if we can also use the KKT/FJ conditions as done in the MPP book (ch 3.1.2, p. 48)
+            equations = []
+            # build the stationarity condition step by step for readability for now
+            # objective gradient
+            stationarity = nu_sym * self.Q @ sympy.Matrix(x_sym) + nu_sym * self.H @ sympy.Matrix(theta_sym) + nu_sym * self.c
+            # linear constraint gradients
+            if len(active_linear_indices) > 0:
+                stationarity += self.A[active_linear_indices].T @ sympy.Matrix(lambda_sym[0:len(active_linear_indices)])
+            # quadratic constraint gradients
+            quadratic_lambda_index = len(active_linear_indices)
+            for i in active_quadratic_indices:
+                stationarity += lambda_sym[quadratic_lambda_index] * (self.qconstraints[i].Q + self.qconstraints[i].Q.T) @ sympy.Matrix(x_sym) + lambda_sym[quadratic_lambda_index] * self.qconstraints[i].H @ sympy.Matrix(theta_sym) + self.qconstraints[i].A.T @ sympy.Matrix([lambda_sym[quadratic_lambda_index]])
+                quadratic_lambda_index += 1
 
-        # set up the LHS matrix
-        A_hat = self.A[active_set]
-        zeros = numpy.zeros((len(active_set),len(active_set)))
-        M_mat = numpy.block([[A_hat,zeros], [self.Q, A_hat.T]])
+            equations.append(stationarity)
 
-        # solve the equation for the constant terms b, d
-        consts = numpy.linalg.solve(M_mat, numpy.block([[self.b[active_set]], [-self.c]]))
+            # active constraints = 0
+            active_linear_constraints = self.A[active_linear_indices] @ sympy.Matrix(x_sym) - self.b[active_linear_indices] - self.F[active_linear_indices] @ sympy.Matrix(theta_sym)
+            equations.append(active_linear_constraints)
+            active_quadratic_constraints = [self.qconstraints[i].evaluate_symbolic(sympy.Matrix(x_sym), sympy.Matrix(theta_sym)) for i in active_quadratic_indices]
+            equations.extend(active_quadratic_constraints)
 
-        # solve the equation for the theta terms A, C
-        mats = numpy.linalg.solve(M_mat, numpy.block([[self.F[active_set]], [-self.H]]))
+            # normalize the lagrange multipliers or set nu = 1, depending on convexity
+            nonconvex_in_active_set = numpy.any([not self.qconstraints[i].is_convex() for i in active_quadratic_indices])
+            if nonconvex_in_active_set:
+                normalizing_eq = nu_sym ** 2 + sum(l**2 for l in lambda_sym) - beta_sym ** 2
+            else:
+                normalizing_eq = nu_sym - 1
+            equations.append(normalizing_eq)
 
-        parameter_A = mats[:self.num_x()]
-        parameter_b = consts[:self.num_x()]
+            # solve the system of equations
+            solution = sympy.solve(equations, *x_sym, *lambda_sym, nu_sym)
 
-        lagrange_A = mats[self.num_x():]
-        lagrange_b = consts[self.num_x():]
+            # extract each set of x, lambda, nu
+            num_solutions = len(solution)
+            x_sol = [solution[i][0:self.num_x()] for i in range(num_solutions)]
+            lambda_sol = [solution[i][self.num_x():-1] for i in range(num_solutions)]
+            nu_sol = [solution[i][-1] for i in range(num_solutions)]
+            
+            # iterate over each solution pair, only keep those for which lambda >= 0 can be satisfied
+            keep_indices = []
+            for i in range(num_solutions):
+                this_lambda = lambda_sol[i]
+                if numpy.all([(l >= 0) != False for l in this_lambda]): # required for the cases that lambda is constant, as the solve call will return [] in that case, which is useless TODO is it? might be able to still use that info
+                    if numpy.all([sympy.solve(l >= 0) != False for l in this_lambda]): # required for the cases that lambda is a function of theta
+                        keep_indices.append(i)
 
-        return parameter_A, parameter_b, lagrange_A, lagrange_b
+            # return the list of x, lambda, nu tuples
+            x_sol = [x_sol[i] for i in keep_indices]
+            lambda_sol = [lambda_sol[i] for i in keep_indices]
+            nu_sol = [nu_sol[i] for i in keep_indices]
+            return x_sol, lambda_sol, nu_sol
 
-    
+
     def base_constraint_processing(self):
         # This is identical to the MPLP case, with the exception that we don't scale constraints, as some issues came up with that for the quadratically constrained case (even though we only scale linear ones)
 
@@ -559,7 +602,7 @@ class MPQCQP_Program(MPQP_Program):
             tmp = zeros(num_x + num_theta + num_constraints + 3, num_x + num_theta + num_constraints + 3)
             tmp[-1][-1] = -1
             tmp[-2][-2] = 1
-            lambda_indices = numpy.arange(num_x + num_theta - 1, num_x + num_theta + num_activated)
+            lambda_indices = numpy.arange(num_x + num_theta, num_x + num_theta + num_activated)
             tmp[lambda_indices, lambda_indices] = 1
             Q_q_list.append(tmp)
             A_q_list.append([zeros(1, num_x + num_theta + num_constraints + 3)])
