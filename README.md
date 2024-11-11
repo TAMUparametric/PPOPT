@@ -11,7 +11,7 @@ multiparametric programs in Python.
 
 ## Installation
 
-Currently, PPOPT requires Python 3.7 or higher and can be installed with the following commands.
+Currently, PPOPT requires Python 3.8 or higher and can be installed with the following commands.
 
 ```bash
 pip install ppopt

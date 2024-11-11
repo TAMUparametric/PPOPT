@@ -57,7 +57,9 @@ def simple_qp_program() -> MPQP_Program:
     A_t = numpy.array([[-1], [1]])
     b_t = numpy.array([[0], [1]])
     H = numpy.zeros((F.shape[1], Q.shape[0]))
+
     return MPQP_Program(A, b, c, H, Q, A_t, b_t, F, post_process=True)
+
 
 @pytest.fixture()
 def psd_qp_program() -> MPQP_Program:
@@ -98,7 +100,6 @@ def nd_qp_program() -> MPQP_Program:
     prog.scale_constraints()
 
     return prog
-
 
 def test_active_set(linear_program):
     assert linear_program.equality_indices == [0]
