@@ -141,6 +141,10 @@ class MPQCQP_Program(MPQP_Program):
         obj_val = 0.5 * x.T @ self.Q @ x + theta_point.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ theta_point
 
         return float(obj_val[0, 0])
+    
+    def evaluate_objective_symbolic(self, x, theta) -> sympy.Matrix:
+        """Evaluates the objective of the multiparametric program symbolically."""
+        return 0.5 * x.T @ self.Q @ x + theta.T @ self.H.T @ x + self.c.T @ x + self.c_c + self.c_t.T @ theta + 0.5 * theta.T @ self.Q_t @ theta
 
     def warnings(self) -> List[str]:
         """Checks the dimensions of the matrices to ensure consistency."""
@@ -306,14 +310,14 @@ class MPQCQP_Program(MPQP_Program):
         if len(active_set) == 0 or max(active_set) < self.num_linear_constraints():
             # return super().optimal_control_law(active_set)
             A, b, C, d = super().optimal_control_law(active_set)
-            theta_sym = sympy.symbols('theta:' + str(self.num_t()))
+            theta_sym = sympy.symbols('theta:' + str(self.num_t()), real=True, finite=True)
             x_star = A @ sympy.Matrix([theta_sym]).T + b
             lambda_star = C @ sympy.Matrix([theta_sym]).T + d
             return x_star, lambda_star, sympy.Rational(1)
         else:
             # create sympy symbols for variables, theta, lagrange multipliers, (nu and beta)
             x_sym = sympy.symbols('x:' + str(self.num_x()))
-            theta_sym = sympy.symbols('theta:' + str(self.num_t()))
+            theta_sym = sympy.symbols('theta:' + str(self.num_t()), real=True, finite=True)
             lambda_sym = sympy.symbols('lambda:' + str(len(active_set)))
             nu_sym = sympy.symbols('nu')
             beta_sym = sympy.symbols('beta')
@@ -390,7 +394,7 @@ class MPQCQP_Program(MPQP_Program):
         # Compute optimal control law for active set
         x_star, lambda_star, nu_star = self.optimal_control_law(active_set)
         # theta_syms = x_star.free_symbols | lambda_star.free_symbols | nu_star.free_symbols # hopefully all thetas occur at least once so we don't get a dimension error
-        theta_syms = sympy.symbols('theta:' + str(self.num_t()))
+        theta_syms = sympy.symbols('theta:' + str(self.num_t()), real=True, finite=True)
         # Insert optimal control law into the inactive constraints to build the critical region
         
         bounds_from_linear = self.A[linear_inactive] @ sympy.Matrix(x_star) - self.b[linear_inactive] - self.F[linear_inactive] @ sympy.Matrix(theta_syms)
@@ -404,10 +408,14 @@ class MPQCQP_Program(MPQP_Program):
             region_inequalities.append(i[0] <= 0)
         for i in bounds_from_theta:
             region_inequalities.append(i <= 0)
+        for i in sympy.Matrix(lambda_star):
+            region_inequalities.append(i >= 0)
 
         region_inequalities = [i for i in region_inequalities if i != True] # remove any trivially satisfied constraints
 
         region_inequalities = reduce_redundant_symbolic_constraints(region_inequalities)
+
+        # region_inequalities = [i.lhs for i in region_inequalities] # remove the <= 0 part
 
         # Test full dimensionality of the new critical region
 
