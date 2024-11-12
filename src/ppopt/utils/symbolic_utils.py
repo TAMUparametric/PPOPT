@@ -50,15 +50,16 @@ def replace_square_roots_dictionary(constraint_strings: List[str]) -> Tuple[Dict
     return replacement_dict, constraint_strings, counter
 
 
-def remove_duplicate_symbolic_constraints(constraints: List[sympy.core.relational.LessThan]) -> List[sympy.core.relational.LessThan]:
+def remove_duplicate_symbolic_constraints(constraints: List[sympy.core.relational.LessThan], indices: List[int]) -> Tuple[List[sympy.core.relational.LessThan], List[int]]:
     """
     Removes duplicate constraints from a list of constraints.
 
     :param constraints: a list of symbolic constraints
-    :return: a list of constraints with duplicates removed
+    :return: a list of constraints with duplicates removed and their indices in the original list
     """
     unique_constraints = []
-    for c in constraints:
+    new_indices = []
+    for i, c in enumerate(constraints):
         unique = True
         for uc in unique_constraints:
             if sympy.simplify((c.lhs - c.rhs) - (uc.lhs - uc.rhs)) == 0:
@@ -66,43 +67,50 @@ def remove_duplicate_symbolic_constraints(constraints: List[sympy.core.relationa
                 break
         if unique:
             unique_constraints.append(c)
+            new_indices.append(indices[i])
 
-    return unique_constraints
+    return unique_constraints, new_indices
 
 
-def simplify_univariate_symbolic_constraints(constraints: List[sympy.core.relational.LessThan]) -> List[sympy.core.relational.LessThan]:
+def simplify_univariate_symbolic_constraints(constraints: List[sympy.core.relational.LessThan], indices: List[int]) -> Tuple[List[sympy.core.relational.LessThan], List[int]]:
     """
     Simplifies univariate constraints.
 
     :param constraints: a list of symbolic constraints
-    :return: a list of simplified constraints
+    :return: a list of simplified constraints and their indices in the original list
     """
 
     simplified_constraints = []
-    for c in constraints:
+    new_indices = []
+    for i, c in enumerate(constraints):
+        constraint_index = indices[i]
         if len(c.free_symbols) == 1:
             simplified = sympy.solve(c, c.free_symbols.pop())
             if isinstance(simplified, sympy.And):
                 for s in simplified.args:
                     simplified_constraints.append(s)
+                    new_indices.append(constraint_index)
             else:
                 simplified_constraints.append(simplified)
+                new_indices.append(constraint_index)
         else:
             simplified_constraints.append(c)
+            new_indices.append(constraint_index)
 
-    return simplified_constraints
+    return simplified_constraints, new_indices
 
 
-def simplfiy_trivial_symbolic_constraints(constraints: List[sympy.core.relational.LessThan]) -> List[sympy.core.relational.LessThan]:
+def simplfiy_trivial_symbolic_constraints(constraints: List[sympy.core.relational.LessThan], indices: List[int]) -> Tuple[List[sympy.core.relational.LessThan], List[int]]:
     """
     Simplifies trivial constraints by trying to see if some sympy simplifications result in a True value.
 
     :param constraints: a list of symbolic constraints
-    :return: a list of simplified constraints
+    :return: a list of simplified constraints and their indices in the original list
     """
 
     simplified_constraints = []
-    for c in constraints:
+    new_indices = []
+    for i, c in enumerate(constraints):
         if sympy.factor(c) == True:
             continue
         if sympy.simplify(c) == True:
@@ -111,8 +119,9 @@ def simplfiy_trivial_symbolic_constraints(constraints: List[sympy.core.relationa
             continue
         else:
             simplified_constraints.append(c)
+            new_indices.append(indices[i])
 
-    return simplified_constraints
+    return simplified_constraints, new_indices
 
 
 def build_gurobi_model_with_square_roots(constraint_strings: List[str], syms: List[sympy.Symbol], replacement_dict: Dict[str, Tuple[str, str]], num_aux: int) -> gurobipy.Model:
@@ -151,23 +160,22 @@ def build_gurobi_model_with_square_roots(constraint_strings: List[str], syms: Li
     return model
 
 
-# TODO this needs to be refactored later, I'm just going to build a gurobi model in here for now
-def reduce_redundant_symbolic_constraints(constraints: List[sympy.core.relational.LessThan]) -> List[sympy.core.relational.LessThan]:
+def reduce_redundant_symbolic_constraints(constraints: List[sympy.core.relational.LessThan], indices: List[int]) -> Tuple[List[sympy.core.relational.LessThan], List[int]]:
     """
     Reduces the constraints to a minimal set of constraints that are not redundant.
 
     :param constraints: a list of symbolic constraints
-    :return: a list of symbolic constraints that are not redundant
+    :return: a list of symbolic constraints that are not redundant and their indices in the original list
     """
 
     # first, we need to simplify any univariate constraints
-    constraints = simplify_univariate_symbolic_constraints(constraints)
+    constraints, indices = simplify_univariate_symbolic_constraints(constraints, indices)
 
     # next, we need to simplify any trivial constraints
-    constraints = simplfiy_trivial_symbolic_constraints(constraints)
+    constraints, indices = simplfiy_trivial_symbolic_constraints(constraints, indices)
 
     # next, we need to remove any duplicate constraints
-    constraints = remove_duplicate_symbolic_constraints(constraints)
+    constraints, indices = remove_duplicate_symbolic_constraints(constraints, indices)
 
     # TODO this can probably be more efficient
     
@@ -195,6 +203,8 @@ def reduce_redundant_symbolic_constraints(constraints: List[sympy.core.relationa
     syms = list(set(syms))
     syms.sort(key=str)
 
+    kept_indices = []
+
     for i_con, c in enumerate(constraint_strings):
 
         constraint_strings[i_con] = c.replace('<=', '==')
@@ -206,7 +216,8 @@ def reduce_redundant_symbolic_constraints(constraints: List[sympy.core.relationa
         status = model.status
         if status == gurobipy.GRB.OPTIMAL:
             nonredundant_constraint_list.append(constraints[i_con])
+            kept_indices.append(indices[i_con])
 
         constraint_strings[i_con] = constraint_strings[i_con].replace('==', '<=')
 
-    return nonredundant_constraint_list
+    return nonredundant_constraint_list, kept_indices

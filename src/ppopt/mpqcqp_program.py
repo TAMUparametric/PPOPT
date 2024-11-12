@@ -400,24 +400,35 @@ class MPQCQP_Program(MPQP_Program):
         bounds_from_quadratic = [q.evaluate_symbolic(sympy.Matrix(x_star), sympy.Matrix(theta_syms)) for q in [self.qconstraints[i] for i in quadratic_inactive]]
         bounds_from_theta = self.A_t @ sympy.Matrix(theta_syms) - self.b_t
 
-        region_inequalities = []
+        original_region_inequalities = []
         for i in bounds_from_linear:
-            region_inequalities.append(i <= 0)
+            original_region_inequalities.append(i <= 0)
         for i in bounds_from_quadratic:
-            region_inequalities.append(i[0] <= 0)
+            original_region_inequalities.append(i[0] <= 0)
         for i in bounds_from_theta:
-            region_inequalities.append(i <= 0)
+            original_region_inequalities.append(i <= 0)
         for i in sympy.Matrix(lambda_star):
-            region_inequalities.append(i >= 0)
+            original_region_inequalities.append(i >= 0)
 
-        region_inequalities = [i for i in region_inequalities if i != True] # remove any trivially satisfied constraints
+        index_list = []
+        region_inequalities = []
+        for idx, ineq in enumerate(original_region_inequalities):
+            if ineq != True:
+                region_inequalities.append(ineq)
+                index_list.append(idx)
 
-        region_inequalities = reduce_redundant_symbolic_constraints(region_inequalities)
+        # region_inequalities = [i for i in region_inequalities if i != True] # remove any trivially satisfied constraints
+
+        region_inequalities, index_list = reduce_redundant_symbolic_constraints(region_inequalities, index_list)
 
         # Test full dimensionality of the new critical region
 
-        # TODO omega_set, lambda_set, regular_set
-        return NonlinearCriticalRegion(x_star=x_star, lambda_star=lambda_star, theta_constraints=region_inequalities, active_set=active_set)
+        # classify the remaining constraints
+        regular_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] < len(bounds_from_linear) + len(bounds_from_quadratic)]
+        omega_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] >= len(bounds_from_linear) + len(bounds_from_quadratic) and index_list[i] < len(bounds_from_linear) + len(bounds_from_quadratic) + len(bounds_from_theta)]
+        lambda_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] >= len(bounds_from_linear) + len(bounds_from_quadratic) + len(bounds_from_theta)]
+
+        return NonlinearCriticalRegion(x_star, lambda_star, region_inequalities, active_set, omega_set, lambda_set, regular_set)
 
 
     def base_constraint_processing(self):
