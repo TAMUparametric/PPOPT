@@ -369,8 +369,8 @@ class MPQCQP_Program(MPQP_Program):
             keep_indices = []
             for i in range(num_solutions):
                 this_lambda = lambda_sol[i]
-                if numpy.all([(l >= 0) != False for l in this_lambda]): # required for the cases that lambda is constant, as the solve call will return [] in that case, which is useless TODO is it? might be able to still use that info
-                    if numpy.all([sympy.solve(l >= 0) != False for l in this_lambda]): # required for the cases that lambda is a function of theta
+                if numpy.all([(l > 0) != False for l in this_lambda]): # required for the cases that lambda is constant, as the solve call will return [] in that case, which is useless TODO is it? might be able to still use that info
+                    if numpy.all([sympy.solve(l > 0) != False for l in this_lambda]): # required for the cases that lambda is a function of theta
                         keep_indices.append(i)
 
             # return the list of x, lambda, nu tuples
@@ -380,20 +380,19 @@ class MPQCQP_Program(MPQP_Program):
             return x_sol, lambda_sol, nu_sol
 
 
-    def gen_cr_from_active_set(self, active_set: List[int]) -> NonlinearCriticalRegion:
-        # Placeholder for generating a nonlinear critical region from an active set
+    def gen_cr_from_active_set(self, active_set: List[int]) -> Optional[NonlinearCriticalRegion]:
         # Get list of inactive constraints
         num_linear_constraints = self.num_linear_constraints()
         num_quadratic_constraints = self.num_quadratic_constraints()
-        # linear_active = [i for i in active_set if i < num_linear_constraints]
-        # quadratic_active = [i - num_linear_constraints for i in active_set if i >= num_linear_constraints]
 
         linear_inactive = [i for i in range(num_linear_constraints) if i not in active_set]
         quadratic_inactive = [i - num_linear_constraints for i in range(num_linear_constraints, num_linear_constraints + num_quadratic_constraints) if i not in active_set]
 
         # Compute optimal control law for active set
         x_star, lambda_star, nu_star = self.optimal_control_law(active_set)
-        # theta_syms = x_star.free_symbols | lambda_star.free_symbols | nu_star.free_symbols # hopefully all thetas occur at least once so we don't get a dimension error
+        # if we don't find a control law, we can't build a critical region (most likely due to lower dimensionality of the CR)
+        if x_star == []:
+            return None
         theta_syms = sympy.symbols('theta:' + str(self.num_t()), real=True, finite=True)
         # Insert optimal control law into the inactive constraints to build the critical region
         
@@ -415,13 +414,10 @@ class MPQCQP_Program(MPQP_Program):
 
         region_inequalities = reduce_redundant_symbolic_constraints(region_inequalities)
 
-        # region_inequalities = [i.lhs for i in region_inequalities] # remove the <= 0 part
-
         # Test full dimensionality of the new critical region
 
         # TODO omega_set, lambda_set, regular_set
         return NonlinearCriticalRegion(x_star=x_star, lambda_star=lambda_star, theta_constraints=region_inequalities, active_set=active_set)
-        return None
 
 
     def base_constraint_processing(self):
