@@ -305,10 +305,8 @@ class MPQCQP_Program(MPQP_Program):
         :return: a tuple of the optimal x* and λ* functions in the following form(A_x, b_x, A_l, b_l)
         """
 
-        # if the active set contains only linear constraints, then we can use the QP case
-        # TODO should we be using the returned matrices from the QP case to build symbolic expressions, for consistency with the QCQP case?
+        # if the active set contains only linear constraints, then we can use the QP case and transform it to symbolics
         if len(active_set) == 0 or max(active_set) < self.num_linear_constraints():
-            # return super().optimal_control_law(active_set)
             A, b, C, d = super().optimal_control_law(active_set)
             theta_sym = sympy.symbols('theta:' + str(self.num_t()), real=True, finite=True)
             x_star = A @ sympy.Matrix([theta_sym]).T + b
@@ -326,7 +324,6 @@ class MPQCQP_Program(MPQP_Program):
             active_quadratic_indices = [i - self.num_linear_constraints() for i in active_set if i >= self.num_linear_constraints()]
             
             # set up the system of quadratic equations
-            # TODO determine whether we need the Taylor expansion as in the paper or if we can also use the KKT/FJ conditions as done in the MPP book (ch 3.1.2, p. 48)
             equations = []
             # build the stationarity condition step by step for readability for now
             # objective gradient
@@ -394,8 +391,8 @@ class MPQCQP_Program(MPQP_Program):
         if x_star == []:
             return None
         theta_syms = sympy.symbols('theta:' + str(self.num_t()), real=True, finite=True)
-        # Insert optimal control law into the inactive constraints to build the critical region
-        
+
+        # Insert optimal control law into the inactive constraints to build the critical region        
         bounds_from_linear = self.A[linear_inactive] @ sympy.Matrix(x_star) - self.b[linear_inactive] - self.F[linear_inactive] @ sympy.Matrix(theta_syms)
         bounds_from_quadratic = [q.evaluate_symbolic(sympy.Matrix(x_star), sympy.Matrix(theta_syms)) for q in [self.qconstraints[i] for i in quadratic_inactive]]
         bounds_from_theta = self.A_t @ sympy.Matrix(theta_syms) - self.b_t
@@ -416,8 +413,6 @@ class MPQCQP_Program(MPQP_Program):
             if ineq != True:
                 region_inequalities.append(ineq)
                 index_list.append(idx)
-
-        # region_inequalities = [i for i in region_inequalities if i != True] # remove any trivially satisfied constraints
 
         region_inequalities, index_list = reduce_redundant_symbolic_constraints(region_inequalities, index_list)
 

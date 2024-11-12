@@ -120,7 +120,6 @@ class NonlinearCriticalRegion:
         # check if all constraints are satisfied
         return numpy.all(numpy.array(self.theta_constraints_numpy(theta)) < tol)
 
-    # depreciated
     # TODO refactor this to have gurobi stuff outside of here
     def is_full_dimension(self) -> bool:
         """Tests dimensionality of critical region. This is done by checking if the slack of all constraints is positive.
