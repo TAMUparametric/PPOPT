@@ -8,7 +8,7 @@ from .mplp_program import MPLP_Program
 from .mpmilp_program import MPMILP_Program
 from .mpmiqp_program import MPMIQP_Program
 from .mpqp_program import MPQP_Program
-
+from .mpqcqp_program import MPQCQP_Program, QConstraint
 
 class VariableType(Enum):
     """
@@ -377,10 +377,6 @@ class MPModeler:
         """
 
         if isinstance(constr, Constraint):
-
-            if constr.expr.is_quadratic():
-                raise ValueError("Quadratic constraints are not supported")
-
             self.constraints.append(constr)
         else:
             raise TypeError(f"Constraints must be of type Constraint not {type(constr)}")
@@ -452,27 +448,33 @@ class MPModeler:
         num_params = len(self.parameters)
 
         # partition the constraints into parametric (A@ theta -b <= 0) and mixed constraints(A@x + F@theta -b <= 0)
-        mixed_constraints = [constr for constr in self.constraints if constr.is_mixed_constraint()]
         parametric_constraints = [constr for constr in self.constraints if constr.is_parametric_constraint()]
 
+        # partition the mixed constraints into linear and quadratic
+        linear_mixed_constraints = [constr for constr in self.constraints if constr.is_mixed_constraint() and constr.expr.is_linear()]
+        quadratic_mixed_constraints = [constr for constr in self.constraints if constr.is_mixed_constraint() and constr.expr.is_quadratic()]
+
         # get the indices of the equality constraints
-        equality_indices = [i for i, constr in enumerate(mixed_constraints) if
+        equality_indices = [i for i, constr in enumerate([*linear_mixed_constraints, *quadratic_mixed_constraints]) if
                             constr.const_type == ConstraintType.equality]
 
         # get the indices of the binary variables
         binary_indices = [var.var_id for var in self.variables if var.var_type == VariableType.binary]
 
-        # Instantiate the mixed constraint matrices
-        A = numpy.zeros((len(mixed_constraints), num_vars))
-        F = numpy.zeros((len(mixed_constraints), num_params))
-        b = numpy.zeros((len(mixed_constraints), 1))
+        # Instantiate the linear mixed constraint matrices
+        A = numpy.zeros((len(linear_mixed_constraints), num_vars))
+        F = numpy.zeros((len(linear_mixed_constraints), num_params))
+        b = numpy.zeros((len(linear_mixed_constraints), 1))
 
         # instantiate the parametric constraint matrices
         A_t = numpy.zeros((len(parametric_constraints), num_params))
         b_t = numpy.zeros((len(parametric_constraints), 1))
 
-        # fill in the mixed constraint matrices
-        for constr_idx, constr in enumerate(mixed_constraints):
+        # instantiate the list of quadratic constraints
+        qconstrs = []
+
+        # fill in the linear mixed constraint matrices
+        for constr_idx, constr in enumerate(linear_mixed_constraints):
 
             # for each term in the
             for var, coeff in constr.expr.linear_coeffs.items():
@@ -485,6 +487,41 @@ class MPModeler:
 
             # set the constant term
             b[constr_idx] = -constr.expr.const
+
+        for constr_idx, constr in enumerate(quadratic_mixed_constraints):
+            Q_q = numpy.zeros((num_vars, num_vars))
+            H_q = numpy.zeros((num_vars, num_params))
+            A_q = numpy.zeros((1, num_vars))
+            b_q = numpy.array([[-constr.expr.const]])
+            F_q = numpy.zeros((1, num_params))
+            Q_qt = numpy.zeros((num_params, num_params))
+
+            # linear as before
+            for var, coeff in constr.expr.linear_coeffs.items():
+                if var.is_var():
+                    A_q[0, var.var_id] = coeff
+
+                if var.is_param():
+                    F_q[0, var.var_id] = -coeff
+
+            # quadratic
+            for (v1, v2), coeff in constr.expr.quad_coeffs.items():
+                if v1.is_var() and v2.is_var():
+                    Q_q[v1.var_id, v2.var_id] += 0.5 * coeff
+                    Q_q[v2.var_id, v1.var_id] += 0.5 * coeff
+
+                if v1.is_param() and v2.is_param():
+                    Q_qt[v1.var_id, v2.var_id] += -0.5 * coeff
+                    Q_qt[v2.var_id, v1.var_id] += -0.5 * coeff
+
+
+                if v1.is_var() and v2.is_param():
+                    H_q[v1.var_id, v2.var_id] += coeff
+
+                if v1.is_param() and v2.is_var():
+                    H_q[v2.var_id, v1.var_id] += coeff
+
+            qconstrs.append(QConstraint(Q_q, H_q, A_q, b_q, F_q, Q_qt))            
 
         # fill in the parametric constraint matrices
         for constr_idx, constr in enumerate(parametric_constraints):
@@ -531,6 +568,11 @@ class MPModeler:
 
             if v1.is_param() and v2.is_var():
                 H[v2.var_id, v1.var_id] += coeff
+
+        # if we have quadratic constraints we have a mpQCQP
+        if len(qconstrs) > 0:
+            return MPQCQP_Program(A, b, c, H, 2 * Q, A_t, b_t, F, qconstrs, c_c, c_t, Q_t, equality_indices=equality_indices,
+                                  post_process=process)
 
         # if we don't have any quadratic terms then we either have a mpLP or a mpMILP
         if numpy.sum(numpy.abs(Q)) == 0:

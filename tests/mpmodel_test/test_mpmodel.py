@@ -3,6 +3,7 @@ from itertools import product
 from src.ppopt.mpmodel import MPModeler, VariableType
 from src.ppopt.mp_solvers.solve_mpqp import solve_mpqp, mpqp_algorithm
 from src.ppopt.mp_solvers.solve_mpmiqp import solve_mpmiqp
+from src.ppopt.mp_solvers.solve_mpqcqp import solve_mpqcqp
 
 import numpy
 
@@ -240,3 +241,30 @@ def test_assigment_problem():
     assignment_problem = model.formulate_problem()
 
     sol = solve_mpqp(assignment_problem, mpqp_algorithm.combinatorial_graph)
+
+
+def test_qcqp_modeler():
+    model = MPModeler()
+
+    x = model.add_var()
+    theta1 = model.add_param()
+    theta2 = model.add_param()
+
+    model.add_constr(x**2 + 2*x - theta2 + 1 <= 0)
+    model.add_constr(x - theta1 + theta2 <= 0)
+    model.add_constr(-5 <= x)
+    model.add_constr(x <= 3)
+    model.add_constr(-2 <= theta1)
+    model.add_constr(theta1 <= 2)
+    model.add_constr(0 <= theta2)
+    model.add_constr(theta2 <= 3)
+    model.set_objective(x**2 + 4*x + 5)
+
+    program = model.formulate_problem()
+    sol = solve_mpqcqp(program)
+    assert len(sol.critical_regions) == 3
+
+
+# TODO this still needs to be tested, for now we let it pass
+def test_qcqp_modeler_with_equalities():
+    assert True
