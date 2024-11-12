@@ -60,7 +60,7 @@ def full_process_2(program, current_active_set):
     if critical_region is None:
         return None
 
-    return critical_region, get_facet_centers(critical_region.E, critical_region.f)
+    return critical_region, get_facet_centers(critical_region.E, critical_region.f, solver = program.solver)
 
 
 def fathem_initial_active_sets(program: MPQP_Program, initial_active_sets: List[List[int]]):
@@ -78,7 +78,7 @@ def fathem_initial_active_sets(program: MPQP_Program, initial_active_sets: List[
     work_items = []
 
     for cr in crs:
-        facets = get_facet_centers(cr.E, cr.f)
+        facets = get_facet_centers(cr.E, cr.f, program.solver)
         work_items.extend([(theta, facet_normal, radius, cr.active_set) for theta, facet_normal, radius in facets])
 
     return work_items, crs
@@ -112,7 +112,7 @@ def solve(program: MPQP_Program, initial_active_sets: Optional[List[List[int]]] 
 
     cr_gen = lambda active_set: gen_cr_from_active_set(program=program, active_set=active_set, check_full_dim=True)
 
-    facet_gen = lambda cr: get_facet_centers(cr.E, cr.f)
+    facet_gen = lambda cr: get_facet_centers(cr.E, cr.f, program.solver)
 
     initial_critical_regions = [cr for cr in pool.map(cr_gen, initial_active_sets) if cr is not None]
     initial_facets = pool.map(facet_gen, initial_critical_regions)

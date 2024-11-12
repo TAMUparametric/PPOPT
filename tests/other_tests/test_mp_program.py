@@ -28,7 +28,7 @@ def linear_program() -> MPLP_Program:
 
 @pytest.fixture()
 def quadratic_program() -> MPQP_Program:
-    """a simple mplp to test the dimensional correctness of its functions"""
+    """a simple mpqp to test the dimensional correctness of its functions"""
     A = numpy.array(
         [[1, 1, 0, 0], [0, 0, 1, 1], [-1, 0, -1, 0], [0, -1, 0, -1], [-1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0],
          [0, 0, 0, -1]])
@@ -57,8 +57,49 @@ def simple_qp_program() -> MPQP_Program:
     A_t = numpy.array([[-1], [1]])
     b_t = numpy.array([[0], [1]])
     H = numpy.zeros((F.shape[1], Q.shape[0]))
+
     return MPQP_Program(A, b, c, H, Q, A_t, b_t, F, post_process=True)
 
+
+@pytest.fixture()
+def psd_qp_program() -> MPQP_Program:
+    """a simple positive semi-definite mpqp"""
+    A = numpy.array(
+        [[1, 1, 0, 0], [0, 0, 1, 1], [-1, 0, -1, 0], [0, -1, 0, -1], [-1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0],
+         [0, 0, 0, -1]])
+    b = numpy.array([350, 600, 0, 0, 0, 0, 0, 0]).reshape(8, 1)
+    c = 25 * make_column([1, 1, 1, 1])
+    F = numpy.array([[0, 0], [0, 0], [-1, 0], [0, -1], [0, 0], [0, 0], [0, 0], [0, 0]])
+    Q = 2.0 * numpy.diag([0, 162, 162, 126])
+
+    CRa = numpy.vstack((numpy.eye(2), -numpy.eye(2)))
+    CRb = numpy.array([1000, 1000, 0, 0]).reshape(4, 1)
+    H = numpy.zeros((F.shape[1], Q.shape[0]))
+
+    prog = MPQP_Program(A, b, c, H, Q, CRa, CRb, F)
+    prog.scale_constraints()
+
+    return prog
+
+@pytest.fixture()
+def nd_qp_program() -> MPQP_Program:
+    """a simple negative definite mpqp"""
+    A = numpy.array(
+        [[1, 1, 0, 0], [0, 0, 1, 1], [-1, 0, -1, 0], [0, -1, 0, -1], [-1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0],
+         [0, 0, 0, -1]])
+    b = numpy.array([350, 600, 0, 0, 0, 0, 0, 0]).reshape(8, 1)
+    c = 25 * make_column([1, 1, 1, 1])
+    F = numpy.array([[0, 0], [0, 0], [-1, 0], [0, -1], [0, 0], [0, 0], [0, 0], [0, 0]])
+    Q = -2.0 * numpy.diag([153, 162, 162, 126])
+
+    CRa = numpy.vstack((numpy.eye(2), -numpy.eye(2)))
+    CRb = numpy.array([1000, 1000, 0, 0]).reshape(4, 1)
+    H = numpy.zeros((F.shape[1], Q.shape[0]))
+
+    prog = MPQP_Program(A, b, c, H, Q, CRa, CRb, F)
+    prog.scale_constraints()
+
+    return prog
 
 def test_active_set(linear_program):
     assert linear_program.equality_indices == [0]
@@ -189,6 +230,11 @@ def test_warnings_qp_4(quadratic_program):
     qp_program_2.Q = numpy.diag([1, 0, 10 ** -5])
     assert len(qp_program_2.warnings()) > 0
 
+def test_warnings_qp_5(psd_qp_program):
+    assert len(psd_qp_program.warnings()) > 0
+
+def test_warnings_qp_6(nd_qp_program):
+    assert len(nd_qp_program.warnings()) > 0
 
 def test_latex(quadratic_program):
     _ = quadratic_program.latex()
