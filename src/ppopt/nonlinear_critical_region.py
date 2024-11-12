@@ -12,8 +12,6 @@ from .utils.symbolic_utils import (
     build_gurobi_model_with_square_roots,
 )
 
-# TODO many methods of this class will not yet work as they need to be updated to reflect that this is a nonlinear and symbolic CR rather than a polytope
-
 
 @dataclass(eq=False)
 class NonlinearCriticalRegion:
@@ -25,18 +23,18 @@ class NonlinearCriticalRegion:
     .. math::
 
         \begin{align}
-            x(\theta) &= A\theta + b\\
-            \lambda(\theta) &= C\theta + d\\
-            \Theta &:= \{\forall \theta \in \mathbf{R}^m: E\theta \leq f\}
+            x^* &= x(\theta)\\
+            \lambda^* &= \lambda(\theta)\\
+            \Theta &:= \{\forall \theta \in \mathbf{R}^m: h(\theta) \leq 0\}
         \end{align}
 
-    equality_indices: numpy array of indices
+    active_set: numpy array of indices
 
-    constraint_set: if this is an A@x = b + F@theta boundary
+    regular_set: if this is an x(theta) = 0 boundary
 
     lambda_set: if this is a λ = 0 boundary
 
-    boundary_set: if this is an Eθ <= f boundary
+    omega_set: if this is an h(theta) = 0 boundary
 
     """
 
@@ -60,11 +58,14 @@ class NonlinearCriticalRegion:
     y_indices: Optional[numpy.ndarray] = None
     x_indices: Optional[numpy.ndarray] = None
 
-    def __init__(self, x_star, lambda_star, theta_constraints, active_set, y_fixation=None, y_indices=None, x_indices=None):
+    def __init__(self, x_star, lambda_star, theta_constraints, active_set, omega_set, lambda_set, regular_set, y_fixation=None, y_indices=None, x_indices=None):
         self.x_star = x_star
         self.lambda_star = lambda_star
         self.theta_constraints = theta_constraints
         self.active_set = active_set
+        self.omega_set = omega_set
+        self.lambda_set = lambda_set
+        self.regular_set = regular_set
         self.y_fixation = y_fixation
         self.y_indices = y_indices
         self.x_indices = x_indices
@@ -89,8 +90,9 @@ class NonlinearCriticalRegion:
         output += f"\nThe Omega Constraint indices are {self.omega_set}"
         output += f"\nThe Lagrange multipliers Constraint indices are {self.lambda_set}"
         output += f"\nThe Regular Constraint indices are {self.regular_set}"
-        output += "\n  x(θ) = Aθ + b \n λ(θ) = Cθ + d \n  Eθ <= f"
-        output += f"\n A = {self.A} \n b = {self.b} \n C = {self.C} \n d = {self.d} \n E = {self.E} \n f = {self.f}"
+        output += f"\nx(θ) = {numpy.array(self.x_star).flatten()}"
+        output += f"\nλ(θ) = {numpy.array(self.lambda_star).flatten()}"
+        output += f"\nConstraints on θ are {self.theta_constraints}"
 
         return output
 
