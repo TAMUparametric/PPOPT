@@ -225,7 +225,6 @@ def reduce_redundant_symbolic_constraints(constraints: List[sympy.core.relationa
 
         model = build_gurobi_model_with_square_roots(constraint_strings, syms, replacement_dict, num_aux)
 
-        model.write("model.lp")
         model.optimize()
         status = model.status
         if status == gurobipy.GRB.OPTIMAL:
