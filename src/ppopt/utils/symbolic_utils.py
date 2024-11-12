@@ -29,6 +29,20 @@ import re
 
 #     return constraint_list
 
+def to_less_than_or_equal(constraint: sympy.core.relational) -> sympy.core.relational.LessThan:
+    """
+    Converts an inequality to a less than or equal constraint.
+
+    :param constraint: an inequality
+    :return: a less than or equal constraint
+    """
+
+    if constraint.rel_op != '>=' and constraint.rel_op != '<=':
+        raise ValueError('Constraint must be an inequality.')
+    if constraint.rel_op == '>=':
+        return sympy.LessThan(-constraint.lhs, -constraint.rhs)
+    return constraint
+
 
 def replace_square_roots_dictionary(constraint_strings: List[str]) -> Tuple[Dict[str, Tuple[str, str]], List[str], int]:
     """
