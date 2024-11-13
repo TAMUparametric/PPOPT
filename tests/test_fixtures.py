@@ -620,6 +620,38 @@ def pappas_qcqp_1():
     return prog
 
 @pytest.fixture()
+def pappas_qcqp_1_adapted():
+    """
+    This is an adaption of example 1 from https://doi.org/10.1007/s10898-020-00933-9
+    The quadratic coefficient in the constraint is changed from 1 to 2
+    See also https://www.desmos.com/calculator/swo1fcohvl vor a visualization
+    This is a convex mpQCQP
+    """
+    Q = 2 * numpy.array([[1]])
+    c = numpy.array([[4]])
+    c_c = numpy.array([[5]])
+
+    A = numpy.array([[1], [-1], [1]])
+    b = numpy.array([[0], [5], [3]])
+    F = numpy.array([[1, -1], [0, 0], [0, 0]])
+
+    Q_q = numpy.array([[2]])
+    A_q = numpy.array([[2]])
+    b_q = numpy.array([[-1]])
+    F_q = numpy.array([[0, 1]])
+
+    A_t = numpy.array([[1, 0], [-1, 0], [0, 1], [0, -1]])
+    b_t = numpy.array([[2], [2], [3], [0]])
+
+    H = numpy.zeros((1, 2))
+    Q_qt = numpy.zeros((2, 2))
+
+    qcon = QConstraint(Q_q, H, A_q, b_q, F_q, Q_qt)
+
+    prog = MPQCQP_Program(A, b, c, H, Q, A_t, b_t, F, [qcon], c_c, post_process=False) # turn off constraint processing to use the original constraint set and numbering in the tests
+    return prog
+
+@pytest.fixture()
 def pappas_qcqp_2():
     """
     This is example 2 from https://doi.org/10.1007/s10898-020-00933-9

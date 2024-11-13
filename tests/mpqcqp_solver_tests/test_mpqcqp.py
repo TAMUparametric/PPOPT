@@ -2,7 +2,7 @@
 import numpy
 
 from src.ppopt.mp_solvers.solve_mpqcqp import mpqcqp_algorithm, solve_mpqcqp
-from tests.test_fixtures import pappas_qcqp_1
+from tests.test_fixtures import pappas_qcqp_1, pappas_qcqp_1_adapted
 
 
 def test_convex_mpqcqp(pappas_qcqp_1):
@@ -18,3 +18,8 @@ def test_convex_mpqcqp(pappas_qcqp_1):
         assert numpy.isclose(x_point, expected_x_points[i])
         objective_val = pappas_qcqp_1.evaluate_objective(x_point, theta)
         assert numpy.isclose(objective_val, expected_objective_values[i])
+
+
+def test_convex_mpqcqp_2(pappas_qcqp_1_adapted):
+    sol = solve_mpqcqp(pappas_qcqp_1_adapted, mpqcqp_algorithm.combinatorial)
+    assert len(sol) == 1
