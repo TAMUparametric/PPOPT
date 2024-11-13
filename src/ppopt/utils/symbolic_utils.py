@@ -37,10 +37,12 @@ def to_less_than_or_equal(constraint: sympy.core.relational) -> sympy.core.relat
     :return: a less than or equal constraint
     """
 
-    if constraint.rel_op != '>=' and constraint.rel_op != '<=':
+    if '<' not in constraint.rel_op and '>' not in constraint.rel_op:
         raise ValueError('Constraint must be an inequality.')
-    if constraint.rel_op == '>=':
+    if constraint.rel_op == '>=' or constraint.rel_op == '>':
         return sympy.LessThan(-constraint.lhs, -constraint.rhs)
+    if constraint.rel_op == '<':
+        return sympy.LessThan(constraint.lhs, constraint.rhs)
     return constraint
 
 
@@ -190,6 +192,9 @@ def reduce_redundant_symbolic_constraints(constraints: List[sympy.core.relationa
 
     # next, we need to remove any duplicate constraints
     constraints, indices = remove_duplicate_symbolic_constraints(constraints, indices)
+
+    # finally, we make everything a less than or equal constraint (in particular, this can make some strict inequalities into non-strict inequalities)
+    constraints = [to_less_than_or_equal(c) for c in constraints]
 
     # TODO this can probably be more efficient
     
