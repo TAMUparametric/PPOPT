@@ -351,10 +351,11 @@ class MPQCQP_Program(MPQP_Program):
                 normalizing_eq = nu_sym ** 2 + sum(l**2 for l in lambda_sym) - beta_sym ** 2
             else:
                 normalizing_eq = nu_sym - 1
+                equations = [eq.subs(nu_sym, 1) for eq in equations]
             equations.append(normalizing_eq)
 
             # solve the system of equations
-            solution = sympy.solve(equations, *x_sym, *lambda_sym, nu_sym)
+            solution = sympy.solve(equations, [*x_sym, *lambda_sym, nu_sym], rational=True, simplify=True)
 
             # extract each set of x, lambda, nu
             num_solutions = len(solution)
