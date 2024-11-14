@@ -311,14 +311,14 @@ class MPQCQP_Program(MPQP_Program):
             theta_sym = sympy.symbols('theta:' + str(self.num_t()), real=True, finite=True)
             x_star = A @ sympy.Matrix([theta_sym]).T + b
             lambda_star = C @ sympy.Matrix([theta_sym]).T + d
-            return x_star, lambda_star, sympy.Rational(1)
+            return [x_star], [lambda_star], [sympy.Rational(1)]
         else:
             # create sympy symbols for variables, theta, lagrange multipliers, (nu and beta)
-            x_sym = sympy.symbols('x:' + str(self.num_x()))
+            x_sym = sympy.symbols('x:' + str(self.num_x()), real=True, finite=True)
             theta_sym = sympy.symbols('theta:' + str(self.num_t()), real=True, finite=True)
-            lambda_sym = sympy.symbols('lambda:' + str(len(active_set)))
-            nu_sym = sympy.symbols('nu')
-            beta_sym = sympy.symbols('beta')
+            lambda_sym = sympy.symbols('lambda:' + str(len(active_set)), real=True, nonnegative=True)
+            nu_sym = sympy.symbols('nu', real=True, positive=True)
+            beta_sym = sympy.symbols('beta', real=True, positive=True)
 
             active_linear_indices = [i for i in active_set if i < self.num_linear_constraints()]
             active_quadratic_indices = [i - self.num_linear_constraints() for i in active_set if i >= self.num_linear_constraints()]
@@ -367,18 +367,33 @@ class MPQCQP_Program(MPQP_Program):
             keep_indices = []
             for i in range(num_solutions):
                 this_lambda = lambda_sol[i]
-                if numpy.all([(l > 0) != False for l in this_lambda]): # required for the cases that lambda is constant, as the solve call will return [] in that case, which is useless TODO is it? might be able to still use that info
-                    if numpy.all([sympy.solve(l > 0) != False for l in this_lambda]): # required for the cases that lambda is a function of theta
+                this_nu = nu_sol[i]
+                if numpy.all([(l > 0) != False for l in this_lambda]) and ((this_nu > 0) != False): # required for the cases that lambda is constant, as the solve call will return [] in that case, which is useless TODO is it? might be able to still use that info
+                    implications_lambda = [sympy.solve(l.subs({beta_sym:1}) > 0) for l in this_lambda]
+                    implications_nu = sympy.solve(this_nu.subs({beta_sym:1}) > 0)
+                    implications = [*implications_lambda, implications_nu]
+                    implications_satisfied = numpy.all([imp != False for imp in implications])
+                    if implications_satisfied:
                         keep_indices.append(i)
-
+                        for implication in implications:
+                            if implication != []:
+                                x_sol[i] = [sympy.refine(sympy.factor(sympy.LT(x)), implication) + sympy.refine(sympy.factor(x - sympy.LT(x)), implication) for x in x_sol[i]]
+                                lambda_sol[i] = [sympy.refine(sympy.factor(sympy.LT(l)), implication) + sympy.refine(sympy.factor(l - sympy.LT(l)), implication) for l in lambda_sol[i]]
+                    
             # return the list of x, lambda, nu tuples
             x_sol = [x_sol[i] for i in keep_indices]
             lambda_sol = [lambda_sol[i] for i in keep_indices]
             nu_sol = [nu_sol[i] for i in keep_indices]
+
+            # try to do one final simplification on the kept solutions
+            for i in range(len(x_sol)):
+                x_sol[i] = [sympy.simplify(x)for x in x_sol[i]]
+                lambda_sol[i] = [sympy.simplify(l) for l in lambda_sol[i]]
+
             return x_sol, lambda_sol, nu_sol
 
 
-    def gen_cr_from_active_set(self, active_set: List[int]) -> Optional[NonlinearCriticalRegion]:
+    def gen_cr_from_active_set(self, active_set: List[int]) -> Optional[List[NonlinearCriticalRegion]]:
         # Get list of inactive constraints
         num_linear_constraints = self.num_linear_constraints()
         num_quadratic_constraints = self.num_quadratic_constraints()
@@ -387,44 +402,53 @@ class MPQCQP_Program(MPQP_Program):
         quadratic_inactive = [i - num_linear_constraints for i in range(num_linear_constraints, num_linear_constraints + num_quadratic_constraints) if i not in active_set]
 
         # Compute optimal control law for active set
-        x_star, lambda_star, nu_star = self.optimal_control_law(active_set)
+        x_stars, lambda_stars, nu_stars = self.optimal_control_law(active_set)
         # if we don't find a control law, we can't build a critical region (most likely due to lower dimensionality of the CR)
-        if x_star == []:
+        if x_stars == []:
             return None
         theta_syms = sympy.symbols('theta:' + str(self.num_t()), real=True, finite=True)
 
+        returned_regions = []
+
+        for i in range(len(x_stars)):
+            x_star = x_stars[i]
+            lambda_star = lambda_stars[i]
+
         # Insert optimal control law into the inactive constraints to build the critical region        
-        bounds_from_linear = self.A[linear_inactive] @ sympy.Matrix(x_star) - self.b[linear_inactive] - self.F[linear_inactive] @ sympy.Matrix(theta_syms)
-        bounds_from_quadratic = [q.evaluate_symbolic(sympy.Matrix(x_star), sympy.Matrix(theta_syms)) for q in [self.qconstraints[i] for i in quadratic_inactive]]
-        bounds_from_theta = self.A_t @ sympy.Matrix(theta_syms) - self.b_t
+            bounds_from_linear = self.A[linear_inactive] @ sympy.Matrix(x_star) - self.b[linear_inactive] - self.F[linear_inactive] @ sympy.Matrix(theta_syms)
+            bounds_from_quadratic = [q.evaluate_symbolic(sympy.Matrix(x_star), sympy.Matrix(theta_syms)) for q in [self.qconstraints[i] for i in quadratic_inactive]]
+            bounds_from_theta = self.A_t @ sympy.Matrix(theta_syms) - self.b_t
 
-        original_region_inequalities = []
-        for i in bounds_from_linear:
-            original_region_inequalities.append(i <= 0)
-        for i in bounds_from_quadratic:
-            original_region_inequalities.append(i[0] <= 0)
-        for i in bounds_from_theta:
-            original_region_inequalities.append(i <= 0)
-        for i in sympy.Matrix(lambda_star):
-            original_region_inequalities.append(i >= 0)
+            original_region_inequalities = []
+            for i in bounds_from_linear:
+                original_region_inequalities.append(i <= 0)
+            for i in bounds_from_quadratic:
+                original_region_inequalities.append(i[0] <= 0)
+            for i in bounds_from_theta:
+                original_region_inequalities.append(i <= 0)
+            for i in sympy.Matrix(lambda_star):
+                original_region_inequalities.append(i >= 0)
 
-        index_list = []
-        region_inequalities = []
-        for idx, ineq in enumerate(original_region_inequalities):
-            if ineq != True:
-                region_inequalities.append(ineq)
-                index_list.append(idx)
+            index_list = []
+            region_inequalities = []
+            for idx, ineq in enumerate(original_region_inequalities):
+                if ineq != True:
+                    region_inequalities.append(ineq)
+                    index_list.append(idx)
 
-        region_inequalities, index_list = reduce_redundant_symbolic_constraints(region_inequalities, index_list)
+            if self.is_convex():
+                region_inequalities, index_list = reduce_redundant_symbolic_constraints(region_inequalities, index_list)
 
-        # Test full dimensionality of the new critical region
+            # Test full dimensionality of the new critical region
 
-        # classify the remaining constraints
-        regular_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] < len(bounds_from_linear) + len(bounds_from_quadratic)]
-        omega_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] >= len(bounds_from_linear) + len(bounds_from_quadratic) and index_list[i] < len(bounds_from_linear) + len(bounds_from_quadratic) + len(bounds_from_theta)]
-        lambda_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] >= len(bounds_from_linear) + len(bounds_from_quadratic) + len(bounds_from_theta)]
+            # classify the remaining constraints
+            regular_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] < len(bounds_from_linear) + len(bounds_from_quadratic)]
+            omega_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] >= len(bounds_from_linear) + len(bounds_from_quadratic) and index_list[i] < len(bounds_from_linear) + len(bounds_from_quadratic) + len(bounds_from_theta)]
+            lambda_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] >= len(bounds_from_linear) + len(bounds_from_quadratic) + len(bounds_from_theta)]
 
-        return NonlinearCriticalRegion(x_star, lambda_star, region_inequalities, active_set, omega_set, lambda_set, regular_set)
+            returned_regions.append(NonlinearCriticalRegion(x_star, lambda_star, region_inequalities, active_set, omega_set, lambda_set, regular_set))
+
+        return returned_regions
 
 
     def base_constraint_processing(self):

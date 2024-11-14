@@ -50,10 +50,11 @@ def solve(program: MPQCQP_Program) -> Solution:
 
             # if soln is not None:
             if program.check_optimality(child_set):
-                critical_region = program.gen_cr_from_active_set(child_set)
+                critical_region_list = program.gen_cr_from_active_set(child_set)
                 # Check the dimensions of the critical region
-                if critical_region is not None:
-                    solution.add_region(critical_region)
+                if critical_region_list is not None:
+                    for critical_region in critical_region_list:
+                        solution.add_region(critical_region)
 
             # propagate sets
 
@@ -64,10 +65,11 @@ def solve(program: MPQCQP_Program) -> Solution:
 
     if program.check_feasibility(program.equality_indices):
         if program.check_optimality(program.equality_indices):
-            region = program.gen_cr_from_active_set(program.equality_indices)
-            if region is not None:
-                if region.is_full_dimension():
-                    solution.add_region(region)
+            region_list = program.gen_cr_from_active_set(program.equality_indices)
+            if region_list is not None:
+                for region in region_list:
+                    if region.is_full_dimension():
+                        solution.add_region(region)
 
     return solution
 
