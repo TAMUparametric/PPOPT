@@ -4,11 +4,13 @@ from typing import List, Optional, Union
 import numpy
 
 from .critical_region import CriticalRegion
+from .nonlinear_critical_region import NonlinearCriticalRegion
 from .geometry.polytope_operations import get_chebyshev_information
 from .mplp_program import MPLP_Program
 from .mpmilp_program import MPMILP_Program
 from .mpmiqp_program import MPMIQP_Program
 from .mpqp_program import MPQP_Program
+from .mpqcqp_program import MPQCQP_Program
 from .utils.general_utils import make_column
 
 
@@ -16,10 +18,10 @@ from .utils.general_utils import make_column
 class Solution:
     """The Solution object is the output of multiparametric solvers, it contains all the critical regions as well
     as holds a copy of the original problem that was solved. """
-    program: Union[MPLP_Program, MPQP_Program, MPMIQP_Program, MPMILP_Program]
-    critical_regions: List[CriticalRegion]
+    program: Union[MPLP_Program, MPQP_Program, MPMIQP_Program, MPMILP_Program, MPQCQP_Program]
+    critical_regions: List[Union[CriticalRegion, NonlinearCriticalRegion]]
 
-    def __init__(self, program: Union[MPLP_Program, MPQP_Program], critical_regions: List[CriticalRegion],
+    def __init__(self, program: Union[MPLP_Program, MPQP_Program], critical_regions: List[Union[CriticalRegion, NonlinearCriticalRegion]],
                  is_overlapping=False, point_location_tolerance=1e-5):
         """
         The explicit solution associated with
@@ -34,7 +36,7 @@ class Solution:
         self.is_overlapping = is_overlapping
         self.point_location_tolerance = point_location_tolerance
 
-    def add_region(self, region: CriticalRegion) -> None:
+    def add_region(self, region: Union[CriticalRegion, NonlinearCriticalRegion]) -> None:
         """
         Adds a region to the solution
 
@@ -57,7 +59,7 @@ class Solution:
 
         return cr.evaluate(theta_point)
 
-    def get_region(self, theta_point: numpy.ndarray) -> Optional[CriticalRegion]:
+    def get_region(self, theta_point: numpy.ndarray) -> Optional[Union[CriticalRegion, NonlinearCriticalRegion]]:
         """
         Find the critical region in the solution that corresponds to the theta provided
 
@@ -74,7 +76,7 @@ class Solution:
         else:
             return self.get_region_no_overlap(theta_point)
 
-    def get_region_no_overlap(self, theta_point: numpy.ndarray) -> Optional[CriticalRegion]:
+    def get_region_no_overlap(self, theta_point: numpy.ndarray) -> Optional[Union[CriticalRegion, NonlinearCriticalRegion]]:
         """
         Find the critical region in the solution that corresponds to the provided theta, assumes that no critical regions overlap
 
@@ -86,7 +88,7 @@ class Solution:
                 return region
         return None
 
-    def get_region_overlap(self, theta_point: numpy.ndarray) -> Optional[CriticalRegion]:
+    def get_region_overlap(self, theta_point: numpy.ndarray) -> Optional[Union[CriticalRegion, NonlinearCriticalRegion]]:
         """
         Find the critical region in the solution that corresponds to the provided theta
 

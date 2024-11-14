@@ -387,7 +387,7 @@ class MPQCQP_Program(MPQP_Program):
 
             # try to do one final simplification on the kept solutions
             for i in range(len(x_sol)):
-                x_sol[i] = [sympy.simplify(x)for x in x_sol[i]]
+                x_sol[i] = [sympy.simplify(x) for x in x_sol[i]]
                 lambda_sol[i] = [sympy.simplify(l) for l in lambda_sol[i]]
 
             return x_sol, lambda_sol, nu_sol
