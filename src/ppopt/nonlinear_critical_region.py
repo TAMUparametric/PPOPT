@@ -75,10 +75,18 @@ class NonlinearCriticalRegion:
         for c in self.theta_constraints:
             theta_syms.extend(c.free_symbols)
         num_theta = len(list(set(theta_syms))) # get the number of unique theta variables
+        beta = sympy.symbols('beta')
+        if 'beta' in [str(t) for t in theta_syms]:
+            num_theta -= 1
+            theta_syms.sort(key=str)
+            beta = theta_syms[0]
         theta = sympy.Matrix(sympy.symbols(f'theta:{num_theta}'))
-        self.x_star_numpy = sympy.lambdify([theta], self.x_star, 'numpy')
-        self.lambda_star_numpy = sympy.lambdify([theta], self.lambda_star, 'numpy')
-        self.theta_constraints_numpy = sympy.lambdify([theta], [c.lhs - c.rhs for c in self.theta_constraints], 'numpy')
+        x_star_beta = [x.subs({beta:1}) for x in self.x_star]
+        lambda_star_beta = [l.subs({beta:1}) for l in self.lambda_star]
+        theta_constraints_beta = [c.subs({beta:1}) for c in self.theta_constraints]
+        self.x_star_numpy = sympy.lambdify([theta], x_star_beta, 'numpy')
+        self.lambda_star_numpy = sympy.lambdify([theta], lambda_star_beta, 'numpy')
+        self.theta_constraints_numpy = sympy.lambdify([theta], [c.lhs - c.rhs for c in theta_constraints_beta], 'numpy')
 
     def __repr__(self):
         """Returns a String representation of a Critical Region."""

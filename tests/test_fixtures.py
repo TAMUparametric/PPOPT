@@ -666,7 +666,7 @@ def pappas_qcqp_2():
     F = numpy.array([[0, -5], [0, 0], [0, 0]])
 
     Q_q = numpy.array([[-1]])
-    A_q = numpy.array([[-1]])
+    A_q = numpy.array([[-5]])
     b_q = numpy.array([[-15]])
     F_q = numpy.array([[-10, 0]])
 
