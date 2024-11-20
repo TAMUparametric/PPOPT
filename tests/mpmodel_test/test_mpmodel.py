@@ -240,3 +240,27 @@ def test_assigment_problem():
     assignment_problem = model.formulate_problem()
 
     sol = solve_mpqp(assignment_problem, mpqp_algorithm.combinatorial_graph)
+
+
+def test_objective_quadratic_theta_term():
+    model = MPModeler()
+    t = model.add_param()
+    x = model.add_var()
+    model.set_objective(t**2)
+    # dummy constraints so that we don't get some warnings
+    model.add_constr(x >= 0)
+    model.add_constr(t >= 0)
+    model.add_constr(t <= 1)
+
+    prog = model.formulate_problem()
+
+    obj = prog.evaluate_objective(numpy.array([[0]]), numpy.array([[1]]))
+    assert numpy.isclose(obj, 1)
+
+
+def test_product_of_linear_expressions():
+    model = MPModeler()
+    x = model.add_var()
+    expr = x + 1
+    expr2 = expr**2
+    assert numpy.isclose(expr2.const, 1)
