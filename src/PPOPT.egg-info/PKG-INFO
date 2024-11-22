@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: ppopt
-Version: 1.5.1
+Version: 1.6.12
 Summary: Extensible Multiparametric Solver in Python
 Home-page: https://github.com/TAMUparametric/PPOPT
 Author: Dustin R. Kenefake
@@ -13,21 +13,21 @@ Requires-Dist: matplotlib
 Requires-Dist: scipy
 Requires-Dist: numba
 Requires-Dist: gurobipy
-Requires-Dist: pytest
-Requires-Dist: setuptools
-Requires-Dist: psutil
 Requires-Dist: pathos
 Requires-Dist: plotly
 Requires-Dist: daqp
+Requires-Dist: sympy
 Provides-Extra: test
 Requires-Dist: pytest; extra == "test"
+Requires-Dist: cvxopt; extra == "test"
+Requires-Dist: quadprog; extra == "test"
 Provides-Extra: optional
 Requires-Dist: cvxopt; extra == "optional"
 Requires-Dist: quadprog; extra == "optional"
 
 # PPOPT
 
-[![Python package](https://github.com/TAMUparametric/PPOPT/actions/workflows/python-package.yml/badge.svg)](https://github.com/TAMUparametric/PPOPT/actions/workflows/python-package.yml)
+[![Python package](https://github.com/TAMUparametric/PPOPT/actions/workflows/PPOPT_CI.yml/badge.svg)](https://github.com/TAMUparametric/PPOPT/actions/workflows/PPOPT_CI.yml)
 [![Documentation Status](https://readthedocs.org/projects/ppopt/badge/?version=latest)](https://ppopt.readthedocs.io/en/latest/?badge=latest)
 [![PyPI](https://img.shields.io/pypi/v/ppopt.svg)](https://pypi.org/project/ppopt)
 [![Downloads](https://static.pepy.tech/personalized-badge/ppopt?period=total&units=none&left_color=grey&right_color=brightgreen&left_text=Downloads)](https://pepy.tech/project/ppopt)
@@ -38,7 +38,7 @@ multiparametric programs in Python.
 
 ## Installation
 
-Currently, PPOPT requires Python 3.7 or higher and can be installed with the following commands.
+Currently, PPOPT requires Python 3.8 or higher and can be installed with the following commands.
 
 ```bash
 pip install ppopt

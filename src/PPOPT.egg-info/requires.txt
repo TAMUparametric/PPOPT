@@ -3,12 +3,10 @@ matplotlib
 scipy
 numba
 gurobipy
-pytest
-setuptools
-psutil
 pathos
 plotly
 daqp
+sympy
 
 [optional]
 cvxopt
@@ -16,3 +14,5 @@ quadprog
 
 [test]
 pytest
+cvxopt
+quadprog

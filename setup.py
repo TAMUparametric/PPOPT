@@ -30,7 +30,8 @@ setup(
                       "gurobipy",
                       "pathos",
                       "plotly",
-                      "daqp"],
+                      "daqp",
+                      "sympy"],
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
 )
