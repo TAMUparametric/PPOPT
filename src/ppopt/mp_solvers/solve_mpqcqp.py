@@ -6,6 +6,7 @@ import numpy
 
 from ..mp_solvers import (
     mpqcqp_combinatorial,
+    mpqcqp_parallel_combinatorial,
 )
 from ..mplp_program import MPLP_Program
 from ..mpqp_program import MPQP_Program
@@ -20,6 +21,7 @@ class mpqcqp_algorithm(Enum):
     This is done by passing the argument mpqp_algorithm.algorithm
     """
     combinatorial = 'combinatorial'
+    combinatorial_parallel = 'p combinatorial'
 
     def __str__(self):
         return self.name
@@ -52,6 +54,8 @@ def solve_mpqcqp(problem: MPQP_Program, algorithm: mpqcqp_algorithm = mpqcqp_alg
 
     if algorithm is mpqcqp_algorithm.combinatorial:
         solution = mpqcqp_combinatorial.solve(problem)
+    if algorithm is mpqcqp_algorithm.combinatorial_parallel:
+        solution = mpqcqp_parallel_combinatorial.solve(problem)
 
     # check if there needs to be a flag thrown in the case of overlapping critical regions
     # happens if there are negative or zero eigen values for mpQP (kkt conditions can find a lot of saddle points)
