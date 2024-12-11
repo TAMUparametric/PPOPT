@@ -6,6 +6,7 @@ import sympy
 from .mplp_program import MPLP_Program
 from .mpqp_program import MPQP_Program
 from .nonlinear_critical_region import NonlinearCriticalRegion
+from .implicit_critical_region import ImplicitCriticalRegion
 from .solver_interface.solver_interface import SolverOutput
 from .utils.constraint_utilities import(
     is_full_rank,
@@ -73,7 +74,8 @@ class QConstraint:
     
     def is_convex(self) -> bool:
         """Checks if the quadratic constraint is convex."""
-        return numpy.all(numpy.linalg.eigvals(self.Q) >= 10 ** -4)
+        # return numpy.all(numpy.linalg.eigvals(self.Q) >= 10 ** -4)
+        return numpy.all(numpy.linalg.eigvals(self.Q) >= 0)
     
 
 class MPQCQP_Program(MPQP_Program):
@@ -283,6 +285,79 @@ class MPQCQP_Program(MPQP_Program):
         return self.solver.solve_miqcqp(Q=Q_prime, c=c_prime, A=A_prime, b=b_prime, Q_q=Q_q_prime, A_q=A_q_prime, b_q=b_q_prime, equality_constraints=self.equality_indices, q_equality_constraints=[], get_duals=False)
 
 
+    def build_optimality_conditions(self, active_set: List[int], symbols: List[sympy.Symbol]) -> List[sympy.Matrix]:
+        x_sym = symbols[0]
+        theta_sym = symbols[1]
+        lambda_sym = symbols[2]
+        nu_sym = symbols[3]
+        beta_sym = symbols[4]
+
+        active_linear_indices = [i for i in active_set if i < self.num_linear_constraints()]
+        active_quadratic_indices = [i - self.num_linear_constraints() for i in active_set if i >= self.num_linear_constraints()]
+        
+        # set up the system of quadratic equations
+        equations = []
+        # build the stationarity condition step by step for readability for now
+        # objective gradient
+        stationarity = nu_sym * self.Q @ sympy.Matrix(x_sym) + nu_sym * self.H @ sympy.Matrix(theta_sym) + nu_sym * self.c
+        # linear constraint gradients
+        if len(active_linear_indices) > 0:
+            stationarity += self.A[active_linear_indices].T @ sympy.Matrix(lambda_sym[0:len(active_linear_indices)])
+        # quadratic constraint gradients
+        quadratic_lambda_index = len(active_linear_indices)
+        for i in active_quadratic_indices:
+            stationarity += lambda_sym[quadratic_lambda_index] * (self.qconstraints[i].Q + self.qconstraints[i].Q.T) @ sympy.Matrix(x_sym) + lambda_sym[quadratic_lambda_index] * self.qconstraints[i].H @ sympy.Matrix(theta_sym) + self.qconstraints[i].A.T @ sympy.Matrix([lambda_sym[quadratic_lambda_index]])
+            quadratic_lambda_index += 1
+
+        equations.append(stationarity)
+
+        # active constraints = 0
+        active_linear_constraints = self.A[active_linear_indices] @ sympy.Matrix(x_sym) - self.b[active_linear_indices] - self.F[active_linear_indices] @ sympy.Matrix(theta_sym)
+        equations.append(active_linear_constraints)
+        active_quadratic_constraints = [self.qconstraints[i].evaluate_symbolic(sympy.Matrix(x_sym), sympy.Matrix(theta_sym)) for i in active_quadratic_indices]
+        equations.append(sympy.Matrix(active_quadratic_constraints))
+
+        # normalize the lagrange multipliers or set nu = 1, depending on convexity
+        nonconvex_in_active_set = numpy.any([not self.qconstraints[i].is_convex() for i in active_quadratic_indices])
+        if nonconvex_in_active_set:
+            normalizing_eq = nu_sym ** 2 + sum(l**2 for l in lambda_sym) - beta_sym ** 2
+        else:
+            normalizing_eq = nu_sym - 1
+            equations = [eq.subs(nu_sym, 1) for eq in equations]
+        equations.append(normalizing_eq)
+
+        return equations
+
+
+    def gen_implicit_cr_from_active_set(self, active_set: List[int]) -> Optional[List[ImplicitCriticalRegion]]:
+        x_sym = sympy.symbols('x:' + str(self.num_x()), real=True, finite=True)
+        theta_sym = sympy.symbols('theta:' + str(self.num_t()), real=True, finite=True)
+        lambda_sym = sympy.symbols('lambda:' + str(self.num_constraints()), real=True, nonnegative=True)
+        nu_sym = sympy.symbols('nu', real=True, positive=True)
+        beta_sym = sympy.symbols('beta', real=True, positive=True)
+        symbol_collection = [x_sym, theta_sym, lambda_sym, nu_sym, beta_sym]
+
+        num_linear_constraints = self.num_linear_constraints()
+        num_quadratic_constraints = self.num_quadratic_constraints()
+
+        linear_inactive = [i for i in range(num_linear_constraints) if i not in active_set]
+        quadratic_inactive = [i - num_linear_constraints for i in range(num_linear_constraints, num_linear_constraints + num_quadratic_constraints) if i not in active_set]
+
+        optimality_conditions = self.build_optimality_conditions(active_set, symbol_collection)
+
+        grad_lagrangian = optimality_conditions[0]
+        active_linear_constraints = optimality_conditions[1] # if len(optimality_conditions[1]) > 0 else None
+        active_quadratic_constraints = optimality_conditions[2] # if len(optimality_conditions[2]) > 0 else None
+        inactive_linear_constraints = self.A[linear_inactive] @ sympy.Matrix(x_sym) - self.b[linear_inactive] - self.F[linear_inactive] @ sympy.Matrix(theta_sym)
+        # inactive_linear_constraints = inactive_linear_constraints if len(inactive_linear_constraints) > 0 else None
+        inactive_quadratic_constraints = sympy.Matrix([self.qconstraints[i].evaluate_symbolic(sympy.Matrix(x_sym), sympy.Matrix(theta_sym)) for i in quadratic_inactive])
+        # inactive_quadratic_constraints = inactive_quadratic_constraints if len(inactive_quadratic_constraints) > 0 else None
+        theta_bounds = self.A_t @ sympy.Matrix(theta_sym) - self.b_t
+
+        cr = ImplicitCriticalRegion(grad_lagrangian, active_linear_constraints, active_quadratic_constraints, inactive_linear_constraints, inactive_quadratic_constraints, theta_bounds, active_set)
+        return [cr]
+
+
     def optimal_control_law(self, active_set: List[int]) -> Tuple:
         r"""
         This function calculates the optimal control law corresponding to an active set combination. This is effectively
@@ -320,39 +395,9 @@ class MPQCQP_Program(MPQP_Program):
             nu_sym = sympy.symbols('nu', real=True, positive=True)
             beta_sym = sympy.symbols('beta', real=True, positive=True)
 
-            active_linear_indices = [i for i in active_set if i < self.num_linear_constraints()]
-            active_quadratic_indices = [i - self.num_linear_constraints() for i in active_set if i >= self.num_linear_constraints()]
-            
-            # set up the system of quadratic equations
-            equations = []
-            # build the stationarity condition step by step for readability for now
-            # objective gradient
-            stationarity = nu_sym * self.Q @ sympy.Matrix(x_sym) + nu_sym * self.H @ sympy.Matrix(theta_sym) + nu_sym * self.c
-            # linear constraint gradients
-            if len(active_linear_indices) > 0:
-                stationarity += self.A[active_linear_indices].T @ sympy.Matrix(lambda_sym[0:len(active_linear_indices)])
-            # quadratic constraint gradients
-            quadratic_lambda_index = len(active_linear_indices)
-            for i in active_quadratic_indices:
-                stationarity += lambda_sym[quadratic_lambda_index] * (self.qconstraints[i].Q + self.qconstraints[i].Q.T) @ sympy.Matrix(x_sym) + lambda_sym[quadratic_lambda_index] * self.qconstraints[i].H @ sympy.Matrix(theta_sym) + self.qconstraints[i].A.T @ sympy.Matrix([lambda_sym[quadratic_lambda_index]])
-                quadratic_lambda_index += 1
+            symbol_collection = [x_sym, theta_sym, lambda_sym, nu_sym, beta_sym]
 
-            equations.append(stationarity)
-
-            # active constraints = 0
-            active_linear_constraints = self.A[active_linear_indices] @ sympy.Matrix(x_sym) - self.b[active_linear_indices] - self.F[active_linear_indices] @ sympy.Matrix(theta_sym)
-            equations.append(active_linear_constraints)
-            active_quadratic_constraints = [self.qconstraints[i].evaluate_symbolic(sympy.Matrix(x_sym), sympy.Matrix(theta_sym)) for i in active_quadratic_indices]
-            equations.extend(active_quadratic_constraints)
-
-            # normalize the lagrange multipliers or set nu = 1, depending on convexity
-            nonconvex_in_active_set = numpy.any([not self.qconstraints[i].is_convex() for i in active_quadratic_indices])
-            if nonconvex_in_active_set:
-                normalizing_eq = nu_sym ** 2 + sum(l**2 for l in lambda_sym) - beta_sym ** 2
-            else:
-                normalizing_eq = nu_sym - 1
-                equations = [eq.subs(nu_sym, 1) for eq in equations]
-            equations.append(normalizing_eq)
+            equations = self.build_optimality_conditions(active_set, symbol_collection)
 
             # solve the system of equations
             solution = sympy.solve(equations, [*x_sym, *lambda_sym, nu_sym], rational=True, simplify=True)
@@ -378,7 +423,10 @@ class MPQCQP_Program(MPQP_Program):
                         for implication in implications:
                             if implication != []:
                                 x_sol[i] = [sympy.refine(sympy.factor(sympy.LT(x)), implication) + sympy.refine(sympy.factor(x - sympy.LT(x)), implication) for x in x_sol[i]]
-                                lambda_sol[i] = [sympy.refine(sympy.factor(sympy.LT(l)), implication) + sympy.refine(sympy.factor(l - sympy.LT(l)), implication) for l in lambda_sol[i]]
+                                # TODO make this a flag somewhere else, most likely we don't nee to refine lambda and it just increases computation time signficantly
+                                refine_lambda = False
+                                if refine_lambda:
+                                    lambda_sol[i] = [sympy.refine(sympy.factor(sympy.LT(l)), implication) + sympy.refine(sympy.factor(l - sympy.LT(l)), implication) for l in lambda_sol[i]]
                     
             # return the list of x, lambda, nu tuples
             x_sol = [x_sol[i] for i in keep_indices]

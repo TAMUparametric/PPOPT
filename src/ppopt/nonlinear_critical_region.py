@@ -39,8 +39,6 @@ class NonlinearCriticalRegion:
 
     """
 
-    # TODO update the docstring above
-
     x_star: sympy.Matrix
     lambda_star: sympy.Matrix
     theta_constraints: List[sympy.core.relational.LessThan]

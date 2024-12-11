@@ -7,7 +7,7 @@ from ..solution import Solution
 from .solver_utils import CombinationTester, generate_children_sets
 
 
-def solve(program: MPQCQP_Program) -> Solution:
+def solve(program: MPQCQP_Program, explicit_crs = True) -> Solution:
     """
     Solves the MPQCQP program with a modified algorithm described in Gupta et al. 2011.
     The algorithm is described in this paper https://www.sciencedirect.com/science/article/pii/S0005109811003190
@@ -18,6 +18,8 @@ def solve(program: MPQCQP_Program) -> Solution:
     murder_list = CombinationTester()
 
     to_check = []
+
+    optimal_sets = []
 
     solution = Solution(program, [])
 
@@ -50,7 +52,11 @@ def solve(program: MPQCQP_Program) -> Solution:
 
             # if soln is not None:
             if program.check_optimality(child_set):
-                critical_region_list = program.gen_cr_from_active_set(child_set)
+                optimal_sets.append(child_set)
+                if explicit_crs:
+                    critical_region_list = program.gen_cr_from_active_set(child_set)
+                else:
+                    critical_region_list = program.gen_implicit_cr_from_active_set(child_set)
                 # Check the dimensions of the critical region
                 if critical_region_list is not None:
                     for critical_region in critical_region_list:
@@ -65,11 +71,15 @@ def solve(program: MPQCQP_Program) -> Solution:
 
     if program.check_feasibility(program.equality_indices):
         if program.check_optimality(program.equality_indices):
-            region_list = program.gen_cr_from_active_set(program.equality_indices)
-            if region_list is not None:
-                for region in region_list:
-                    if region.is_full_dimension():
-                        solution.add_region(region)
+            if explicit_crs:
+                region_list = program.gen_cr_from_active_set(program.equality_indices)
+                if region_list is not None:
+                    for region in region_list:
+                        if region.is_full_dimension():
+                            solution.add_region(region)
+            else:
+                region_list = program.gen_implicit_cr_from_active_set(program.equality_indices)
+                solution.add_region(region_list[0])
 
     return solution
 

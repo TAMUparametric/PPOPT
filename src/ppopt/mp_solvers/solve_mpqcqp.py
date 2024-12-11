@@ -34,7 +34,7 @@ class mpqcqp_algorithm(Enum):
         return output
 
 
-def solve_mpqcqp(problem: MPQP_Program, algorithm: mpqcqp_algorithm = mpqcqp_algorithm.combinatorial, num_cores: int = -1) -> Solution:
+def solve_mpqcqp(problem: MPQCQP_Program, algorithm: mpqcqp_algorithm = mpqcqp_algorithm.combinatorial, num_cores: int = -1, explicit_crs = True) -> Solution:
     """
     Takes a mpqcqp programming problem and solves it in a specified manner. The default
      solve algorithm is the Combinatorial algorithm by Gupta. et al.
@@ -53,7 +53,7 @@ def solve_mpqcqp(problem: MPQP_Program, algorithm: mpqcqp_algorithm = mpqcqp_alg
     solution = Solution(problem, [])
 
     if algorithm is mpqcqp_algorithm.combinatorial:
-        solution = mpqcqp_combinatorial.solve(problem)
+        solution = mpqcqp_combinatorial.solve(problem, explicit_crs)
     if algorithm is mpqcqp_algorithm.combinatorial_parallel:
         solution = mpqcqp_parallel_combinatorial.solve(problem, num_cores)
 
