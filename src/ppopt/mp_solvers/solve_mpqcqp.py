@@ -7,6 +7,7 @@ import numpy
 from ..mp_solvers import (
     mpqcqp_combinatorial,
     mpqcqp_parallel_combinatorial,
+    mpqcqp_combinatorial_implicit,
 )
 from ..mplp_program import MPLP_Program
 from ..mpqp_program import MPQP_Program
@@ -22,6 +23,7 @@ class mpqcqp_algorithm(Enum):
     """
     combinatorial = 'combinatorial'
     combinatorial_parallel = 'p combinatorial'
+    combinatorial_implicit = 'implicit combinatorial'
 
     def __str__(self):
         return self.name
@@ -34,7 +36,7 @@ class mpqcqp_algorithm(Enum):
         return output
 
 
-def solve_mpqcqp(problem: MPQCQP_Program, algorithm: mpqcqp_algorithm = mpqcqp_algorithm.combinatorial, num_cores: int = -1, explicit_crs = True) -> Solution:
+def solve_mpqcqp(problem: MPQCQP_Program, algorithm: mpqcqp_algorithm = mpqcqp_algorithm.combinatorial, num_cores: int = -1) -> Solution:
     """
     Takes a mpqcqp programming problem and solves it in a specified manner. The default
      solve algorithm is the Combinatorial algorithm by Gupta. et al.
@@ -53,9 +55,11 @@ def solve_mpqcqp(problem: MPQCQP_Program, algorithm: mpqcqp_algorithm = mpqcqp_a
     solution = Solution(problem, [])
 
     if algorithm is mpqcqp_algorithm.combinatorial:
-        solution = mpqcqp_combinatorial.solve(problem, explicit_crs)
+        solution = mpqcqp_combinatorial.solve(problem)
     if algorithm is mpqcqp_algorithm.combinatorial_parallel:
         solution = mpqcqp_parallel_combinatorial.solve(problem, num_cores)
+    if algorithm is mpqcqp_algorithm.combinatorial_implicit:
+        solution = mpqcqp_combinatorial_implicit.solve(problem)
 
     # check if there needs to be a flag thrown in the case of overlapping critical regions
     # happens if there are negative or zero eigen values for mpQP (kkt conditions can find a lot of saddle points)

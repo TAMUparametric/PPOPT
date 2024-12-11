@@ -22,7 +22,7 @@ def test_convex_mpqcqp(pappas_qcqp_1):
 
 
 def test_convex_mpqcqp_implicit(pappas_qcqp_1):
-    sol = solve_mpqcqp(pappas_qcqp_1, mpqcqp_algorithm.combinatorial, explicit_crs=False)
+    sol = solve_mpqcqp(pappas_qcqp_1, mpqcqp_algorithm.combinatorial_implicit)
 
     assert len(sol) == 3
 

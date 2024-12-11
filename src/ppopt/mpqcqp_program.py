@@ -355,7 +355,7 @@ class MPQCQP_Program(MPQP_Program):
         theta_bounds = self.A_t @ sympy.Matrix(theta_sym) - self.b_t
 
         cr = ImplicitCriticalRegion(grad_lagrangian, active_linear_constraints, active_quadratic_constraints, inactive_linear_constraints, inactive_quadratic_constraints, theta_bounds, active_set)
-        return [cr]
+        return cr
 
 
     def optimal_control_law(self, active_set: List[int]) -> Tuple:
