@@ -36,6 +36,12 @@ def test_convex_mpqcqp_implicit(pappas_qcqp_1):
     #     assert numpy.isclose(objective_val, expected_objective_values[i])
 
 
+def test_convex_mpqcqp_implicit_hybrid(pappas_qcqp_1):
+    sol = solve_mpqcqp(pappas_qcqp_1, mpqcqp_algorithm.combinatorial_implicit_hybrid)
+
+    assert len(sol) == 3
+
+
 def test_convex_mpqcqp_parallel(pappas_qcqp_1):
     sol = solve_mpqcqp(pappas_qcqp_1, mpqcqp_algorithm.combinatorial_parallel)
 
