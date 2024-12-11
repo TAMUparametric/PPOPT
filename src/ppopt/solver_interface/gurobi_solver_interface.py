@@ -16,6 +16,28 @@ from ..solver_interface.solver_interface_utils import (
 Matrix = Optional[numpy.ndarray]
 
 
+def get_bounds_gurobi(A: Matrix, b: Matrix):
+    num_x = A.shape[1]
+    lb = -GRB.INFINITY * numpy.ones((num_x, 1))
+    ub = GRB.INFINITY * numpy.ones((num_x, 1))
+
+    bound_rows = [(i, row) for (i, row) in enumerate(A) if numpy.count_nonzero(row) == 1]
+    for row in bound_rows:
+        constraint_idx = row[0]
+        variable_idx = numpy.nonzero(row[1])[0][0]
+        bound = b.flatten()[constraint_idx]/row[1][variable_idx]
+        # upper bound
+        if row[1][variable_idx] > 0:
+            if bound < ub[variable_idx]:
+                ub[variable_idx] = bound
+        # lower bound
+        else:
+            if bound > lb[variable_idx]:
+                lb[variable_idx] = bound
+
+    return lb, ub
+
+
 def solve_miqcqp_gurobi(Q: Matrix = None, c: Matrix = None, A: Matrix = None,
                       b: Matrix = None,
                       Q_q: List[Matrix] = None, A_q: Matrix = None, b_q: Matrix = None,
@@ -101,7 +123,13 @@ def solve_miqcqp_gurobi(Q: Matrix = None, c: Matrix = None, A: Matrix = None,
 
     var_types = [GRB.BINARY if i in bin_vars else GRB.CONTINUOUS for i in range(num_vars)]
     # noinspection PyTypeChecker
-    x = model.addMVar(num_vars, lb=-GRB.INFINITY, ub=GRB.INFINITY, vtype=var_types)
+    lb = -GRB.INFINITY * numpy.ones((num_vars, 1))
+    ub = GRB.INFINITY * numpy.ones((num_vars, 1))
+    # if we have quadratic constraints, providing variable bounds might be helpful to gurobi, try to infer them from linear constraints
+    if A is not None and num_quadratic_constraints > 0:
+        lb, ub = get_bounds_gurobi(A, b)
+    # x = model.addMVar(num_vars, lb=-GRB.INFINITY, ub=GRB.INFINITY, vtype=var_types)
+    x = model.addMVar(num_vars, lb=lb.flatten(), ub=ub.flatten(), vtype=var_types)
 
     if num_linear_constraints != 0:
         # sense = numpy.chararray(num_constraints)

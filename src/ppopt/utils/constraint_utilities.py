@@ -220,7 +220,7 @@ def find_redundant_constraints_with_quadratic(A: numpy.ndarray, b: numpy.ndarray
     to_check_quadratic = [x for x in range(num_quadratic) if x not in quadratic_set]
 
     for i in to_check_linear:
-        if solver_interface.solve_miqcqp(None, None, A, b, Q_q, A_q, b_q, [*linear_set, i], quadratic_set, deterministic_solver=solver) is None:
+        if solver_interface.solve_miqcqp(None, None, A, b, Q_q, A_q, b_q, [*linear_set, i], quadratic_set, deterministic_solver=solver, get_duals=False) is None:
             redundant.append(i)
 
     for i in to_check_quadratic:
