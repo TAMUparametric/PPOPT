@@ -822,3 +822,15 @@ class MPQCQP_Program(MPQP_Program):
         b_q = numpy.array([q.b for q in self.qconstraints])
 
         return self.solver.solve_miqcqp(None, c, A, b, Q_q, A_q, b_q, active_linear_constraints, active_quadratic_constraints, get_duals=False) is not None
+    
+    def check_linearity_of_active_set(self, active_set: List[int]) -> bool:
+        r"""
+        Checks if the active set consists of only linear constraints.
+
+        :param active_set: active set being considered
+        :return: True if the active set contains only linear constraints, False otherwise
+        """
+        # TODO does this work correctly if we have quadratic equality constraints?
+        if len(active_set) == 0:
+            return True
+        return max(active_set) < self.num_linear_constraints()

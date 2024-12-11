@@ -3,7 +3,6 @@ from typing import List
 from ..mpqcqp_program import MPQCQP_Program
 from ..mplp_program import MPLP_Program
 from ..solution import Solution
-# from ..utils.mpqp_utils import gen_cr_from_active_set
 from .solver_utils import CombinationTester, generate_children_sets
 
 
@@ -12,14 +11,14 @@ def solve(program: MPQCQP_Program) -> Solution:
     Solves the MPQCQP program with a modified algorithm described in Gupta et al. 2011.
     The algorithm is described in this paper https://www.sciencedirect.com/science/article/pii/S0005109811003190
 
+    This algorithm only identifies optimal active sets. The returned solution consits of implicit critical regions, which are described by the optimality conditions of the active sets and the corresponding inactive constraints.
+
     :param program: MQCPQP to be solved
     :return: the solution of the MPQCQP
     """
     murder_list = CombinationTester()
 
     to_check = []
-
-    optimal_sets = []
 
     solution = Solution(program, [])
 
@@ -52,7 +51,6 @@ def solve(program: MPQCQP_Program) -> Solution:
 
             # if soln is not None:
             if program.check_optimality(child_set):
-                optimal_sets.append(child_set)
                 critical_region = program.gen_implicit_cr_from_active_set(child_set)
                 # Check the dimensions of the critical region
                 if critical_region is not None:

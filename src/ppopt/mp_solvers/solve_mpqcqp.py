@@ -8,6 +8,7 @@ from ..mp_solvers import (
     mpqcqp_combinatorial,
     mpqcqp_parallel_combinatorial,
     mpqcqp_combinatorial_implicit,
+    mpqcqp_combinatorial_implicit_hybrid,
 )
 from ..mplp_program import MPLP_Program
 from ..mpqp_program import MPQP_Program
@@ -17,13 +18,14 @@ from ..solution import Solution
 
 class mpqcqp_algorithm(Enum):
     """
-    Enum that selects the mpqp algorithm to be used
+    Enum that selects the mpqcqp algorithm to be used
 
-    This is done by passing the argument mpqp_algorithm.algorithm
+    This is done by passing the argument mpqcqp_algorithm.algorithm
     """
     combinatorial = 'combinatorial'
     combinatorial_parallel = 'p combinatorial'
     combinatorial_implicit = 'implicit combinatorial'
+    combinatorial_implicit_hybrid = 'implicit combinatorial hybrid'
 
     def __str__(self):
         return self.name
@@ -32,7 +34,7 @@ class mpqcqp_algorithm(Enum):
     def all_algos():
         output = ''
         for algo in mpqcqp_algorithm:
-            output += f'mpqp_algorithm.{algo}\n'
+            output += f'mpqcqp_algorithm.{algo}\n'
         return output
 
 
@@ -48,8 +50,8 @@ def solve_mpqcqp(problem: MPQCQP_Program, algorithm: mpqcqp_algorithm = mpqcqp_a
 
     if not isinstance(algorithm, mpqcqp_algorithm):
         raise TypeError(
-            f"You must pass an algorithm from mpqp_algorithm as the continuous algorithm. These can be found by "
-            f"importing the following \n\nfrom ppopt.mp_solvers.solve_mpqp import mpqp_algorithm\n\nWith the "
+            f"You must pass an algorithm from mpqcqp_algorithm as the continuous algorithm. These can be found by "
+            f"importing the following \n\nfrom ppopt.mp_solvers.solve_mpqcqp import mpqcqp_algorithm\n\nWith the "
             f"following choices\n{mpqcqp_algorithm.all_algos()}")
 
     solution = Solution(problem, [])
@@ -60,6 +62,8 @@ def solve_mpqcqp(problem: MPQCQP_Program, algorithm: mpqcqp_algorithm = mpqcqp_a
         solution = mpqcqp_parallel_combinatorial.solve(problem, num_cores)
     if algorithm is mpqcqp_algorithm.combinatorial_implicit:
         solution = mpqcqp_combinatorial_implicit.solve(problem)
+    if algorithm is mpqcqp_algorithm.combinatorial_implicit_hybrid:
+        solution = mpqcqp_combinatorial_implicit_hybrid.solve(problem)
 
     # check if there needs to be a flag thrown in the case of overlapping critical regions
     # happens if there are negative or zero eigen values for mpQP (kkt conditions can find a lot of saddle points)
