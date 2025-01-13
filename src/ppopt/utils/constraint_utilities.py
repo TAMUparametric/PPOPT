@@ -134,6 +134,18 @@ def remove_duplicate_rows(A: numpy.ndarray, b: numpy.ndarray) -> List[numpy.ndar
     return [A[uniques], b[uniques]]
 
 
+def remove_duplicate_rows_mixed(A: numpy.ndarray, b: numpy.ndarray, F: numpy.ndarray) -> List[numpy.ndarray]:
+    """Finds and removes duplicate rows in the constraints A @ x <= b + F @ theta."""
+    combined = numpy.hstack((A, b.reshape(b.size, 1), F))
+
+    if A.size == 0 or b.size == 0:
+        return [A, b]
+
+    uniques = numpy.sort(numpy.unique(combined, axis=0, return_index=True)[1])
+
+    return [A[uniques], b[uniques], F[uniques]]
+
+
 def facet_ball_elimination(A: numpy.ndarray, b: numpy.ndarray) -> List[numpy.ndarray]:
     """
     Removes weakly redundant constraints, method is from the appendix of the Oberdieck paper

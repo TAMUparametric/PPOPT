@@ -268,3 +268,12 @@ def test_qcqp_modeler():
 # TODO this still needs to be tested, for now we let it pass
 def test_qcqp_modeler_with_equalities():
     assert True
+
+
+def test_duplicate_constraints_mpmodel():
+    model = MPModeler()
+    x = model.add_var()
+    model.add_constr(x <= 1)
+    model.add_constr(x <= 1)
+    prog = model.formulate_problem()
+    assert prog.A.shape[0] == 1
