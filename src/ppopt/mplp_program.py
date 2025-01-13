@@ -13,6 +13,7 @@ from .utils.constraint_utilities import (
     generate_reduced_equality_constraints,
     is_full_rank,
     process_program_constraints,
+    remove_duplicate_rows_mixed,
 )
 from .utils.general_utils import (
     latex_matrix,
@@ -288,6 +289,9 @@ class MPLP_Program:
 
     def process_constraints(self) -> None:
         """Removes redundant constraints from the multiparametric programming problem."""
+
+        # remove duplicate rows from the constraints
+        self.A, self.b, self.F = remove_duplicate_rows_mixed(self.A, self.b, self.F)
 
         # form a polytope P := {(x, theta) in R^K : Ax <= b + F theta and A_t theta <= b_t}
         problem_A = ppopt_block([[self.A, -self.F], [numpy.zeros((self.A_t.shape[0], self.A.shape[1])), self.A_t]])
