@@ -1,6 +1,8 @@
 import os
 from typing import Iterable, List, Union
 
+from itertools import combinations
+
 import numpy
 
 
@@ -156,3 +158,22 @@ def ppopt_block(mat_list):
 
     # return the output buffer
     return output_data
+
+def vertex_enumeration(A: numpy.ndarray, b: numpy.ndarray, solver) -> List[numpy.ndarray]:
+    """
+    Enumerates the vertices of a polytope defined by the constraints Ax <= b
+    This is a very naive implementation that is probably too slow for higher dimensions
+
+    :param A: The left-hand side constraint matrix
+    :param b: The right-hand side constraint matrix
+    :param solver: A solver object to solve the LPs
+    :return: List of vertices
+    """
+
+    num_constrs = A.shape[0]
+    dimension = A.shape[1]
+
+    trials = combinations(range(num_constrs), dimension)
+    res = (solver.solve_lp(None, A, b, comb) for comb in trials)
+    filtered_res = filter(lambda x: x is not None, res)
+    return [x.sol for x in filtered_res]

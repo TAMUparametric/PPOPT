@@ -1,7 +1,7 @@
 import numpy
 import pytest
 
-from src.ppopt.mpqcqp_program import MPQCQP_Program
+from src.ppopt.mpqcqp_program import MPQCQP_Program, QConstraint
 
 from tests.test_fixtures import small_mpqcqp, pappas_qcqp_1, pappas_qcqp_2, redundant_qcqp
 
@@ -74,3 +74,27 @@ def test_constraint_processing(redundant_qcqp):
     assert redundant_qcqp.num_linear_constraints() == 1
     assert redundant_qcqp.num_quadratic_constraints() == 1
     assert redundant_qcqp.A_t.shape[0] == 1
+
+def test_qconstraint_linearization():
+    Q = numpy.array([[1, 0], [0, 1]])
+    H = numpy.array([[1], [1]])
+    A = numpy.array([[1, 1]])
+    b = numpy.array([1])
+    F = numpy.array([[1]])
+    Q_t = numpy.array([[1]])
+
+    qc = QConstraint(Q, H, A, b, F, Q_t)
+
+    x0 = numpy.array([0, 0])
+    theta0 = numpy.array([0])
+    A_t, b_t, F_t = qc.linearize((x0, theta0))
+    assert numpy.allclose(A_t, numpy.array([[1, 1]]))
+    assert numpy.allclose(b_t, numpy.array([1]))
+    assert numpy.allclose(F_t, numpy.array([1]))
+
+    x1 = numpy.array([1, 2])
+    theta1 = numpy.array([3])
+    A_t, b_t, F_t = qc.linearize((x1, theta1))
+    assert numpy.allclose(A_t, numpy.array([[6, 8]]))
+    assert numpy.allclose(b_t, numpy.array([6]))
+    assert numpy.allclose(F_t, numpy.array([4]))

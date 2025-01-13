@@ -3,6 +3,8 @@ from typing import List, Optional, Tuple
 import numpy
 import sympy
 
+from collections import deque
+
 from .mplp_program import MPLP_Program
 from .mpqp_program import MPQP_Program
 from .nonlinear_critical_region import NonlinearCriticalRegion
@@ -21,6 +23,7 @@ from .utils.general_utils import (
     ppopt_block,
     remove_size_zero_matrices,
     select_not_in_list,
+    vertex_enumeration,
 )
 from .utils.symbolic_utils import (
     reduce_redundant_symbolic_constraints,
@@ -76,6 +79,15 @@ class QConstraint:
         """Checks if the quadratic constraint is convex."""
         # return numpy.all(numpy.linalg.eigvals(self.Q) >= 10 ** -4)
         return numpy.all(numpy.linalg.eigvals(self.Q) >= 0)
+    
+    def linearize(self, linearization_point: List[numpy.ndarray]) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+        # TODO
+        lin_x = linearization_point[0]
+        lin_theta = linearization_point[1]
+        A_lin = self.A + 2 * self.Q @ lin_x + lin_theta.T @ self.H.T 
+        b_lin = lin_x.T @ self.Q @ lin_x + lin_theta.T @ self.H.T @ lin_x - lin_theta.T @ self.Q_t @ lin_theta + self.b
+        F_lin = -(self.H.T @ lin_x - 2 * self.Q_t @ lin_theta - self.F)
+        return A_lin, b_lin, F_lin
     
 
 class MPQCQP_Program(MPQP_Program):
@@ -422,7 +434,7 @@ class MPQCQP_Program(MPQP_Program):
                         keep_indices.append(i)
                         for implication in implications:
                             if implication != []:
-                                x_sol[i] = [sympy.refine(sympy.factor(sympy.LT(x)), implication) + sympy.refine(sympy.factor(x - sympy.LT(x)), implication) for x in x_sol[i]]
+                                x_sol[i] = [sympy.refine(sympy.factor(sympy.LT(x)), implication) + sympy.refine(sympy.factor(x - sympy.LT(x)), implication) if x != 0 else x for x in x_sol[i]]
                                 # TODO make this a flag somewhere else, most likely we don't nee to refine lambda and it just increases computation time signficantly
                                 refine_lambda = False
                                 if refine_lambda:
@@ -702,7 +714,7 @@ class MPQCQP_Program(MPQP_Program):
         # 10) active quadratic constraints
         if num_quadratic_active > 0:
             A_q_active = ppopt_block([[q.A, -q.F, zeros(1, num_constraints + 3)] for q in [self.qconstraints[i] for i in quadratic_active]])
-            b_q_active = ppopt_block([q.b for q in [self.qconstraints[i] for i in quadratic_active]])
+            b_q_active = ppopt_block([[q.b] for q in [self.qconstraints[i] for i in quadratic_active]])
             for i in quadratic_active:
                 q = self.qconstraints[i]
                 tmp = zeros(num_x + num_theta + num_constraints + 3, num_x + num_theta + num_constraints + 3)
@@ -834,3 +846,85 @@ class MPQCQP_Program(MPQP_Program):
         if len(active_set) == 0:
             return True
         return max(active_set) < self.num_linear_constraints()
+    
+
+    def gen_hybrid_approx_cr_from_active_set(self, active_set: List[int]) -> Optional[List[NonlinearCriticalRegion]]:
+        r"""
+        Generates an approximation to the critical region from an active set combination if the active set involves quadratic constraints.
+        Otherwise, generates the exact critical region.
+
+        :param active_set: active set being considered
+        :return: a list of critical regions that approximate the exact critical region or the exact critical region
+        """
+
+        # Guard that we don't approximate linear active sets
+        if self.check_linearity_of_active_set(active_set):
+            return self.gen_cr_from_active_set(active_set)
+        else:
+            return self.gen_approx_cr_from_active_set(active_set)
+
+
+    def gen_approx_cr_from_active_set(self, active_set: List[int]) -> Optional[List[NonlinearCriticalRegion]]:
+        r"""
+        Generates an approximation to the critical region from an active set combination.
+
+        :param active_set: active set being considered
+        :return: a list of critical regions that approximate the exact critical region
+        """
+
+        linearization_points = deque()
+        returned_regions = []
+        linearizations = []
+        num_regions = 0
+
+        # add initial linearization point to the queue
+
+        while len(linearization_points) > 0:
+            linearization_point = linearization_points.popleft()
+            # get quadratic constraints from active set
+            quadratic_active = [i - self.num_linear_constraints() for i in active_set if i >= self.num_linear_constraints()]
+            # linearize the quadratic constraints at the linearization point
+            # TODO this should return a list of the format A, b, F with Ax <= b + F theta
+            linearized_constraints = [self.qconstraints[i].linearize(linearization_point) for i in quadratic_active]
+            # compute the parametric solution for the linearized active set
+            # TODO
+            # idea: can we build a pseudo mpQP-object and use that?
+            linear_active_indices = [i for i in active_set if i < self.num_linear_constraints()]
+            active_A = self.A[linear_active_indices]
+            active_b = self.b[linear_active_indices]
+            active_F = self.F[linear_active_indices]
+            # Otherwise this will require re-implementing a lot of stuff since the methods all work on active sets based on exact constraints
+            # actually, this pseudo object might be able to take care of all the critical region stuff
+            # since we can just keep refining the linearizations and defining which is active
+            # this way, maybe no need to store linearizations and refine seperately?
+            # for building the CR we need inactive constraints though which might be quad, so should refactor parts of gen_cr now and be able to re-use some stuff
+            # add the solution to the list of returned regions
+            # TODO
+            # add the linearization to the list of linearizations
+            linearizations.append(linearized_constraints)
+            num_regions += 1
+            for i in range(num_regions): # linearization index
+                for j in range(num_regions): # region index
+                    if i != j:
+                        # add constraint to region j to ensure linearization i is inactive
+                        # TODO
+                        pass
+            
+            # compute vertices of new region
+            # assume all inactive constraints are linear
+            # below code is wrong and needs changing
+            # TODO
+            inactive_linear = [i for i in range(self.num_linear_constraints()) if i not in active_set]
+            inactive_A = self.A[inactive_linear]
+            inactive_b = self.b[inactive_linear]
+            vertices = vertex_enumeration(inactive_A, inactive_b, self.solver)
+            for v in vertices:
+                # TODO
+                # compute x at vertex
+                # compute value of original quadratic active constraints at vertex
+                # compute solution to deterministic qcqp at vertex
+                # compute constraint and solution errors
+                # if either error is too large, compute x at the vertex and add (x, v) to the linearization points
+                pass
+        
+        return returned_regions
