@@ -474,41 +474,46 @@ class MPQCQP_Program(MPQP_Program):
             x_star = x_stars[i]
             lambda_star = lambda_stars[i]
 
-        # Insert optimal control law into the inactive constraints to build the critical region        
-            bounds_from_linear = self.A[linear_inactive] @ sympy.Matrix(x_star) - self.b[linear_inactive] - self.F[linear_inactive] @ sympy.Matrix(theta_syms)
-            bounds_from_quadratic = [q.evaluate_symbolic(sympy.Matrix(x_star), sympy.Matrix(theta_syms)) for q in [self.qconstraints[i] for i in quadratic_inactive]]
-            bounds_from_theta = self.A_t @ sympy.Matrix(theta_syms) - self.b_t
-
-            original_region_inequalities = []
-            for i in bounds_from_linear:
-                original_region_inequalities.append(i <= 0)
-            for i in bounds_from_quadratic:
-                original_region_inequalities.append(i[0] <= 0)
-            for i in bounds_from_theta:
-                original_region_inequalities.append(i <= 0)
-            for i in sympy.Matrix(lambda_star):
-                original_region_inequalities.append(i >= 0)
-
-            index_list = []
-            region_inequalities = []
-            for idx, ineq in enumerate(original_region_inequalities):
-                if ineq != True:
-                    region_inequalities.append(ineq)
-                    index_list.append(idx)
-
-            if self.is_convex():
-                region_inequalities, index_list = reduce_redundant_symbolic_constraints(region_inequalities, index_list)
-
-            # Test full dimensionality of the new critical region
-
-            # classify the remaining constraints
-            regular_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] < len(bounds_from_linear) + len(bounds_from_quadratic)]
-            omega_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] >= len(bounds_from_linear) + len(bounds_from_quadratic) and index_list[i] < len(bounds_from_linear) + len(bounds_from_quadratic) + len(bounds_from_theta)]
-            lambda_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] >= len(bounds_from_linear) + len(bounds_from_quadratic) + len(bounds_from_theta)]
+            region_inequalities, regular_set, omega_set, lambda_set = self.build_critical_region_constraints(sympy.Matrix(x_star), sympy.Matrix(lambda_star), sympy.Matrix(theta_syms), linear_inactive, quadratic_inactive)
 
             returned_regions.append(NonlinearCriticalRegion(x_star, lambda_star, region_inequalities, active_set, omega_set, lambda_set, regular_set))
 
         return returned_regions
+
+
+    def build_critical_region_constraints(self, x_star: sympy.Matrix, lambda_star: sympy.Matrix, theta_sym: sympy.Matrix, linear_inactive: List[int], quadratic_inactive: List[int]) -> Tuple:
+        bounds_from_linear = self.A[linear_inactive] @ x_star - self.b[linear_inactive] - self.F[linear_inactive] @ theta_sym
+        bounds_from_quadratic = [q.evaluate_symbolic(x_star, theta_sym) for q in [self.qconstraints[i] for i in quadratic_inactive]]
+        bounds_from_theta = self.A_t @ theta_sym - self.b_t
+
+        original_region_inequalities = []
+        for i in bounds_from_linear:
+            original_region_inequalities.append(i <= 0)
+        for i in bounds_from_quadratic:
+            original_region_inequalities.append(i[0] <= 0)
+        for i in bounds_from_theta:
+            original_region_inequalities.append(i <= 0)
+        for i in lambda_star:
+            original_region_inequalities.append(i >= 0)
+
+        index_list = []
+        region_inequalities = []
+        for idx, ineq in enumerate(original_region_inequalities):
+            if ineq != True:
+                region_inequalities.append(ineq)
+                index_list.append(idx)
+
+        if self.is_convex():
+            region_inequalities, index_list = reduce_redundant_symbolic_constraints(region_inequalities, index_list)
+
+        # Test full dimensionality of the new critical region
+
+        # classify the remaining constraints
+        regular_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] < len(bounds_from_linear) + len(bounds_from_quadratic)]
+        omega_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] >= len(bounds_from_linear) + len(bounds_from_quadratic) and index_list[i] < len(bounds_from_linear) + len(bounds_from_quadratic) + len(bounds_from_theta)]
+        lambda_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] >= len(bounds_from_linear) + len(bounds_from_quadratic) + len(bounds_from_theta)]
+
+        return region_inequalities, regular_set, omega_set, lambda_set
 
 
     def base_constraint_processing(self):
@@ -872,32 +877,44 @@ class MPQCQP_Program(MPQP_Program):
         :return: a list of critical regions that approximate the exact critical region
         """
 
-        linearization_points = deque()
+        remaining_linearization_points = deque()
         returned_regions = []
         linearizations = []
         num_regions = 0
+        # TODO we only need to linearize around (x/t) if (x/t) is quadratic or bilinear in the constraint
+        # so if Q_t and H are 0, only need to lin around x
+        # else also around t
+        all_linearization_points = set()
 
         # add initial linearization point to the queue
 
-        while len(linearization_points) > 0:
-            linearization_point = linearization_points.popleft()
+        while len(remaining_linearization_points) > 0:
+            linearization_point = remaining_linearization_points.popleft()
             # get quadratic constraints from active set
             quadratic_active = [i - self.num_linear_constraints() for i in active_set if i >= self.num_linear_constraints()]
+            quadratic_inactive = [i - self.num_linear_constraints() for i in range(self.num_linear_constraints(), self.num_linear_constraints() + self.num_quadratic_constraints()) if i not in active_set]
             # linearize the quadratic constraints at the linearization point
-            # TODO this should return a list of the format A, b, F with Ax <= b + F theta
-            linearized_constraints = [self.qconstraints[i].linearize(linearization_point) for i in quadratic_active]
+            linearized_constraints = [self.qconstraints[i].linearize(linearization_point) for i in quadratic_active] # list of tuples A, b, F with Ax <= b + F theta
             # compute the parametric solution for the linearized active set
-            # TODO
             # idea: can we build a pseudo mpQP-object and use that?
             linear_active_indices = [i for i in active_set if i < self.num_linear_constraints()]
+            linear_inactive = [i for i in range(self.num_linear_constraints()) if i not in active_set]
             active_A = self.A[linear_active_indices]
             active_b = self.b[linear_active_indices]
             active_F = self.F[linear_active_indices]
-            # Otherwise this will require re-implementing a lot of stuff since the methods all work on active sets based on exact constraints
-            # actually, this pseudo object might be able to take care of all the critical region stuff
-            # since we can just keep refining the linearizations and defining which is active
-            # this way, maybe no need to store linearizations and refine seperately?
-            # for building the CR we need inactive constraints though which might be quad, so should refactor parts of gen_cr now and be able to re-use some stuff
+            for con in linearized_constraints:
+                active_A = numpy.vstack((active_A, con[0]))
+                active_b = numpy.vstack((active_b, con[1]))
+                active_F = numpy.vstack((active_F, con[2]))
+            # build the mpQP object
+            mpqp = MPQP_Program(active_A, active_b, self.c, self.H, self.Q, self.A_t, self.b_t, active_F, equality_indices=list(range(active_A.shape[0])))
+            A_x, b_x, A_l, b_l = mpqp.optimal_control_law(mpqp.equality_indices)
+            # construct a nonlinear critical region object
+            theta_sym = sympy.Matrix(sympy.symbols('theta:' + str(self.num_t()), real=True, finite=True))
+            x_star = A_x @ theta_sym + b_x
+            lambda_star = A_l @ theta_sym + b_l
+
+            region_inequalities, regular_set, omega_set, lambda_set = self.build_critical_region_constraints(x_star, lambda_star, theta_sym, linear_inactive, quadratic_inactive)
             # add the solution to the list of returned regions
             # TODO
             # add the linearization to the list of linearizations
