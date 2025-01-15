@@ -5,7 +5,10 @@ from src.ppopt.utils.general_utils import (
     make_row,
     remove_size_zero_matrices,
     select_not_in_list,
+    vertex_enumeration,
 )
+
+from src.ppopt.solver import Solver
 
 
 def test_make_column_1():
@@ -60,3 +63,14 @@ def test_remove_size_zero_matrices():
     A = [numpy.eye(0), numpy.eye(1), numpy.zeros((2, 0))]
     assert remove_size_zero_matrices(A) == [numpy.eye(1)]
 
+
+def test_vertex_enumeration():
+    A = numpy.array([[1., 0.], [0., 1.], [-1., 0.], [0., -1.]])
+    b = numpy.array([[1.], [1.], [1.], [1.]])
+    solver = Solver()
+    vertices = vertex_enumeration(A, b, solver)
+    vertices = [v.tolist() for v in vertices]
+    assert [1, 1] in vertices
+    assert [-1, -1] in vertices
+    assert [-1, 1] in vertices
+    assert [1, -1] in vertices

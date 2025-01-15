@@ -1,7 +1,7 @@
 import numpy
 import pytest
 
-from src.ppopt.mpqcqp_program import MPQCQP_Program, QConstraint
+from src.ppopt.mpqcqp_program import MPQCQP_Program, QConstraint, ApproxOptions
 
 from tests.test_fixtures import small_mpqcqp, pappas_qcqp_1, pappas_qcqp_2, redundant_qcqp
 
@@ -103,4 +103,7 @@ def test_approx_cr(pappas_qcqp_1):
     initial_x = numpy.array([-2])
     initial_theta = numpy.array([0,0])
     initial_point = (initial_x, initial_theta)
-    cr = pappas_qcqp_1.gen_approx_cr_from_active_set([3], initial_point)
+    options = ApproxOptions()
+    cr = pappas_qcqp_1.gen_approx_cr_from_active_set([3], initial_point, options)
+    assert len(cr) == 4
+    

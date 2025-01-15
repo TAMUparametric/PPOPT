@@ -174,6 +174,7 @@ def vertex_enumeration(A: numpy.ndarray, b: numpy.ndarray, solver) -> List[numpy
     dimension = A.shape[1]
 
     trials = combinations(range(num_constrs), dimension)
+    trials = [list(trial) for trial in trials] # the cvxopt solver can't handle the combinations object so make it a list
     res = (solver.solve_lp(None, A, b, comb) for comb in trials)
     filtered_res = filter(lambda x: x is not None, res)
     return [x.sol for x in filtered_res]
