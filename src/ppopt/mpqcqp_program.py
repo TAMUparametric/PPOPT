@@ -16,6 +16,7 @@ from .utils.constraint_utilities import(
     process_program_constraints,
     find_implicit_equalities,
     generate_reduced_equality_constraints,
+    constraint_norm,
 )
 from .utils.general_utils import (
     latex_matrix,
@@ -28,6 +29,22 @@ from .utils.general_utils import (
 from .utils.symbolic_utils import (
     reduce_redundant_symbolic_constraints,
 )
+
+
+class ApproxOptions:
+    """
+    A class to hold the options for the approximation algorithm
+    """
+
+    max_linearizations: int
+    constraint_tol: float
+    solution_tol: float
+
+    def __init__(self, max_linearizations: int = 10, constraint_tol: float = 0.05, solution_tol: float = 0.1):
+        self.max_linearizations = max_linearizations
+        self.constraint_tol = constraint_tol
+        self.solution_tol = solution_tol
+
 
 class QConstraint:
     Q: numpy.ndarray
@@ -80,8 +97,7 @@ class QConstraint:
         # return numpy.all(numpy.linalg.eigvals(self.Q) >= 10 ** -4)
         return numpy.all(numpy.linalg.eigvals(self.Q) >= 0)
     
-    def linearize(self, linearization_point: List[numpy.ndarray]) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
-        # TODO
+    def linearize(self, linearization_point: Tuple[numpy.ndarray]) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
         lin_x = linearization_point[0]
         lin_theta = linearization_point[1]
         A_lin = self.A + 2 * self.Q @ lin_x + lin_theta.T @ self.H.T 
@@ -853,7 +869,7 @@ class MPQCQP_Program(MPQP_Program):
         return max(active_set) < self.num_linear_constraints()
     
 
-    def gen_hybrid_approx_cr_from_active_set(self, active_set: List[int]) -> Optional[List[NonlinearCriticalRegion]]:
+    def gen_hybrid_approx_cr_from_active_set(self, active_set: List[int], initial_point: Tuple[numpy.ndarray], options: ApproxOptions=ApproxOptions()) -> Optional[List[NonlinearCriticalRegion]]:
         r"""
         Generates an approximation to the critical region from an active set combination if the active set involves quadratic constraints.
         Otherwise, generates the exact critical region.
@@ -866,10 +882,10 @@ class MPQCQP_Program(MPQP_Program):
         if self.check_linearity_of_active_set(active_set):
             return self.gen_cr_from_active_set(active_set)
         else:
-            return self.gen_approx_cr_from_active_set(active_set)
+            return self.gen_approx_cr_from_active_set(active_set, initial_point, options)
 
 
-    def gen_approx_cr_from_active_set(self, active_set: List[int]) -> Optional[List[NonlinearCriticalRegion]]:
+    def gen_approx_cr_from_active_set(self, active_set: List[int], initial_point: Tuple[numpy.ndarray], options: ApproxOptions) -> Optional[List[NonlinearCriticalRegion]]:
         r"""
         Generates an approximation to the critical region from an active set combination.
 
@@ -884,19 +900,30 @@ class MPQCQP_Program(MPQP_Program):
         # TODO we only need to linearize around (x/t) if (x/t) is quadratic or bilinear in the constraint
         # so if Q_t and H are 0, only need to lin around x
         # else also around t
-        all_linearization_points = set()
+        # all_linearization_points = set()
 
         # add initial linearization point to the queue
+        remaining_linearization_points.append(initial_point)
 
-        while len(remaining_linearization_points) > 0:
+        while len(remaining_linearization_points) > 0 and num_regions < options.max_linearizations:
             linearization_point = remaining_linearization_points.popleft()
+            # all_linearization_points.add(tuple(linearization_point))
             # get quadratic constraints from active set
             quadratic_active = [i - self.num_linear_constraints() for i in active_set if i >= self.num_linear_constraints()]
             quadratic_inactive = [i - self.num_linear_constraints() for i in range(self.num_linear_constraints(), self.num_linear_constraints() + self.num_quadratic_constraints()) if i not in active_set]
             # linearize the quadratic constraints at the linearization point
             linearized_constraints = [self.qconstraints[i].linearize(linearization_point) for i in quadratic_active] # list of tuples A, b, F with Ax <= b + F theta
+
+            lin_already_exists = False
+            for existing_lin in linearizations: # check if the linearization is already in the list
+                for j in range(len(linearized_constraints)): # loop over each linearized quadratic
+                    if numpy.all(numpy.hstack([linearized_constraints[j][i] == existing_lin[j][i] for i in range(len(linearized_constraints[j]))])):
+                        lin_already_exists = True
+                        break
+            if lin_already_exists:
+                continue
+
             # compute the parametric solution for the linearized active set
-            # idea: can we build a pseudo mpQP-object and use that?
             linear_active_indices = [i for i in active_set if i < self.num_linear_constraints()]
             linear_inactive = [i for i in range(self.num_linear_constraints()) if i not in active_set]
             active_A = self.A[linear_active_indices]
@@ -907,8 +934,13 @@ class MPQCQP_Program(MPQP_Program):
                 active_b = numpy.vstack((active_b, con[1]))
                 active_F = numpy.vstack((active_F, con[2]))
             # build the mpQP object
-            mpqp = MPQP_Program(active_A, active_b, self.c, self.H, self.Q, self.A_t, self.b_t, active_F, equality_indices=list(range(active_A.shape[0])))
+            mpqp = MPQP_Program(active_A, active_b, self.c, self.H, self.Q, self.A_t, self.b_t, active_F, equality_indices=list(range(active_A.shape[0])), post_process=False)
             A_x, b_x, A_l, b_l = mpqp.optimal_control_law(mpqp.equality_indices)
+            # because MPQP_Program automatically scales constraints, we need to undo the scaling for the multipliers, otherwise they won't match the unscaled actual constraints
+            tmp = numpy.block([active_A, -active_F])
+            norm = constraint_norm(tmp)
+            A_l = A_l / norm
+            b_l = b_l / norm
             # construct a nonlinear critical region object
             theta_sym = sympy.Matrix(sympy.symbols('theta:' + str(self.num_t()), real=True, finite=True))
             x_star = A_x @ theta_sym + b_x
@@ -916,7 +948,7 @@ class MPQCQP_Program(MPQP_Program):
 
             region_inequalities, regular_set, omega_set, lambda_set = self.build_critical_region_constraints(x_star, lambda_star, theta_sym, linear_inactive, quadratic_inactive)
             # add the solution to the list of returned regions
-            # TODO
+            returned_regions.append(NonlinearCriticalRegion(x_star, lambda_star, region_inequalities, active_set, omega_set, lambda_set, regular_set))
             # add the linearization to the list of linearizations
             linearizations.append(linearized_constraints)
             num_regions += 1
@@ -924,24 +956,46 @@ class MPQCQP_Program(MPQP_Program):
                 for j in range(num_regions): # region index
                     if i != j:
                         # add constraint to region j to ensure linearization i is inactive
-                        # TODO
-                        pass
-            
+                        for con in linearizations[i]:
+                            inactive = con[0] @ returned_regions[j].x_star - con[1] - con[2] @ theta_sym
+                            returned_regions[j].theta_constraints.append(inactive[0] <= 0)
+                            returned_regions[j].theta_constraints_numpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in returned_regions[j].theta_constraints], 'numpy')
+                            returned_regions[j].regular_set.append(len(returned_regions[j].theta_constraints) - 1)
+
             # compute vertices of new region
             # assume all inactive constraints are linear
-            # below code is wrong and needs changing
+            # CR described by E theta <= f
+            # We have that in symbolic form, we also have the matrices for A x <= b + F theta and A_t theta <= b_t and x = A_x theta + b_x and lambda = A_l theta + b_l
+            # We can put this all in terms of theta:
+            # A (A_x theta + b_x) <= b + F theta ==> (A A_x - F) theta <= b - A b_x
+            # A_t theta <= b_t
+            # linearization is given by con[0] x <= con[1] + con[2] theta ==> con[0] A_x theta + con[0] b_x <= con[1] + con[2] theta
+            # ==> (con[0] A_x - con[2]) theta <= con[1] - con[0] b_x
+
             # TODO
             inactive_linear = [i for i in range(self.num_linear_constraints()) if i not in active_set]
-            inactive_A = self.A[inactive_linear]
-            inactive_b = self.b[inactive_linear]
-            vertices = vertex_enumeration(inactive_A, inactive_b, self.solver)
+            inactive_A = self.A[inactive_linear] @ A_x - self.F[inactive_linear]
+            inactive_b = self.b[inactive_linear] - self.A[inactive_linear] @ b_x
+            cr_A = numpy.vstack((inactive_A, self.A_t, -A_l))
+            cr_b = numpy.vstack((inactive_b, self.b_t, b_l))
+            for i in range(num_regions - 1):
+                for con in linearizations[i]:
+                    inactive_lins_A = con[0] @ A_x - con[2]
+                    inactive_lins_b = con[1] - con[0] @ b_x
+                    cr_A = numpy.vstack((cr_A, inactive_lins_A))
+                    cr_b = numpy.vstack((cr_b, inactive_lins_b))
+
+            vertices = vertex_enumeration(cr_A, cr_b, self.solver)
             for v in vertices:
                 # TODO
                 # compute x at vertex
+                x = A_x @ v + b_x
                 # compute value of original quadratic active constraints at vertex
+                qvals = [self.qconstraints[i].evaluate(x, v) for i in quadratic_active]
                 # compute solution to deterministic qcqp at vertex
-                # compute constraint and solution errors
-                # if either error is too large, compute x at the vertex and add (x, v) to the linearization points
-                pass
+                # compute solution error
+                # if either error is too large, add (x, v) to the linearization points
+                if numpy.any([q > options.constraint_tol for q in qvals]):
+                    remaining_linearization_points.append((x[0], v))
         
         return returned_regions

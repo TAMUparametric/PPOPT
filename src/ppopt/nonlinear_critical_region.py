@@ -97,8 +97,8 @@ class NonlinearCriticalRegion:
         output += f"\nThe Omega Constraint indices are {self.omega_set}"
         output += f"\nThe Lagrange multipliers Constraint indices are {self.lambda_set}"
         output += f"\nThe Regular Constraint indices are {self.regular_set}"
-        output += f"\nx(θ) = {numpy.array(self.x_star).flatten()}"
-        output += f"\nλ(θ) = {numpy.array(self.lambda_star).flatten()}"
+        output += f"\nx(θ) = \n{numpy.array(self.x_star).reshape(-1, 1)}"
+        output += f"\nλ(θ) = \n{numpy.array(self.lambda_star).reshape(-1, 1)}"
         output += f"\nConstraints on θ are {self.theta_constraints}"
 
         return output

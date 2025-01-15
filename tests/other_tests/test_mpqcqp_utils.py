@@ -98,3 +98,9 @@ def test_qconstraint_linearization():
     assert numpy.allclose(A_t, numpy.array([[6, 8]]))
     assert numpy.allclose(b_t, numpy.array([6]))
     assert numpy.allclose(F_t, numpy.array([4]))
+
+def test_approx_cr(pappas_qcqp_1):
+    initial_x = numpy.array([-2])
+    initial_theta = numpy.array([0,0])
+    initial_point = (initial_x, initial_theta)
+    cr = pappas_qcqp_1.gen_approx_cr_from_active_set([3], initial_point)

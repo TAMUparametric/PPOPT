@@ -9,10 +9,11 @@ from ..mp_solvers import (
     mpqcqp_parallel_combinatorial,
     mpqcqp_combinatorial_implicit,
     mpqcqp_combinatorial_implicit_hybrid,
+    mpqcqp_combinatorial_approximation_hybrid,
 )
 from ..mplp_program import MPLP_Program
 from ..mpqp_program import MPQP_Program
-from ..mpqcqp_program import MPQCQP_Program
+from ..mpqcqp_program import MPQCQP_Program, ApproxOptions
 from ..solution import Solution
 
 
@@ -26,6 +27,7 @@ class mpqcqp_algorithm(Enum):
     combinatorial_parallel = 'p combinatorial'
     combinatorial_implicit = 'implicit combinatorial'
     combinatorial_implicit_hybrid = 'implicit combinatorial hybrid'
+    combinatorial_approximation_hybrid = 'approximation combinatorial hybrid'
 
     def __str__(self):
         return self.name
@@ -38,7 +40,7 @@ class mpqcqp_algorithm(Enum):
         return output
 
 
-def solve_mpqcqp(problem: MPQCQP_Program, algorithm: mpqcqp_algorithm = mpqcqp_algorithm.combinatorial, num_cores: int = -1) -> Solution:
+def solve_mpqcqp(problem: MPQCQP_Program, algorithm: mpqcqp_algorithm = mpqcqp_algorithm.combinatorial, num_cores: int = -1, options: ApproxOptions = ApproxOptions()) -> Solution:
     """
     Takes a mpqcqp programming problem and solves it in a specified manner. The default
      solve algorithm is the Combinatorial algorithm by Gupta. et al.
@@ -64,6 +66,8 @@ def solve_mpqcqp(problem: MPQCQP_Program, algorithm: mpqcqp_algorithm = mpqcqp_a
         solution = mpqcqp_combinatorial_implicit.solve(problem)
     if algorithm is mpqcqp_algorithm.combinatorial_implicit_hybrid:
         solution = mpqcqp_combinatorial_implicit_hybrid.solve(problem)
+    if algorithm is mpqcqp_algorithm.combinatorial_approximation_hybrid:
+        solution = mpqcqp_combinatorial_approximation_hybrid.solve(problem, options)
 
     # check if there needs to be a flag thrown in the case of overlapping critical regions
     # happens if there are negative or zero eigen values for mpQP (kkt conditions can find a lot of saddle points)
