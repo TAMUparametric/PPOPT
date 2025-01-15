@@ -100,7 +100,7 @@ class QConstraint:
     def linearize(self, linearization_point: Tuple[numpy.ndarray]) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
         lin_x = linearization_point[0].reshape(-1, 1)
         lin_theta = linearization_point[1].reshape(-1, 1)
-        A_lin = (self.A + 2 * self.Q @ lin_x + lin_theta.T @ self.H.T).T 
+        A_lin = (self.A.T + 2 * self.Q @ lin_x + self.H @ lin_theta).T 
         b_lin = lin_x.T @ self.Q @ lin_x + lin_theta.T @ self.H.T @ lin_x - lin_theta.T @ self.Q_t @ lin_theta + self.b
         F_lin = -(self.H.T @ lin_x - 2 * self.Q_t @ lin_theta - self.F.T).T
         # we want to return row vectors for A and F and a scalar for b
@@ -898,10 +898,6 @@ class MPQCQP_Program(MPQP_Program):
         returned_regions = []
         linearizations = []
         num_regions = 0
-        # TODO we only need to linearize around (x/t) if (x/t) is quadratic or bilinear in the constraint
-        # so if Q_t and H are 0, only need to lin around x
-        # else also around t
-        # all_linearization_points = set()
 
         # add initial linearization point to the queue
         remaining_linearization_points.append(initial_point)
@@ -918,7 +914,7 @@ class MPQCQP_Program(MPQP_Program):
             lin_already_exists = False
             for existing_lin in linearizations: # check if the linearization is already in the list
                 for j in range(len(linearized_constraints)): # loop over each linearized quadratic
-                    if numpy.all(numpy.hstack([linearized_constraints[j][i] == existing_lin[j][i] for i in range(len(linearized_constraints[j]))])):
+                    if numpy.all([numpy.allclose(linearized_constraints[j][i], existing_lin[j][i]) for i in range(len(linearized_constraints[j]))]):
                         lin_already_exists = True
                         break
             if lin_already_exists:
@@ -973,7 +969,8 @@ class MPQCQP_Program(MPQP_Program):
             # linearization is given by con[0] x <= con[1] + con[2] theta ==> con[0] A_x theta + con[0] b_x <= con[1] + con[2] theta
             # ==> (con[0] A_x - con[2]) theta <= con[1] - con[0] b_x
 
-            # TODO
+            # FIXME
+            # This assumes that there are no inactive quadratic constraints
             inactive_linear = [i for i in range(self.num_linear_constraints()) if i not in active_set]
             inactive_A = self.A[inactive_linear] @ A_x - self.F[inactive_linear]
             inactive_b = self.b[inactive_linear] - self.A[inactive_linear] @ b_x
@@ -989,7 +986,6 @@ class MPQCQP_Program(MPQP_Program):
             vertices = vertex_enumeration(cr_A, cr_b, self.solver)
             for v in vertices:
                 v = v.reshape(-1, 1)
-                # TODO
                 # compute x at vertex
                 x = A_x @ v + b_x
                 # compute value of original quadratic active constraints at vertex
@@ -997,6 +993,7 @@ class MPQCQP_Program(MPQP_Program):
                 # compute solution to deterministic qcqp at vertex
                 sol_vertex = self.solve_theta(v)
                 # compute solution error
+                # TODO can we find some points close to the infeasible vertices to compute the exact solution instead?
                 if sol_vertex is not None:
                     x_exact = sol_vertex.sol
                     solution_error = numpy.linalg.norm(x - x_exact, numpy.inf)
@@ -1004,6 +1001,6 @@ class MPQCQP_Program(MPQP_Program):
                     solution_error = 0.0 # the vertex is infeasible in the original problem (expected since outer approximation), thus we can't compute the exact solution so we skip it for now
                 # if either error is too large, add (x, v) to the linearization points
                 if numpy.any([q > options.constraint_tol for q in qvals]) or solution_error > options.solution_tol:
-                    remaining_linearization_points.append((x[0], v))
+                    remaining_linearization_points.append((x, v))
         
         return returned_regions
