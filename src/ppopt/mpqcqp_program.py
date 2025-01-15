@@ -98,11 +98,12 @@ class QConstraint:
         return numpy.all(numpy.linalg.eigvals(self.Q) >= 0)
     
     def linearize(self, linearization_point: Tuple[numpy.ndarray]) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
-        lin_x = linearization_point[0]
-        lin_theta = linearization_point[1]
-        A_lin = self.A + 2 * self.Q @ lin_x + lin_theta.T @ self.H.T 
+        lin_x = linearization_point[0].reshape(-1, 1)
+        lin_theta = linearization_point[1].reshape(-1, 1)
+        A_lin = (self.A + 2 * self.Q @ lin_x + lin_theta.T @ self.H.T).T 
         b_lin = lin_x.T @ self.Q @ lin_x + lin_theta.T @ self.H.T @ lin_x - lin_theta.T @ self.Q_t @ lin_theta + self.b
-        F_lin = -(self.H.T @ lin_x - 2 * self.Q_t @ lin_theta - self.F)
+        F_lin = -(self.H.T @ lin_x - 2 * self.Q_t @ lin_theta - self.F.T).T
+        # we want to return row vectors for A and F and a scalar for b
         return A_lin, b_lin, F_lin
     
 
@@ -987,15 +988,22 @@ class MPQCQP_Program(MPQP_Program):
 
             vertices = vertex_enumeration(cr_A, cr_b, self.solver)
             for v in vertices:
+                v = v.reshape(-1, 1)
                 # TODO
                 # compute x at vertex
                 x = A_x @ v + b_x
                 # compute value of original quadratic active constraints at vertex
                 qvals = [self.qconstraints[i].evaluate(x, v) for i in quadratic_active]
                 # compute solution to deterministic qcqp at vertex
+                sol_vertex = self.solve_theta(v)
                 # compute solution error
+                if sol_vertex is not None:
+                    x_exact = sol_vertex.sol
+                    solution_error = numpy.linalg.norm(x - x_exact, numpy.inf)
+                else:
+                    solution_error = 0.0 # the vertex is infeasible in the original problem (expected since outer approximation), thus we can't compute the exact solution so we skip it for now
                 # if either error is too large, add (x, v) to the linearization points
-                if numpy.any([q > options.constraint_tol for q in qvals]):
+                if numpy.any([q > options.constraint_tol for q in qvals]) or solution_error > options.solution_tol:
                     remaining_linearization_points.append((x[0], v))
         
         return returned_regions

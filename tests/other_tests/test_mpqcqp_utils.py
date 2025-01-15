@@ -103,7 +103,6 @@ def test_approx_cr(pappas_qcqp_1):
     initial_x = numpy.array([-2])
     initial_theta = numpy.array([0,0])
     initial_point = (initial_x, initial_theta)
-    options = ApproxOptions()
+    options = ApproxOptions(constraint_tol=0.05, solution_tol=0.15)
     cr = pappas_qcqp_1.gen_approx_cr_from_active_set([3], initial_point, options)
     assert len(cr) == 4
-    
