@@ -108,6 +108,9 @@ def solve_miqcqp_gurobi(Q: Matrix = None, c: Matrix = None, A: Matrix = None,
 
     # in the case of non-convex quadratic constraints add the non-convex flag, set the MIP gap to a small tolerance as QCQPs are harder to solve
     if Q_q is not None:
+        # FIXME there is an error in Gurobi 12 with presolve for QCQP, we disable it for now but this should be changed once that bug is fixed!
+        model.Params.Presolve = 0
+
         if get_duals:
             model.Params.QCPDual = 1
         if numpy.min([numpy.min(numpy.linalg.eigvalsh(Q)) for Q in Q_q]) < 0 or len(q_equality_constraints) > 0:

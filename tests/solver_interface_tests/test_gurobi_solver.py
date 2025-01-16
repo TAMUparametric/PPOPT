@@ -117,7 +117,10 @@ def test_qcqp_1():
     Q = numpy.array([[1, 0], [0, -1]])
     Q_q = [numpy.array([[0, 0], [0, 1]])]
     b_q = numpy.array([[4]])
-    soln = solve_miqcqp_gurobi(Q=Q, c=None, A=A, b=b, Q_q=Q_q, A_q=None, b_q=b_q)
+    soln = solve_miqcqp_gurobi(Q=Q, c=None, A=A, b=b, Q_q=Q_q, A_q=None, b_q=b_q, get_duals=False)
+    # For some reason, gurobi 12 seems to have some issues with duals and QCQP,
+    # seems to be related to another bug that currently requires disabling presolve.
+    # Set get_duals to false for now, check back at some later time to see if we can set it to true again.
     assert numpy.allclose(numpy.array([5, 2]), soln.sol)
 
 def test_qcqp_2():

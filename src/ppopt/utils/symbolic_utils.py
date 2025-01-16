@@ -56,12 +56,12 @@ def replace_square_roots_dictionary(constraint_strings: List[str]) -> Tuple[Dict
 
     counter = 0
     replacement_dict = {} # this stores the replacement for each square root term, so that we can re-use the same aux variables where appropriate instead of creating new ones each time
-    for i_con, cs in enumerate(constraint_strings):
+    for i_con, _ in enumerate(constraint_strings):
         for term in re.findall(r'sqrt\((.*?)\)', cs):
             if term not in replacement_dict:
                 replacement_dict[term] = tuple((f'aux{counter}', f'aux{counter + 1}'))
                 counter += 2
-            constraint_strings[i_con] = cs.replace(f'sqrt({term})', replacement_dict[term][0])
+            constraint_strings[i_con] = constraint_strings[i_con].replace(f'sqrt({term})', replacement_dict[term][0])
 
     return replacement_dict, constraint_strings, counter
 
