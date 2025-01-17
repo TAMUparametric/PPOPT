@@ -56,7 +56,7 @@ def replace_square_roots_dictionary(constraint_strings: List[str]) -> Tuple[Dict
 
     counter = 0
     replacement_dict = {} # this stores the replacement for each square root term, so that we can re-use the same aux variables where appropriate instead of creating new ones each time
-    for i_con, _ in enumerate(constraint_strings):
+    for i_con, cs in enumerate(constraint_strings):
         for term in re.findall(r'sqrt\((.*?)\)', cs):
             if term not in replacement_dict:
                 replacement_dict[term] = tuple((f'aux{counter}', f'aux{counter + 1}'))
@@ -166,8 +166,35 @@ def build_gurobi_model_with_square_roots(constraint_strings: List[str], syms: Li
         exec_string += f"{value[1]} = model.getVarByName('{value[1]}')\n"
         exec_string += f"model.addConstr({key} == {value[1]})\n"
         exec_string += f"model.addGenConstrPow({value[1]}, {value[0]}, 0.5)\n"
+    # execute once here to ensure we have all variables loaded, this is important for the next step
+    model.update()
+    exec(exec_string)
+    model.update()
+    exec_string = ''
+    nonlinear_counter = 0
+    version = gurobipy.gurobi.version()[0]
     for constr in constraint_strings:
-        exec_string += 'model.addConstr(' + constr + ')\n'
+        # gurobi 12 has an issue with some nonlinear inequality constraints
+        # so we check if the constraint is an inequality
+        # if so, we see if gurobi creates a nonlinear expression
+        # if it does, we use the nonlinear constraint methods to write aux = f(x), aux <= 0 instead of f(x) <= 0
+        if version == 12:
+            if "<=" in constr:
+                tmp = constr.split("<=")
+                # ensure the RHS is 0
+                tmp = tmp[0] + "-(" + tmp[1] + ")"
+                expr = eval(tmp)
+                if isinstance(expr, gurobipy.NLExpr):
+                    nlvar = model.addVar(lb=-gurobipy.GRB.INFINITY, ub=gurobipy.GRB.INFINITY, name=f'nonlinear{nonlinear_counter}')
+                    model.addConstr(nlvar <= 0)
+                    model.addGenConstrNL(nlvar, expr)
+                    nonlinear_counter += 1
+                else:
+                    exec_string += 'model.addConstr(' + constr + ')\n'
+            else:
+                exec_string += 'model.addConstr(' + constr + ')\n'
+        else:
+            exec_string += 'model.addConstr(' + constr + ')\n'
 
     model.update() # essential to get all information
 
