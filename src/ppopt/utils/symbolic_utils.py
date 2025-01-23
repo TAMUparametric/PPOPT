@@ -300,7 +300,7 @@ def reduce_redundant_symbolic_constraints(constraints: List[sympy.core.relationa
     return nonredundant_constraint_list, kept_indices
 
 
-def get_linear_coeffs_of_symbolic_constraints(constraints: List[sympy.core.relational]) -> numpy.ndarray:
+def get_linear_coeffs_of_symbolic_constraints(constraints: List[sympy.core.relational.LessThan]) -> numpy.ndarray:
     """
     Extracts the linear coefficients and constants of a list of symbolic constraints.
 
