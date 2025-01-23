@@ -1,5 +1,6 @@
 import sympy
 import gurobipy
+import numpy
 
 from itertools import combinations
 
@@ -174,23 +175,28 @@ def build_gurobi_model_with_square_roots(constraint_strings: List[str], syms: Li
     nonlinear_counter = 0
     version = gurobipy.gurobi.version()[0]
     for constr in constraint_strings:
-        # gurobi 12 has an issue with some nonlinear inequality constraints
-        # so we check if the constraint is an inequality
-        # if so, we see if gurobi creates a nonlinear expression
+        # gurobi 12 has an issue with some nonlinear constraints
         # if it does, we use the nonlinear constraint methods to write aux = f(x), aux <= 0 instead of f(x) <= 0
         if version == 12:
             if "<=" in constr:
                 tmp = constr.split("<=")
-                # ensure the RHS is 0
-                tmp = tmp[0] + "-(" + tmp[1] + ")"
-                expr = eval(tmp)
-                if isinstance(expr, gurobipy.NLExpr):
-                    nlvar = model.addVar(lb=-gurobipy.GRB.INFINITY, ub=gurobipy.GRB.INFINITY, name=f'nonlinear{nonlinear_counter}')
+            elif "==" in constr:
+                tmp = constr.split("==")
+            else:
+                tmp = constr.split(">=")
+            # ensure the RHS is 0
+            tmp = tmp[0] + "-(" + tmp[1] + ")"
+            expr = eval(tmp)
+            if isinstance(expr, gurobipy.NLExpr):
+                nlvar = model.addVar(lb=-gurobipy.GRB.INFINITY, ub=gurobipy.GRB.INFINITY, name=f'nonlinear{nonlinear_counter}')
+                if "<=" in constr:
                     model.addConstr(nlvar <= 0)
-                    model.addGenConstrNL(nlvar, expr)
-                    nonlinear_counter += 1
+                elif "==" in constr:
+                    model.addConstr(nlvar == 0)
                 else:
-                    exec_string += 'model.addConstr(' + constr + ')\n'
+                    model.addConstr(nlvar >= 0)
+                model.addGenConstrNL(nlvar, expr)
+                nonlinear_counter += 1
             else:
                 exec_string += 'model.addConstr(' + constr + ')\n'
         else:
@@ -214,8 +220,15 @@ def reduce_redundant_symbolic_constraints(constraints: List[sympy.core.relationa
     # first, we need to simplify any univariate constraints
     constraints, indices = simplify_univariate_symbolic_constraints(constraints, indices)
 
+    # if any constraint get simplified to False, then the CR is empty
+    if False in constraints:
+        return [], []
+
     # next, we need to simplify any trivial constraints
     constraints, indices = simplfiy_trivial_symbolic_constraints(constraints, indices)
+
+    if False in constraints:
+        return [], []
 
     # next, we need to remove any duplicate constraints
     constraints, indices = remove_duplicate_symbolic_constraints(constraints, indices)
@@ -233,11 +246,6 @@ def reduce_redundant_symbolic_constraints(constraints: List[sympy.core.relationa
     constraint_strings = [str(c) for c in constraints]
     replacement_dict, constraint_strings, num_aux = replace_square_roots_dictionary(constraint_strings)
 
-    for i, c in enumerate(constraints):
-        if isinstance(c, sympy.Equality):
-            constraint_strings[i] = str(c.lhs - c.rhs) + ' == 0'
-
-    nonredundant_constraint_list = []
     syms = []
 
     # capture all the symbols in the constraints (this is basically all the thetas)
@@ -249,6 +257,29 @@ def reduce_redundant_symbolic_constraints(constraints: List[sympy.core.relationa
     syms = list(set(syms))
     syms.sort(key=str)
 
+    # if we have square roots, make sure that their radicands are non-negative
+    for key in replacement_dict.keys():
+        nonnegative_radicand_constraint = key + ' >= 0'
+        sympy_constraint = sympy.sympify(nonnegative_radicand_constraint)
+        if sympy_constraint != True: # if trivially true (e.g. radicand is just a number), don't add it
+            # sympify adds new symbols so we replace them with the existing ones, this is important if we want to evaluate the solution later on
+            for s in sympy_constraint.free_symbols:
+                if str(s) in str(syms):
+                    original_sym = [osym for osym in syms if str(osym) == str(s)][0]
+                    sympy_constraint = sympy_constraint.subs(s, original_sym)
+            if sympy_constraint != False:
+                constraints.append(sympy_constraint)
+                constraint_strings.append(nonnegative_radicand_constraint)
+                indices.append(-1) # TODO determine the correct constraint index
+            else: # if trivially false (e.g. radicand is negative), then we are infeasible (this should be caught before, but just in case)
+                return [], []
+
+    for i, c in enumerate(constraints):
+        if isinstance(c, sympy.Equality):
+            constraint_strings[i] = str(c.lhs - c.rhs) + ' == 0'
+
+    nonredundant_constraint_list = []
+
     kept_indices = []
 
     for i_con, c in enumerate(constraint_strings):
@@ -257,12 +288,46 @@ def reduce_redundant_symbolic_constraints(constraints: List[sympy.core.relationa
 
         model = build_gurobi_model_with_square_roots(constraint_strings, syms, replacement_dict, num_aux)
 
+        model.Params.TimeLimit = 5 # if we can't quickly identify a redundancy, just keep the constraint
         model.optimize()
         status = model.status
-        if status == gurobipy.GRB.OPTIMAL:
+        if status == gurobipy.GRB.OPTIMAL or status == gurobipy.GRB.TIME_LIMIT:
             nonredundant_constraint_list.append(constraints[i_con])
             kept_indices.append(indices[i_con])
 
         constraint_strings[i_con] = constraint_strings[i_con].replace('==', '<=')
 
     return nonredundant_constraint_list, kept_indices
+
+
+def get_linear_coeffs_of_symbolic_constraints(constraints: List[sympy.core.relational]) -> numpy.ndarray:
+    """
+    Extracts the linear coefficients and constants of a list of symbolic constraints.
+
+    :param constraints: a list of symbolic constraints
+    :return: a numpy array of linear coefficients and a numpy array of constants, such that Ax <= b
+    """
+
+    constraints = [to_less_than_or_equal(c) for c in constraints]
+
+    linear_coeffs = []
+    constants = []
+
+    syms = []
+
+    # capture all the symbols in the constraints (this is basically all the thetas)
+    for c in constraints:
+        syms.extend(c.free_symbols)
+
+    # ensure that we only have unique symbols
+    # FIXME efficiency??
+    syms = list(set(syms))
+    syms.sort(key=str)
+
+    for c in constraints:
+        lhs_coeffs = c.lhs.as_coefficients_dict()
+        rhs_coeffs = c.rhs.as_coefficients_dict()
+        linear_coeffs.append([lhs_coeffs[s] - rhs_coeffs[s] for s in syms])
+        constants.append(rhs_coeffs[1] - lhs_coeffs[1])
+
+    return numpy.array(linear_coeffs, numpy.float64), numpy.array(constants, numpy.float64)

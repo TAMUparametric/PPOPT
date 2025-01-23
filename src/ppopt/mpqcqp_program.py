@@ -28,6 +28,7 @@ from .utils.general_utils import (
 )
 from .utils.symbolic_utils import (
     reduce_redundant_symbolic_constraints,
+    get_linear_coeffs_of_symbolic_constraints,
 )
 
 
@@ -37,11 +38,13 @@ class ApproxOptions:
     """
 
     max_linearizations: int
+    max_regions: int
     constraint_tol: float
     solution_tol: float
 
-    def __init__(self, max_linearizations: int = 10, constraint_tol: float = 0.05, solution_tol: float = 0.1):
+    def __init__(self, max_linearizations: int = 20, max_regions: int = 10, constraint_tol: float = 0.05, solution_tol: float = 0.1):
         self.max_linearizations = max_linearizations
+        self.max_regions = max_regions
         self.constraint_tol = constraint_tol
         self.solution_tol = solution_tol
 
@@ -278,7 +281,7 @@ class MPQCQP_Program(MPQP_Program):
         sol_obj = self.solver.solve_miqcqp(Q = self.Q, c = (self.H @ theta_point).reshape(-1,1) + self.c, A = self.A,
                                          b = self.b + (self.F @ theta_point).reshape(-1, 1),
                                          Q_q = Q_q, A_q = A_q, b_q = b_q,
-                                         equality_constraints = self.equality_indices)
+                                         equality_constraints = self.equality_indices, get_duals=False)
 
         if sol_obj is not None:
             sol_obj.obj += self.c_c + self.c_t.T @ theta_point + 0.5 * theta_point.T @ self.Q_t @ theta_point
@@ -436,31 +439,33 @@ class MPQCQP_Program(MPQP_Program):
             x_sol = [solution[i][0:self.num_x()] for i in range(num_solutions)]
             lambda_sol = [solution[i][self.num_x():-1] for i in range(num_solutions)]
             nu_sol = [solution[i][-1] for i in range(num_solutions)]
-            
-            # iterate over each solution pair, only keep those for which lambda >= 0 can be satisfied
-            keep_indices = []
-            for i in range(num_solutions):
-                this_lambda = lambda_sol[i]
-                this_nu = nu_sol[i]
-                if numpy.all([(l > 0) != False for l in this_lambda]) and ((this_nu > 0) != False): # required for the cases that lambda is constant, as the solve call will return [] in that case, which is useless TODO is it? might be able to still use that info
-                    implications_lambda = [sympy.solve(l.subs({beta_sym:1}) > 0) for l in this_lambda]
-                    implications_nu = sympy.solve(this_nu.subs({beta_sym:1}) > 0)
-                    implications = [*implications_lambda, implications_nu]
-                    implications_satisfied = numpy.all([imp != False for imp in implications])
-                    if implications_satisfied:
-                        keep_indices.append(i)
-                        for implication in implications:
-                            if implication != []:
-                                x_sol[i] = [sympy.refine(sympy.factor(sympy.LT(x)), implication) + sympy.refine(sympy.factor(x - sympy.LT(x)), implication) if x != 0 else x for x in x_sol[i]]
-                                # TODO make this a flag somewhere else, most likely we don't nee to refine lambda and it just increases computation time signficantly
-                                refine_lambda = False
-                                if refine_lambda:
-                                    lambda_sol[i] = [sympy.refine(sympy.factor(sympy.LT(l)), implication) + sympy.refine(sympy.factor(l - sympy.LT(l)), implication) for l in lambda_sol[i]]
+
+            # skip this for now as solving lambda>=0 is tough if lambda is a function of multiple thetas
+            # instead, if a lambda can only be negative, we will find this through redundant constraint removal, which will ensure the CR has no constraints            
+            # # iterate over each solution pair, only keep those for which lambda >= 0 can be satisfied
+            # keep_indices = []
+            # for i in range(num_solutions):
+            #     this_lambda = lambda_sol[i]
+            #     this_nu = nu_sol[i]
+            #     if numpy.all([(l > 0) != False for l in this_lambda]) and ((this_nu > 0) != False): # required for the cases that lambda is constant, as the solve call will return [] in that case, which is useless TODO is it? might be able to still use that info
+            #         implications_lambda = [sympy.solve(l.subs({beta_sym:1}) > 0) for l in this_lambda]
+            #         implications_nu = sympy.solve(this_nu.subs({beta_sym:1}) > 0)
+            #         implications = [*implications_lambda, implications_nu]
+            #         implications_satisfied = numpy.all([imp != False for imp in implications])
+            #         if implications_satisfied:
+            #             keep_indices.append(i)
+            #             for implication in implications:
+            #                 if implication != []:
+            #                     x_sol[i] = [sympy.refine(sympy.factor(sympy.LT(x)), implication) + sympy.refine(sympy.factor(x - sympy.LT(x)), implication) if x != 0 else x for x in x_sol[i]]
+            #                     # TODO make this a flag somewhere else, most likely we don't nee to refine lambda and it just increases computation time signficantly
+            #                     refine_lambda = False
+            #                     if refine_lambda:
+            #                         lambda_sol[i] = [sympy.refine(sympy.factor(sympy.LT(l)), implication) + sympy.refine(sympy.factor(l - sympy.LT(l)), implication) for l in lambda_sol[i]]
                     
-            # return the list of x, lambda, nu tuples
-            x_sol = [x_sol[i] for i in keep_indices]
-            lambda_sol = [lambda_sol[i] for i in keep_indices]
-            nu_sol = [nu_sol[i] for i in keep_indices]
+            # # return the list of x, lambda, nu tuples
+            # x_sol = [x_sol[i] for i in keep_indices]
+            # lambda_sol = [lambda_sol[i] for i in keep_indices]
+            # nu_sol = [nu_sol[i] for i in keep_indices]
 
             # try to do one final simplification on the kept solutions
             for i in range(len(x_sol)):
@@ -493,7 +498,8 @@ class MPQCQP_Program(MPQP_Program):
 
             region_inequalities, regular_set, omega_set, lambda_set = self.build_critical_region_constraints(sympy.Matrix(x_star), sympy.Matrix(lambda_star), sympy.Matrix(theta_syms), linear_inactive, quadratic_inactive)
 
-            returned_regions.append(NonlinearCriticalRegion(x_star, lambda_star, region_inequalities, active_set, omega_set, lambda_set, regular_set))
+            if len(region_inequalities) > 0:
+                returned_regions.append(NonlinearCriticalRegion(x_star, lambda_star, region_inequalities, active_set, omega_set, lambda_set, regular_set))
 
         return returned_regions
 
@@ -897,12 +903,13 @@ class MPQCQP_Program(MPQP_Program):
         remaining_linearization_points = deque()
         returned_regions = []
         linearizations = []
+        num_linearizations = 0
         num_regions = 0
 
         # add initial linearization point to the queue
         remaining_linearization_points.append(initial_point)
 
-        while len(remaining_linearization_points) > 0 and num_regions < options.max_linearizations:
+        while len(remaining_linearization_points) > 0 and num_linearizations < options.max_linearizations and num_regions < options.max_regions:
             linearization_point = remaining_linearization_points.popleft()
             # all_linearization_points.add(tuple(linearization_point))
             # get quadratic constraints from active set
@@ -945,19 +952,37 @@ class MPQCQP_Program(MPQP_Program):
 
             region_inequalities, regular_set, omega_set, lambda_set = self.build_critical_region_constraints(x_star, lambda_star, theta_sym, linear_inactive, quadratic_inactive)
             # add the solution to the list of returned regions
-            returned_regions.append(NonlinearCriticalRegion(x_star, lambda_star, region_inequalities, active_set, omega_set, lambda_set, regular_set))
+            # If the region is empty, we don't add it. This can happen if the linearization is built around the "side" of the constraint that is always inactive
+            # However, the linearization is still useful for restricting previous regions, as it still holds that this linearization should be inactive in other regions
+            if len(region_inequalities) > 0:
+                returned_regions.append(NonlinearCriticalRegion(x_star, lambda_star, region_inequalities, active_set, omega_set, lambda_set, regular_set))
+                num_regions += 1
             # add the linearization to the list of linearizations
             linearizations.append(linearized_constraints)
-            num_regions += 1
-            for i in range(num_regions): # linearization index
-                for j in range(num_regions): # region index
-                    if i != j:
-                        # add constraint to region j to ensure linearization i is inactive
-                        for con in linearizations[i]:
-                            inactive = con[0] @ returned_regions[j].x_star - con[1] - con[2] @ theta_sym
-                            returned_regions[j].theta_constraints.append(inactive[0] <= 0)
-                            returned_regions[j].theta_constraints_numpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in returned_regions[j].theta_constraints], 'numpy')
-                            returned_regions[j].regular_set.append(len(returned_regions[j].theta_constraints) - 1)
+            num_linearizations += 1
+
+            # update all previous regions with the new linearization
+            if len(region_inequalities) > 0:
+                to_update = range(len(returned_regions) - 1)
+            else:
+                to_update = range(len(returned_regions))
+            for i in to_update:
+                region = returned_regions[i]
+                for con in linearized_constraints:
+                    inactive = con[0] @ region.x_star - con[1] - con[2] @ theta_sym
+                    region.theta_constraints.append(inactive[0] <= 0)
+                    region.theta_constraints_numpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in region.theta_constraints], 'numpy')
+                    region.regular_set.append(len(region.theta_constraints) - 1)
+            
+            # ensure other linearizations are inactive in current region
+            if len(region_inequalities) > 0:
+                for i in range(num_linearizations-1):
+                    for con in linearizations[i]:
+                        inactive = con[0] @ x_star - con[1] - con[2] @ theta_sym
+                        returned_regions[-1].theta_constraints.append(inactive[0] <= 0)
+                        returned_regions[-1].theta_constraintsnumpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in region_inequalities], 'numpy')
+                        returned_regions[-1].regular_set.append(len(returned_regions[-1].theta_constraints) - 1)
+
 
             # compute vertices of new region
             # assume all inactive constraints are linear
@@ -971,19 +996,49 @@ class MPQCQP_Program(MPQP_Program):
 
             # FIXME
             # This assumes that there are no inactive quadratic constraints
-            inactive_linear = [i for i in range(self.num_linear_constraints()) if i not in active_set]
-            inactive_A = self.A[inactive_linear] @ A_x - self.F[inactive_linear]
-            inactive_b = self.b[inactive_linear] - self.A[inactive_linear] @ b_x
-            cr_A = numpy.vstack((inactive_A, self.A_t, -A_l))
-            cr_b = numpy.vstack((inactive_b, self.b_t, b_l))
-            for i in range(num_regions - 1):
-                for con in linearizations[i]:
-                    inactive_lins_A = con[0] @ A_x - con[2]
-                    inactive_lins_b = con[1] - con[0] @ b_x
-                    cr_A = numpy.vstack((cr_A, inactive_lins_A))
-                    cr_b = numpy.vstack((cr_b, inactive_lins_b))
+            # Assumes that this linearization induced a new CR
 
-            vertices = vertex_enumeration(cr_A, cr_b, self.solver)
+            # This part holds for all linearizations
+            # inactive_linear = [i for i in range(self.num_linear_constraints()) if i not in active_set]
+            # inactive_A = self.A[inactive_linear] @ A_x - self.F[inactive_linear]
+            # inactive_b = self.b[inactive_linear] - self.A[inactive_linear] @ b_x
+            # cr_A = numpy.vstack((inactive_A, self.A_t))
+            # cr_b = numpy.vstack((inactive_b, self.b_t))
+
+            # If we got a new region, then we can just use the vertices of that region
+            if len(region_inequalities) > 0:
+                cr_A, cr_b = get_linear_coeffs_of_symbolic_constraints(returned_regions[-1].theta_constraints)
+                # cr_A = numpy.vstack((cr_A, -A_l))
+                # cr_b = numpy.vstack((cr_b, b_l))
+                # for i in range(num_linearizations - 1):
+                #     for con in linearizations[i]:
+                #         inactive_lins_A = con[0] @ A_x - con[2]
+                #         inactive_lins_b = con[1] - con[0] @ b_x
+                #         cr_A = numpy.vstack((cr_A, inactive_lins_A))
+                #         cr_b = numpy.vstack((cr_b, inactive_lins_b))
+                vertices = vertex_enumeration(cr_A, cr_b, self.solver)
+            # If we didn't get a new region, we need to find where the new linearization affected other regions
+            else:
+                # cr_A_base = cr_A
+                # cr_b_base = cr_b
+                vertices = []
+                for region in returned_regions:
+                    cr_A, cr_b = get_linear_coeffs_of_symbolic_constraints(region.theta_constraints)
+                    vertices.extend(vertex_enumeration(cr_A, cr_b, self.solver))
+                # for i in range(num_linearizations): # active linearization, will not be included in CR
+                #     cr_A = cr_A_base
+                #     cr_b = cr_b_base
+                #     for j, lin in enumerate(linearizations):
+                #         if i != j:
+                #             for con in lin:
+                #                 inactive_lins_A = con[0] @ A_x - con[2]
+                #                 inactive_lins_b = con[1] - con[0] @ b_x
+                #                 cr_A = numpy.vstack((cr_A, inactive_lins_A))
+                #                 cr_b = numpy.vstack((cr_b, inactive_lins_b))
+                #     vertices.extend(vertex_enumeration(cr_A, cr_b, self.solver))
+                # get uniques
+                vertices = numpy.unique(vertices, axis=0)
+            # vertices = vertex_enumeration(cr_A, cr_b, self.solver)
             for v in vertices:
                 v = v.reshape(-1, 1)
                 # compute x at vertex
@@ -1002,5 +1057,28 @@ class MPQCQP_Program(MPQP_Program):
                 # if either error is too large, add (x, v) to the linearization points
                 if numpy.any([q > options.constraint_tol for q in qvals]) or solution_error > options.solution_tol:
                     remaining_linearization_points.append((x, v))
-        
+
+        for region in returned_regions:
+            index_list = []
+            region_inequalities = []
+            for idx, ineq in enumerate(region.theta_constraints):
+                if ineq != True:
+                    region_inequalities.append(ineq)
+                    index_list.append(idx)
+
+            if self.is_convex():
+                region_inequalities, index_list = reduce_redundant_symbolic_constraints(region_inequalities, index_list)
+
+            # if reducing constraints lead to discovering an empty region, we discard it
+            if len(region_inequalities) > 0:
+                region.theta_constraints = region_inequalities
+                # classify the remaining constraints
+                region.regular_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] in region.regular_set]
+                region.omega_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] in region.omega_set]
+                region.lambda_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] in region.lambda_set]
+            else:
+                region.theta_constraints = []
+                
+        returned_regions = [r for r in returned_regions if len(r.theta_constraints) > 0]
+
         return returned_regions
