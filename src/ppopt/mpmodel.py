@@ -144,8 +144,7 @@ class Expression:
             # break into multiple lines
             return (Expression(other.const * self.const, {}, quad_terms)
                     + self.const * Expression(0.0, other.linear_coeffs, {})
-                    + other.const * Expression(0.0, self.linear_coeffs, {})
-                    + other.const * self.const).reduced_form()
+                    + other.const * Expression(0.0, self.linear_coeffs, {})).reduced_form()
 
         raise TypeError(
             f"Multiplication on expressions is only defined on numeric types and (linear Expressions) not {type(other)}")
@@ -579,16 +578,16 @@ class MPModeler:
 
             # if we don't have any binary variables then we have an mpLP
             if len(binary_indices) == 0:
-                return MPLP_Program(A, b, c, H, A_t, b_t, F, c_c, c_t, Q_t, equality_indices=equality_indices,
+                return MPLP_Program(A, b, c, H, A_t, b_t, F, c_c, c_t, 2 * Q_t, equality_indices=equality_indices,
                                     post_process=process)
             else:
-                return MPMILP_Program(A, b, c, H, A_t, b_t, F, binary_indices, c_c, c_t, Q_t,
+                return MPMILP_Program(A, b, c, H, A_t, b_t, F, binary_indices, c_c, c_t, 2 * Q_t,
                                       equality_indices=equality_indices, post_process=process)
 
         # otherwise we have a mpQP or a mpMIQP
         if len(binary_indices) == 0:
-            return MPQP_Program(A, b, c, H, 2 * Q, A_t, b_t, F, c_c, c_t, Q_t, equality_indices=equality_indices,
+            return MPQP_Program(A, b, c, H, 2 * Q, A_t, b_t, F, c_c, c_t, 2 * Q_t, equality_indices=equality_indices,
                                 post_process=process)
         else:
-            return MPMIQP_Program(A, b, c, H, 2 * Q, A_t, b_t, F, binary_indices, c_c, c_t, Q_t,
+            return MPMIQP_Program(A, b, c, H, 2 * Q, A_t, b_t, F, binary_indices, c_c, c_t, 2 * Q_t,
                                   equality_indices=equality_indices, post_process=process)
