@@ -980,7 +980,7 @@ class MPQCQP_Program(MPQP_Program):
                     for con in linearizations[i]:
                         inactive = con[0] @ x_star - con[1] - con[2] @ theta_sym
                         returned_regions[-1].theta_constraints.append(inactive[0] <= 0)
-                        returned_regions[-1].theta_constraintsnumpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in region_inequalities], 'numpy')
+                        returned_regions[-1].theta_constraints_numpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in region_inequalities], 'numpy')
                         returned_regions[-1].regular_set.append(len(returned_regions[-1].theta_constraints) - 1)
 
 
@@ -1069,16 +1069,22 @@ class MPQCQP_Program(MPQP_Program):
             if self.is_convex():
                 region_inequalities, index_list = reduce_redundant_symbolic_constraints(region_inequalities, index_list)
 
-            # if reducing constraints lead to discovering an empty region, we discard it
             if len(region_inequalities) > 0:
                 region.theta_constraints = region_inequalities
+                region.theta_constraints_numpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in region.theta_constraints], 'numpy')
                 # classify the remaining constraints
                 region.regular_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] in region.regular_set]
                 region.omega_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] in region.omega_set]
                 region.lambda_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] in region.lambda_set]
+            # if reducing constraints lead to discovering an empty region, we discard it
             else:
                 region.theta_constraints = []
                 
         returned_regions = [r for r in returned_regions if len(r.theta_constraints) > 0]
+
+        if num_linearizations >= options.max_linearizations:
+            print("Active set:", active_set, "Warning: Maximum number of linearizations reached. Tolerances might not be satisfied.")
+        if num_regions >= options.max_regions:
+            print("Active set:", active_set, "Warning: Maximum number of regions reached. Tolerances might not be satisfied.")
 
         return returned_regions
