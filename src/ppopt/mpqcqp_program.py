@@ -971,71 +971,40 @@ class MPQCQP_Program(MPQP_Program):
                 for con in linearized_constraints:
                     inactive = con[0] @ region.x_star - con[1] - con[2] @ theta_sym
                     region.theta_constraints.append(inactive[0] <= 0)
-                    region.theta_constraints_numpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in region.theta_constraints], 'numpy')
                     region.regular_set.append(len(region.theta_constraints) - 1)
-            
+                region.theta_constraints_numpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in region.theta_constraints], 'numpy')
+
             # ensure other linearizations are inactive in current region
             if len(region_inequalities) > 0:
                 for i in range(num_linearizations-1):
                     for con in linearizations[i]:
                         inactive = con[0] @ x_star - con[1] - con[2] @ theta_sym
                         returned_regions[-1].theta_constraints.append(inactive[0] <= 0)
-                        returned_regions[-1].theta_constraints_numpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in region_inequalities], 'numpy')
                         returned_regions[-1].regular_set.append(len(returned_regions[-1].theta_constraints) - 1)
-
+                returned_regions[-1].theta_constraints_numpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in region_inequalities], 'numpy')
 
             # compute vertices of new region
             # assume all inactive constraints are linear
-            # CR described by E theta <= f
-            # We have that in symbolic form, we also have the matrices for A x <= b + F theta and A_t theta <= b_t and x = A_x theta + b_x and lambda = A_l theta + b_l
-            # We can put this all in terms of theta:
-            # A (A_x theta + b_x) <= b + F theta ==> (A A_x - F) theta <= b - A b_x
-            # A_t theta <= b_t
-            # linearization is given by con[0] x <= con[1] + con[2] theta ==> con[0] A_x theta + con[0] b_x <= con[1] + con[2] theta
-            # ==> (con[0] A_x - con[2]) theta <= con[1] - con[0] b_x
-
             # FIXME
             # This assumes that there are no inactive quadratic constraints
-            # Assumes that this linearization induced a new CR
-
-            # This part holds for all linearizations
-            # inactive_linear = [i for i in range(self.num_linear_constraints()) if i not in active_set]
-            # inactive_A = self.A[inactive_linear] @ A_x - self.F[inactive_linear]
-            # inactive_b = self.b[inactive_linear] - self.A[inactive_linear] @ b_x
-            # cr_A = numpy.vstack((inactive_A, self.A_t))
-            # cr_b = numpy.vstack((inactive_b, self.b_t))
-
             # If we got a new region, then we can just use the vertices of that region
             if len(region_inequalities) > 0:
+                # before finding vertices, reduce constraints to non-redundant set to minimize number of LPs solved
+                # reduced_inequalties, _ = reduce_redundant_symbolic_constraints(region_inequalities, list(range(len(region_inequalities))))
+                # returned_regions[-1].theta_constraints = reduced_inequalties
+                # returned_regions[-1].theta_constraints_numpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in reduced_inequalties], 'numpy')
                 cr_A, cr_b = get_linear_coeffs_of_symbolic_constraints(returned_regions[-1].theta_constraints)
-                # cr_A = numpy.vstack((cr_A, -A_l))
-                # cr_b = numpy.vstack((cr_b, b_l))
-                # for i in range(num_linearizations - 1):
-                #     for con in linearizations[i]:
-                #         inactive_lins_A = con[0] @ A_x - con[2]
-                #         inactive_lins_b = con[1] - con[0] @ b_x
-                #         cr_A = numpy.vstack((cr_A, inactive_lins_A))
-                #         cr_b = numpy.vstack((cr_b, inactive_lins_b))
                 vertices = vertex_enumeration(cr_A, cr_b, self.solver)
             # If we didn't get a new region, we need to find where the new linearization affected other regions
             else:
-                # cr_A_base = cr_A
-                # cr_b_base = cr_b
                 vertices = []
                 for region in returned_regions:
+                    # before finding vertices, reduce constraints to non-redundant set to minimize number of LPs solved
+                    # reduced_inequalties, _ = reduce_redundant_symbolic_constraints(region.theta_constraints, list(range(len(region.theta_constraints))))
+                    # region.theta_constraints = reduced_inequalties
+                    # region.theta_constraints_numpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in reduced_inequalties], 'numpy')
                     cr_A, cr_b = get_linear_coeffs_of_symbolic_constraints(region.theta_constraints)
                     vertices.extend(vertex_enumeration(cr_A, cr_b, self.solver))
-                # for i in range(num_linearizations): # active linearization, will not be included in CR
-                #     cr_A = cr_A_base
-                #     cr_b = cr_b_base
-                #     for j, lin in enumerate(linearizations):
-                #         if i != j:
-                #             for con in lin:
-                #                 inactive_lins_A = con[0] @ A_x - con[2]
-                #                 inactive_lins_b = con[1] - con[0] @ b_x
-                #                 cr_A = numpy.vstack((cr_A, inactive_lins_A))
-                #                 cr_b = numpy.vstack((cr_b, inactive_lins_b))
-                #     vertices.extend(vertex_enumeration(cr_A, cr_b, self.solver))
                 # get uniques
                 vertices = numpy.unique(vertices, axis=0)
             # vertices = vertex_enumeration(cr_A, cr_b, self.solver)
@@ -1066,6 +1035,7 @@ class MPQCQP_Program(MPQP_Program):
                     region_inequalities.append(ineq)
                     index_list.append(idx)
 
+            # just in case, do a final reduction of constraints
             if self.is_convex():
                 region_inequalities, index_list = reduce_redundant_symbolic_constraints(region_inequalities, index_list)
 
@@ -1081,6 +1051,10 @@ class MPQCQP_Program(MPQP_Program):
                 region.theta_constraints = []
                 
         returned_regions = [r for r in returned_regions if len(r.theta_constraints) > 0]
+
+        print("Active set:", active_set)
+        print("Number of linearizations:", num_linearizations)
+        print("Number of regions:", num_regions)
 
         if num_linearizations >= options.max_linearizations:
             print("Active set:", active_set, "Warning: Maximum number of linearizations reached. Tolerances might not be satisfied.")
