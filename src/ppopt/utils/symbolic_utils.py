@@ -74,16 +74,30 @@ def remove_duplicate_symbolic_constraints(constraints: List[sympy.core.relationa
     :param constraints: a list of symbolic constraints
     :return: a list of constraints with duplicates removed and their indices in the original list
     """
+
+    numpy_constraints = [sympy.lambdify(list(c.free_symbols), c.lhs - c.rhs, 'numpy', docstring_limit=0) for c in constraints]
+
     unique_constraints = []
+    unique_idxs = []
     new_indices = []
     for i, c in enumerate(constraints):
         unique = True
-        for uc in unique_constraints:
+        for ui, uc in enumerate(unique_constraints):
+            # if the constraints evaluate to different values at some points, they are trivially not the same
+            c_symbol_length = len(c.free_symbols)
+            uc_symbol_length = len(uc.free_symbols)
+            zeros_c = numpy.zeros((c_symbol_length, 1))
+            zeros_uc = numpy.zeros((uc_symbol_length, 1))
+            ones_c = numpy.ones((c_symbol_length, 1))
+            ones_uc = numpy.ones((uc_symbol_length, 1))
+            if not (numpy.isclose(numpy_constraints[i](*zeros_c), numpy_constraints[unique_idxs[ui]](*zeros_uc)) and numpy.isclose(numpy_constraints[i](*ones_c), numpy_constraints[unique_idxs[ui]](*ones_uc))):
+                continue
             if sympy.simplify((c.lhs - c.rhs) - (uc.lhs - uc.rhs)) == 0:
                 unique = False
                 break
         if unique:
             unique_constraints.append(c)
+            unique_idxs.append(i)
             new_indices.append(indices[i])
 
     return unique_constraints, new_indices
@@ -253,7 +267,6 @@ def reduce_redundant_symbolic_constraints(constraints: List[sympy.core.relationa
         syms.extend(c.free_symbols)
 
     # ensure that we only have unique symbols
-    # FIXME efficiency??
     syms = list(set(syms))
     syms.sort(key=str)
 
