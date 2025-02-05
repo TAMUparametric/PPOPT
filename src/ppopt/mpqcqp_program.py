@@ -938,7 +938,7 @@ class MPQCQP_Program(MPQP_Program):
                 active_b = numpy.vstack((active_b, con[1]))
                 active_F = numpy.vstack((active_F, con[2]))
             # build the mpQP object
-            mpqp = MPQP_Program(active_A, active_b, self.c, self.H, self.Q, self.A_t, self.b_t, active_F, equality_indices=list(range(active_A.shape[0])), post_process=False)
+            mpqp = MPQP_Program(active_A, active_b, self.c, self.H, self.Q, self.A_t, self.b_t, active_F, equality_indices=list(range(active_A.shape[0])), solver=self.solver, post_process=False)
             A_x, b_x, A_l, b_l = mpqp.optimal_control_law(mpqp.equality_indices)
             # because MPQP_Program automatically scales constraints, we need to undo the scaling for the multipliers, otherwise they won't match the unscaled actual constraints
             tmp = numpy.block([active_A, -active_F])
