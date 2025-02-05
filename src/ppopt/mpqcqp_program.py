@@ -954,7 +954,23 @@ class MPQCQP_Program(MPQP_Program):
             # add the solution to the list of returned regions
             # If the region is empty, we don't add it. This can happen if the linearization is built around the "side" of the constraint that is always inactive
             # However, the linearization is still useful for restricting previous regions, as it still holds that this linearization should be inactive in other regions
+
+            # ensure other linearizations are inactive in current region
             if len(region_inequalities) > 0:
+                for i in range(num_linearizations):
+                    for con in linearizations[i]:
+                        inactive = con[0] @ x_star - con[1] - con[2] @ theta_sym
+                        region_inequalities.append(inactive[0] <= 0)
+                        regular_set.append(len(region_inequalities) - 1)
+
+            index_list = list(range(len(region_inequalities)))
+            region_inequalities, index_list = reduce_redundant_symbolic_constraints(region_inequalities, index_list)
+
+            if len(region_inequalities) > 0:
+                # classify the remaining constraints
+                regular_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] in regular_set]
+                omega_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] in omega_set]
+                lambda_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] in lambda_set]
                 returned_regions.append(NonlinearCriticalRegion(x_star, lambda_star, region_inequalities, active_set, omega_set, lambda_set, regular_set))
                 num_regions += 1
             # add the linearization to the list of linearizations
@@ -973,15 +989,6 @@ class MPQCQP_Program(MPQP_Program):
                     region.theta_constraints.append(inactive[0] <= 0)
                     region.regular_set.append(len(region.theta_constraints) - 1)
                 region.theta_constraints_numpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in region.theta_constraints], 'numpy')
-
-            # ensure other linearizations are inactive in current region
-            if len(region_inequalities) > 0:
-                for i in range(num_linearizations-1):
-                    for con in linearizations[i]:
-                        inactive = con[0] @ x_star - con[1] - con[2] @ theta_sym
-                        returned_regions[-1].theta_constraints.append(inactive[0] <= 0)
-                        returned_regions[-1].regular_set.append(len(returned_regions[-1].theta_constraints) - 1)
-                returned_regions[-1].theta_constraints_numpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in region_inequalities], 'numpy')
 
             # compute vertices of new region
             # assume all inactive constraints are linear
