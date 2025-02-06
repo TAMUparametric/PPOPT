@@ -30,6 +30,9 @@ from .utils.symbolic_utils import (
     reduce_redundant_symbolic_constraints,
     get_linear_coeffs_of_symbolic_constraints,
 )
+from .utils.approximation_utils import (
+    point_is_relevant,
+)
 
 
 class ApproxOptions:
@@ -914,31 +917,7 @@ class MPQCQP_Program(MPQP_Program):
 
             # we want to have as few linearizations as necessary, so first check, if the linearization point already satisfies tolerances
             theta_part = linearization_point[1].reshape(-1, 1)
-            constraint_tol_satisfied = False
-            solution_tol_satisfied = False
-            is_inside_current_regions = False
-            for region in returned_regions:
-                if region.is_inside(theta_part, 1e-6):
-                    is_inside_current_regions = True
-                    x_region = numpy.array(region.x_star_numpy(theta_part)).reshape(-1,1)
-                    # check constraint tolerance
-                    qvals = [q.evaluate(x_region, theta_part) for q in self.qconstraints]
-                    if numpy.all([qval <= options.constraint_tol for qval in qvals]):
-                        constraint_tol_satisfied = True
-                    # check solution tolerance
-                    sol_exact = self.solve_theta(theta_part)
-                    if sol_exact is None:
-                        # then we are infeasible which means only constraint tol is relevant
-                        solution_tol_satisfied = True
-                    else:
-                        x_exact = sol_exact.sol.reshape(-1, 1)
-                        if numpy.linalg.norm(x_exact - x_region, numpy.inf) <= options.solution_tol:
-                            solution_tol_satisfied = True
-                    break
-            if not is_inside_current_regions and len(returned_regions) > 0:
-                # this point is already cut off by previous linearizations so we don't need to linearize around it
-                continue
-            if constraint_tol_satisfied and solution_tol_satisfied:
+            if not point_is_relevant(self, theta_part, returned_regions, options):
                 continue
 
             # get quadratic constraints from active set
@@ -966,7 +945,8 @@ class MPQCQP_Program(MPQP_Program):
                 active_A = numpy.vstack((active_A, con[0]))
                 active_b = numpy.vstack((active_b, con[1]))
                 active_F = numpy.vstack((active_F, con[2]))
-            # build the mpQP object
+
+            # build the mpQP object and use it to get the solution
             mpqp = MPQP_Program(active_A, active_b, self.c, self.H, self.Q, self.A_t, self.b_t, active_F, equality_indices=list(range(active_A.shape[0])), solver=self.solver, post_process=False)
             A_x, b_x, A_l, b_l = mpqp.optimal_control_law(mpqp.equality_indices)
             # because MPQP_Program automatically scales constraints, we need to undo the scaling for the multipliers, otherwise they won't match the unscaled actual constraints
@@ -974,16 +954,12 @@ class MPQCQP_Program(MPQP_Program):
             norm = constraint_norm(tmp)
             A_l = A_l / norm
             b_l = b_l / norm
-            # construct a nonlinear critical region object
             theta_sym = sympy.Matrix(sympy.symbols('theta:' + str(self.num_t()), real=True, finite=True))
             x_star = A_x @ theta_sym + b_x
             lambda_star = A_l @ theta_sym + b_l
 
+            # generate the critical region constraints, including making other linearizations inactive
             region_inequalities, regular_set, omega_set, lambda_set = self.build_critical_region_constraints(x_star, lambda_star, theta_sym, linear_inactive, quadratic_inactive)
-            # add the solution to the list of returned regions
-            # If the region is empty, we don't add it. This can happen if the linearization is built around the "side" of the constraint that is always inactive
-            # However, the linearization is still useful for restricting previous regions, as it still holds that this linearization should be inactive in other regions
-
             # ensure other linearizations are inactive in current region
             if len(region_inequalities) > 0:
                 for i in range(num_linearizations):
@@ -995,6 +971,9 @@ class MPQCQP_Program(MPQP_Program):
             index_list = list(range(len(region_inequalities)))
             region_inequalities, index_list = reduce_redundant_symbolic_constraints(region_inequalities, index_list)
 
+            # add the solution to the list of returned regions
+            # If the region is empty, we don't add it. This can happen if the linearization is built around the "side" of the constraint that is always inactive
+            # However, the linearization is still useful for restricting previous regions, as it still holds that this linearization should be inactive in other regions
             if len(region_inequalities) > 0:
                 # classify the remaining constraints
                 regular_set = [i for i, _ in enumerate(region_inequalities) if index_list[i] in regular_set]
@@ -1027,18 +1006,16 @@ class MPQCQP_Program(MPQP_Program):
             if len(region_inequalities) > 0:
                 cr_A, cr_b = get_linear_coeffs_of_symbolic_constraints(returned_regions[-1].theta_constraints)
                 vertices = vertex_enumeration(cr_A, cr_b, self.solver)
-            # If we didn't get a new region, we need to find where the new linearization affected other regions
+            # If we didn't get a new region, we compute all vertices of the approximation
+            # FIXME can we figure out just which ones were affected in the last iteration?
             else:
                 vertices = []
                 for region in returned_regions:
-                    # before finding vertices, reduce constraints to non-redundant set to minimize number of LPs solved
-                    # reduced_inequalties, _ = reduce_redundant_symbolic_constraints(region.theta_constraints, list(range(len(region.theta_constraints))))
-                    # region.theta_constraints = reduced_inequalties
-                    # region.theta_constraints_numpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in reduced_inequalties], 'numpy')
                     cr_A, cr_b = get_linear_coeffs_of_symbolic_constraints(region.theta_constraints)
                     vertices.extend(vertex_enumeration(cr_A, cr_b, self.solver))
                 # get uniques
                 vertices = numpy.unique(numpy.round(vertices, decimals=8), axis=0)
+
             for v in vertices:
                 v = v.reshape(-1, 1)
                 # compute x at vertex
@@ -1053,7 +1030,6 @@ class MPQCQP_Program(MPQP_Program):
                 # compute solution to deterministic qcqp at vertex
                 sol_vertex = self.solve_theta(v)
                 # compute solution error
-                # TODO can we find some points close to the infeasible vertices to compute the exact solution instead?
                 if sol_vertex is not None:
                     x_exact = sol_vertex.sol.reshape(-1,1)
                     solution_error = numpy.linalg.norm(x - x_exact, numpy.inf)
