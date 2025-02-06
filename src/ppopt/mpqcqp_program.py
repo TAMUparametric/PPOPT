@@ -996,10 +996,6 @@ class MPQCQP_Program(MPQP_Program):
             # This assumes that there are no inactive quadratic constraints
             # If we got a new region, then we can just use the vertices of that region
             if len(region_inequalities) > 0:
-                # before finding vertices, reduce constraints to non-redundant set to minimize number of LPs solved
-                # reduced_inequalties, _ = reduce_redundant_symbolic_constraints(region_inequalities, list(range(len(region_inequalities))))
-                # returned_regions[-1].theta_constraints = reduced_inequalties
-                # returned_regions[-1].theta_constraints_numpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in reduced_inequalties], 'numpy')
                 cr_A, cr_b = get_linear_coeffs_of_symbolic_constraints(returned_regions[-1].theta_constraints)
                 vertices = vertex_enumeration(cr_A, cr_b, self.solver)
             # If we didn't get a new region, we need to find where the new linearization affected other regions
@@ -1013,12 +1009,16 @@ class MPQCQP_Program(MPQP_Program):
                     cr_A, cr_b = get_linear_coeffs_of_symbolic_constraints(region.theta_constraints)
                     vertices.extend(vertex_enumeration(cr_A, cr_b, self.solver))
                 # get uniques
-                vertices = numpy.unique(vertices, axis=0)
-            # vertices = vertex_enumeration(cr_A, cr_b, self.solver)
+                vertices = numpy.unique(numpy.round(vertices, decimals=8), axis=0)
             for v in vertices:
                 v = v.reshape(-1, 1)
                 # compute x at vertex
-                x = A_x @ v + b_x
+                # since vertices may be of a different region, we need to figure out the correct law for x first
+                # no need to do an objective comparison here, since we are doing basically a convex QP approx so no overlaps possible
+                for region in returned_regions:
+                    if region.is_inside(v):
+                        x = numpy.array(region.x_star_numpy(v)).reshape(-1, 1)
+                        break
                 # compute value of original quadratic active constraints at vertex
                 qvals = [self.qconstraints[i].evaluate(x, v) for i in quadratic_active]
                 # compute solution to deterministic qcqp at vertex
@@ -1026,13 +1026,18 @@ class MPQCQP_Program(MPQP_Program):
                 # compute solution error
                 # TODO can we find some points close to the infeasible vertices to compute the exact solution instead?
                 if sol_vertex is not None:
-                    x_exact = sol_vertex.sol
+                    x_exact = sol_vertex.sol.reshape(-1,1)
                     solution_error = numpy.linalg.norm(x - x_exact, numpy.inf)
                 else:
                     solution_error = 0.0 # the vertex is infeasible in the original problem (expected since outer approximation), thus we can't compute the exact solution so we skip it for now
                 # if either error is too large, add (x, v) to the linearization points
+                # if we have the exact solution, also add that point
                 if numpy.any([q > options.constraint_tol for q in qvals]) or solution_error > options.solution_tol:
-                    remaining_linearization_points.append((x, v))
+                    if sol_vertex is not None:
+                        remaining_linearization_points.append((x_exact, v))
+                    # TODO should we always use the approximate solution? I think it only makes sense if the exact solution is not available due to outer approximation
+                    else:
+                        remaining_linearization_points.append((x, v))
 
         for region in returned_regions:
             index_list = []
