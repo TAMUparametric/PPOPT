@@ -918,7 +918,7 @@ class MPQCQP_Program(MPQP_Program):
             solution_tol_satisfied = False
             is_inside_current_regions = False
             for region in returned_regions:
-                if region.is_inside(theta_part, 1e-8):
+                if region.is_inside(theta_part, 1e-6):
                     is_inside_current_regions = True
                     x_region = numpy.array(region.x_star_numpy(theta_part)).reshape(-1,1)
                     # check constraint tolerance
@@ -1045,7 +1045,7 @@ class MPQCQP_Program(MPQP_Program):
                 # since vertices may be of a different region, we need to figure out the correct law for x first
                 # no need to do an objective comparison here, since we are doing basically a convex QP approx so no overlaps possible
                 for region in returned_regions:
-                    if region.is_inside(v, 1e-8):
+                    if region.is_inside(v, 1e-6):
                         x = numpy.array(region.x_star_numpy(v)).reshape(-1, 1)
                         break
                 # compute value of original quadratic active constraints at vertex
