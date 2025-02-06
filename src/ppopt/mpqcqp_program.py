@@ -911,7 +911,36 @@ class MPQCQP_Program(MPQP_Program):
 
         while len(remaining_linearization_points) > 0 and num_linearizations < options.max_linearizations and num_regions < options.max_regions:
             linearization_point = remaining_linearization_points.popleft()
-            # all_linearization_points.add(tuple(linearization_point))
+
+            # we want to have as few linearizations as necessary, so first check, if the linearization point already satisfies tolerances
+            theta_part = linearization_point[1].reshape(-1, 1)
+            constraint_tol_satisfied = False
+            solution_tol_satisfied = False
+            is_inside_current_regions = False
+            for region in returned_regions:
+                if region.is_inside(theta_part, 1e-8):
+                    is_inside_current_regions = True
+                    x_region = numpy.array(region.x_star_numpy(theta_part)).reshape(-1,1)
+                    # check constraint tolerance
+                    qvals = [q.evaluate(x_region, theta_part) for q in self.qconstraints]
+                    if numpy.all([qval <= options.constraint_tol for qval in qvals]):
+                        constraint_tol_satisfied = True
+                    # check solution tolerance
+                    sol_exact = self.solve_theta(theta_part)
+                    if sol_exact is None:
+                        # then we are infeasible which means only constraint tol is relevant
+                        solution_tol_satisfied = True
+                    else:
+                        x_exact = sol_exact.sol.reshape(-1, 1)
+                        if numpy.linalg.norm(x_exact - x_region, numpy.inf) <= options.solution_tol:
+                            solution_tol_satisfied = True
+                    break
+            if not is_inside_current_regions and len(returned_regions) > 0:
+                # this point is already cut off by previous linearizations so we don't need to linearize around it
+                continue
+            if constraint_tol_satisfied and solution_tol_satisfied:
+                continue
+
             # get quadratic constraints from active set
             quadratic_active = [i - self.num_linear_constraints() for i in active_set if i >= self.num_linear_constraints()]
             quadratic_inactive = [i - self.num_linear_constraints() for i in range(self.num_linear_constraints(), self.num_linear_constraints() + self.num_quadratic_constraints()) if i not in active_set]
@@ -1016,7 +1045,7 @@ class MPQCQP_Program(MPQP_Program):
                 # since vertices may be of a different region, we need to figure out the correct law for x first
                 # no need to do an objective comparison here, since we are doing basically a convex QP approx so no overlaps possible
                 for region in returned_regions:
-                    if region.is_inside(v):
+                    if region.is_inside(v, 1e-8):
                         x = numpy.array(region.x_star_numpy(v)).reshape(-1, 1)
                         break
                 # compute value of original quadratic active constraints at vertex
@@ -1031,13 +1060,12 @@ class MPQCQP_Program(MPQP_Program):
                 else:
                     solution_error = 0.0 # the vertex is infeasible in the original problem (expected since outer approximation), thus we can't compute the exact solution so we skip it for now
                 # if either error is too large, add (x, v) to the linearization points
-                # if we have the exact solution, also add that point
                 if numpy.any([q > options.constraint_tol for q in qvals]) or solution_error > options.solution_tol:
-                    if sol_vertex is not None:
-                        remaining_linearization_points.append((x_exact, v))
-                    # TODO should we always use the approximate solution? I think it only makes sense if the exact solution is not available due to outer approximation
-                    else:
-                        remaining_linearization_points.append((x, v))
+                    remaining_linearization_points.append((x, v))
+                    # it could also make sense to use the exact solution as a linearization point
+                    # if sol_vertex is not None:
+                    #     remaining_linearization_points.append((x_exact, v))
+
 
         for region in returned_regions:
             index_list = []
