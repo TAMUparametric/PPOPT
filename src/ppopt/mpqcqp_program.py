@@ -474,6 +474,19 @@ class MPQCQP_Program(MPQP_Program):
             for i in range(len(x_sol)):
                 x_sol[i] = [sympy.simplify(x) for x in x_sol[i]]
                 lambda_sol[i] = [sympy.simplify(l) for l in lambda_sol[i]]
+                # remove numerically zero coefficients
+                for j in range(len(x_sol[i])):
+                    new_x = 0
+                    for k, v in x_sol[i][j].as_coefficients_dict().items():
+                        if abs(v) > 1e-10:
+                            new_x += k * v
+                    x_sol[i][j] = new_x
+                for j in range(len(lambda_sol[i])):
+                    new_l = 0
+                    for k, v in lambda_sol[i][j].as_coefficients_dict().items():
+                        if abs(v) > 1e-10:
+                            new_l += k * v
+                    lambda_sol[i][j] = new_l
 
             return x_sol, lambda_sol, nu_sol
 
@@ -575,7 +588,8 @@ class MPQCQP_Program(MPQP_Program):
         """Removes redundant constraints from the multiparametric programming problem."""
         
         # First step: run processing on only the linear constraints, if there are any linear constraints that are within themselves redundant, this will reduce the number of QCQPs we have to solve next
-        super().process_constraints()
+        # This is not necessary and can break things. If the post_process flag was set, then the linear constraint processing was already run.
+        # super().process_constraints()
 
         # Now we build the expressions using the remaining linear and the quadratic constraints
         # form a polytope P := {(x, theta) in R^K : Ax <= b + F theta and A_t theta <= b_t}
@@ -949,6 +963,7 @@ class MPQCQP_Program(MPQP_Program):
             # build the mpQP object and use it to get the solution
             mpqp = MPQP_Program(active_A, active_b, self.c, self.H, self.Q, self.A_t, self.b_t, active_F, equality_indices=list(range(active_A.shape[0])), solver=self.solver, post_process=False)
             A_x, b_x, A_l, b_l = mpqp.optimal_control_law(mpqp.equality_indices)
+            
             # because MPQP_Program automatically scales constraints, we need to undo the scaling for the multipliers, otherwise they won't match the unscaled actual constraints
             tmp = numpy.block([active_A, -active_F])
             norm = constraint_norm(tmp)
@@ -1023,7 +1038,7 @@ class MPQCQP_Program(MPQP_Program):
                 # no need to do an objective comparison here, since we are doing basically a convex QP approx so no overlaps possible
                 for region in returned_regions:
                     if region.is_inside(v, 1e-6):
-                        x = numpy.array(region.x_star_numpy(v)).reshape(-1, 1)
+                        x = numpy.array([x[0] if isinstance(x, numpy.ndarray) else x for x in region.x_star_numpy(v)]).reshape(-1,1) # there can be weird cases where x_star_numpy gives different types (if only some entries depend on theta and others are constant)
                         break
                 # compute value of original quadratic active constraints at vertex
                 qvals = [self.qconstraints[i].evaluate(x, v) for i in quadratic_active]
@@ -1068,6 +1083,28 @@ class MPQCQP_Program(MPQP_Program):
                 
         returned_regions = [r for r in returned_regions if len(r.theta_constraints) > 0]
 
+        for region in returned_regions:
+            for i in range(len(region.x_star)):
+                # remove numerically zero coefficients
+                new_x = 0
+                for k, v in region.x_star[i].as_coefficients_dict().items():
+                    if abs(v) > 1e-10:
+                        new_x += k * v
+                region.x_star[i] = new_x
+            for i in range(len(region.lambda_star)):
+                new_l = 0
+                for k, v in region.lambda_star[i].as_coefficients_dict().items():
+                    if abs(v) > 1e-10:
+                        new_l += k * v
+                region.lambda_star[i] = new_l
+            # part for constraints assumes all constraints linear
+            coeffs, constants = get_linear_coeffs_of_symbolic_constraints(region.theta_constraints)
+            coeffs[abs(coeffs) < 1e-10] = 0
+            constants[abs(constants) < 1e-10] = 0
+            region.theta_constraints = [(coeffs[i].reshape(1,-1) @ theta_sym)[0] - constants[i] <= 0 for i in range(len(coeffs))]
+            region.theta_constraints_numpy = sympy.lambdify([theta_sym], [c.lhs - c.rhs for c in region.theta_constraints], 'numpy')
+            region.x_star_numpy = sympy.lambdify([theta_sym], region.x_star, 'numpy')
+            region.lambda_star_numpy = sympy.lambdify([theta_sym], region.lambda_star, 'numpy')        
         print("Active set:", active_set)
         print("Number of linearizations:", num_linearizations)
         print("Number of regions:", num_regions)
