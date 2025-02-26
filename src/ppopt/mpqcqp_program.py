@@ -162,7 +162,7 @@ class MPQCQP_Program(MPQP_Program):
     
     def is_convex(self) -> bool:
         """Checks if the program is convex. Assumes that all quadratic constraints are inequalities."""
-        return bool(numpy.all(numpy.linalg.eigvals(self.Q) >= 10 ** -4) and all([q.is_convex() for q in self.qconstraints]))
+        return bool(numpy.all(numpy.linalg.eigvals(self.Q) >= 0) and all([q.is_convex() for q in self.qconstraints]))
 
     def evaluate_objective(self, x, theta_point) -> float:
         r"""
@@ -438,10 +438,18 @@ class MPQCQP_Program(MPQP_Program):
             solution = sympy.solve(equations, [*x_sym, *lambda_sym, nu_sym], rational=True, simplify=True)
 
             # extract each set of x, lambda, nu
-            num_solutions = len(solution)
-            x_sol = [solution[i][0:self.num_x()] for i in range(num_solutions)]
-            lambda_sol = [solution[i][self.num_x():-1] for i in range(num_solutions)]
-            nu_sol = [solution[i][-1] for i in range(num_solutions)]
+            # I encountered a case where sympy would return a dicitionary rather than a list (of lists) of solutions, so we need to handle that case
+            # no idea why that happened
+            # TODO figure that out
+            if not isinstance(solution, dict):
+                num_solutions = len(solution)
+                x_sol = [solution[i][0:self.num_x()] for i in range(num_solutions)]
+                lambda_sol = [solution[i][self.num_x():-1] for i in range(num_solutions)]
+                nu_sol = [solution[i][-1] for i in range(num_solutions)]
+            else:
+                x_sol = [[solution[key] for key in solution if 'x' in str(key)]]
+                lambda_sol = [[solution[key] for key in solution if 'lambda' in str(key)]]
+                nu_sol = [[solution[key] for key in solution if 'nu' in str(key)]]
 
             # skip this for now as solving lambda>=0 is tough if lambda is a function of multiple thetas
             # instead, if a lambda can only be negative, we will find this through redundant constraint removal, which will ensure the CR has no constraints            
@@ -532,7 +540,7 @@ class MPQCQP_Program(MPQP_Program):
             original_region_inequalities.append(i[0] <= 0)
         for i in bounds_from_theta:
             original_region_inequalities.append(i <= 0)
-        for i in lambda_star:
+        for i in lambda_star[self.num_equality_constraints():]: # only consider multipliers corresponding to inequality constraints
             original_region_inequalities.append(i >= 0)
 
         index_list = []
