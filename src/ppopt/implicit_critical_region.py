@@ -48,6 +48,7 @@ class ImplicitCriticalRegion:
     inactive_linear_constraints: sympy.Matrix
     inactive_quadratic_constraints: sympy.Matrix
     theta_bounds: sympy.Matrix
+    non_negative_multipliers: sympy.Matrix
 
     active_set: List[int]
 
@@ -70,6 +71,7 @@ class ImplicitCriticalRegion:
         output += f"\nThe active quadratic constraints are {self.active_quadratic_constraints}"
         output += f"\nThe inactive linear constraints are {self.inactive_linear_constraints}"
         output += f"\nThe inactive quadratic constraints are {self.inactive_quadratic_constraints}"
+        output += f"\nThe non-negative multipliers are {self.non_negative_multipliers}"
         output += f"\nThe theta bounds are {self.theta_bounds}"
 
         return output

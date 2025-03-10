@@ -367,7 +367,7 @@ class MPQCQP_Program(MPQP_Program):
     def gen_implicit_cr_from_active_set(self, active_set: List[int]) -> Optional[List[ImplicitCriticalRegion]]:
         x_sym = sympy.symbols('x:' + str(self.num_x()), real=True, finite=True)
         theta_sym = sympy.symbols('theta:' + str(self.num_t()), real=True, finite=True)
-        lambda_sym = sympy.symbols('lambda:' + str(self.num_constraints()), real=True, nonnegative=True)
+        lambda_sym = sympy.symbols('lambda:' + str(self.num_constraints()), real=True)
         nu_sym = sympy.symbols('nu', real=True, positive=True)
         beta_sym = sympy.symbols('beta', real=True, positive=True)
         symbol_collection = [x_sym, theta_sym, lambda_sym, nu_sym, beta_sym]
@@ -388,8 +388,9 @@ class MPQCQP_Program(MPQP_Program):
         inactive_quadratic_constraints = sympy.Matrix([self.qconstraints[i].evaluate_symbolic(sympy.Matrix(x_sym), sympy.Matrix(theta_sym)) for i in quadratic_inactive])
         # inactive_quadratic_constraints = inactive_quadratic_constraints if len(inactive_quadratic_constraints) > 0 else None
         theta_bounds = self.A_t @ sympy.Matrix(theta_sym) - self.b_t
+        non_negative_multipliers = sympy.Matrix([lambda_sym[i] for i in range(len(active_set)) if i not in self.equality_indices])
 
-        cr = ImplicitCriticalRegion(grad_lagrangian, active_linear_constraints, active_quadratic_constraints, inactive_linear_constraints, inactive_quadratic_constraints, theta_bounds, active_set)
+        cr = ImplicitCriticalRegion(grad_lagrangian, active_linear_constraints, active_quadratic_constraints, inactive_linear_constraints, inactive_quadratic_constraints, theta_bounds, non_negative_multipliers, active_set)
         return cr
 
 
@@ -1098,13 +1099,13 @@ class MPQCQP_Program(MPQP_Program):
                 for k, v in region.x_star[i].as_coefficients_dict().items():
                     if abs(v) > 1e-10:
                         new_x += k * v
-                region.x_star[i] = new_x
+                region.x_star[i] = sympy.sympify(new_x)
             for i in range(len(region.lambda_star)):
                 new_l = 0
                 for k, v in region.lambda_star[i].as_coefficients_dict().items():
                     if abs(v) > 1e-10:
                         new_l += k * v
-                region.lambda_star[i] = new_l
+                region.lambda_star[i] = sympy.sympify(new_l)
             # part for constraints assumes all constraints linear
             coeffs, constants = get_linear_coeffs_of_symbolic_constraints(region.theta_constraints)
             coeffs[abs(coeffs) < 1e-10] = 0
