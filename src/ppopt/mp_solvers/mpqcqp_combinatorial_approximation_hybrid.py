@@ -49,7 +49,7 @@ def solve(program: MPQCQP_Program, options: ApproxOptions = ApproxOptions()) -> 
 
             # if soln is not None:
             soln = program.check_optimality(child_set)
-            if soln is not None:
+            if soln is not None and soln['t'] > 0:
             # if program.check_optimality(child_set):
                 initial_x = soln["x"]
                 initial_theta = soln["theta"]

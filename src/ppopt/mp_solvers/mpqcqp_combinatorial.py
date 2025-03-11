@@ -48,7 +48,9 @@ def solve(program: MPQCQP_Program) -> Solution:
             # The active set is optimal try to build a critical region
 
             # if soln is not None:
-            if program.check_optimality(child_set):
+            soln = program.check_optimality(child_set)
+            if soln is not None and soln['t'] > 0:
+            # if program.check_optimality(child_set):
                 critical_region_list = program.gen_cr_from_active_set(child_set)
                 # Check the dimensions of the critical region
                 if critical_region_list is not None:

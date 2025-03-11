@@ -38,11 +38,7 @@ def full_process(program: MPQCQP_Program, active_set: List[int], murder_list, ge
         pruned_active_sets.add(t_set)
         return candidate_cr, pruned_active_sets, child_active_sets
 
-    soln = program.check_optimality(active_set)  # is_optimal(program, equality_indices)
-    is_optimal_ = False
-
-    if soln is not None and soln['t'] > 0:
-        is_optimal_ = True
+    is_optimal_ = program.check_optimality(active_set)  # is_optimal(program, equality_indices)
 
     if not is_optimal_:
         if gen_children:
@@ -55,16 +51,12 @@ def full_process(program: MPQCQP_Program, active_set: List[int], murder_list, ge
 
         return candidate_cr, pruned_active_sets, child_active_sets
 
-    candidate_crs = program.gen_cr_from_active_set(active_set)
-
-    if len(candidate_crs) == 0:
-        pruned_active_sets.add(t_set)
-        return candidate_cr, pruned_active_sets, child_active_sets
+    critical_region = program.gen_implicit_cr_from_active_set(active_set)
 
     if gen_children:
         child_active_sets = generate_children_sets(active_set, program.num_constraints(), murder_list)
 
-    return candidate_crs, pruned_active_sets, child_active_sets
+    return critical_region, pruned_active_sets, child_active_sets
 
 
 def solve(program: MPQCQP_Program, num_cores=-1) -> Solution:
@@ -124,16 +116,14 @@ def solve(program: MPQCQP_Program, num_cores=-1) -> Solution:
         if i + 1 == max_depth:
             for output in outputs:
                 if output[0] is not None:
-                    for region in output[0]:
-                        solution.add_region(region)
+                    solution.add_region(output[0])
             break
 
         for output in outputs:
             murder_list.add_combos(output[1])
             future_list.extend(output[2])
             if output[0] is not None:
-                for region in output[0]:
-                    solution.add_region(region)
+                solution.add_region(output[0])
 
         print(f'Time to process all depth outputs {time.time() - depth_time}')
 
@@ -146,11 +136,8 @@ def solve(program: MPQCQP_Program, num_cores=-1) -> Solution:
     # we never actually tested the program base active set
     if program.check_feasibility(program.equality_indices):
         if program.check_optimality(program.equality_indices):
-            region_list = program.gen_cr_from_active_set(program.equality_indices)
-            if region_list is not None:
-                for region in region_list:
-                    if region.is_full_dimension():
-                        solution.add_region(region)
+            region = program.gen_implicit_cr_from_active_set(program.equality_indices)
+            solution.add_region(region)
 
     # pool.clear()
 

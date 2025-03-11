@@ -7,13 +7,13 @@ from pathos.multiprocessing import ProcessingPool as Pool
 
 from ..nonlinear_critical_region import NonlinearCriticalRegion
 from ..mplp_program import MPLP_Program
-from ..mpqcqp_program import MPQCQP_Program
+from ..mpqcqp_program import MPQCQP_Program, ApproxOptions
 from ..solution import Solution
 from ..utils.general_utils import num_cpu_cores
 from .solver_utils import CombinationTester, generate_children_sets
 
 
-def full_process(program: MPQCQP_Program, active_set: List[int], murder_list, gen_children) -> Tuple[Optional[List[NonlinearCriticalRegion]], Set[Tuple[int,...]], List[List[int]]]:
+def full_process(program: MPQCQP_Program, active_set: List[int], murder_list, gen_children, options: ApproxOptions) -> Tuple[Optional[List[NonlinearCriticalRegion]], Set[Tuple[int,...]], List[List[int]]]:
     """
 
     This is the fundamental building block of the parallel combinatorial algorithm, here we branch off of a known feasible active set combination\\
@@ -55,7 +55,10 @@ def full_process(program: MPQCQP_Program, active_set: List[int], murder_list, ge
 
         return candidate_cr, pruned_active_sets, child_active_sets
 
-    candidate_crs = program.gen_cr_from_active_set(active_set)
+    initial_x = soln["x"]
+    initial_theta = soln["theta"]
+    initial_point = (initial_x, initial_theta)
+    candidate_crs = program.gen_hybrid_approx_cr_from_active_set(active_set, initial_point, options)
 
     if len(candidate_crs) == 0:
         pruned_active_sets.add(t_set)
@@ -67,7 +70,7 @@ def full_process(program: MPQCQP_Program, active_set: List[int], murder_list, ge
     return candidate_crs, pruned_active_sets, child_active_sets
 
 
-def solve(program: MPQCQP_Program, num_cores=-1) -> Solution:
+def solve(program: MPQCQP_Program, num_cores=-1, options: ApproxOptions = ApproxOptions()) -> Solution:
     """
     Solves the MPQCQP program with a modified algorithm described in Gupta et al. 2011
 
@@ -110,7 +113,7 @@ def solve(program: MPQCQP_Program, num_cores=-1) -> Solution:
 
         gen_children = i + 1 != max_depth
 
-        f = lambda x: full_process(program, x, murder_list, gen_children)
+        f = lambda x: full_process(program, x, murder_list, gen_children, options)
 
         future_list = []
 
@@ -145,8 +148,13 @@ def solve(program: MPQCQP_Program, num_cores=-1) -> Solution:
 
     # we never actually tested the program base active set
     if program.check_feasibility(program.equality_indices):
-        if program.check_optimality(program.equality_indices):
-            region_list = program.gen_cr_from_active_set(program.equality_indices)
+        soln = program.check_optimality(program.equality_indices)
+        if soln is not None:
+        # if program.check_optimality(program.equality_indices):
+            initial_x = soln["x"]
+            initial_theta = soln["theta"]
+            initial_point = (initial_x, initial_theta)
+            region_list = program.gen_hybrid_approx_cr_from_active_set(program.equality_indices, initial_point, options)
             if region_list is not None:
                 for region in region_list:
                     if region.is_full_dimension():
