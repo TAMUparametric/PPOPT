@@ -21,7 +21,7 @@ def point_is_relevant(program, theta_point: numpy.ndarray, critical_regions: Lis
     for region in critical_regions:
         if region.is_inside(theta_point, 1e-6):
             is_inside_current_regions = True
-            x_region = numpy.array(region.x_star_numpy(theta_point)).reshape(-1,1)
+            x_region = numpy.array([x[0] if isinstance(x, numpy.ndarray) else x for x in region.x_star_numpy(theta_point)]).reshape(-1,1)
             # check constraint tolerance
             qvals = [q.evaluate(x_region, theta_point) for q in program.qconstraints]
             if numpy.all([qval <= options.constraint_tol for qval in qvals]):
