@@ -24,6 +24,7 @@ def solve(program: MPQCQP_Program) -> Solution:
 
     max_depth = program.num_x() - len(program.equality_indices)
     # breath first to optimize the elimination
+    # print("Max depth", max_depth)
 
     root_node = generate_children_sets(program.equality_indices, program.num_constraints(), murder_list)
 
@@ -32,6 +33,8 @@ def solve(program: MPQCQP_Program) -> Solution:
     for i in range(max_depth):
         # if there are no other active sets to check break out of loop
         # print(len(to_check))
+
+        # print("Depth", i)
 
         future_sets = []
         # creates the list of feasible active sets
@@ -45,12 +48,14 @@ def solve(program: MPQCQP_Program) -> Solution:
         feasible_sets = check_child_feasibility(program, to_check, murder_list)
 
         for child_set in feasible_sets:
-
             # soln = check_optimality(program, equality_indices=child_set)
             # The active set is optimal try to build a critical region
 
             # if soln is not None:
-            if program.check_optimality(child_set):
+            soln = program.check_optimality(child_set)
+            if soln is not None and soln['t'] > 0:
+            # if program.check_optimality(child_set):
+                # print(child_set, "is optimal")
                 critical_region = program.gen_implicit_cr_from_active_set(child_set)
                 # Check the dimensions of the critical region
                 if critical_region is not None:
@@ -83,6 +88,7 @@ def check_child_feasibility(program: MPQCQP_Program, set_list: List[List[int]], 
     """
     output = []
     for child in set_list:
+        # print("Testing feasibility of", child)
         if program.check_feasibility(child):
             output.append(child)
         else:

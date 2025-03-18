@@ -38,7 +38,11 @@ def full_process(program: MPQCQP_Program, active_set: List[int], murder_list, ge
         pruned_active_sets.add(t_set)
         return candidate_cr, pruned_active_sets, child_active_sets
 
-    is_optimal_ = program.check_optimality(active_set)  # is_optimal(program, equality_indices)
+    soln = program.check_optimality(active_set)  # is_optimal(program, equality_indices)
+    is_optimal_ = False
+
+    if soln is not None and soln['t'] > 0:
+        is_optimal_ = True
 
     if not is_optimal_:
         if gen_children:
