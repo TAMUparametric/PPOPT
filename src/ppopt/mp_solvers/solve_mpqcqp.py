@@ -8,8 +8,10 @@ from ..mp_solvers import (
     mpqcqp_combinatorial,
     mpqcqp_parallel_combinatorial,
     mpqcqp_combinatorial_implicit,
+    mpqcqp_parallel_combinatorial_implicit,
     mpqcqp_combinatorial_implicit_hybrid,
     mpqcqp_combinatorial_approximation_hybrid,
+    mpqcqp_parallel_combinatorial_approximation_hybrid,
 )
 from ..mplp_program import MPLP_Program
 from ..mpqp_program import MPQP_Program
@@ -26,8 +28,10 @@ class mpqcqp_algorithm(Enum):
     combinatorial = 'combinatorial'
     combinatorial_parallel = 'p combinatorial'
     combinatorial_implicit = 'implicit combinatorial'
+    combinatorial_implicit_parallel = 'p implicit combinatorial'
     combinatorial_implicit_hybrid = 'implicit combinatorial hybrid'
     combinatorial_approximation_hybrid = 'approximation combinatorial hybrid'
+    combinatorial_approximation_hybrid_parallel = 'p implicit approximation combinatorial hybrid'
 
     def __str__(self):
         return self.name
@@ -64,10 +68,14 @@ def solve_mpqcqp(problem: MPQCQP_Program, algorithm: mpqcqp_algorithm = mpqcqp_a
         solution = mpqcqp_parallel_combinatorial.solve(problem, num_cores)
     if algorithm is mpqcqp_algorithm.combinatorial_implicit:
         solution = mpqcqp_combinatorial_implicit.solve(problem)
+    if algorithm is mpqcqp_algorithm.combinatorial_implicit_parallel:
+        solution = mpqcqp_parallel_combinatorial_implicit.solve(problem, num_cores)
     if algorithm is mpqcqp_algorithm.combinatorial_implicit_hybrid:
         solution = mpqcqp_combinatorial_implicit_hybrid.solve(problem)
     if algorithm is mpqcqp_algorithm.combinatorial_approximation_hybrid:
         solution = mpqcqp_combinatorial_approximation_hybrid.solve(problem, options)
+    if algorithm is mpqcqp_algorithm.combinatorial_approximation_hybrid_parallel:
+        solution = mpqcqp_parallel_combinatorial_approximation_hybrid.solve(problem, num_cores, options)
 
     # check if there needs to be a flag thrown in the case of overlapping critical regions
     # happens if there are negative or zero eigen values for mpQP (kkt conditions can find a lot of saddle points)
