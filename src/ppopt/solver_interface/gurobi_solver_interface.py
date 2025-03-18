@@ -174,6 +174,12 @@ def solve_miqcqp_gurobi(Q: Matrix = None, c: Matrix = None, A: Matrix = None,
 
     # get gurobi status
     status = model.status
+    # if we ran into numerical issues try to resolve them once (this has occured in conjunction with the disabled presolve in Gurobi 12.0.0.)
+    if status == GRB.NUMERIC:
+        model.reset()
+        model.Params.NumericFocus = 3
+        model.optimize()
+        status = model.status
     # if not solved return None
     if status not in (GRB.OPTIMAL, GRB.SUBOPTIMAL):
         return None
@@ -193,8 +199,12 @@ def solve_miqcqp_gurobi(Q: Matrix = None, c: Matrix = None, A: Matrix = None,
                 sol.dual = numpy.array(model.getAttr("Pi"))
 
         # TODO slack and active set also needed for quadratic constraints
-        sol.slack = numpy.array(model.getAttr("Slack"))
-        sol.active_set = numpy.where((A @ sol.sol.flatten() - b.flatten()) ** 2 < 10 ** -12)[0]
+        linslack = numpy.array(model.getAttr("Slack"))
+        quadslack = numpy.array(model.getAttr("QCSlack"))
+        # sol.slack = numpy.array(model.getAttr("Slack"))
+        sol.slack = numpy.concatenate((linslack, quadslack))
+        # sol.active_set = numpy.where((A @ sol.sol.flatten() - b.flatten()) ** 2 < 10 ** -12)[0]
+        sol.active_set = numpy.where(sol.slack <= 1e-6)[0]
 
     return sol
 
