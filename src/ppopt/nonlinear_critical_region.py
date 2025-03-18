@@ -11,6 +11,7 @@ from .utils.symbolic_utils import (
     replace_square_roots_dictionary,
     build_gurobi_model_with_square_roots,
     to_less_than_or_equal,
+    sort_symbols_by_index,
 )
 
 
@@ -58,8 +59,8 @@ class NonlinearCriticalRegion:
     x_indices: Optional[numpy.ndarray] = None
 
     def __init__(self, x_star, lambda_star, theta_constraints, active_set, omega_set, lambda_set, regular_set, y_fixation=None, y_indices=None, x_indices=None):
-        self.x_star = x_star
-        self.lambda_star = lambda_star
+        self.x_star = [sympy.sympify(x) for x in x_star] # make sure everything is of sympy type instead of mixing types
+        self.lambda_star = [sympy.sympify(l) for l in lambda_star]
         self.theta_constraints = [to_less_than_or_equal(c) for c in theta_constraints] # having all constraints as <= is helpful for building the numeric evaluation, since we can then always do lhs-rhs
         self.active_set = active_set
         self.omega_set = omega_set
@@ -76,7 +77,8 @@ class NonlinearCriticalRegion:
         beta = sympy.symbols('beta')
         if 'beta' in [str(t) for t in theta_syms]:
             num_theta -= 1
-            theta_syms.sort(key=str)
+            # theta_syms.sort(key=str)
+            theta_syms = sort_symbols_by_index(theta_syms)
             beta = theta_syms[0]
         theta = sympy.Matrix(sympy.symbols(f'theta:{num_theta}'))
         x_star_beta = [x.subs({beta:1}) for x in self.x_star]
@@ -108,7 +110,8 @@ class NonlinearCriticalRegion:
 
         # if there are not any binary variables in this problem evaluate and return
         if self.y_fixation is None:
-            return numpy.array(self.x_star_numpy(theta)).reshape(-1, 1)
+            return numpy.array([val[0] if isinstance(val, numpy.ndarray) else numpy.float64(val) for val in self.x_star_numpy(theta)]).reshape(-1,1)
+            # return numpy.array(self.x_star_numpy(theta)).reshape(-1, 1)
 
         # otherwise evalute x for the continuous variables, then slice in the binaries at the correct locations
         cont_vars = numpy.array(self.x_star_numpy(theta))
@@ -120,7 +123,8 @@ class NonlinearCriticalRegion:
 
     def lagrange_multipliers(self, theta: numpy.ndarray) -> numpy.ndarray:
         """Evaluates λ(θ)."""
-        return numpy.array(self.lambda_star_numpy(theta))
+        return numpy.array([val[0] if isinstance(val, numpy.ndarray) else numpy.float64(val) for val in self.lambda_star_numpy(theta)]).reshape(-1,1)
+        # return numpy.array(self.lambda_star_numpy(theta))
 
     def is_inside(self, theta: numpy.ndarray, tol: float = 1e-5) -> bool:
         """Tests if point θ is inside the critical region."""
@@ -153,7 +157,7 @@ class NonlinearCriticalRegion:
         for c in constraints_with_slack:
             syms.extend(c.free_symbols)
         syms = list(set(syms))
-        syms.sort(key=str)
+        syms = sort_symbols_by_index(syms)
 
         # TODO this is ugly and should be done nicer later
         for i_con, c in enumerate(constraint_strings):

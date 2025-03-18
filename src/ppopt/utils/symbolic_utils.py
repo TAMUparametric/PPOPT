@@ -3,6 +3,7 @@ import gurobipy
 import numpy
 
 from itertools import combinations
+from functools import cmp_to_key
 
 from typing import List, Dict, Tuple
 import re
@@ -92,7 +93,14 @@ def remove_duplicate_symbolic_constraints(constraints: List[sympy.core.relationa
             ones_uc = numpy.ones((uc_symbol_length, 1))
             if not (numpy.isclose(numpy_constraints[i](*zeros_c), numpy_constraints[unique_idxs[ui]](*zeros_uc)) and numpy.isclose(numpy_constraints[i](*ones_c), numpy_constraints[unique_idxs[ui]](*ones_uc))):
                 continue
-            if sympy.simplify((c.lhs - c.rhs) - (uc.lhs - uc.rhs)) == 0:
+            simplified_difference = sympy.simplify((c.lhs - c.rhs) - (uc.lhs - uc.rhs))
+            # test if it simplifies to numeric 0
+            if isinstance(simplified_difference, sympy.Float):
+                if abs(simplified_difference) <= 1e-11:
+                    unique = False
+                    break
+            # test if it simplifies to structural 0 (this is a different class from sympy.Float, so it needs to be tested separately)
+            if simplified_difference == 0:
                 unique = False
                 break
         if unique:
@@ -116,7 +124,10 @@ def simplify_univariate_symbolic_constraints(constraints: List[sympy.core.relati
     for i, c in enumerate(constraints):
         constraint_index = indices[i]
         if len(c.free_symbols) == 1:
-            simplified = sympy.solve(c, c.free_symbols.pop())
+            try:
+                simplified = sympy.solve(c, c.free_symbols.pop())
+            except NotImplementedError: # has happened once with a "square root of square" constraint, sympy internally makes something barely complex that should be real, not sure why it's doing that
+                simplified = c
             if isinstance(simplified, sympy.And):
                 for s in simplified.args:
                     simplified_constraints.append(s)
@@ -268,7 +279,7 @@ def reduce_redundant_symbolic_constraints(constraints: List[sympy.core.relationa
 
     # ensure that we only have unique symbols
     syms = list(set(syms))
-    syms.sort(key=str)
+    syms = sort_symbols_by_index(syms)
 
     # if we have square roots, make sure that their radicands are non-negative
     for key in replacement_dict.keys():
@@ -335,7 +346,7 @@ def get_linear_coeffs_of_symbolic_constraints(constraints: List[sympy.core.relat
     # ensure that we only have unique symbols
     # FIXME efficiency??
     syms = list(set(syms))
-    syms.sort(key=str)
+    syms = sort_symbols_by_index(syms)
 
     for c in constraints:
         lhs_coeffs = c.lhs.as_coefficients_dict()
@@ -344,3 +355,14 @@ def get_linear_coeffs_of_symbolic_constraints(constraints: List[sympy.core.relat
         constants.append(rhs_coeffs[1] - lhs_coeffs[1])
 
     return numpy.array(linear_coeffs, numpy.float64), numpy.array(constants, numpy.float64)
+
+
+def sort_symbols_by_index(syms: List[sympy.Symbol]) -> List[sympy.Symbol]:
+    """
+    Sorts a list of symbols by their index.
+
+    :param syms: a list of symbols
+    :return: a sorted list of symbols
+    """
+
+    return sorted(syms, key=cmp_to_key(lambda a, b: (len(a.name) - len(b.name)) or (-1 if str(a) < str(b) else (1 if str(a) > str(b) else 0))))
