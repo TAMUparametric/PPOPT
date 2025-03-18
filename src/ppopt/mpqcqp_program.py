@@ -418,7 +418,10 @@ class MPQCQP_Program(MPQP_Program):
 
         # if the active set contains only linear constraints, then we can use the QP case and transform it to symbolics
         if len(active_set) == 0 or max(active_set) < self.num_linear_constraints():
-            A, b, C, d = super().optimal_control_law(active_set)
+            if numpy.any(self.Q):
+                A, b, C, d = super().optimal_control_law(active_set)
+            else:
+                A, b, C, d = super(MPQP_Program, self).optimal_control_law(active_set)
             theta_sym = sympy.symbols('theta:' + str(self.num_t()), real=True, finite=True)
             x_star = A @ sympy.Matrix([theta_sym]).T + b
             lambda_star = C @ sympy.Matrix([theta_sym]).T + d
@@ -436,7 +439,7 @@ class MPQCQP_Program(MPQP_Program):
             equations = self.build_optimality_conditions(active_set, symbol_collection)
 
             # solve the system of equations
-            solution = sympy.solve(equations, [*x_sym, *lambda_sym, nu_sym], rational=True, simplify=True)
+            solution = sympy.solve(equations, [*x_sym, *lambda_sym, nu_sym], rational=False, simplify=True)
 
             # extract each set of x, lambda, nu
             # I encountered a case where sympy would return a dicitionary rather than a list (of lists) of solutions, so we need to handle that case
@@ -970,9 +973,13 @@ class MPQCQP_Program(MPQP_Program):
                 active_F = numpy.vstack((active_F, con[2]))
 
             # build the mpQP object and use it to get the solution
-            mpqp = MPQP_Program(active_A, active_b, self.c, self.H, self.Q, self.A_t, self.b_t, active_F, equality_indices=list(range(active_A.shape[0])), solver=self.solver, post_process=False)
-            A_x, b_x, A_l, b_l = mpqp.optimal_control_law(mpqp.equality_indices)
-            
+            if numpy.any(self.Q):
+                mpqp = MPQP_Program(active_A, active_b, self.c, self.H, self.Q, self.A_t, self.b_t, active_F, equality_indices=list(range(active_A.shape[0])), solver=self.solver, post_process=False)
+                A_x, b_x, A_l, b_l = mpqp.optimal_control_law(mpqp.equality_indices)
+            else:
+                mplp = MPLP_Program(active_A, active_b, self.c, self.H, self.A_t, self.b_t, active_F, equality_indices=list(range(active_A.shape[0])), solver=self.solver, post_process=False)
+                A_x, b_x, A_l, b_l = mplp.optimal_control_law(mplp.equality_indices)
+
             # because MPQP_Program automatically scales constraints, we need to undo the scaling for the multipliers, otherwise they won't match the unscaled actual constraints
             tmp = numpy.block([active_A, -active_F])
             norm = constraint_norm(tmp)
@@ -1037,8 +1044,8 @@ class MPQCQP_Program(MPQP_Program):
                 for region in returned_regions:
                     cr_A, cr_b = get_linear_coeffs_of_symbolic_constraints(region.theta_constraints)
                     vertices.extend(vertex_enumeration(cr_A, cr_b, self.solver))
-                # get uniques
-                vertices = numpy.unique(numpy.round(vertices, decimals=8), axis=0)
+            # get uniques
+            vertices = numpy.unique(numpy.round(vertices, decimals=9), axis=0)
 
             for v in vertices:
                 v = v.reshape(-1, 1)
@@ -1046,7 +1053,7 @@ class MPQCQP_Program(MPQP_Program):
                 # since vertices may be of a different region, we need to figure out the correct law for x first
                 # no need to do an objective comparison here, since we are doing basically a convex QP approx so no overlaps possible
                 for region in returned_regions:
-                    if region.is_inside(v, 1e-6):
+                    if region.is_inside(v, 2e-6):
                         x = numpy.array([x[0] if isinstance(x, numpy.ndarray) else x for x in region.x_star_numpy(v)]).reshape(-1,1) # there can be weird cases where x_star_numpy gives different types (if only some entries depend on theta and others are constant)
                         break
                 # compute value of original quadratic active constraints at vertex
