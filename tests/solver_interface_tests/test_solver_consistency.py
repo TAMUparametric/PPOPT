@@ -9,6 +9,7 @@ from src.ppopt.solver_interface.gurobi_solver_interface import (
     solve_qp_gurobi,
 )
 from src.ppopt.solver_interface.quad_prog_interface import solve_qp_quadprog
+random.seed(42)
 
 
 def test_lp_consistency():
