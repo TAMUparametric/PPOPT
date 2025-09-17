@@ -9,7 +9,7 @@ from ..solution import Solution
 from ..solver import Solver
 from ..utils.chebyshev_ball import chebyshev_ball
 from ..utils.general_utils import make_column
-from ..utils.mpqp_utils import gen_cr_from_active_set
+from ..utils.mpqp_utils import gen_cr_from_active_set, find_sub_active_set
 
 
 class CombinationTester:
@@ -164,43 +164,6 @@ def generate_children_sets(active_set, num_constraints: int, murder_list=None) -
         return [[i] for i in range(num_constraints) if check([i])]
     else:
         return [[*active_set, i] for i in range(active_set[-1] + 1, num_constraints) if check([*active_set, i])]
-
-
-def find_sub_active_set(program: Union[MPLP_Program, MPQP_Program], active_set: List[int]) -> List[int]:
-    """
-    In the situation that there is an overdetermined active set we need to find the subset that is full rank and allows
-    for generating active sets that are well defined.
-
-
-    """
-
-    eq_cons = program.equality_indices
-    ineq_constraints = [i for i in active_set if i not in eq_cons]
-    kept_inequalities = []
-
-    current_rank = 0
-
-    if len(eq_cons) == 0:
-        current_rank = 0
-    else:
-        current_rank = numpy.linalg.matrix_rank(program.A[eq_cons])
-
-    for i in ineq_constraints:
-
-        trial_ineq = [*kept_inequalities, i]
-
-        A_block = numpy.block([[program.A[eq_cons]], [program.A[trial_ineq]]])
-
-        A_rank = numpy.linalg.matrix_rank(A_block)
-
-        if A_rank > current_rank:
-            kept_inequalities.append(i)
-            current_rank = A_rank
-
-        if current_rank == program.num_x():
-            return [*eq_cons, *kept_inequalities]
-
-    return [*eq_cons, *kept_inequalities]
 
 
 def get_facet_centers(A: numpy.ndarray, b: numpy.ndarray, solver: Optional[Solver] = None) -> List[

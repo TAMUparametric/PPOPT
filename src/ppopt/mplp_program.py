@@ -22,6 +22,7 @@ from .utils.general_utils import (
     select_not_in_list,
 )
 
+
 # noinspection GrazieInspection
 
 class MPLP_Program:
@@ -383,11 +384,13 @@ class MPLP_Program:
             \lambda^*(\theta) &= A_l\theta + b_l\\
             \end{align*}
         """
+        from .utils.mpqp_utils import find_sub_active_set
+        ac_sub = find_sub_active_set(self, active_set)
 
-        aux = numpy.linalg.pinv(self.A[active_set])
+        aux = numpy.linalg.pinv(self.A[ac_sub])
 
-        parameter_A = aux @ self.F[active_set]
-        parameter_b = aux @ self.b[active_set]
+        parameter_A = aux @ self.F[ac_sub]
+        parameter_b = aux @ self.b[ac_sub]
 
         lagrange_A = -aux.T @ self.H
         lagrange_b = -aux.T @ self.c
@@ -469,7 +472,7 @@ class MPLP_Program:
         """
 
         # The cardinality of an active set less then x is impossible to be vertex defining
-        if len(active_set) != self.num_x():
+        if len(active_set) < self.num_x():
             return False
 
         # make a helper function for making zero matrices
@@ -612,8 +615,10 @@ class MPLP_Program:
             is_optimal = self.solve_theta(test_point)
 
             if is_optimal is not None:
-                if is_optimal.active_set.size <= self.num_x():
-                    return is_optimal.active_set.tolist()
+                # in the case of being over determined active set we project to a set
+                # of constraints that are full rank
+                from .utils.mpqp_utils import find_sub_active_set
+                return find_sub_active_set(self, is_optimal.active_set.tolist())
 
         return None
 
