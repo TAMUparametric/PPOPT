@@ -54,8 +54,8 @@ def detect_implicit_equalities(A: numpy.ndarray, b: numpy.ndarray) -> List[List[
     """
 
     block = numpy.zeros((A.shape[0], A.shape[1] + 1))
-    block[:, :A.shape[1]] = A
-    block[:, A.shape[1]:A.shape[1] + 1] = b
+    block[:, : A.shape[1]] = A
+    block[:, A.shape[1] : A.shape[1] + 1] = b
 
     # scale all the constraints again, so we don't have weird numerical problems
     block = block / numpy.linalg.norm(block, axis=1, keepdims=True)
@@ -77,6 +77,16 @@ def detect_implicit_equalities(A: numpy.ndarray, b: numpy.ndarray) -> List[List[
 
             # third is u_i + v_i ~ 0
 
+            # If same blocks are being compared:
+            # check one will only pass if block[i] is a zero vector
+            # check two will always pass, since the euclidean norm will always be zero
+            # check three will always fail.
+
+            # Given that zero vectors are not being added to the constraint set
+            # it is safe to skip these comparisons
+            if i == j:
+                continue
+
             checks = 0
 
             # check one
@@ -87,14 +97,25 @@ def detect_implicit_equalities(A: numpy.ndarray, b: numpy.ndarray) -> List[List[
             if numpy.linalg.norm(block[i] - block[j], 2) <= 1e-12:
                 checks += 1
 
+            if checks == 0:
+                continue
+
+            # if we have two checks already, we can short circuit
+            # allclose is time consuming
+            if checks == 2:
+                implicit_pairs.append([i, j])
+                continue
+
             # check three
             if numpy.allclose(block[i], -block[j]):
                 checks += 1
 
-            if checks >= 2:
+            # if 3, it is already returned above, so we need to only check for 2 here
+            if checks == 2:
                 implicit_pairs.append([i, j])
 
     return implicit_pairs
+
 
 
 # removes zeroed constraints
